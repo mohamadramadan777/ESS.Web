@@ -1,0 +1,63 @@
+<div class="register-container">
+    <div class="sections-wrapper">
+        <div class="left-section">
+            <div class="lift-content-wrapper">
+                <img src="assets/images/logo.jpg" alt="Logo" class="logo" />
+                <h2>Welcome to <span>The QFC Regulatory Authority</span> Electronic Submission System</h2>
+
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                    <mat-radio-group formControlName="idType" class="radio-group">
+                        <mat-radio-button value="qfc">QFC Number</mat-radio-button>
+                        <mat-radio-button value="rf">RF Number</mat-radio-button>
+                    </mat-radio-group>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Number</mat-label>
+                        <input matInput formControlName="number" placeholder="Enter your number" />
+                        <mat-error *ngIf="registerForm.get('number')?.invalid">Number is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Registered Email</mat-label>
+                        <input matInput formControlName="email" placeholder="Enter your email" />
+                        <mat-error *ngIf="registerForm.get('email')?.invalid">Valid email is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Password</mat-label>
+                        <input matInput type="password" formControlName="password" placeholder="Enter your password" />
+                        <mat-error *ngIf="registerForm.get('password')?.invalid">Password is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Type the code shown below</mat-label>
+                        <input matInput formControlName="captcha" placeholder="Enter captcha" />
+                        <mat-error *ngIf="registerForm.get('captcha')?.invalid">Captcha is required</mat-error>
+                    </mat-form-field>
+
+                    <mat-checkbox formControlName="terms">
+                        I Agree to the terms of use
+                    </mat-checkbox>
+
+                    <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+                        Register
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="right-content-wrapper">
+                <div class="help-section">
+                    <h3>Need help with the system?</h3>
+                    <p>If you need help with the system, click on <a href="#">Help</a>.</p>
+                    <p>Need to Contact us? <a href="#">Contact us</a></p>
+                </div>
+                <div class="file-section">
+                    <a href="#" class="download-link">Download file</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

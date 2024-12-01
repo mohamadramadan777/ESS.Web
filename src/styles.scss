@@ -1,1 +1,61 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// تفعيل وضع light-dark لدعم الوضعين
+html {
+  color-scheme: light dark;
+
+  // تخصيص الثيم الخاص بالنظام
+  @include mat.theme((
+    color: (
+      primary: mat.define-palette((
+        50: #fcebe5,
+        100: #f6c8b8,
+        200: #f0a28a,
+        300: #ea7b5c,
+        400: #e75d39,
+        500: #e33f16, // اللون الأساسي الرئيسي
+        600: #db3a14,
+        700: #d33510,
+        800: #cb2f0d,
+        900: #bd2508,
+      )),
+      secondary: mat.define-palette((
+        50: #f8f9fa,
+        100: #e9ecef,
+        200: #dee2e6,
+        300: #ced4da,
+        400: #adb5bd,
+        500: #6c757d, // اللون الرمادي الرئيسي
+        600: #495057,
+        700: #343a40,
+        800: #212529,
+        900: #121416,
+      )),
+      warn: mat.$red-palette,
+    ),
+    typography: (
+      plain-family: Roboto,
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+    ),
+    density: 0, // كثافة قياسية
+  ));
+}
+
+// تخصيص ألوان الخلفية والنصوص
+body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+// تخصيص ألوان الأزرار
+.mat-raised-button {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.mat-form-field {
+  color: var(--mat-sys-on-surface);
+  border-color: var(--mat-sys-outline);
+}
