@@ -1,0 +1,30 @@
+<header class="header">
+    <div class="header-wrapper">
+      <div class="logo">
+        <img src="/assets/images/logo.svg" alt="Organization Logo">
+      </div>
+      <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input matInput type="text" placeholder="Search">
+      </div>
+    </div>
+    <div class="user-card">
+      <mat-icon class="notification-icon" matBadge="2">
+        <img src="assets/images/notification.png" alt="">
+      </mat-icon>
+      <mat-card class="profile-card">
+        <div class="profile-details">
+          <img class="avatar" src="assets/images/81.png" alt="User Avatar" />
+          <div class="info">
+            <h3 class="name">{{ name }}</h3>
+            <p class="email">{{ email }}</p>
+          </div>
+        </div>
+        <img src="../../../../../assets/images/more.svg" alt="">
+      </mat-card>
+      <button class="logout-button" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </header>
+  

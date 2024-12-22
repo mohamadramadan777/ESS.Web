@@ -1,0 +1,5 @@
+{
+    "swaggerUrl": "http://localhost:5039/swagger/v1/swagger.json",
+    "output": "src/app/services/api-client.ts",
+    "templateDirectory": "./templates"
+}

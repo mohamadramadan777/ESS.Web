@@ -2,62 +2,120 @@
     <div class="sections-wrapper">
         <div class="left-section">
             <div class="lift-content-wrapper">
-                <img src="assets/images/logo.jpg" alt="Logo" class="logo" />
-                <h2>Welcome to <span>The QFC Regulatory Authority</span> Electronic Submission System</h2>
+                <div class="logo-wrapper">
+                    <img src="/assets/images/logo.svg" alt="Logo" class="logo" />
+                </div>
+                <h2>
+                    Welcome to <span>The QFC Regulatory Authority</span> Electronic <br> Submission System
+                </h2>
 
                 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-                    <mat-radio-group formControlName="idType" class="radio-group">
+                    <mat-radio-group formControlName="idType" class="radio-group"
+                        (change)="onIdTypeChange($event.value)">
                         <mat-radio-button value="qfc">QFC Number</mat-radio-button>
                         <mat-radio-button value="rf">RF Number</mat-radio-button>
                     </mat-radio-group>
 
-                    <mat-form-field appearance="outline" class="form-field">
-                        <mat-label>Number</mat-label>
-                        <input matInput formControlName="number" placeholder="Enter your number" />
-                        <mat-error *ngIf="registerForm.get('number')?.invalid">Number is required</mat-error>
-                    </mat-form-field>
+                    <ng-container *ngIf="idType === 'qfc'">
+                        <p class="label">Number : <span class="asterisk">*</span></p>
+                        <mat-form-field appearance="outline" class="form-field">
+                            <input matInput formControlName="QfcNumber" placeholder="Enter QFC number" />
+                            <mat-error *ngIf="registerForm.get('QfcNumber')?.invalid">
+                                QFC Number is required
+                            </mat-error>
+                        </mat-form-field>
+                    </ng-container>
 
+                    <ng-container *ngIf="idType === 'rf'">
+                        <p class="label">Number : <span class="asterisk">*</span></p>
+                        <mat-form-field appearance="outline" class="form-field">
+                            <input matInput formControlName="registrationDetails" placeholder="Enter RF number" />
+                            <mat-error *ngIf="registerForm.get('registrationDetails')?.invalid">
+                                RF Number is required
+                            </mat-error>
+                        </mat-form-field>
+                    </ng-container>
+
+
+
+                    <p class="label">Registered Email <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <mat-label>Registered Email</mat-label>
                         <input matInput formControlName="email" placeholder="Enter your email" />
                         <mat-error *ngIf="registerForm.get('email')?.invalid">Valid email is required</mat-error>
                     </mat-form-field>
 
+                    <p class="label">Password <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <mat-label>Password</mat-label>
                         <input matInput type="password" formControlName="password" placeholder="Enter your password" />
                         <mat-error *ngIf="registerForm.get('password')?.invalid">Password is required</mat-error>
                     </mat-form-field>
 
+                    <p class="label">Type the code shown below <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <mat-label>Type the code shown below</mat-label>
                         <input matInput formControlName="captcha" placeholder="Enter captcha" />
                         <mat-error *ngIf="registerForm.get('captcha')?.invalid">Captcha is required</mat-error>
                     </mat-form-field>
 
-                    <mat-checkbox formControlName="terms">
-                        I Agree to the terms of use
-                    </mat-checkbox>
+                    <div class="terms-container">
+                        <mat-checkbox formControlName="terms">I Agree to the terms of use</mat-checkbox>
+                        <a href="#" class="forget-pass-link">Forgot Password?</a>
+                    </div>
 
-                    <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+                    <button (click)="register()" mat-raised-button class="register-button" type="submit" [disabled]="!registerForm.invalid">
                         Register
                     </button>
+
+                    <div class="contact-us-divider">
+                        <span class="contact-us-text">Contact us</span>
+                        <div class="divider"></div>
+                        <span class="help-text">Help</span>
+                    </div>
                 </form>
             </div>
         </div>
 
         <div class="right-section">
             <div class="right-content-wrapper">
-                <div class="help-section">
-                    <h3>Need help with the system?</h3>
-                    <p>If you need help with the system, click on <a href="#">Help</a>.</p>
-                    <p>Need to Contact us? <a href="#">Contact us</a></p>
+                <div class="info-section">
+                    <img src="assets/images/Paper.png" alt="Document Icon" class="document-icon" />
+                    <h3 class="system-users-title">System Users:</h3>
+                    <p class="system-users-description">
+                        This system is meant to be used by individuals from firms which are
+                        authorized to engage in regulated activities licensed by the QFC Regulatory
+                        Authority of a Designated Non-Financial Business or Professional (DNFBP).
+                    </p>
                 </div>
-                <div class="file-section">
-                    <a href="#" class="download-link">Download file</a>
+                <hr>
+                <div class="compatibility-section">
+                    <p>
+                        This website works best with Internet Explorer 11, Microsoft Edge 13 and above,
+                        Firefox 47 and above, or Google Chrome 57 and above.
+                    </p>
+                </div>
+                <div class="file-links">
+                    <a href="#" class="download-link">
+                        XBRL file installer / Manual form &nbsp;
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+                            <path
+                                d="M12.4169 7.27034C15.1175 7.50289 16.2203 8.89071 16.2203 11.9289V12.0264C16.2203 15.3797 14.8775 16.7225 11.5242 16.7225H6.64054C3.28727 16.7225 1.94446 15.3797 1.94446 12.0264V11.9289C1.94446 8.91322 3.03221 7.5254 5.68782 7.27784"
+                                stroke="#A51E36" stroke-width="1.03085" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M9.08594 2.09395V11.7562" stroke="#A51E36" stroke-width="1.03085"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M11.5994 10.0834L9.08632 12.5964L6.57324 10.0834" stroke="#A51E36"
+                                stroke-width="1.03085" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        &nbsp;
+                        <span class="download-text">Download file</span>
+                    </a>
+                    <a href="#" class="download-link">
+                        You can find QFC Regulatory Authority forms
+                        &nbsp;
+                        <span class="download-text">Open Here</span>
+                    </a>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
-

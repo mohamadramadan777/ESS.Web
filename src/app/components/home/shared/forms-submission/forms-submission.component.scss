@@ -1,0 +1,35 @@
+
+.submit-button {
+  font-size: 11.19px;
+  letter-spacing: 0.1px;
+  line-height: 19.84px;
+  font-family: Montserrat;
+  color: #222;
+  text-align: center;
+}
+
+tr {
+  display: flex;
+
+  padding: 7.937px 15.874px;
+  align-items: stretch;
+  flex-shrink: 0;
+  background: rgba(243, 243, 243, 0.24);
+}
+th,
+td {
+  padding: 12px;
+  text-align: center !important;
+  font-family: Montserrat;
+  font-size: 14px;
+  color: #333;
+  width: 33.33%;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+}

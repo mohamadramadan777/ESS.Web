@@ -1,0 +1,24 @@
+.navbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: #a51e36;
+  button {
+    padding: 10px;
+    color: white;
+    color: #fff;
+    font-family: Cairo;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: -0.28px;
+    border-radius: 1px !important;
+    transition: border-color 0.2s ease-in-out;
+    border-bottom: 3px solid transparent;
+    &:hover {
+      border-bottom: 3px solid #fff;
+    }
+  }
+}

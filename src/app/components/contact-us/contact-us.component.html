@@ -1,0 +1,92 @@
+<div class="back-to-login">
+    <button mat-raised-button (click)="navigateToLogin()">
+      <mat-icon class="arrow-icon">arrow_back</mat-icon>
+      <span class="back-text">Back to Login</span>
+    </button>
+  </div>
+<div class="contact-container">
+    <div class="sections-wrapper">
+      <div class="left-section">
+        <div class="content-wrapper contact-content-wrapper">
+          <div class="logo-wrapper">
+            <img src="/assets/images/logo.svg" alt="Logo" class="logo" />
+          </div>
+          <h2>Contact <span>The QFC Regulatory Authority</span></h2>
+          <p class="subtext">
+            For any questions or concerns, please fill out the form below. Your feedback is important to us!
+          </p>
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <div class="form-item">
+                <p class="label">Your Name <span class="asterisk">*</span></p>
+                <mat-form-field appearance="outline" class="form-field">
+                  <input matInput formControlName="name" placeholder="Enter your name" />
+                  <mat-error *ngIf="contactForm.get('name')?.invalid">Name is required</mat-error>
+                </mat-form-field>
+              </div>
+  
+              <div class="form-item">
+                <p class="label">Your firm's QFC Number <span class="asterisk">*</span></p>
+                <mat-form-field appearance="outline" class="form-field">
+                  <input matInput formControlName="qfcNumber" placeholder="Enter your QFC Number" />
+                  <mat-error *ngIf="contactForm.get('qfcNumber')?.invalid">
+                    QFC Number is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+  
+              <div class="form-item">
+                <p class="label">Your Email Address <span class="asterisk">*</span></p>
+                <mat-form-field appearance="outline" class="form-field">
+                  <input matInput formControlName="email" placeholder="Enter your email address" />
+                  <mat-error *ngIf="contactForm.get('email')?.invalid">
+                    Valid email is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+  
+              <div class="form-item">
+                <p class="label">Feedback Relating To</p>
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-select formControlName="feedbackRelatingTo" placeholder="Select">
+                    <mat-option *ngFor="let option of feedbackOptions" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+  
+              <div class="form-item full-width">
+                <p class="label">Description of the Issue <span class="asterisk">*</span></p>
+                <mat-form-field appearance="outline" class="form-field">
+                  <textarea
+                    matInput
+                    formControlName="description"
+                    placeholder="Provide a detailed description"
+                    rows="4"
+                  ></textarea>
+                  <mat-error *ngIf="contactForm.get('description')?.invalid">
+                    Description is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+  
+              <div class="form-item captcha-container full-width">
+                <div class="captcha-image">
+                    <div class="g-recaptcha" data-sitekey="Your_Site_Key_Here"></div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="button-group">
+              <button mat-raised-button class="contact-button" type="submit" [disabled]="contactForm.invalid">
+                Submit
+              </button>
+              <button mat-button class="reset-button" type="button" (click)="resetForm()">Reset</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

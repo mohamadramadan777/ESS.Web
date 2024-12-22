@@ -1,0 +1,26 @@
+.signoff-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  p {
+    color: #121212;
+    font-family: Montserrat;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: -0.36px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    button.mat-button {
+      outline: 1px solid #a51e36;
+      color: #a51e36;
+      background-color: transparent;
+      padding: 15px 20px;
+    }
+  }
+}

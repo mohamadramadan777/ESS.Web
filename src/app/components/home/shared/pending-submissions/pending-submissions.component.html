@@ -1,0 +1,27 @@
+<div class="content-wrapper">
+    <h2 class="content-title">Following items are pending for submission</h2>
+    <mat-divider></mat-divider>
+    <div class="submission-category">
+        <div class="overdue">
+
+            <h3 class="overdue-title">Submission overdue:</h3>
+            <button mat-button color="primary" outline class="btn-outline-primary">Submit</button>
+
+        </div>
+        <ul>
+            <li *ngFor="let item of overdueSubmissions" class="list-item">
+                <a href="#" class="list-link">{{ item.title }} (due on {{ item.dueDate }})</a>
+                <button mat-button>Submit</button>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- <div class="submission-category">
+            <h3 class="overdue-title">General Submissions:</h3>
+            <ul>
+                <li *ngFor="let item of submissions">
+                    {{ item.title }} (due on {{ item.dueDate }})
+                    <button mat-button>Submit</button>
+                </li>
+            </ul>
+        </div> -->

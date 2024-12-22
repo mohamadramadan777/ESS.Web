@@ -1,0 +1,42 @@
+.submission-category {
+    margin-bottom: 15px;
+
+    h3 {
+      color: #d32f2f;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+
+      li {
+        margin: 20px 0;
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+button {
+  position: relative;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  line-height: 25px;
+  font-weight: 600;
+  font-family: Montserrat;
+  color: #a51e36 !important;
+  text-align: left;
+}
+.overdue {
+  display: flex;
+  justify-content: space-between;
+}
+button.btn-outline-primary {
+  outline: 1px solid #a51e36;
+  color: #a51e36;
+  background-color: transparent;
+  padding: 15px 20px;
+}
+.pending-submissions {
+  background-color: #fff;
+  padding: 20px;
+}
