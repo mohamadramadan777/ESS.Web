@@ -1,2 +1,11 @@
 <app-header></app-header>
 <app-navbar></app-navbar>
+<ag-grid-angular
+  style="width: 100%; height: 500px;"
+  class="ag-theme-alpine"
+  [modules]="modules"
+  [defaultColDef]="defaultColDef"
+  [columnDefs]="columnDefs"
+  [rowData]="rowData"
+  (cellClicked)="onCellClicked($event)">
+</ag-grid-angular>

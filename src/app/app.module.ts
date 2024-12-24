@@ -36,6 +36,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SystemAccessComponent } from './components/system-access/system-access.component';
+import { AgGridModule } from 'ag-grid-angular';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,6 +75,7 @@ import { SystemAccessComponent } from './components/system-access/system-access.
     MatTooltipModule,
     MatBadgeModule,
     MatSelectModule,
+    AgGridModule, // Ensure this is configured 
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)
       positionClass: 'toast-top-center', // Position on the page
@@ -80,7 +83,10 @@ import { SystemAccessComponent } from './components/system-access/system-access.
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [
+    provideAnimationsAsync(),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
