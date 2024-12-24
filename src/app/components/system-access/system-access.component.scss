@@ -1,30 +1,72 @@
 .ag-theme-alpine {
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-  }
-  
-  .ag-header-cell {
-    text-align: center;
-    background-color: #eaeaea; /* Header background */
-  }
-  
-  .ag-row {
-    text-align: center;
-  }
-  
-  .ag-row:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra striping */
-  }
-  
-  .btn-danger {
-    color: #fff;
-    background-color: #dc3545;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .btn-danger:hover {
-    background-color: #c82333;
-  }
-  
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.ag-header-cell {
+  text-align: center;
+  background-color: #eaeaea;
+}
+
+.ag-row {
+  text-align: center;
+}
+
+.ag-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+/* Container for the entire table section */
+.table-container {
+  display: flex; /* Enable flexbox layout */
+  flex-direction: column; /* Arrange children in a column */
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fff; /* White background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  height: 700px; /* Adjust the height to fit table + header + button */
+  position: relative; /* Allow positioning for the button */
+}
+
+/* Header Section */
+.table-header {
+  display: flex;
+  justify-content: flex-start; /* Align title to the left */
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0; /* Add a line under the header */
+}
+
+/* Table Section */
+.table-content {
+  flex: 1; /* Let the table section take up available space */
+  display: flex;
+  justify-content: center; /* Center table horizontally */
+  align-items: center; /* Center table vertically */
+}
+
+/* Button Section */
+.table-footer {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Button Styling */
+.btn-request-access {
+  padding: 10px 20px;
+  font-size: 14px;
+  color: #fff;
+  background-color: #007bff; /* Blue button */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-request-access:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}

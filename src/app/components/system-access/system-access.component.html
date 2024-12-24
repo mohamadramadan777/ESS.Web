@@ -1,11 +1,28 @@
 <app-header></app-header>
 <app-navbar></app-navbar>
-<ag-grid-angular
-  style="width: 100%; height: 500px;"
-  class="ag-theme-alpine"
-  [modules]="modules"
-  [defaultColDef]="defaultColDef"
-  [columnDefs]="columnDefs"
-  [rowData]="rowData"
-  (cellClicked)="onCellClicked($event)">
-</ag-grid-angular>
+
+<div class="table-container">
+  <!-- Header Section -->
+  <div class="table-header">
+    <h2>Administration</h2>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-content">
+    <ag-grid-angular
+      style="width: 100%; height: 500px"
+      class="ag-theme-alpine"
+      [modules]="modules"
+      [defaultColDef]="defaultColDef"
+      [columnDefs]="columnDefs"
+      [rowData]="rowData"
+      (cellClicked)="onCellClicked($event)"
+    >
+    </ag-grid-angular>
+  </div>
+
+  <!-- Button Section -->
+  <div class="table-footer">
+    <button class="btn-request-access">Request Access</button>
+  </div>
+</div>
