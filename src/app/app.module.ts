@@ -35,6 +35,7 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SystemAccessComponent } from './components/system-access/system-access.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,6 +52,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     FormsSubmissionComponent,
     SignOffComponent,
     ContactUsComponent,
+    SystemAccessComponent,
   ],
   imports: [
     BrowserModule,
