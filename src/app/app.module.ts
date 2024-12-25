@@ -37,6 +37,7 @@ import { AuthInterceptor } from './services/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SystemAccessComponent } from './components/system-access/system-access.component';
 import { AgGridModule } from 'ag-grid-angular';
+import { AccessModalComponent } from './components/system-access/access-modal/access-modal.component';
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import { AgGridModule } from 'ag-grid-angular';
     SignOffComponent,
     ContactUsComponent,
     SystemAccessComponent,
+    AccessModalComponent,
   ],
   imports: [
     BrowserModule,

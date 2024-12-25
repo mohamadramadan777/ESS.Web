@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
 import { ColDef } from 'ag-grid-community';
+import { Component, ViewChild } from '@angular/core';
+import { AccessModalComponent } from './access-modal/access-modal.component';
 import { ClientSideRowModelModule } from 'ag-grid-community';
 
 @Component({
@@ -9,6 +10,15 @@ import { ClientSideRowModelModule } from 'ag-grid-community';
 })
 export class SystemAccessComponent {
   public modules = [ClientSideRowModelModule];
+  @ViewChild('accessModal') accessModal!: AccessModalComponent;
+
+  openAccessModal(): void {
+    this.accessModal.openModal();
+  }
+
+  onModalClosed(): void {
+    console.log('Modal closed');
+  }
 
   columnDefs: ColDef[] = [
     { headerName: 'Name', field: 'name', sortable: true, filter: true },

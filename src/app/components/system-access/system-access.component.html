@@ -23,6 +23,10 @@
 
   <!-- Button Section -->
   <div class="table-footer">
-    <button class="btn-request-access">Request Access</button>
+    <button class="btn-request-access"  (click)="openAccessModal()">Request Access</button>
   </div>
 </div>
+<app-access-modal
+  #accessModal
+  (modalClosed)="onModalClosed()"
+></app-access-modal>
