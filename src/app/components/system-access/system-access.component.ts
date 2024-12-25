@@ -1,7 +1,18 @@
 import { ColDef } from 'ag-grid-community';
 import { Component, ViewChild } from '@angular/core';
 import { AccessModalComponent } from './access-modal/access-modal.component';
-import { ClientSideRowModelModule } from 'ag-grid-community';
+import {
+  TextFilterModule,
+  ClientSideRowModelModule,
+  NumberEditorModule,
+  ValidationModule,
+  TextEditorModule,
+  themeQuartz,
+  PaginationModule,
+  NumberFilterModule,
+  PaginationNumberFormatterParams,
+  RowSelectionModule,
+} from 'ag-grid-community';
 
 @Component({
   selector: 'app-system-access',
@@ -9,9 +20,24 @@ import { ClientSideRowModelModule } from 'ag-grid-community';
   styleUrls: ['./system-access.component.scss'],
 })
 export class SystemAccessComponent {
-  public modules = [ClientSideRowModelModule];
-  @ViewChild('accessModal') accessModal!: AccessModalComponent;
+  public modules = [
+    TextFilterModule,
 
+    NumberEditorModule,
+    TextEditorModule,
+    ClientSideRowModelModule,
+    ValidationModule,
+    PaginationModule,
+    NumberFilterModule,
+    RowSelectionModule,
+  ];
+  @ViewChild('accessModal') accessModal!: AccessModalComponent;
+   paginationPageSize=1;
+   theme=themeQuartz
+  paginationPageSizeSelector= [1, 5, 10];
+  paginationNumberFormatter= (params: PaginationNumberFormatterParams) => {
+    return "[" + params.value.toLocaleString() + "]";
+  }
   openAccessModal(): void {
     this.accessModal.openModal();
   }
@@ -91,6 +117,7 @@ export class SystemAccessComponent {
       registeredDate: '14/Jul/2020 7:38PM',
       revoke: true,
     },
+    // Add more rows to test pagination
   ];
 
   defaultColDef = {
