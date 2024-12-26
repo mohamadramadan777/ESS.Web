@@ -35,10 +35,14 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SystemAccessComponent } from './components/system-access/system-access.component';
+import { AgGridModule } from 'ag-grid-angular';
+import { AccessModalComponent } from './components/system-access/access-modal/access-modal.component';
 import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 import { Client } from './services/api-client'; // Import the Client service
 import { API_BASE_URL } from './services/tokens';
 import { environment } from '../environments/environment';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,6 +59,8 @@ import { environment } from '../environments/environment';
     FormsSubmissionComponent,
     SignOffComponent,
     ContactUsComponent,
+    SystemAccessComponent,
+    AccessModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -75,6 +81,7 @@ import { environment } from '../environments/environment';
     MatTooltipModule,
     MatBadgeModule,
     MatSelectModule,
+    AgGridModule, // Ensure this is configured 
     HttpClientModule,
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)

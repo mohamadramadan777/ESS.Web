@@ -1,0 +1,86 @@
+<div class="modal" *ngIf="isOpen">
+  <div class="modal-content">
+    <h3>Request Access</h3>
+    <label for="accessType">Select Access Type:</label>
+    <select
+      id="accessType"
+      [(ngModel)]="selectedAccessType"
+      (change)="onAccessTypeChange($event)"
+    >
+      <option value="">Select</option>
+      <option value="documentAdmin">Document Admin</option>
+      <option value="approvedIndividual">Approved Individual</option>
+    </select>
+
+    <div id="form-container">
+      <ng-container [ngSwitch]="selectedAccessType">
+        <div *ngSwitchCase="'documentAdmin'">
+          <label for="name">Name of the Individual:</label>
+          <input type="text" id="name" [(ngModel)]="documentAdminForm.name" />
+          <label for="jobTitle">Job Title:</label>
+          <input
+            type="text"
+            id="jobTitle"
+            [(ngModel)]="documentAdminForm.jobTitle"
+          />
+          <label for="dob">Date of Birth:</label>
+          <input type="date" id="dob" [(ngModel)]="documentAdminForm.dob" />
+          <label for="nationality">Nationality:</label>
+          <select id="nationality" [(ngModel)]="documentAdminForm.nationality">
+            <option value="">Select</option>
+            <option value="US">United States</option>
+            <option value="IN">India</option>
+          </select>
+          <label for="email">Email Address:</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="documentAdminForm.email"
+          />
+          <label for="confirmEmail">Confirm Email Address:</label>
+          <input
+            type="email"
+            id="confirmEmail"
+            [(ngModel)]="documentAdminForm.confirmEmail"
+          />
+        </div>
+
+        <div *ngSwitchCase="'approvedIndividual'">
+          <label for="approvedName">Approved Individual Name:</label>
+          <input
+            type="text"
+            id="approvedName"
+            [(ngModel)]="approvedIndividualForm.name"
+          />
+          <label for="controlledFunctions"
+            >Approved Controlled Functions:</label
+          >
+          <select
+            id="controlledFunctions"
+            [(ngModel)]="approvedIndividualForm.controlledFunctions"
+          >
+            <option value="">Select</option>
+            <option value="Function1">Function 1</option>
+            <option value="Function2">Function 2</option>
+          </select>
+        </div>
+
+        <div *ngSwitchDefault>
+          <p>Please select a valid access type to proceed.</p>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-close" (click)="closeModal()">Close</button>
+      <button
+        class="btn-request"
+        [class.disabled]="!isFormValid()"
+        [disabled]="!isFormValid()"
+        (click)="onRequest()"
+      >
+        Request
+      </button>
+    </div>
+  </div>
+</div>
