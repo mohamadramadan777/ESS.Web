@@ -67,45 +67,59 @@ export class LoginComponent implements OnInit {
       });
 
       try {
-        const response = await this.authenticationService.login(user);
         this.isSubmitting = false;
-        switch (response) {
-          case "AccountLocked":
-            this.toastr.error("Your account has been Locked", "Login Failed");
-            this.setInstruction("Your account has been locked for security reasons.<br/> Please contact QFCRA IT Support <a href=\"../contactus\" onclick=\"/contactus()\" style=\"color: #9c1f2f; text-decoration:underline;\">here</a>.")
-            break;
-          case "LoggedInOtherSystem":
-            this.toastr.error("Logged in to another system", "Login Failed");
-            this.setInstruction("<span style=\" color: red;\">You are logged in to another system, please log out from the other system first.</span>");
-            break;
-          case "Deactivated":
-            this.toastr.error( "Account has been deactivated", "Login Failed");
-            this.setInstruction("<span style=\" color: red;\">Your Account has been deactivated.</span>");
-            break;
-          case "InvalidUserCredentials":
-            this.toastr.error("Invalid Credentials", "Login Failed");
-            this.setInstruction("<span style=\" color: red;\">Invalid user credentials.</span>");
-            break;
-          case "Unauthorized":
-            this.toastr.error("Unauthorized", "Login Failed");
-            break;
-          case "NoToken":
-            this.toastr.error("Error", "Login Failed");
-            break;
-          case "Error":
-            this.toastr.error("An error occurred", "Login Failed");
-            break;
-          case "resetpassword":
-            this.toastr.info("Redirecting to reset password", "Password Reset Required");
-            break;
-          case "success":
-            this.toastr.success("Welcome!","Login Successful");
-            break;
-          default:
-            this.toastr.error("An unexpected error occurred","Login Failed");
-            break;
-        }
-
+        this.authenticationService.login(user).subscribe({
+          next: response => {
+            switch (response) {
+              case 'AccountLocked':
+                this.toastr.error('Your account has been Locked', 'Login Failed');
+                this.setInstruction(
+                  'Your account has been locked for security reasons.<br/> Please contact QFCRA IT Support <a href="../contactus" onclick="/contactus()" style="color: #9c1f2f; text-decoration:underline;">here</a>.'
+                );
+                break;
+              case 'LoggedInOtherSystem':
+                this.toastr.error('Logged in to another system', 'Login Failed');
+                this.setInstruction(
+                  '<span style=" color: red;">You are logged in to another system, please log out from the other system first.</span>'
+                );
+                break;
+              case 'Deactivated':
+                this.toastr.error('Account has been deactivated', 'Login Failed');
+                this.setInstruction(
+                  '<span style=" color: red;">Your Account has been deactivated.</span>'
+                );
+                break;
+              case 'InvalidUserCredentials':
+                this.toastr.error('Invalid Credentials', 'Login Failed');
+                this.setInstruction(
+                  '<span style=" color: red;">Invalid user credentials.</span>'
+                );
+                break;
+              case 'Unauthorized':
+                this.toastr.error('Unauthorized', 'Login Failed');
+                break;
+              case 'NoToken':
+                this.toastr.error('Error', 'Login Failed');
+                break;
+              case 'Error':
+                this.toastr.error('An error occurred', 'Login Failed');
+                break;
+              case 'resetpassword':
+                this.toastr.info('Redirecting to reset password', 'Password Reset Required');
+                break;
+              case 'success':
+                this.toastr.success('Welcome!', 'Login Successful');
+                break;
+              default:
+                this.toastr.error('An unexpected error occurred', 'Login Failed');
+                break;
+            }
+          },
+          error: err => {
+            console.error('Unexpected error:', err);
+            this.toastr.error('An unexpected error occurred.', 'Login Failed');
+          },
+        });
       } catch (error) {
         this.isSubmitting = false;
         this.toastr.error('An unexpected error occurred', 'Login Failed');
@@ -122,7 +136,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  contactus(): void{
+  contactus(): void {
     this.router.navigate(['/contactus']);
   }
 }

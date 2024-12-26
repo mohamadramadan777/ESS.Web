@@ -1,5 +1,18 @@
 {
     "swaggerUrl": "http://localhost:5039/swagger/v1/swagger.json",
     "output": "src/app/services/api-client.ts",
-    "templateDirectory": "./templates"
+    "templateDirectory": "./templates",
+    "typeScriptClientGenerator": {
+      "template": "Angular",
+      "clientBaseClass": null,
+      "configurationClass": null,
+      "useHttpClient": true,
+      "useRxJS6": true,
+      "useObservable": true,
+      "importRequiredTypes": true,
+      "modelNamespace": null,
+      "responseClass": "HttpResponse",
+      "generateDtoTypes": true,
+      "output": "src/app/services/api-client.ts"
+    }
 }
