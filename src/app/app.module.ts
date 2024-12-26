@@ -35,6 +35,10 @@ import { ContactUsComponent } from './components/contact-us/contact-us.component
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { Client } from './services/api-client'; // Import the Client service
+import { API_BASE_URL } from './services/tokens';
+import { environment } from '../environments/environment';
 @NgModule({
   declarations: [
     AppComponent,
@@ -71,6 +75,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTooltipModule,
     MatBadgeModule,
     MatSelectModule,
+    HttpClientModule,
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)
       positionClass: 'toast-top-center', // Position on the page
@@ -78,7 +83,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },  Client , { provide: API_BASE_URL, useValue: environment.apiBaseUrl } ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
