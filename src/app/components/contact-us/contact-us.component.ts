@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Client } from '../../services/api-client'; 
 import { environment } from '../../../environments/environment'; 
 
-
 @Component({
   selector: 'app-contact-us',
   templateUrl: './contact-us.component.html',
@@ -12,12 +11,13 @@ import { environment } from '../../../environments/environment';
 })
 export class ContactUsComponent implements OnInit {
   contactForm!: FormGroup; // FormGroup to handle form controls
-  feedbackOptions: string[] = ['Technical Issue', 'General Query', 'Feedback']; // Options for the dropdown
-  private client: Client;
+  feedbackOptions: string[] = []; // Options for the dropdown
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.client = new Client(environment.apiBaseUrl, window as any);
-  } // Inject FormBuilder for reactive forms
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private client: Client // Inject the Client service directly
+  ) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -35,19 +35,23 @@ export class ContactUsComponent implements OnInit {
       captcha: ['', Validators.required] // Captcha field (required)
     });
   }
+
+  // Fetch feedback options from the API
   fillFeedbackOptions(): void {
-    this.client.getMastertableData("v_WFeedbackTypes").then(response => {
-      if (response && response.response) {
-        // Assuming response.response is a key-value dictionary
-        this.feedbackOptions = Object.values(response.response);
-      } else {
-        console.error('No data received for feedback options.');
+    this.client.getMastertableData("v_WFeedbackTypes").subscribe({
+      next: (response) => {
+        if (response && response.response) {
+          // Assuming response.response is a key-value dictionary
+          this.feedbackOptions = Object.values(response.response);
+        } else {
+          console.error('No data received for feedback options.');
+        }
+      },
+      error: (error) => {
+        console.error('Failed to fetch feedback options:', error);
       }
-    }).catch(error => {
-      console.error('Failed to fetch feedback options:', error);
     });
   }
-  
 
   // Handle form submission
   onSubmit(): void {
