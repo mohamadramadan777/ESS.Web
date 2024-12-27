@@ -1,6 +1,7 @@
 import { ColDef } from 'ag-grid-community';
 import { Component, ViewChild } from '@angular/core';
 import { AccessModalComponent } from './access-modal/access-modal.component';
+import * as config from './system-access-config';
 import {
   TextFilterModule,
   ClientSideRowModelModule,
@@ -32,12 +33,12 @@ export class SystemAccessComponent {
     RowSelectionModule,
   ];
   @ViewChild('accessModal') accessModal!: AccessModalComponent;
-   paginationPageSize=1;
-   theme=themeQuartz
-  paginationPageSizeSelector= [1, 5, 10];
-  paginationNumberFormatter= (params: PaginationNumberFormatterParams) => {
-    return "[" + params.value.toLocaleString() + "]";
-  }
+  paginationPageSize = config.paginationPageSize;
+  theme = config.theme;
+  paginationPageSizeSelector = config.paginationPageSizeSelector;
+  paginationNumberFormatter = (params: PaginationNumberFormatterParams) => {
+    return '[' + params.value.toLocaleString() + ']';
+  };
   openAccessModal(): void {
     this.accessModal.openModal();
   }
@@ -46,55 +47,7 @@ export class SystemAccessComponent {
     console.log('Modal closed');
   }
 
-  columnDefs: ColDef[] = [
-    { headerName: 'Name', field: 'name', sortable: true, filter: true },
-    {
-      headerName: 'Job Title',
-      field: 'jobTitle',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Email Address',
-      field: 'email',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Active Functions',
-      field: 'functions',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Access Requested Date',
-      field: 'accessDate',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Account Registered',
-      field: 'registered',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Account Registered Date',
-      field: 'registeredDate',
-      sortable: true,
-      filter: true,
-    },
-    {
-      headerName: 'Revoke Access',
-      field: 'revoke',
-      cellRenderer: (params: any) => {
-        if (params.value) {
-          return `<button class="btn btn-danger revoke-button">Revoke Access</button>`;
-        }
-        return '';
-      },
-    },
-  ];
+  columnDefs: ColDef[] = config.colDef
 
   rowData = [
     {
