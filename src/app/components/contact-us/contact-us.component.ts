@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Client } from '../../services/api-client'; 
-import { environment } from '../../../environments/environment'; 
+import { ContactUs } from '../../services/api-client'; 
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-contact-us',
@@ -16,7 +17,8 @@ export class ContactUsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private client: Client // Inject the Client service directly
+    private client: Client,
+    private toastr: ToastrService 
   ) {}
 
   ngOnInit(): void {
@@ -32,7 +34,7 @@ export class ContactUsComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]], // Email field (required and must be a valid email)
       feedbackRelatingTo: [''], // Dropdown field (optional)
       description: ['', Validators.required], // Description field (required)
-      captcha: ['', Validators.required] // Captcha field (required)
+      captcha: [''] // Captcha field (required)
     });
   }
 
@@ -53,18 +55,35 @@ export class ContactUsComponent implements OnInit {
     });
   }
 
-  // Handle form submission
   onSubmit(): void {
     if (this.contactForm.valid) {
-      const formData = this.contactForm.value;
-      console.log('Form Data:', formData);
+      const formValues = this.contactForm.value;
+      const feedbackRequest = new ContactUs({
+        userName: formValues.name,
+        firmQFCNumber: formValues.qfcNumber,
+        userEmailAddress: formValues.email,
+        wFeedbackTypeText: formValues.feedbackRelatingTo,
+        feedbackDesc: formValues.description
+      });
 
-      // Simulate form submission logic (e.g., send formData to the server)
-      alert('Form submitted successfully!');
-      this.resetForm(); // Reset the form after submission
+      this.client.sendFeedback(feedbackRequest).subscribe({
+        next: (response) => {
+          if (response) {
+            this.toastr.success('Your feedback has been submitted successfully!', 'Success');
+            this.resetForm(); // Reset the form after successful submission
+          } else {
+            this.toastr.error('Failed to submit feedback. Please try again.', 'Error');
+          }
+        },
+        error: (error) => {
+          console.error('Error while submitting feedback:', error);
+          this.toastr.error('An unexpected error occurred. Please try again.', 'Error');
+        }
+      });
     } else {
       console.error('Form is invalid');
       this.contactForm.markAllAsTouched(); // Highlight invalid fields
+      this.toastr.warning('Please fill all required fields before submitting.', 'Validation Error');
     }
   }
 
