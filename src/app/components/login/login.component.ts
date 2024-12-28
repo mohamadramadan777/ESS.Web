@@ -67,9 +67,9 @@ export class LoginComponent implements OnInit {
       });
 
       try {
-        this.isSubmitting = false;
         this.authenticationService.login(user).subscribe({
           next: response => {
+            this.isSubmitting = false;
             switch (response) {
               case 'AccountLocked':
                 this.toastr.error('Your account has been Locked', 'Login Failed');
