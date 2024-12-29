@@ -3,7 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 @Component({
   selector: 'app-access-modal',
   templateUrl: './access-modal.component.html',
-  styleUrls: ['./access-modal.component.scss']
+  styleUrls: ['./access-modal.component.scss'],
 })
 export class AccessModalComponent {
   @Output() modalClosed = new EventEmitter<void>();
@@ -18,12 +18,12 @@ export class AccessModalComponent {
     dob: '',
     nationality: '',
     email: '',
-    confirmEmail: ''
+    confirmEmail: '',
   };
 
   approvedIndividualForm = {
     name: '',
-    controlledFunctions: ''
+    controlledFunctions: '',
   };
 
   // Open the modal
@@ -53,18 +53,19 @@ export class AccessModalComponent {
       dob: '',
       nationality: '',
       email: '',
-      confirmEmail: ''
+      confirmEmail: '',
     };
     this.approvedIndividualForm = {
       name: '',
-      controlledFunctions: ''
+      controlledFunctions: '',
     };
   }
 
   // Check if all fields are filled for the current form
   isFormValid(): boolean {
     if (this.selectedAccessType === 'documentAdmin') {
-      const { name, jobTitle, dob, nationality, email, confirmEmail } = this.documentAdminForm;
+      const { name, jobTitle, dob, nationality, email, confirmEmail } =
+        this.documentAdminForm;
       return (
         name.trim() !== '' &&
         jobTitle.trim() !== '' &&

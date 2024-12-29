@@ -40,11 +40,12 @@ export class SystemAccessComponent {
     return '[' + params.value.toLocaleString() + ']';
   };
   openAccessModal(): void {
+    document.body.classList.add('modal-open');
     this.accessModal.openModal();
   }
 
   onModalClosed(): void {
-    console.log('Modal closed');
+    document.body.classList.remove('modal-open');
   }
 
   columnDefs: ColDef[] = config.colDef
