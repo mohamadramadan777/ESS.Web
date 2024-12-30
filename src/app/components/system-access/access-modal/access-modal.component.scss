@@ -12,6 +12,7 @@
 }
 
 .modal-content {
+  height: 500px;
   background: #fff;
   padding: 2rem;
   border-radius: 8px;
@@ -91,12 +92,19 @@ label {
   align-items: stretch;
   align-content: stretch;
 }
-.right {
+.right  {
   display: block;
   flex-shrink: 1;
+
   flex-basis: auto;
   align-self: auto;
   order: 0;
+}
+.right_nat{
+  width: 300px;
+}
+.right_mail{
+  flex-grow: 1;
 }
 .left {
   display: block;

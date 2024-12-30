@@ -3,16 +3,15 @@
     <h3>Request Access</h3>
     <label for="accessType">Select Access Type:</label>
     <mat-form-field class="form-input">
-    <mat-select 
-      id="accessType"
-      [(ngModel)]="selectedAccessType"
-      (change)="onAccessTypeChange($event)"
-      
-    >
-      <mat-option value="documentAdmin">Document Admin</mat-option>
-      <mat-option value="approvedIndividual">Approved Individual</mat-option>
-    </mat-select>
-  </mat-form-field>
+      <mat-select
+        id="accessType"
+        [(ngModel)]="selectedAccessType"
+        (change)="onAccessTypeChange($event)"
+      >
+        <mat-option value="documentAdmin">Document Admin</mat-option>
+        <mat-option value="approvedIndividual">Approved Individual</mat-option>
+      </mat-select>
+    </mat-form-field>
     <div id="form-container">
       <ng-container [ngSwitch]="selectedAccessType">
         <!-- Document Admin Form -->
@@ -41,34 +40,40 @@
                 class="form-input"
               />
             </div>
-            <div class="right">
+            <div class="right right_nat">
               <label for="nationality">Nationality:</label>
               <mat-form-field class="form-input">
-              <mat-select 
-                id="nationality"
-                [(ngModel)]="documentAdminForm.nationality"
-              >
-                <mat-option value="">Select</mat-option>
-                <mat-option value="US">United States</mat-option>
-                <mat-option value="IN">India</mat-option>
-              </mat-select>
-            </mat-form-field>
+                <mat-select
+                  id="nationality"
+                  [(ngModel)]="documentAdminForm.nationality"
+                >
+                  <mat-option value="">Select</mat-option>
+                  <mat-option value="US">United States</mat-option>
+                  <mat-option value="IN">India</mat-option>
+                </mat-select>
+              </mat-form-field>
             </div>
           </div>
-          <label for="email">Email Address:</label>
-          <input
-            type="email"
-            id="email"
-            [(ngModel)]="documentAdminForm.email"
-            class="form-input"
-          />
-          <label for="confirmEmail">Confirm Email Address:</label>
-          <input
-            type="email"
-            id="confirmEmail"
-            [(ngModel)]="documentAdminForm.confirmEmail"
-            class="form-input"
-          />
+          <div class="personal_info">
+            <div class="left">
+              <label for="email">Email Address:</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="documentAdminForm.email"
+                class="form-input"
+              />
+            </div>
+            <div class="right right_mail">
+              <label for="confirmEmail">Confirm Email Address:</label>
+              <input
+                type="email"
+                id="confirmEmail"
+                [(ngModel)]="documentAdminForm.confirmEmail"
+                class="form-input"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- Approved Individual Form -->
@@ -83,17 +88,17 @@
           <label for="controlledFunctions"
             >Approved Controlled Functions:</label
           >
-          <mat-form-field style="width: 600px ; height: 40px;">
-          <mat-select
-            id="controlledFunctions"
-            [(ngModel)]="approvedIndividualForm.controlledFunctions"
-            class="form-select"
-          >
-            <mat-option value="">Select</mat-option>
-            <mat-option value="Function1">Function 1</mat-option>
-            <mat-option value="Function2">Function 2</mat-option>
-          </mat-select>
-        </mat-form-field>
+          <mat-form-field style="width: 600px; height: 40px">
+            <mat-select
+              id="controlledFunctions"
+              [(ngModel)]="approvedIndividualForm.controlledFunctions"
+              class="form-select"
+            >
+              <mat-option value="">Select</mat-option>
+              <mat-option value="Function1">Function 1</mat-option>
+              <mat-option value="Function2">Function 2</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <!-- Default Case -->
