@@ -112,10 +112,11 @@
     <div class="modal-actions">
       <button class="btn-close" (click)="closeModal()">Close</button>
       <button
-        class="btn-request"
-        [class.disabled]="!isFormValid()"
-        [disabled]="!isFormValid()"
-        (click)="onRequest()"
+      class="btn-request"
+      [class.disabled]="!isFormValid()"
+      [disabled]="!isFormValid()"
+      *ngIf="selectedAccessType === 'documentAdmin' || selectedAccessType === 'approvedIndividual'"
+      (click)="onRequest()"
       >
         Request
       </button>
