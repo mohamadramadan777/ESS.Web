@@ -51,7 +51,7 @@ export const paginationPageSizeSelector = [1, 5, 10];
       field: 'revoke',
       cellRenderer: (params: any) => {
         if (params.value) {
-          return `<button class="btn btn-danger revoke-button">Revoke Access</button>`;
+          return `<button class="btn btn-revoke">Revoke Access</button>`;
         }
         return '';
       },

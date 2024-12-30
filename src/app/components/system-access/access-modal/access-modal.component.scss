@@ -179,3 +179,6 @@ input select {
 .mat-mdc-select-value {
   line-height: 40px; /* Match input field height */
 }
+:host ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: #d9534f !important;
+}

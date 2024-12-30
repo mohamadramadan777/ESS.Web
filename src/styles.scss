@@ -326,7 +326,6 @@ button {
   background-color: #ccc;
   color: #333;
 }
-
 .btn-close:hover {
   background-color: #bbb;
 }
@@ -335,7 +334,14 @@ button {
   background-color: #d9534f;
   color: #fff;
 }
-
+.btn-revoke{
+  background-color: white;
+  color: #d9534f;
+}
+.btn-revoke:hover{
+  background-color: #d9534f;
+  color:white ;
+}
 .btn-request:hover {
   background-color: #c9302c;
 }
