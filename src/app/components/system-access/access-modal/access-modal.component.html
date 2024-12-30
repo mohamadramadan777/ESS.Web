@@ -18,7 +18,12 @@
         <!-- Document Admin Form -->
         <div *ngSwitchCase="'documentAdmin'">
           <label for="name">Name of the Individual:</label>
-          <input type="text" id="name" [(ngModel)]="documentAdminForm.name" class="form-input" />
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="documentAdminForm.name"
+            class="form-input"
+          />
           <label for="jobTitle">Job Title:</label>
           <input
             type="text"
@@ -26,14 +31,29 @@
             [(ngModel)]="documentAdminForm.jobTitle"
             class="form-input"
           />
-          <label for="dob">Date of Birth:</label>
-          <input type="date" id="dob" [(ngModel)]="documentAdminForm.dob" class="form-input" />
-          <label for="nationality">Nationality:</label>
-          <select id="nationality" [(ngModel)]="documentAdminForm.nationality" class="form-select">
-            <option value="">Select</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-          </select>
+          <div class="personal_info">
+            <div class="left">
+              <label for="dob">Date of Birth:</label>
+              <input
+                type="date"
+                id="dob"
+                [(ngModel)]="documentAdminForm.dob"
+                class="form-input"
+              />
+            </div>
+            <div class="right">
+              <label for="nationality">Nationality:</label>
+              <select
+                id="nationality"
+                [(ngModel)]="documentAdminForm.nationality"
+                class="form-select nationality"
+              >
+                <option value="">Select</option>
+                <option value="US">United States</option>
+                <option value="IN">India</option>
+              </select>
+            </div>
+          </div>
           <label for="email">Email Address:</label>
           <input
             type="email"
@@ -59,7 +79,9 @@
             [(ngModel)]="approvedIndividualForm.name"
             class="form-input"
           />
-          <label for="controlledFunctions">Approved Controlled Functions:</label>
+          <label for="controlledFunctions"
+            >Approved Controlled Functions:</label
+          >
           <select
             id="controlledFunctions"
             [(ngModel)]="approvedIndividualForm.controlledFunctions"
