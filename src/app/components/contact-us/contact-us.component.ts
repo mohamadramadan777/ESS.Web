@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Client } from '../../services/api-client'; 
+import { LoadingService } from '../../services/loader.service';
 import { ContactUs } from '../../services/api-client'; 
 import { ToastrService } from 'ngx-toastr';
 
@@ -13,29 +14,56 @@ import { ToastrService } from 'ngx-toastr';
 export class ContactUsComponent implements OnInit {
   contactForm!: FormGroup; // FormGroup to handle form controls
   feedbackOptions: string[] = []; // Options for the dropdown
+  private readonly TOKEN_KEY = 'token'; // TODO: Dictionary
+  private readonly SESSION_W_USERID = 'w_userid';
+  private readonly SESSION_INDIVIDUAL_NAME = 'individual_name';
+  private readonly SESSION_QFC_NO  = 'qfc_no';
+  private readonly SESSION_EMAIL_ID   = 'email_id';
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private client: Client,
+    private loadingService : LoadingService,
     private toastr: ToastrService 
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.fillFeedbackOptions();
+    this.populateUserDetails();
   }
 
   // Initialize the form with default values and validation rules
   initializeForm(): void {
     this.contactForm = this.fb.group({
-      name: ['', Validators.required], // Name field (required)
-      qfcNumber: ['', Validators.required], // QFC Number field (required)
-      email: ['', [Validators.required, Validators.email]], // Email field (required and must be a valid email)
+      name: [{ value: '', disabled: false }, Validators.required], // Name field (disabled when logged in)
+      qfcNumber: [{ value: '', disabled: false }, Validators.required], // QFC Number field (disabled when logged in)
+      email: [{ value: '', disabled: false }, [Validators.required, Validators.email]], // Email field (disabled when logged in)
       feedbackRelatingTo: [''], // Dropdown field (optional)
       description: ['', Validators.required], // Description field (required)
       captcha: [''] // Captcha field (required)
     });
+  }
+
+  // Populate name, QFC number, and email from localStorage if the user is logged in
+  populateUserDetails(): void {
+    if (this.isLoggedIn()) {
+      const name = localStorage.getItem(this.SESSION_INDIVIDUAL_NAME) ?? '';
+      const qfcNo = localStorage.getItem(this.SESSION_QFC_NO) ?? '';
+      const email = localStorage.getItem(this.SESSION_EMAIL_ID) ?? '';
+
+      this.contactForm.patchValue({
+        name,
+        qfcNumber: qfcNo,
+        email
+      });
+
+      // Disable the fields for logged-in users
+      this.contactForm.get('name')?.disable();
+      this.contactForm.get('qfcNumber')?.disable();
+      this.contactForm.get('email')?.disable();
+    }
   }
 
   // Fetch feedback options from the API
@@ -57,7 +85,8 @@ export class ContactUsComponent implements OnInit {
 
   onSubmit(): void {
     if (this.contactForm.valid) {
-      const formValues = this.contactForm.value;
+      this.loadingService.show();
+      const formValues = this.contactForm.getRawValue(); // Get raw values, including disabled fields
       const feedbackRequest = new ContactUs({
         userName: formValues.name,
         firmQFCNumber: formValues.qfcNumber,
@@ -68,6 +97,7 @@ export class ContactUsComponent implements OnInit {
 
       this.client.sendFeedback(feedbackRequest).subscribe({
         next: (response) => {
+          this.loadingService.hide();
           if (response) {
             this.toastr.success('Your feedback has been submitted successfully!', 'Success');
             this.resetForm(); // Reset the form after successful submission
@@ -76,6 +106,7 @@ export class ContactUsComponent implements OnInit {
           }
         },
         error: (error) => {
+          this.loadingService.hide();
           console.error('Error while submitting feedback:', error);
           this.toastr.error('An unexpected error occurred. Please try again.', 'Error');
         }
@@ -90,9 +121,17 @@ export class ContactUsComponent implements OnInit {
   // Reset the form to its initial state
   resetForm(): void {
     this.contactForm.reset();
+    if (this.isLoggedIn()) {
+      this.populateUserDetails(); // Re-populate user details if logged in
+    }
   }
 
   navigateToLogin(): void {
     this.router.navigate(['/login']); // Replace '/login' with the actual login route
+  }
+
+  isLoggedIn(): boolean {
+    const userId = localStorage.getItem(this.SESSION_W_USERID);
+    return userId !== null && userId !== undefined;
   }
 }

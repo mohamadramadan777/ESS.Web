@@ -9,8 +9,8 @@
   </div>
   <div class="user-card">
     <!-- Help Icon with Tooltip -->
-    <button class="action-button" (click)="navigateTo('contact-us')" >
-      <mat-icon>help</mat-icon>
+    <button class="action-button" (click)="navigateTo('contactus')" >
+      <mat-icon>email</mat-icon>
       <span class="tooltip">Contact Us</span>
     </button>
 
@@ -30,10 +30,10 @@
         <div class="menu">
           <img src="../../../../../assets/images/more.svg" alt="" (click)="toggleMenu()" class="more-icon">
           <ul *ngIf="menuOpen" class="submenu">
-            <li (click)="navigateTo('contact-us')">Contact Us</li>
-            <li (click)="navigateTo('change-password')">Change Password</li>
-            <li (click)="navigateTo('change-email')">Change Email</li>
-            <li (click)="navigateTo('security-questions')">Change Security Questions</li>
+            <li (click)="navigateTo('contactus')">Contact Us</li>
+            <li (click)="navigateTo('resetpassword')">Change Password</li>
+            <li (click)="navigateTo('changeemail')">Change Email</li>
+            <li (click)="navigateTo('changequestion')">Change Security Questions</li>
             <li (click)="logout()">Logout</li>
           </ul>
         </div>

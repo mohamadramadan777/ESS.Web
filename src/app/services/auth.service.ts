@@ -9,7 +9,7 @@ import { catchError, map, Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'token';
+  private readonly TOKEN_KEY = 'token'; // TODO: Dictionary
   private readonly SESSION_W_USERID = 'w_userid';
   private readonly SESSION_W_ACCESS_REQUEST_ID = 'w_access_request_id';
   private readonly SESSION_INDIVIDUAL_NAME = 'individual_name';
@@ -55,9 +55,9 @@ export class AuthService {
           localStorage.setItem(this.SESSION_LOGINUSER_ROLEID, response.response.userRolesString?.toString() ?? ""); 
           localStorage.setItem(this.SESSION_FIRM_TYPE, response.response.userInfo?.firmTypeID?.toString() ?? ""); 
           localStorage.setItem(this.SESSION_FIRM_NAME, response.response.userInfo?.firmName?.toString() ?? ""); 
+          localStorage.setItem(this.SESSION_EMAIL_ID, response.response.userInfo?.individualEmailAddress?.toString() ?? ""); 
   
           if (!response.response?.bIsRegistered) {
-            localStorage.setItem(this.SESSION_EMAIL_ID, response.response.userInfo?.individualEmailAddress?.toString() ?? ""); 
             localStorage.setItem(this.SESSION_REG_PASS, response.response.userInfo?.registrationPassword?.toString() ?? ""); 
             console.log('Not Registered');
             this.router.navigate(['/register']);

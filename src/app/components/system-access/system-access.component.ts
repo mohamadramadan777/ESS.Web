@@ -22,7 +22,6 @@ import {
 export class SystemAccessComponent {
   public modules = [
     TextFilterModule,
-
     NumberEditorModule,
     TextEditorModule,
     ClientSideRowModelModule,
@@ -32,7 +31,7 @@ export class SystemAccessComponent {
     RowSelectionModule,
   ];
   @ViewChild('accessModal') accessModal!: AccessModalComponent;
-   paginationPageSize=1;
+   paginationPageSize=10;
    theme=themeQuartz
   paginationPageSizeSelector= [1, 5, 10];
   paginationNumberFormatter= (params: PaginationNumberFormatterParams) => {
@@ -117,6 +116,7 @@ export class SystemAccessComponent {
       registeredDate: '14/Jul/2020 7:38PM',
       revoke: true,
     },
+    
     // Add more rows to test pagination
   ];
 

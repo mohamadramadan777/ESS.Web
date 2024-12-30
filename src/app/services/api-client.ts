@@ -10,10 +10,9 @@
 
 import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
-import { Injectable, Inject, Optional} from '@angular/core';
+import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
-
 
 @Injectable()
 export class Client {
@@ -25,6 +24,7 @@ export class Client {
         this.http = http;
         this.baseUrl = baseUrl ?? "";
     }
+
     /**
      * @param body (optional) 
      * @return OK
@@ -135,6 +135,281 @@ export class Client {
             }));
         }
         return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param userQACategoryID (optional) 
+     * @return OK
+     */
+    getUserLoginQuestions(userQACategoryID: number | undefined): Observable<UserQuestionAnswersListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-login-questions?";
+        if (userQACategoryID === null)
+            throw new Error("The parameter 'userQACategoryID' cannot be null.");
+        else if (userQACategoryID !== undefined)
+            url_ += "UserQACategoryID=" + encodeURIComponent("" + userQACategoryID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserLoginQuestions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserLoginQuestions(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserQuestionAnswersListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserQuestionAnswersListBaseResponse>;
+        }));
+    }
+
+    protected processGetUserLoginQuestions(response: HttpResponseBase): Observable<UserQuestionAnswersListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getUserQa(): Observable<UserQuestionAnswersListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-qa";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserQa(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserQa(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserQuestionAnswersListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserQuestionAnswersListBaseResponse>;
+        }));
+    }
+
+    protected processGetUserQa(response: HttpResponseBase): Observable<UserQuestionAnswersListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param email (optional) 
+     * @return OK
+     */
+    updateRegisteredEmail(email: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-registered-email?";
+        if (email === null)
+            throw new Error("The parameter 'email' cannot be null.");
+        else if (email !== undefined)
+            url_ += "email=" + encodeURIComponent("" + email) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateRegisteredEmail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateRegisteredEmail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateRegisteredEmail(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param text (optional) 
+     * @return OK
+     */
+    resetPassword(text: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/reset-password?";
+        if (text === null)
+            throw new Error("The parameter 'text' cannot be null.");
+        else if (text !== undefined)
+            url_ += "text=" + encodeURIComponent("" + text) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processResetPassword(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processResetPassword(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processResetPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    saveUserQuestionAnswer(body: UserQuestionAnswersDto[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/save-user-question-answer";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveUserQuestionAnswer(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveUserQuestionAnswer(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processSaveUserQuestionAnswer(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -1076,7 +1351,6 @@ export class ContactUs implements IContactUs {
     firmQFCNumber?: string | undefined;
     userEmailAddress?: string | undefined;
     feedbackDesc?: string | undefined;
-    dateCreated?: string | undefined;
 
     constructor(data?: IContactUs) {
         if (data) {
@@ -1100,7 +1374,6 @@ export class ContactUs implements IContactUs {
             this.firmQFCNumber = _data["firmQFCNumber"];
             this.userEmailAddress = _data["userEmailAddress"];
             this.feedbackDesc = _data["feedbackDesc"];
-            this.dateCreated = _data["dateCreated"];
         }
     }
 
@@ -1124,7 +1397,6 @@ export class ContactUs implements IContactUs {
         data["firmQFCNumber"] = this.firmQFCNumber;
         data["userEmailAddress"] = this.userEmailAddress;
         data["feedbackDesc"] = this.feedbackDesc;
-        data["dateCreated"] = this.dateCreated;
         return data;
     }
 }
@@ -1141,7 +1413,6 @@ export interface IContactUs {
     firmQFCNumber?: string | undefined;
     userEmailAddress?: string | undefined;
     feedbackDesc?: string | undefined;
-    dateCreated?: string | undefined;
 }
 
 export class ControledFunction implements IControledFunction {
@@ -1890,6 +2161,370 @@ export interface IStringStringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class UserQuestionAnswers implements IUserQuestionAnswers {
+    wAccessRequestID?: number | undefined;
+    firmQFCNo?: string | undefined;
+    firmName?: string | undefined;
+    firmTypeID?: number;
+    firmTypeDesc?: string | undefined;
+    contactID?: number;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    individualJobTitle?: string | undefined;
+    individualDateOfBirth?: string | undefined;
+    individualNationality?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    registrationCode?: string | undefined;
+    registrationPassword?: string | undefined;
+    registrationDate?: string | undefined;
+    isRegistered?: boolean;
+    createdBy?: number;
+    createdDate?: string | undefined;
+    accountLocked?: boolean;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isActiveUser?: boolean;
+    isAccountExists?: boolean;
+    isValidReqeust?: boolean | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    withdrawnFunctionTypeIDsList?: string | undefined;
+    wRequestTypeID?: number;
+    wRequestTypeDesc?: string | undefined;
+    registrationStatus?: string | undefined;
+    wUserAccountTypeID?: number;
+    wUserAccountTypeDesc?: string | undefined;
+    roleId?: number | undefined;
+    roleDesc?: string | undefined;
+    wUserID?: number | undefined;
+    wUserLoginID?: number | undefined;
+    isRecordInsert?: boolean;
+    isSEF?: boolean;
+    isSessionActive?: boolean;
+    passwordChangeDate?: Date | undefined;
+    userPassword?: string | undefined;
+    lstApplicationDetail?: ApplicationDetail[] | undefined;
+    wObjectID?: number | undefined;
+    wRoleStartDate?: string | undefined;
+    lstWUserRoles?: WUserRoles[] | undefined;
+    objectID?: number | undefined;
+    userQuestionAnswerID?: number;
+    wAppUserID?: number;
+    wLoginQuestionTypeID?: number;
+    userQuestionAnswer?: string | undefined;
+    loginQuestion?: string | undefined;
+    answer?: string | undefined;
+    wLoginQuestionCategoryTypeID?: number;
+    userIPAddess?: string | undefined;
+    userSessionID?: string | undefined;
+
+    constructor(data?: IUserQuestionAnswers) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wAccessRequestID = _data["wAccessRequestID"];
+            this.firmQFCNo = _data["firmQFCNo"];
+            this.firmName = _data["firmName"];
+            this.firmTypeID = _data["firmTypeID"];
+            this.firmTypeDesc = _data["firmTypeDesc"];
+            this.contactID = _data["contactID"];
+            this.individualName = _data["individualName"];
+            this.aiNumber = _data["aiNumber"];
+            this.individualJobTitle = _data["individualJobTitle"];
+            this.individualDateOfBirth = _data["individualDateOfBirth"];
+            this.individualNationality = _data["individualNationality"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.registrationCode = _data["registrationCode"];
+            this.registrationPassword = _data["registrationPassword"];
+            this.registrationDate = _data["registrationDate"];
+            this.isRegistered = _data["isRegistered"];
+            this.createdBy = _data["createdBy"];
+            this.createdDate = _data["createdDate"];
+            this.accountLocked = _data["accountLocked"];
+            this.isAccountExpired = _data["isAccountExpired"];
+            this.isLoggedIn = _data["isLoggedIn"];
+            this.isActiveUser = _data["isActiveUser"];
+            this.isAccountExists = _data["isAccountExists"];
+            this.isValidReqeust = _data["isValidReqeust"];
+            this.wFunctionTypeIDsList = _data["wFunctionTypeIDsList"];
+            this.withdrawnFunctionTypeIDsList = _data["withdrawnFunctionTypeIDsList"];
+            this.wRequestTypeID = _data["wRequestTypeID"];
+            this.wRequestTypeDesc = _data["wRequestTypeDesc"];
+            this.registrationStatus = _data["registrationStatus"];
+            this.wUserAccountTypeID = _data["wUserAccountTypeID"];
+            this.wUserAccountTypeDesc = _data["wUserAccountTypeDesc"];
+            this.roleId = _data["roleId"];
+            this.roleDesc = _data["roleDesc"];
+            this.wUserID = _data["wUserID"];
+            this.wUserLoginID = _data["wUserLoginID"];
+            this.isRecordInsert = _data["isRecordInsert"];
+            this.isSEF = _data["isSEF"];
+            this.isSessionActive = _data["isSessionActive"];
+            this.passwordChangeDate = _data["passwordChangeDate"] ? new Date(_data["passwordChangeDate"].toString()) : <any>undefined;
+            this.userPassword = _data["userPassword"];
+            if (Array.isArray(_data["lstApplicationDetail"])) {
+                this.lstApplicationDetail = [] as any;
+                for (let item of _data["lstApplicationDetail"])
+                    this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
+            }
+            this.wObjectID = _data["wObjectID"];
+            this.wRoleStartDate = _data["wRoleStartDate"];
+            if (Array.isArray(_data["lstWUserRoles"])) {
+                this.lstWUserRoles = [] as any;
+                for (let item of _data["lstWUserRoles"])
+                    this.lstWUserRoles!.push(WUserRoles.fromJS(item));
+            }
+            this.objectID = _data["objectID"];
+            this.userQuestionAnswerID = _data["userQuestionAnswerID"];
+            this.wAppUserID = _data["wAppUserID"];
+            this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
+            this.userQuestionAnswer = _data["userQuestionAnswer"];
+            this.loginQuestion = _data["loginQuestion"];
+            this.answer = _data["answer"];
+            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
+            this.userIPAddess = _data["userIPAddess"];
+            this.userSessionID = _data["userSessionID"];
+        }
+    }
+
+    static fromJS(data: any): UserQuestionAnswers {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserQuestionAnswers();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wAccessRequestID"] = this.wAccessRequestID;
+        data["firmQFCNo"] = this.firmQFCNo;
+        data["firmName"] = this.firmName;
+        data["firmTypeID"] = this.firmTypeID;
+        data["firmTypeDesc"] = this.firmTypeDesc;
+        data["contactID"] = this.contactID;
+        data["individualName"] = this.individualName;
+        data["aiNumber"] = this.aiNumber;
+        data["individualJobTitle"] = this.individualJobTitle;
+        data["individualDateOfBirth"] = this.individualDateOfBirth;
+        data["individualNationality"] = this.individualNationality;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["registrationCode"] = this.registrationCode;
+        data["registrationPassword"] = this.registrationPassword;
+        data["registrationDate"] = this.registrationDate;
+        data["isRegistered"] = this.isRegistered;
+        data["createdBy"] = this.createdBy;
+        data["createdDate"] = this.createdDate;
+        data["accountLocked"] = this.accountLocked;
+        data["isAccountExpired"] = this.isAccountExpired;
+        data["isLoggedIn"] = this.isLoggedIn;
+        data["isActiveUser"] = this.isActiveUser;
+        data["isAccountExists"] = this.isAccountExists;
+        data["isValidReqeust"] = this.isValidReqeust;
+        data["wFunctionTypeIDsList"] = this.wFunctionTypeIDsList;
+        data["withdrawnFunctionTypeIDsList"] = this.withdrawnFunctionTypeIDsList;
+        data["wRequestTypeID"] = this.wRequestTypeID;
+        data["wRequestTypeDesc"] = this.wRequestTypeDesc;
+        data["registrationStatus"] = this.registrationStatus;
+        data["wUserAccountTypeID"] = this.wUserAccountTypeID;
+        data["wUserAccountTypeDesc"] = this.wUserAccountTypeDesc;
+        data["roleId"] = this.roleId;
+        data["roleDesc"] = this.roleDesc;
+        data["wUserID"] = this.wUserID;
+        data["wUserLoginID"] = this.wUserLoginID;
+        data["isRecordInsert"] = this.isRecordInsert;
+        data["isSEF"] = this.isSEF;
+        data["isSessionActive"] = this.isSessionActive;
+        data["passwordChangeDate"] = this.passwordChangeDate ? this.passwordChangeDate.toISOString() : <any>undefined;
+        data["userPassword"] = this.userPassword;
+        if (Array.isArray(this.lstApplicationDetail)) {
+            data["lstApplicationDetail"] = [];
+            for (let item of this.lstApplicationDetail)
+                data["lstApplicationDetail"].push(item.toJSON());
+        }
+        data["wObjectID"] = this.wObjectID;
+        data["wRoleStartDate"] = this.wRoleStartDate;
+        if (Array.isArray(this.lstWUserRoles)) {
+            data["lstWUserRoles"] = [];
+            for (let item of this.lstWUserRoles)
+                data["lstWUserRoles"].push(item.toJSON());
+        }
+        data["objectID"] = this.objectID;
+        data["userQuestionAnswerID"] = this.userQuestionAnswerID;
+        data["wAppUserID"] = this.wAppUserID;
+        data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
+        data["userQuestionAnswer"] = this.userQuestionAnswer;
+        data["loginQuestion"] = this.loginQuestion;
+        data["answer"] = this.answer;
+        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
+        data["userIPAddess"] = this.userIPAddess;
+        data["userSessionID"] = this.userSessionID;
+        return data;
+    }
+}
+
+export interface IUserQuestionAnswers {
+    wAccessRequestID?: number | undefined;
+    firmQFCNo?: string | undefined;
+    firmName?: string | undefined;
+    firmTypeID?: number;
+    firmTypeDesc?: string | undefined;
+    contactID?: number;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    individualJobTitle?: string | undefined;
+    individualDateOfBirth?: string | undefined;
+    individualNationality?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    registrationCode?: string | undefined;
+    registrationPassword?: string | undefined;
+    registrationDate?: string | undefined;
+    isRegistered?: boolean;
+    createdBy?: number;
+    createdDate?: string | undefined;
+    accountLocked?: boolean;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isActiveUser?: boolean;
+    isAccountExists?: boolean;
+    isValidReqeust?: boolean | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    withdrawnFunctionTypeIDsList?: string | undefined;
+    wRequestTypeID?: number;
+    wRequestTypeDesc?: string | undefined;
+    registrationStatus?: string | undefined;
+    wUserAccountTypeID?: number;
+    wUserAccountTypeDesc?: string | undefined;
+    roleId?: number | undefined;
+    roleDesc?: string | undefined;
+    wUserID?: number | undefined;
+    wUserLoginID?: number | undefined;
+    isRecordInsert?: boolean;
+    isSEF?: boolean;
+    isSessionActive?: boolean;
+    passwordChangeDate?: Date | undefined;
+    userPassword?: string | undefined;
+    lstApplicationDetail?: ApplicationDetail[] | undefined;
+    wObjectID?: number | undefined;
+    wRoleStartDate?: string | undefined;
+    lstWUserRoles?: WUserRoles[] | undefined;
+    objectID?: number | undefined;
+    userQuestionAnswerID?: number;
+    wAppUserID?: number;
+    wLoginQuestionTypeID?: number;
+    userQuestionAnswer?: string | undefined;
+    loginQuestion?: string | undefined;
+    answer?: string | undefined;
+    wLoginQuestionCategoryTypeID?: number;
+    userIPAddess?: string | undefined;
+    userSessionID?: string | undefined;
+}
+
+export class UserQuestionAnswersDto implements IUserQuestionAnswersDto {
+    wLoginQuestionTypeID?: number;
+    wLoginQuestionCategoryTypeID?: number;
+    answer?: string | undefined;
+
+    constructor(data?: IUserQuestionAnswersDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
+            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
+            this.answer = _data["answer"];
+        }
+    }
+
+    static fromJS(data: any): UserQuestionAnswersDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserQuestionAnswersDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
+        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
+        data["answer"] = this.answer;
+        return data;
+    }
+}
+
+export interface IUserQuestionAnswersDto {
+    wLoginQuestionTypeID?: number;
+    wLoginQuestionCategoryTypeID?: number;
+    answer?: string | undefined;
+}
+
+export class UserQuestionAnswersListBaseResponse implements IUserQuestionAnswersListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserQuestionAnswers[] | undefined;
+
+    constructor(data?: IUserQuestionAnswersListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(UserQuestionAnswers.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserQuestionAnswersListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserQuestionAnswersListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUserQuestionAnswersListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserQuestionAnswers[] | undefined;
 }
 
 export class WAccessRequests implements IWAccessRequests {

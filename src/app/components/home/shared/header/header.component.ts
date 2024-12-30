@@ -8,8 +8,10 @@ import { AuthService } from '../../../../services/auth.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  name = 'Mohamed Ahmed';
-  email = 'mahmed@newtecx.com';
+  private readonly SESSION_EMAIL_ID  = 'email_id'; //TODO: Dictionary
+  private readonly SESSION_INDIVIDUAL_NAME  = 'individual_name'; //TODO: Dictionary
+  name = localStorage.getItem(this.SESSION_INDIVIDUAL_NAME);
+  email = localStorage.getItem(this.SESSION_EMAIL_ID);
   firmName = 'Abu Dhabi Islamic Bank - Qatar Financial Center (000143)'; // Replace with the actual firm name
   menuOpen = false;
 

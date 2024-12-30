@@ -3,22 +3,66 @@
   justify-content: center;
   align-items: center;
   gap: 20px;
-  background: #a51e36;
+  background-color: #a51e36; /* Maroon background */
+  padding: 5px 0; /* Slimmer navbar height */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+
   button {
-    padding: 10px;
-    color: white;
-    color: #fff;
-    font-family: Cairo;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: -0.28px;
-    border-radius: 1px !important;
-    transition: border-color 0.2s ease-in-out;
-    border-bottom: 3px solid transparent;
+    padding: 10px 20px;
+    color: #fff; /* White text */
+    font-family: Cairo, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent; /* Default transparent border */
+    transition: all 0.3s ease;
+    margin-bottom: -3px; /* Brings the button closer to the bottom */
+    position: relative; /* For hover effects */
+
     &:hover {
-      border-bottom: 3px solid #fff;
+      color: #a51e36; /* Maroon text on hover */
+      background: #fff; /* White background on hover */
+      border-bottom: 3px solid #fff; /* Highlight border */
+      border-radius: 4px 4px 0 0; /* Rounded top corners on hover */
+      box-shadow: 0 4px 6px rgba(255, 255, 255, 0.3); /* Subtle glow effect */
+    }
+
+    &:hover:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1px solid rgba(255, 255, 255, 0.5); /* Soft border on hover */
+      border-radius: 4px;
+      opacity: 0;
+      animation: pulse 0.5s forwards;
+    }
+
+    &.active {
+      background: #fff; /* White background for active tab */
+      color: #a51e36; /* Maroon text for active tab */
+      border-bottom: 3px solid #fff; /* Highlight active tab */
+      border-radius: 4px 4px 0 0; /* Rounded top corners for active tab */
+    }
+  }
+
+  /* Add a subtle pulsing effect on hover */
+  @keyframes pulse {
+    0% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1);
     }
   }
 }
