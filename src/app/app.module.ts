@@ -42,6 +42,12 @@ import { HttpClientModule } from '@angular/common/http'; // Import HttpClientMod
 import { Client } from './services/api-client'; // Import the Client service
 import { API_BASE_URL } from './services/tokens';
 import { environment } from '../environments/environment';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { ChangeEmailComponent } from './components/change-email/change-email.component';
+import { ChangeSecurityquestionsComponent } from './components/change-securityquestions/change-securityquestions.component';
+import { LoaderComponent } from './components/loader/loader.component';
+import { LoadingService } from './services/loader.service';
+
 
 @NgModule({
   declarations: [
@@ -61,6 +67,10 @@ import { environment } from '../environments/environment';
     ContactUsComponent,
     SystemAccessComponent,
     AccessModalComponent,
+    ResetPasswordComponent,
+    ChangeEmailComponent,
+    ChangeSecurityquestionsComponent,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,7 +100,7 @@ import { environment } from '../environments/environment';
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },  Client , { provide: API_BASE_URL, useValue: environment.apiBaseUrl } ],
+  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },  Client , { provide: API_BASE_URL, useValue: environment.apiBaseUrl },LoadingService ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })

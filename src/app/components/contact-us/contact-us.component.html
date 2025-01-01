@@ -1,4 +1,7 @@
-<div class="back-to-login">
+<app-header *ngIf="isLoggedIn()"></app-header>
+<app-navbar *ngIf="isLoggedIn()"></app-navbar>
+
+<div class="back-to-login" *ngIf="!isLoggedIn()">
     <button mat-raised-button (click)="navigateToLogin()">
       <mat-icon class="arrow-icon">arrow_back</mat-icon>
       <span class="back-text">Back to Login</span>
@@ -8,7 +11,7 @@
     <div class="sections-wrapper">
       <div class="left-section">
         <div class="content-wrapper contact-content-wrapper">
-          <div class="logo-wrapper">
+          <div class="logo-wrapper" *ngIf="!isLoggedIn()">
             <img src="/assets/images/logo.svg" alt="Logo" class="logo" />
           </div>
           <h2>Contact <span>The QFC Regulatory Authority</span></h2>
@@ -79,7 +82,7 @@
             </div>
   
             <div class="button-group">
-              <button mat-raised-button class="contact-button" type="submit" [disabled]="contactForm.invalid">
+              <button mat-raised-button class="contact-button" type="submit" >
                 Submit
               </button>
               <button mat-button class="reset-button" type="button" (click)="resetForm()">Reset</button>

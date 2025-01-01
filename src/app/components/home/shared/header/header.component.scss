@@ -2,174 +2,241 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  color: white;
+  padding: 5px 10px;
   background-color: #fff;
 
+  // Left container (logo + firm info)
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px; // Space between logo and firm info
+  }
+
   .logo {
-    width: 178px;
-    height: 100px;
+    width: 200px; // Larger logo
+    height: auto;
+
     img {
       width: 100%;
-      height: 100%;
+      height: auto;
     }
   }
 
-  .user-profile {
+  .firm-info {
     display: flex;
-    flex: 1;
     align-items: center;
 
-    .user-name {
-      margin-right: 10px;
-    }
+    label {
+      font-family: "Montserrat", sans-serif;
+      font-weight: bold;
+      font-size: 18px;
+      color: black;
 
-    mat-icon {
-      font-size: 24px;
+      span {
+        font-weight: 600;
+        color: #a51e36; // Maroon for firm name
+        margin-left: 5px;
+      }
     }
   }
-}
 
-.mdc-text-field--outlined {
-  --mdc-outlined-text-field-container-shape: 28px !important;
-}
-input {
-  border-radius: 49px !important;
-  border: 0.72px solid #b1b1b1;
-  background: #fff;
-  height: 58.013px !important;
-  width: 50%;
-  color: rgba(0, 0, 0, 0.1);
-  font-family: "Nunito Sans";
-  font-size: 20.405px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: 156.5%;
-  padding: 0 3rem;
-}
-.header-wrapper {
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  width: 100%;
-  flex: 1;
-}
-.search-bar {
-  width: 100%;
-  position: relative;
-}
-
-mat-form-field {
-  width: 100%;
-}
-.mdc-text-field {
-  border-radius: 49px !important;
-}
-
-mat-form-field {
-  border-radius: 49px !important;
-}
-.user-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  .notification-icon {
-    background: #f8e1e1;
-    padding: 10px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .profile-card {
+  // Right container (user profile and logout)
+  .user-card {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: #a51e36;
-    color: white;
-    border-radius: 13px;
-    padding: 5px 15px;
-    flex-grow: 1;
-    width: 250px;
-    .profile-details {
+    gap: 1rem;
+
+    .notification-icon {
+      background: #f8e1e1;
+      padding: 10px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .profile-card {
       display: flex;
       align-items: center;
-      gap: 10px;
-      width: 100%;
-      .avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-      }
-
-      .info {
-        .name {
-          color: #fff;
-          font-family: Inter;
-          font-size: 13.468px;
-          font-style: normal;
-          font-weight: 700;
-          margin: 0;
-        }
-
-        .email {
-          color: #fff;
-          font-family: Inter;
-          font-size: 11px;
-          font-style: normal;
-          font-weight: 400;
-          margin: 0;
-        }
-      }
-    }
-
-    .more-icon {
+      justify-content: space-between;
+      background: #a51e36;
       color: white;
-      font-size: 24px;
+      border-radius: 13px;
+      padding: 5px 15px;
+      flex-grow: 1;
+      width: 250px;
+
+      .profile-details {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+
+        .avatar {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+        }
+
+        .info {
+          .name {
+            color: #fff;
+            font-family: Inter, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0;
+          }
+
+          .email {
+            color: #fff;
+            font-family: Inter, sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            margin: 0;
+          }
+        }
+
+        .menu {
+          position: relative;
+          flex-grow: 1;
+        
+          .more-icon {
+            position: absolute; // Make the three dots absolute
+            top: 50%; // Align vertically to the center
+            right: 10px; // Align to the right of the card
+            transform: translateY(-50%); // Center-align vertically
+            cursor: pointer;
+            transition: transform 0.3s ease; // Keep smooth hover effect
+          }
+
+          .submenu {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: white;
+            color: #333;
+            list-style: none;
+            margin: 0;
+            padding: 10px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1000;
+            width: 220px;
+            opacity: 0; // Initially hidden
+            transform: scale(0.95); // Slightly smaller
+            animation: fadeIn 0.3s ease forwards; // Apply fadeIn animation
+
+            li {
+              padding: 10px 15px;
+              font-family: "Nunito Sans", sans-serif;
+              font-size: 14px;
+              cursor: pointer;
+              transition: background-color 0.3s ease, transform 0.3s ease;
+
+              &:hover {
+                background-color: #f8e1e1;
+              }
+            }
+
+            &.menu-open {
+              animation: fadeIn 0.3s ease; // Submenu animation
+            }
+          }
+        }
+      }
+    }
+
+    .logout-button {
+      background: #a51e36;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      mat-icon {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: #8b162b;
+      }
+    }
+  }
+}
+
+// Animation for submenu
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.action-button {
+  position: relative;
+  background: #a51e36;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  mat-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background: #8b162b;
+  }
+
+  .tooltip {
+    position: absolute;
+    bottom: 100%; // Show above the button
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: "Nunito Sans", sans-serif;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    // Arrow below the tooltip
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%; // Position at the bottom of the tooltip
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
     }
   }
 
-  .logout-button {
-    background: #a51e36;
-    border: none;
-    border-radius: 50%;
-    color: white;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    mat-icon {
-      font-size: 20px;
-    }
-
-    &:hover {
-      background: #8b162b;
-    }
+  &:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px);
   }
-}
-body[dir="rtl"].search-icon {
-  left: unset !important;
-  right: 10px !important;
-}
-.search-icon {
-  font-size: 24px;
-  color: rgba(0, 0, 0, 0.54);
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 10px;
-}
-.notification-icon {
-  padding: 3rem;
-}
-
-.mat-badge-content {
-  background: red !important;
-  color: blue !important;
 }

@@ -23,7 +23,6 @@ import {
 export class SystemAccessComponent {
   public modules = [
     TextFilterModule,
-
     NumberEditorModule,
     TextEditorModule,
     ClientSideRowModelModule,
@@ -39,6 +38,12 @@ export class SystemAccessComponent {
   paginationNumberFormatter = (params: PaginationNumberFormatterParams) => {
     return '[' + params.value.toLocaleString() + ']';
   };
+   paginationPageSize=10;
+   theme=themeQuartz
+  paginationPageSizeSelector= [1, 5, 10];
+  paginationNumberFormatter= (params: PaginationNumberFormatterParams) => {
+    return "[" + params.value.toLocaleString() + "]";
+  }
   openAccessModal(): void {
     document.body.classList.add('modal-open');
     this.accessModal.openModal();
@@ -71,6 +76,7 @@ export class SystemAccessComponent {
       registeredDate: '14/Jul/2020 7:38PM',
       revoke: true,
     },
+    
     // Add more rows to test pagination
   ];
 

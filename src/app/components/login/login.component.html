@@ -10,7 +10,7 @@
                 </h2>
                 <h4 id="instruction"></h4>
                 <form [formGroup]="loginForm" (ngSubmit)="login()">
-                    <mat-radio-group formControlName="idType" class="radio-group" (change)="onIdTypeChange($event.value)">
+                    <mat-radio-group formControlName="idType" class="radio-group" (change)="onIdTypeChange($event.value)" hidden>
                         <mat-radio-button value="qfc">QFC Number</mat-radio-button>
                         <mat-radio-button value="rf">RF Number</mat-radio-button>
                     </mat-radio-group>
@@ -37,13 +37,13 @@
 
                     <p class="label">Registered Email <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <input matInput formControlName="email" placeholder="Enter your email" />
+                        <input matInput formControlName="email" placeholder="Enter your email" (keydown.enter)="login()"/>
                         <mat-error *ngIf="loginForm.get('email')?.invalid">Valid email is required</mat-error>
                     </mat-form-field>
 
                     <p class="label">Password <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <input matInput type="password" formControlName="password" placeholder="Enter your password" />
+                        <input matInput type="password" formControlName="password" placeholder="Enter your password" (keydown.enter)="login()" />
                         <mat-error *ngIf="loginForm.get('password')?.invalid">Password is required</mat-error>
                     </mat-form-field>
 

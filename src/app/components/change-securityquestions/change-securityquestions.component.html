@@ -1,0 +1,176 @@
+<app-header></app-header>
+<app-navbar></app-navbar>
+
+
+<div class="security-questions-container">
+    <h2>Change Security Questions</h2>
+    <p class="instructions">
+      To change the answers to your favourite questions, click the "Edit" icon.
+    </p>
+  
+    <!-- First Question -->
+    <div class="question-wrapper">
+      <h3>Favourite Question 1</h3>
+      <div class="question">
+        <ng-container *ngIf="!question1Editable">
+            <p>{{ question1 }}</p>
+          </ng-container>
+          <ng-container *ngIf="question1Editable">
+            <mat-form-field appearance="outline" class="question-field full-width">
+              <mat-select
+                [formControl]="$any(question1Form).controls['question']"
+                [value]="$any(question1Form).controls['question'].value"
+              >
+                <mat-option *ngFor="let question of availableQuestions1" [value]="question.value">
+                  {{ question.text }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+          
+        <button
+          *ngIf="!question1Editable"
+          mat-icon-button
+          class="edit-icon-button"
+          (click)="toggleEdit(1)"
+          [disabled]="question1Editable"
+        >
+          <mat-icon>edit</mat-icon>
+          <span class="edit-text">Edit</span>
+        </button>
+      </div>
+      <div class="answer" *ngIf="question1Editable">
+        <mat-form-field appearance="outline" class="answer-field">
+          <input
+            matInput
+            [formControl]="$any(question1Form).controls['answer']"
+            placeholder="Enter your answer"
+          />
+        </mat-form-field>
+        <div
+          class="error"
+          *ngIf="
+            $any(question1Form).controls['answer'].invalid &&
+            $any(question1Form).controls['answer'].touched
+          "
+        >
+          Answer is required.
+        </div>
+      </div>
+    </div>
+  
+    <!-- Second Question -->
+    <div class="question-wrapper">
+      <h3>Favourite Question 2</h3>
+      <div class="question">
+        <ng-container *ngIf="!question2Editable">
+          <p>{{ question2 }}</p>
+        </ng-container>
+        <ng-container *ngIf="question2Editable">
+            <mat-form-field appearance="outline" class="question-field full-width">
+                <mat-select
+                [formControl]="$any(question2Form).controls['question']"
+                [value]="$any(question2Form).controls['question'].value"
+              >
+                  <mat-option *ngFor="let question of availableQuestions2" [value]="question.value">
+                    {{ question.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </ng-container>
+        <button
+          *ngIf="!question2Editable"
+          mat-icon-button
+          class="edit-icon-button"
+          (click)="toggleEdit(2)"
+          [disabled]="question2Editable"
+        >
+          <mat-icon>edit</mat-icon>
+          <span class="edit-text">Edit</span>
+        </button>
+      </div>
+      <div class="answer" *ngIf="question2Editable">
+        <mat-form-field appearance="outline" class="answer-field">
+          <input
+            matInput
+            [formControl]="$any(question2Form).controls['answer']"
+            placeholder="Enter your answer"
+          />
+        </mat-form-field>
+        <div
+          class="error"
+          *ngIf="
+            $any(question2Form).controls['answer'].invalid &&
+            $any(question2Form).controls['answer'].touched
+          "
+        >
+          Answer is required.
+        </div>
+      </div>
+    </div>
+  
+    <!-- Third Question -->
+    <div class="question-wrapper">
+      <h3>Favourite Question 3</h3>
+      <div class="question">
+        <ng-container *ngIf="!question3Editable">
+          <p>{{ question3 }}</p>
+        </ng-container>
+        <ng-container *ngIf="question3Editable">
+            <mat-form-field appearance="outline" class="question-field full-width">
+                <mat-select
+                [formControl]="$any(question3Form).controls['question']"
+                [value]="$any(question3Form).controls['question'].value"
+              >
+                  <mat-option *ngFor="let question of availableQuestions3" [value]="question.value">
+                    {{ question.text }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </ng-container>
+        <button
+          *ngIf="!question3Editable"
+          mat-icon-button
+          class="edit-icon-button"
+          (click)="toggleEdit(3)"
+          [disabled]="question3Editable"
+        >
+          <mat-icon>edit</mat-icon>
+          <span class="edit-text">Edit</span>
+        </button>
+      </div>
+      <div class="answer" *ngIf="question3Editable">
+        <mat-form-field appearance="outline" class="answer-field">
+          <input
+            matInput
+            [formControl]="$any(question3Form).controls['answer']"
+            placeholder="Enter your answer"
+          />
+        </mat-form-field>
+        <div
+          class="error"
+          *ngIf="
+            $any(question3Form).controls['answer'].invalid &&
+            $any(question3Form).controls['answer'].touched
+          "
+        >
+          Answer is required.
+        </div>
+      </div>
+    </div>
+  
+    <!-- Save and Cancel Buttons -->
+    <div class="action-buttons">
+        <button
+        mat-raised-button
+        class="save-button"
+        (click)="saveAll()"
+        *ngIf="isAnyQuestionEditable()"
+      >
+        Save
+      </button>
+      
+      <button mat-button class="cancel-button" (click)="refreshPage()" *ngIf="isAnyQuestionEditable()">Cancel</button>
+    </div>
+  </div>
+  

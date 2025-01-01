@@ -1,5 +1,13 @@
 @use "@angular/material" as mat;
 
+.mdc-text-field__input{
+  padding-top: 10px !important; 
+}
+
+.mat-mdc-select{
+  padding-top: 10px !important; 
+}
+
 body {
   margin: 0;
   font-family: Roboto, sans-serif;
