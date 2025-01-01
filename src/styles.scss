@@ -155,7 +155,6 @@ mat-radio-button {
   );
 }
 
-
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
 
 /* position */
@@ -210,10 +209,10 @@ mat-radio-button {
 }
 .toast-message a,
 .toast-message label {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 .toast-message a:hover {
-  color: #CCCCCC;
+  color: #cccccc;
   text-decoration: none;
 }
 .toast-close-button {
@@ -223,7 +222,7 @@ mat-radio-button {
   float: right;
   font-size: 20px;
   font-weight: bold;
-  color: #FFFFFF;
+  color: #ffffff;
   text-shadow: 0 1px 0 #ffffff;
   /* opacity: 0.8; */
 }
@@ -262,7 +261,7 @@ button.toast-close-button {
   background-repeat: no-repeat;
   background-size: 24px;
   box-shadow: 0 0 12px #999999;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 .toast-container .ngx-toastr:hover {
   box-shadow: 0 0 12px #000000;
@@ -302,16 +301,16 @@ button.toast-close-button {
   pointer-events: auto;
 }
 .toast-success {
-  background-color: #51A351;
+  background-color: #51a351;
 }
 .toast-error {
-  background-color: #BD362F;
+  background-color: #bd362f;
 }
 .toast-info {
-  background-color: #2F96B4;
+  background-color: #2f96b4;
 }
 .toast-warning {
-  background-color: #F89406;
+  background-color: #f89406;
 }
 .toast-progress {
   position: absolute;
@@ -321,6 +320,45 @@ button.toast-close-button {
   background-color: #000000;
   opacity: 0.4;
 }
+
+button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-close {
+  background-color: #ccc;
+  color: #333;
+}
+.btn-close:hover {
+  background-color: #bbb;
+}
+
+.btn-request {
+  background-color: #d9534f;
+  color: #fff;
+}
+.btn-revoke{
+  background-color: white;
+  color: #d9534f;
+}
+.btn-revoke:hover{
+  background-color: #d9534f;
+  color:white ;
+}
+.btn-request:hover {
+  background-color: #c9302c;
+}
+
+button.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Responsive Design */
 @media all and (max-width: 240px) {
   .toast-container .ngx-toastr.div {
@@ -350,5 +388,5 @@ button.toast-close-button {
 }
 
 .toast-error {
-  background-color: #a51e36  !important;
+  background-color: #a51e36 !important;
 }

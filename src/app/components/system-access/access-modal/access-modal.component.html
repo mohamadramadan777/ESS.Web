@@ -2,82 +2,119 @@
   <div class="modal-content">
     <h3>Request Access</h3>
     <label for="accessType">Select Access Type:</label>
-    <select
-      id="accessType"
-      [(ngModel)]="selectedAccessType"
-      (change)="onAccessTypeChange($event)"
-    >
-      <option value="">Select</option>
-      <option value="documentAdmin">Document Admin</option>
-      <option value="approvedIndividual">Approved Individual</option>
-    </select>
-
+    <mat-form-field class="form-input">
+      <mat-select
+        id="accessType"
+        [(ngModel)]="selectedAccessType"
+        (change)="onAccessTypeChange($event)"
+      >
+        <mat-option value="documentAdmin">Document Admin</mat-option>
+        <mat-option value="approvedIndividual">Approved Individual</mat-option>
+      </mat-select>
+    </mat-form-field>
     <div id="form-container">
       <ng-container [ngSwitch]="selectedAccessType">
+        <!-- Document Admin Form -->
         <div *ngSwitchCase="'documentAdmin'">
           <label for="name">Name of the Individual:</label>
-          <input type="text" id="name" [(ngModel)]="documentAdminForm.name" />
+          <input
+            type="text"
+            id="name"
+            [(ngModel)]="documentAdminForm.name"
+            class="form-input"
+          />
           <label for="jobTitle">Job Title:</label>
           <input
             type="text"
             id="jobTitle"
             [(ngModel)]="documentAdminForm.jobTitle"
+            class="form-input"
           />
-          <label for="dob">Date of Birth:</label>
-          <input type="date" id="dob" [(ngModel)]="documentAdminForm.dob" />
-          <label for="nationality">Nationality:</label>
-          <select id="nationality" [(ngModel)]="documentAdminForm.nationality">
-            <option value="">Select</option>
-            <option value="US">United States</option>
-            <option value="IN">India</option>
-          </select>
-          <label for="email">Email Address:</label>
-          <input
-            type="email"
-            id="email"
-            [(ngModel)]="documentAdminForm.email"
-          />
-          <label for="confirmEmail">Confirm Email Address:</label>
-          <input
-            type="email"
-            id="confirmEmail"
-            [(ngModel)]="documentAdminForm.confirmEmail"
-          />
+          <div class="personal_info">
+            <div class="left">
+              <label for="dob">Date of Birth:</label>
+              <input
+                type="date"
+                id="dob"
+                [(ngModel)]="documentAdminForm.dob"
+                class="form-input"
+              />
+            </div>
+            <div class="right right_nat">
+              <label for="nationality">Nationality:</label>
+              <mat-form-field class="form-input">
+                <mat-select
+                  id="nationality"
+                  [(ngModel)]="documentAdminForm.nationality"
+                >
+                  <mat-option value="US">United States</mat-option>
+                  <mat-option value="IN">India</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="personal_info">
+            <div class="left">
+              <label for="email">Email Address:</label>
+              <input
+                type="email"
+                id="email"
+                [(ngModel)]="documentAdminForm.email"
+                class="form-input"
+              />
+            </div>
+            <div class="right right_mail">
+              <label for="confirmEmail">Confirm Email Address:</label>
+              <input
+                type="email"
+                id="confirmEmail"
+                [(ngModel)]="documentAdminForm.confirmEmail"
+                class="form-input"
+              />
+            </div>
+          </div>
         </div>
 
+        <!-- Approved Individual Form -->
         <div *ngSwitchCase="'approvedIndividual'">
           <label for="approvedName">Approved Individual Name:</label>
           <input
             type="text"
             id="approvedName"
             [(ngModel)]="approvedIndividualForm.name"
+            class="form-input"
           />
           <label for="controlledFunctions"
             >Approved Controlled Functions:</label
           >
-          <select
-            id="controlledFunctions"
-            [(ngModel)]="approvedIndividualForm.controlledFunctions"
-          >
-            <option value="">Select</option>
-            <option value="Function1">Function 1</option>
-            <option value="Function2">Function 2</option>
-          </select>
+          <mat-form-field style="width: 600px; height: 40px">
+            <mat-select
+              id="controlledFunctions"
+              [(ngModel)]="approvedIndividualForm.controlledFunctions"
+              class="form-select"
+            >
+              <mat-option value="Function1">Function 1</mat-option>
+              <mat-option value="Function2">Function 2</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
+        <!-- Default Case -->
         <div *ngSwitchDefault>
           <p>Please select a valid access type to proceed.</p>
         </div>
       </ng-container>
     </div>
 
+    <!-- Modal Actions -->
     <div class="modal-actions">
       <button class="btn-close" (click)="closeModal()">Close</button>
       <button
-        class="btn-request"
-        [class.disabled]="!isFormValid()"
-        [disabled]="!isFormValid()"
-        (click)="onRequest()"
+      class="btn-request"
+      [class.disabled]="!isFormValid()"
+      [disabled]="!isFormValid()"
+      *ngIf="selectedAccessType === 'documentAdmin' || selectedAccessType === 'approvedIndividual'"
+      (click)="onRequest()"
       >
         Request
       </button>

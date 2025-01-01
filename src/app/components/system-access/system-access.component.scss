@@ -37,18 +37,17 @@
   margin-top: 20px;
 }
 
-/* Button Styling */
-.btn-request-access {
-  padding: 10px 20px;
-  font-size: 14px;
-  color: #fff;
-  background-color: #007bff; /* Blue button */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+body.modal-open {
+  overflow: hidden; /* Prevent scrolling when modal is open */
 }
 
-.btn-request-access:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+body.modal-open::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Dimmed background effect */
+  z-index: 998; /* Ensure it’s behind the modal but above the content */
 }
