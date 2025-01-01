@@ -38,12 +38,6 @@ export class SystemAccessComponent {
   paginationNumberFormatter = (params: PaginationNumberFormatterParams) => {
     return '[' + params.value.toLocaleString() + ']';
   };
-   paginationPageSize=10;
-   theme=themeQuartz
-  paginationPageSizeSelector= [1, 5, 10];
-  paginationNumberFormatter= (params: PaginationNumberFormatterParams) => {
-    return "[" + params.value.toLocaleString() + "]";
-  }
   openAccessModal(): void {
     document.body.classList.add('modal-open');
     this.accessModal.openModal();
