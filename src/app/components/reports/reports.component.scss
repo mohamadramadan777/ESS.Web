@@ -1,0 +1,144 @@
+.reports-container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  
+    h2 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: left;
+      color: #a51e36;
+      margin-bottom: 20px;
+    }
+    .schedule-dropdown {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    
+        label {
+          font-weight: bold;
+          color: #555555;
+          margin-right: 10px;
+        }
+    
+        select {
+          padding: 8px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+      }
+    .custom-tab-group {
+      .mat-tab-label {
+        color: #555555;
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        background-color: #f7f7f7;
+        margin: 0 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+        &:hover {
+          background-color: #ececec;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+      }
+  
+      .mat-tab-label-active {
+        color: #fff !important; /* White text for active tab */
+        background-color: #a51e36 !important; /* Maroon background for active tab */
+        box-shadow: none;
+      }
+  
+      .mat-ink-bar {
+        background-color: #a51e36 !important; /* Maroon underline for active tab */
+      }
+    }
+  
+    .report-card {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      position: relative;
+  
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+  
+        h3 {
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin: 0;
+          color: #333;
+        }
+  
+        .due-date {
+            strong{
+                color: #a51e36;
+            }
+          font-size: 0.95rem;
+          font-weight: bold;
+          margin: 0;
+        }
+      }
+  
+      table {
+        width: 100%;
+        border-collapse: collapse;
+  
+        td {
+          vertical-align: top;
+          padding: 10px 0;
+  
+          &:first-child {
+            padding-right: 20px; /* Add spacing between content and buttons */
+          }
+        }
+      }
+  
+      .label {
+        font-weight: bold;
+        color: #a51e36;
+        margin-right: 5px;
+      }
+  
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center vertically */
+        gap: 10px;
+  
+        button {
+          width: 120px;
+          height: 40px;
+          font-size: 0.9rem;
+          font-weight: bold;
+          border-radius: 4px;
+          color: #fff;
+          background-color: #a51e36;
+          border: none;
+          transition: all 0.3s ease;
+  
+          &:hover {
+            background-color: darken(#a51e36, 10%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+          }
+  
+          &:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }

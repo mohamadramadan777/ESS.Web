@@ -7,6 +7,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -47,6 +48,8 @@ import { ChangeEmailComponent } from './components/change-email/change-email.com
 import { ChangeSecurityquestionsComponent } from './components/change-securityquestions/change-securityquestions.component';
 import { LoaderComponent } from './components/loader/loader.component';
 import { LoadingService } from './services/loader.service';
+import { ViewNoticeComponent } from './components/notices/view-notice/view-notice.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -71,6 +74,7 @@ import { LoadingService } from './services/loader.service';
     ChangeEmailComponent,
     ChangeSecurityquestionsComponent,
     LoaderComponent,
+    ViewNoticeComponent,
   ],
   imports: [
     BrowserModule,
@@ -93,6 +97,8 @@ import { LoadingService } from './services/loader.service';
     MatSelectModule,
     AgGridModule, // Ensure this is configured 
     HttpClientModule,
+    MatTabsModule,
+    MatDialogModule,
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)
       positionClass: 'toast-top-center', // Position on the page

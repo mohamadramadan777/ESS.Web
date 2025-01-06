@@ -1,0 +1,63 @@
+.notices-container {
+    width: 95%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  
+    h2 {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: left;
+      color: #a51e36;
+      margin-bottom: 20px;
+    }
+  
+    .year-filter {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 20px;
+  
+      label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #555555;
+        margin-right: 10px;
+      }
+  
+      select {
+        padding: 8px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+      }
+    }
+  
+    .table-content {
+      ag-grid-angular {
+        width: 100%;
+  
+        .ag-cell {
+          white-space: normal !important;
+          overflow: visible !important;
+          text-overflow: clip !important;
+          cursor: pointer;
+  
+          &:hover {
+            background-color: #f7e4e9 !important;
+          }
+        }
+  
+        .ag-cell-tooltip {
+          background-color: #ffffff;
+          color: #555555;
+          border: 1px solid #ccc;
+          padding: 5px;
+          border-radius: 5px;
+          box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+  

@@ -1,1 +1,29 @@
-<p>notices works!</p>
+<app-header></app-header>
+<app-navbar [selectedPage]="'notices'"></app-navbar>
+
+<div class="notices-container" data-ag-theme-mode="light-red">
+  <h2>Notices</h2>
+  <div class="year-filter">
+    <label for="year">Year notices sent:</label>
+    <select id="year" [(ngModel)]="selectedYear" (change)="filterNotices()">
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  </div>
+
+  <div class="table-content" >
+    <ag-grid-angular
+      class="ag-theme-alpine custom-ag-grid"
+      [rowData]="filteredNotices"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [theme]="theme"
+      [modules]="modules"
+      [pagination]="true"
+      [paginationPageSize]="paginationPageSize"
+      [paginationPageSizeSelector]="paginationPageSizeSelector"
+      [domLayout]="'autoHeight'"
+      (rowDoubleClicked)="onRowDoubleClicked($event)"
+    >
+    </ag-grid-angular>
+  </div>
+</div>

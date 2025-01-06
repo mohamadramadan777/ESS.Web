@@ -1,53 +1,87 @@
-/* Container for the entire table section */
-.table-container {
-  display: flex; /* Enable flexbox layout */
-  flex-direction: column; /* Arrange children in a column */
-  margin: 20px;
+.system-access-container {
+  width: 95%;
+  margin: 0 auto;
   padding: 20px;
-  border: 1px solid #ccc; /* Light gray border */
-  border-radius: 8px; /* Rounded corners */
-  background-color: #fff; /* White background */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  height: 700px; /* Adjust the height to fit table + header + button */
-  position: relative; /* Allow positioning for the button */
-}
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 
-/* Header Section */
-.table-header {
-  display: flex;
-  justify-content: flex-start; /* Align title to the left */
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e0e0e0; /* Add a line under the header */
-}
+  h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #a51e36;
+    margin-bottom: 20px;
+  }
 
-/* Table Section */
-.table-content {
-  flex: 1; /* Let the table section take up available space */
-  display: flex;
-  justify-content: center; /* Center table horizontally */
-  align-items: center; /* Center table vertically */
-}
+  .table-content {
+    ag-grid-angular {
+      width: 100%;
 
-/* Button Section */
-.table-footer {
-  display: flex;
-  justify-content: flex-end; /* Align button to the right */
-  align-items: center;
-  margin-top: 20px;
-}
+      .ag-cell {
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        cursor: pointer;
 
-body.modal-open {
-  overflow: hidden; /* Prevent scrolling when modal is open */
-}
+        &:hover {
+          background-color: #f7e4e9 !important; /* Light maroon */
+        }
+      }
 
-body.modal-open::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Dimmed background effect */
-  z-index: 998; /* Ensure it’s behind the modal but above the content */
+      .ag-cell-tooltip {
+        background-color: #ffffff;
+        color: #555555;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 5px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .footer-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+
+    .btn-request {
+      background-color: #a51e36;
+      color: #fff;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #861624;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  /* Styles for revoke and info buttons */
+  .btn-icon {
+    background: transparent !important; 
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+    border-radius: 50% !important;
+    transition: background-color 0.3s ease !important;
+
+    &:hover {
+      background-color: #f7e4e9 !important; /* Light maroon background */
+    }
+
+    .revoke-icon {
+      color: #a51e36 !important; /* Maroon color for revoke */
+    }
+
+    .info-icon {
+      color: #555555 !important; /* Gray color for information */
+    }
+  }
 }

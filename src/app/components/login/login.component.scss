@@ -1,3 +1,5 @@
+
+
 .logo-wrapper {
   width: 202px;
   height: 115px;
@@ -197,12 +199,13 @@
   }
 }
 
+
 input {
   border-radius: 7.202px !important;
   border: 0.72px solid #b1b1b1;
   background: #fff;
-  height: 58.013px !important;
-  width: 50%;
+  height: 38.013px !important;
+  width: 80%;
   color: rgba(0, 0, 0, 0.1);
   font-family: "Montserrat";
   font-size: 20.405px;
@@ -211,6 +214,7 @@ input {
   line-height: 156.5%;
   padding: 0 1rem;
 }
+
 
 input:invalid {
   border-bottom: 2px solid #ff3737;
@@ -378,3 +382,4 @@ form {
   flex-direction: column;
   gap: 1rem;
 }
+

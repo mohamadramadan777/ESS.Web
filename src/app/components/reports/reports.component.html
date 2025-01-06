@@ -1,1 +1,59 @@
-<p>reports works!</p>
+<app-header></app-header>
+<app-navbar [selectedPage]="'reports'"></app-navbar>
+
+<div class="reports-container">
+  <h2>Reports:</h2>
+  <div class="schedule-dropdown">
+    <label for="report-schedule">Report Schedule for:</label>
+    <select id="report-schedule" [(ngModel)]="selectedSchedule" (change)="onScheduleChange()">
+      <option *ngFor="let schedule of schedules" [value]="schedule">
+        {{ schedule.startDate }} to {{ schedule.endDate }}
+      </option>
+    </select>
+  </div>
+  <mat-tab-group class="custom-tab-group" [backgroundColor]="">
+    <!-- Reports to be Submitted -->
+    <mat-tab label="Reports to be Submitted">
+      <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
+        <div class="card-header">
+          <h3>{{ report.reportName }}</h3>
+          <p class="due-date"><strong>Due Date:</strong> {{ report.dueDate }}</p>
+        </div>
+        <table>
+          <tr>
+            <td style="width: 90%;">
+              <p><span class="label">Submission Type:</span> {{ report.submissionType }}</p>
+              <p *ngIf="report.attachedFile">
+                <span class="label">Attached File:</span>
+                <a href="#">{{ report.attachedFile }}</a>
+              </p>
+              <p *ngIf="!report.attachedFile" class="warning">No file attached yet.</p>
+              <p><span class="label">Report to be Signed by:</span> {{ report.signedBy }}</p>
+            </td>
+            <td style="width: 10%; text-align: right;">
+              <div class="button-group">
+                <button mat-raised-button class="attach-button">Attach File</button>
+                <button mat-raised-button class="signoff-button" [disabled]="!report.attachedFile">
+                  Sign off
+                </button>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- Reports Submitted -->
+    <mat-tab label="Reports Submitted">
+      <div *ngFor="let report of reportsSubmitted" class="report-card">
+        <div class="card-header">
+          <h3>{{ report.reportName }}</h3>
+          <p class="due-date"><strong>Submission Date:</strong> {{ report.submissionDate }}</p>
+        </div>
+        <p><span class="label">Attached File:</span> <a href="#">{{ report.attachedFile }}</a></p>
+        <p><span class="label">Signed by:</span> {{ report.signedBy }}</p>
+        <p><span class="label">Links:</span> <a href="#" class="history-link">History</a></p>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

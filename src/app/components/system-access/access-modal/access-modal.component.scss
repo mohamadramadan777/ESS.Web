@@ -7,186 +7,82 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+  background: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 
 .modal-content {
-  height: 500px;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
   width: 100%;
   max-width: 600px;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #a51e36;
+  }
+}
+
+.modal-body {
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+
+    .form-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+  }
+
+  .form-input {
+    width: 100%;
+    margin-bottom: 1rem;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
-}
 
-/* Input and select fields */
-.form-input {
-  width: 100%; /* Ensures they fill the container */
-  padding: 0.75rem;
-  height: 40px;
-  margin-bottom: 1rem; /* Adds space between fields */
-  border: 1px solid #ccc; /* Adds a border */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 1rem;
-  box-sizing: border-box; /* Ensures padding doesn't affect width calculation */
-}
+  .btn-cancel {
+    background-color: #ccc;
+    color: #555555;
 
-.form-input:focus,
-.form-select:focus {
-  outline: none;
-  border-color: #d9534f; /* Highlight the input/select when focused */
-}
-
-/* Additional styles to ensure input fields don't shift */
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-/* Align fields in a row */
-.form-row {
-  display: flex;
-  gap: 1rem; /* Space between form items */
-  margin-bottom: 1rem; /* Adds space below each row */
-}
-
-.form-item {
-  flex: 1; /* Ensures fields take equal space */
-}
-
-.custom-select {
-  width: 100%;
-  height: 40px;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
+    &:hover {
+      background-color: #b3b3b3;
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .btn-request {
+    background-color: #a51e36;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #861624;
+    }
+
+    &:disabled {
+      background-color: #e0e0e0;
+      color: #888888;
+      cursor: not-allowed;
+    }
   }
-}
-.personal_info {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: stretch;
-  align-content: stretch;
-}
-.right  {
-  display: block;
-  flex-shrink: 1;
-
-  flex-basis: auto;
-  align-self: auto;
-  order: 0;
-}
-.right_nat{
-  width: 300px;
-}
-.right_mail{
-  flex-grow: 1;
-}
-.left {
-  display: block;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: auto;
-  align-self: auto;
-  order: 0;
-}
-input select {
-  height: 40px;
-}
-.nationality {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-/* General form field styling */
-.mat-mdc-form-field {
-  width: 100%; /* Match input fields */
-  height: 40px; /* Same as input height */
-  border: 1px solid #ccc; /* Match the border color */
-  border-radius: 4px; /* Rounded corners like input fields */
-  background-color: white; /* Match input background */
-  font-size: 1rem; /* Match font size */
-  box-sizing: border-box; /* Consistent box model */
-  padding: 0; /* Remove extra padding */
-}
-
-.mat-mdc-form-field-wrapper {
-  padding: 0; /* Remove extra padding around the field */
-}
-
-.mat-mdc-select {
-  height: 40px; /* Consistent height with inputs */
-  display: flex;
-  align-items: center; /* Center text vertically */
-}
-
-.mat-mdc-select-arrow {
-  top: auto; /* Align the dropdown arrow */
-  bottom: auto;
-}
-
-
-
-.mat-mdc-option {
-  
-  font-size: 1rem; /* Match input text size */
-}
-
-.mat-mdc-form-field-appearance-outline .mat-form-field-outline {
-  display: none; /* Remove Material outline style */
-}
-
-.mat-mdc-form-field-appearance-outline .mat-form-field-outline-thick {
-  display: none;
-}
-
-.mat-mdc-form-field-appearance-outline .mat-form-field-flex {
-  border: none; /* Remove Material inner border */
-}
-
-/* Focused state */
-.mat-mdc-form-field-appearance-outline.mat-form-field--focused {
-  border-color: #d9534f; /* Match focus color with inputs */
-}
-
-.mat-mdc-form-field-appearance-outline .mat-form-field-ripple {
-  background-color: transparent; /* Remove default ripple effect */
-}
-
-/* Dropdown Menu Styling */
-.mat-mdc-select-panel {
-  border: 1px solid #ccc; /* Match border with input fields */
-  border-radius: 4px; /* Rounded corners */
-  background-color: white; /* Match input background */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
-}
-.mat-mdc-select-value {
-  line-height: 40px; /* Match input field height */
-}
-:host ::ng-deep .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
-  color: #d9534f !important;
 }

@@ -1,0 +1,100 @@
+<div class="dialog-header">
+    <h2 mat-dialog-title>View Notice</h2>
+    <button mat-icon-button class="close-button" (click)="onClose()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+  <mat-tab-group class="custom-tab-group">
+    <!-- Notice Details Tab -->
+    <mat-tab label="Notice Details">
+        <div class="tab-content">
+          <table class="notice-details-table">
+            <tbody>
+              <tr>
+                <td class="label">Notice Type:</td>
+                <td>{{ data.noticeType }}</td>
+              </tr>
+              <tr>
+                <td class="label">Notice Name:</td>
+                <td>{{ data.noticeName }}</td>
+              </tr>
+              <tr>
+                <td class="label">Notice Issued By:</td>
+                <td>{{ data.noticeIssuedBy }}</td>
+              </tr>
+              <tr>
+                <td class="label">Notice Issued Date:</td>
+                <td>{{ data.noticeIssuedDate }}</td>
+              </tr>
+              <tr>
+                <td class="label">Response Due Date:</td>
+                <td>{{ data.responseDueDate }}</td>
+              </tr>
+              <tr>
+                <td class="label">Subject:</td>
+                <td>{{ data.subject }}</td>
+              </tr>
+              <tr>
+                <td class="label">References:</td>
+                <td>{{ data.references }}</td>
+              </tr>
+              <tr>
+                <td class="label">Link to Notice:</td>
+                <td><a href="#">{{ data.linkToNotice }}</a></td>
+              </tr>
+              <tr>
+                <td class="label">Link to Email Notification:</td>
+                <td><a href="#">{{ data.linkToEmailNotification }}</a></td>
+              </tr>
+              <tr>
+                <td class="label">Sign-off Requirements:</td>
+                <td>{{ data.signOffRequirements }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-tab>
+      
+  
+    <!-- Questionnaire Tab -->
+   <!-- Questionnaire Tab -->
+<mat-tab label="Questionnaire">
+    <div class="tab-content">
+      <div class="question-card" *ngFor="let question of data.questionnaire">
+        <div class="card-header">
+          <p><strong>Question:</strong> {{ question.question }}</p>
+        </div>
+        <div class="card-body">
+          <p><strong>Response:</strong> {{ question.response }}</p>
+          <p><strong>Explanation:</strong> {{ question.explanation }}</p>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+  
+  
+    <!-- Notes Tab -->
+    <mat-tab label="Notes">
+      <div class="tab-content">
+        <p>{{ data.note }}</p>
+      </div>
+    </mat-tab>
+  
+    <!-- Attachments Tab -->
+    <mat-tab label="Attachments">
+      <div class="tab-content">
+        <div *ngFor="let attachment of data.attachments">
+          <a href="#">{{ attachment }}</a>
+        </div>
+      </div>
+    </mat-tab>
+  
+    <!-- Signature Tab -->
+    <mat-tab label="Signature">
+      <div class="tab-content">
+        <p><strong>Name of Individual:</strong> {{ data.signatureName }}</p>
+        <p><strong>Date Signed:</strong> {{ data.signatureDate }}</p>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  

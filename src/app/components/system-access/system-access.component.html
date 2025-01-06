@@ -1,37 +1,53 @@
 <app-header></app-header>
-<app-navbar></app-navbar>
+<app-navbar [selectedPage]="'system-access'"></app-navbar>
 
-<div class="table-container">
-  <!-- Header Section -->
-  <div class="table-header">
-    <h2>Administration</h2>
-  </div>
-
+<div class="system-access-container" data-ag-theme-mode="light-red"> 
+  <h2>Administration</h2>
+  <mat-tab-group class="custom-tab-group" [backgroundColor]="">
+    <!-- Reports to be Submitted -->
+    <mat-tab label="Individuals that have access to the System">
   <!-- Table Section -->
   <div class="table-content">
     <ag-grid-angular
-      style="width: 100%; height: 500px"
-      [theme]="theme"
-      [modules]="modules"
-      [defaultColDef]="defaultColDef"
-      [columnDefs]="columnDefs"
-      [rowData]="rowData"
-      (cellClicked)="onCellClicked($event)"
-      [pagination]="true"
-      [paginationPageSize]="paginationPageSize"
-      [paginationPageSizeSelector]="paginationPageSizeSelector"
-    >
-    </ag-grid-angular>
+    class="ag-theme-alpine custom-ag-grid"
+    [theme]="theme"
+    [modules]="modules"
+    [defaultColDef]="defaultColDef"
+    [columnDefs]="individualsColDef"
+    [rowData]="individuals"
+    (cellClicked)="onCellClicked($event)"
+    [pagination]="true"
+    [paginationPageSize]="paginationPageSize"
+    [paginationPageSizeSelector]="paginationPageSizeSelector"
+    [domLayout]="'autoHeight'"
+  >
+  </ag-grid-angular>
   </div>
+</mat-tab>
+<mat-tab label="Actions on system accounts processed in the last 30 days">
 
-  <!-- Button Section -->
-  <div class="table-footer">
-    <button class="btn-request" (click)="openAccessModal()">
-      Request Access
-    </button>
+  <div class="table-content">
+    <ag-grid-angular
+    class="ag-theme-alpine custom-ag-grid"
+    [theme]="theme"
+    [modules]="modules"
+    [defaultColDef]="defaultColDef"
+    [columnDefs]="systemAccountColDef"
+    [rowData]="systemAccounts"
+    (cellClicked)="onCellClicked($event)"
+    [pagination]="true"
+    [paginationPageSize]="paginationPageSize"
+    [paginationPageSizeSelector]="paginationPageSizeSelector"
+    [domLayout]="'autoHeight'"
+  >
+  </ag-grid-angular>
   </div>
+</mat-tab>
+</mat-tab-group>
+<div class="footer-section">
+  <button mat-raised-button class="btn-request" (click)="openAccessModal()">Request Access</button>
 </div>
-<app-access-modal
-  #accessModal
-  (modalClosed)="onModalClosed()"
-></app-access-modal>
+
+</div>
+
+<app-access-modal #accessModal (modalClosed)="onModalClosed()"></app-access-modal>

@@ -462,6 +462,108 @@ export class Client {
     /**
      * @return OK
      */
+    getIndividualList(): Observable<WAccessRequestsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-individual-list";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndividualList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndividualList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
+        }));
+    }
+
+    protected processGetIndividualList(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getSystemAccounts(): Observable<WAccessRequestsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-system-accounts";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSystemAccounts(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSystemAccounts(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
+        }));
+    }
+
+    protected processGetSystemAccounts(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
     getObjectTaskStatus(): Observable<ObjTasksListBaseResponse> {
         let url_ = this.baseUrl + "/api/Firms/GetObjectTaskStatus";
         url_ = url_.replace(/[?&]$/, "");
@@ -620,6 +722,123 @@ export class Client {
             }));
         }
         return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @param year (optional) 
+     * @return OK
+     */
+    getWnoticeList(year: number | undefined): Observable<WNoticeListListBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-list?";
+        if (year === null)
+            throw new Error("The parameter 'year' cannot be null.");
+        else if (year !== undefined)
+            url_ += "year=" + encodeURIComponent("" + year) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWnoticeList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWnoticeList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WNoticeListListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WNoticeListListBaseResponse>;
+        }));
+    }
+
+    protected processGetWnoticeList(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WNoticeListListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WNoticeListListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wNoticeID (optional) 
+     * @param wFirmNoticeID (optional) 
+     * @return OK
+     */
+    getWnoticeDetails(wNoticeID: number | undefined, wFirmNoticeID: number | undefined): Observable<WNoticeBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-details?";
+        if (wNoticeID === null)
+            throw new Error("The parameter 'wNoticeID' cannot be null.");
+        else if (wNoticeID !== undefined)
+            url_ += "wNoticeID=" + encodeURIComponent("" + wNoticeID) + "&";
+        if (wFirmNoticeID === null)
+            throw new Error("The parameter 'wFirmNoticeID' cannot be null.");
+        else if (wFirmNoticeID !== undefined)
+            url_ += "WFirmNoticeID=" + encodeURIComponent("" + wFirmNoticeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWnoticeDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWnoticeDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WNoticeBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WNoticeBaseResponse>;
+        }));
+    }
+
+    protected processGetWnoticeDetails(response: HttpResponseBase): Observable<WNoticeBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WNoticeBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WNoticeBaseResponse>(null as any);
     }
 }
 
@@ -2753,6 +2972,1274 @@ export interface IWAccessRequests {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+}
+
+export class WAccessRequestsListBaseResponse implements IWAccessRequestsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAccessRequests[] | undefined;
+
+    constructor(data?: IWAccessRequestsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WAccessRequests.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WAccessRequestsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WAccessRequestsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWAccessRequestsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAccessRequests[] | undefined;
+}
+
+export class WNotice implements IWNotice {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+
+    constructor(data?: IWNotice) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WNotice {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNotice();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWNotice {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+}
+
+export class WNoticeBaseResponse implements IWNoticeBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNotice;
+
+    constructor(data?: IWNoticeBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WNotice.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WNoticeBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWNoticeBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNotice;
+}
+
+export class WNoticeList implements IWNoticeList {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    noticeType?: string | undefined;
+    noticeTemplate?: string | undefined;
+    noticeNumber?: string | undefined;
+    noticeDate?: string | undefined;
+    issuer?: string | undefined;
+    responseRequired?: string | undefined;
+    published?: string | undefined;
+    responseDueDate?: string | undefined;
+    responseProvidedDate?: string | undefined;
+    responseSignedBy?: string | undefined;
+    resoponseType?: string | undefined;
+    wsosStatusTypeID?: number | undefined;
+
+    constructor(data?: IWNoticeList) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+            this.noticeType = _data["noticeType"];
+            this.noticeTemplate = _data["noticeTemplate"];
+            this.noticeNumber = _data["noticeNumber"];
+            this.noticeDate = _data["noticeDate"];
+            this.issuer = _data["issuer"];
+            this.responseRequired = _data["responseRequired"];
+            this.published = _data["published"];
+            this.responseDueDate = _data["responseDueDate"];
+            this.responseProvidedDate = _data["responseProvidedDate"];
+            this.responseSignedBy = _data["responseSignedBy"];
+            this.resoponseType = _data["resoponseType"];
+            this.wsosStatusTypeID = _data["wsosStatusTypeID"];
+        }
+    }
+
+    static fromJS(data: any): WNoticeList {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeList();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        data["noticeType"] = this.noticeType;
+        data["noticeTemplate"] = this.noticeTemplate;
+        data["noticeNumber"] = this.noticeNumber;
+        data["noticeDate"] = this.noticeDate;
+        data["issuer"] = this.issuer;
+        data["responseRequired"] = this.responseRequired;
+        data["published"] = this.published;
+        data["responseDueDate"] = this.responseDueDate;
+        data["responseProvidedDate"] = this.responseProvidedDate;
+        data["responseSignedBy"] = this.responseSignedBy;
+        data["resoponseType"] = this.resoponseType;
+        data["wsosStatusTypeID"] = this.wsosStatusTypeID;
+        return data;
+    }
+}
+
+export interface IWNoticeList {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    noticeType?: string | undefined;
+    noticeTemplate?: string | undefined;
+    noticeNumber?: string | undefined;
+    noticeDate?: string | undefined;
+    issuer?: string | undefined;
+    responseRequired?: string | undefined;
+    published?: string | undefined;
+    responseDueDate?: string | undefined;
+    responseProvidedDate?: string | undefined;
+    responseSignedBy?: string | undefined;
+    resoponseType?: string | undefined;
+    wsosStatusTypeID?: number | undefined;
+}
+
+export class WNoticeListListBaseResponse implements IWNoticeListListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNoticeList[] | undefined;
+
+    constructor(data?: IWNoticeListListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WNoticeList.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WNoticeListListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeListListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWNoticeListListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNoticeList[] | undefined;
+}
+
+export class WNoticeQuestionnaire implements IWNoticeQuestionnaire {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+
+    constructor(data?: IWNoticeQuestionnaire) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
+            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
+                this.lstNoticeQuestionnaireItems = [] as any;
+                for (let item of _data["lstNoticeQuestionnaireItems"])
+                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WNoticeQuestionnaire {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeQuestionnaire();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
+        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+            data["lstNoticeQuestionnaireItems"] = [];
+            for (let item of this.lstNoticeQuestionnaireItems)
+                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWNoticeQuestionnaire {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+}
+
+export class WNoticeQuestionnaireItems implements IWNoticeQuestionnaireItems {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wNoticeQuestionNumber?: string | undefined;
+    wNoticeQuestion?: string | undefined;
+    wResponseTypeID?: number | undefined;
+    wResponseTypeDesc?: string | undefined;
+    wListNameID?: number | undefined;
+    wListNameDesc?: string | undefined;
+    wExplanationRequired?: number | undefined;
+    wEvaluationRequirementTypeDesc?: string | undefined;
+    wQuestionDisplayOrder?: number;
+    wNoticeResponseItemID?: number | undefined;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wResponseAnswer?: string | undefined;
+    responseProvided?: boolean | undefined;
+    explanationProvided?: boolean | undefined;
+    evaluationCriteriaMet?: number | undefined;
+    errorMessage?: string | undefined;
+    wResponseMandatory?: boolean;
+    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+
+    constructor(data?: IWNoticeQuestionnaireItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
+            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
+                this.lstNoticeQuestionnaireItems = [] as any;
+                for (let item of _data["lstNoticeQuestionnaireItems"])
+                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
+            }
+            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
+            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
+            this.wNoticeQuestionNumber = _data["wNoticeQuestionNumber"];
+            this.wNoticeQuestion = _data["wNoticeQuestion"];
+            this.wResponseTypeID = _data["wResponseTypeID"];
+            this.wResponseTypeDesc = _data["wResponseTypeDesc"];
+            this.wListNameID = _data["wListNameID"];
+            this.wListNameDesc = _data["wListNameDesc"];
+            this.wExplanationRequired = _data["wExplanationRequired"];
+            this.wEvaluationRequirementTypeDesc = _data["wEvaluationRequirementTypeDesc"];
+            this.wQuestionDisplayOrder = _data["wQuestionDisplayOrder"];
+            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
+            this.wExplanation = _data["wExplanation"];
+            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
+            this.wResponseAnswer = _data["wResponseAnswer"];
+            this.responseProvided = _data["responseProvided"];
+            this.explanationProvided = _data["explanationProvided"];
+            this.evaluationCriteriaMet = _data["evaluationCriteriaMet"];
+            this.errorMessage = _data["errorMessage"];
+            this.wResponseMandatory = _data["wResponseMandatory"];
+            if (Array.isArray(_data["lstResponseCriteria"])) {
+                this.lstResponseCriteria = [] as any;
+                for (let item of _data["lstResponseCriteria"])
+                    this.lstResponseCriteria!.push(WNoticeResponseEvaluationCriteria.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WNoticeQuestionnaireItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeQuestionnaireItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
+        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+            data["lstNoticeQuestionnaireItems"] = [];
+            for (let item of this.lstNoticeQuestionnaireItems)
+                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
+        }
+        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
+        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
+        data["wNoticeQuestionNumber"] = this.wNoticeQuestionNumber;
+        data["wNoticeQuestion"] = this.wNoticeQuestion;
+        data["wResponseTypeID"] = this.wResponseTypeID;
+        data["wResponseTypeDesc"] = this.wResponseTypeDesc;
+        data["wListNameID"] = this.wListNameID;
+        data["wListNameDesc"] = this.wListNameDesc;
+        data["wExplanationRequired"] = this.wExplanationRequired;
+        data["wEvaluationRequirementTypeDesc"] = this.wEvaluationRequirementTypeDesc;
+        data["wQuestionDisplayOrder"] = this.wQuestionDisplayOrder;
+        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
+        data["wExplanation"] = this.wExplanation;
+        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
+        data["wResponseAnswer"] = this.wResponseAnswer;
+        data["responseProvided"] = this.responseProvided;
+        data["explanationProvided"] = this.explanationProvided;
+        data["evaluationCriteriaMet"] = this.evaluationCriteriaMet;
+        data["errorMessage"] = this.errorMessage;
+        data["wResponseMandatory"] = this.wResponseMandatory;
+        if (Array.isArray(this.lstResponseCriteria)) {
+            data["lstResponseCriteria"] = [];
+            for (let item of this.lstResponseCriteria)
+                data["lstResponseCriteria"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWNoticeQuestionnaireItems {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wNoticeQuestionNumber?: string | undefined;
+    wNoticeQuestion?: string | undefined;
+    wResponseTypeID?: number | undefined;
+    wResponseTypeDesc?: string | undefined;
+    wListNameID?: number | undefined;
+    wListNameDesc?: string | undefined;
+    wExplanationRequired?: number | undefined;
+    wEvaluationRequirementTypeDesc?: string | undefined;
+    wQuestionDisplayOrder?: number;
+    wNoticeResponseItemID?: number | undefined;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wResponseAnswer?: string | undefined;
+    responseProvided?: boolean | undefined;
+    explanationProvided?: boolean | undefined;
+    evaluationCriteriaMet?: number | undefined;
+    errorMessage?: string | undefined;
+    wResponseMandatory?: boolean;
+    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+}
+
+export class WNoticeResponseEvaluationCriteria implements IWNoticeResponseEvaluationCriteria {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wNoticeQuestionNumber?: string | undefined;
+    wNoticeQuestion?: string | undefined;
+    wResponseTypeID?: number | undefined;
+    wResponseTypeDesc?: string | undefined;
+    wListNameID?: number | undefined;
+    wListNameDesc?: string | undefined;
+    wExplanationRequired?: number | undefined;
+    wEvaluationRequirementTypeDesc?: string | undefined;
+    wQuestionDisplayOrder?: number;
+    wNoticeResponseItemID?: number | undefined;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wResponseAnswer?: string | undefined;
+    responseProvided?: boolean | undefined;
+    explanationProvided?: boolean | undefined;
+    evaluationCriteriaMet?: number | undefined;
+    errorMessage?: string | undefined;
+    wResponseMandatory?: boolean;
+    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+    wSourceResponseEvaluationCriteriaID?: number;
+    wResponseEvaluationCriteriaID?: number | undefined;
+    wEvaluationReasonTypeID?: number;
+    wNoticeResponseValueID?: number | undefined;
+    wResponseOperatorTypeID?: number | undefined;
+    wEvaluationOperatorTypeDesc?: string | undefined;
+    wResponse?: string | undefined;
+    wResponseTo?: string | undefined;
+    wListValueID?: number | undefined;
+    listValueDesc?: string | undefined;
+    dcMultiSelectValues?: { [key: string]: string; } | undefined;
+
+    constructor(data?: IWNoticeResponseEvaluationCriteria) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
+            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
+                this.lstNoticeQuestionnaireItems = [] as any;
+                for (let item of _data["lstNoticeQuestionnaireItems"])
+                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
+            }
+            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
+            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
+            this.wNoticeQuestionNumber = _data["wNoticeQuestionNumber"];
+            this.wNoticeQuestion = _data["wNoticeQuestion"];
+            this.wResponseTypeID = _data["wResponseTypeID"];
+            this.wResponseTypeDesc = _data["wResponseTypeDesc"];
+            this.wListNameID = _data["wListNameID"];
+            this.wListNameDesc = _data["wListNameDesc"];
+            this.wExplanationRequired = _data["wExplanationRequired"];
+            this.wEvaluationRequirementTypeDesc = _data["wEvaluationRequirementTypeDesc"];
+            this.wQuestionDisplayOrder = _data["wQuestionDisplayOrder"];
+            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
+            this.wExplanation = _data["wExplanation"];
+            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
+            this.wResponseAnswer = _data["wResponseAnswer"];
+            this.responseProvided = _data["responseProvided"];
+            this.explanationProvided = _data["explanationProvided"];
+            this.evaluationCriteriaMet = _data["evaluationCriteriaMet"];
+            this.errorMessage = _data["errorMessage"];
+            this.wResponseMandatory = _data["wResponseMandatory"];
+            if (Array.isArray(_data["lstResponseCriteria"])) {
+                this.lstResponseCriteria = [] as any;
+                for (let item of _data["lstResponseCriteria"])
+                    this.lstResponseCriteria!.push(WNoticeResponseEvaluationCriteria.fromJS(item));
+            }
+            this.wSourceResponseEvaluationCriteriaID = _data["wSourceResponseEvaluationCriteriaID"];
+            this.wResponseEvaluationCriteriaID = _data["wResponseEvaluationCriteriaID"];
+            this.wEvaluationReasonTypeID = _data["wEvaluationReasonTypeID"];
+            this.wNoticeResponseValueID = _data["wNoticeResponseValueID"];
+            this.wResponseOperatorTypeID = _data["wResponseOperatorTypeID"];
+            this.wEvaluationOperatorTypeDesc = _data["wEvaluationOperatorTypeDesc"];
+            this.wResponse = _data["wResponse"];
+            this.wResponseTo = _data["wResponseTo"];
+            this.wListValueID = _data["wListValueID"];
+            this.listValueDesc = _data["listValueDesc"];
+            if (_data["dcMultiSelectValues"]) {
+                this.dcMultiSelectValues = {} as any;
+                for (let key in _data["dcMultiSelectValues"]) {
+                    if (_data["dcMultiSelectValues"].hasOwnProperty(key))
+                        (<any>this.dcMultiSelectValues)![key] = _data["dcMultiSelectValues"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): WNoticeResponseEvaluationCriteria {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeResponseEvaluationCriteria();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
+        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+            data["lstNoticeQuestionnaireItems"] = [];
+            for (let item of this.lstNoticeQuestionnaireItems)
+                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
+        }
+        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
+        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
+        data["wNoticeQuestionNumber"] = this.wNoticeQuestionNumber;
+        data["wNoticeQuestion"] = this.wNoticeQuestion;
+        data["wResponseTypeID"] = this.wResponseTypeID;
+        data["wResponseTypeDesc"] = this.wResponseTypeDesc;
+        data["wListNameID"] = this.wListNameID;
+        data["wListNameDesc"] = this.wListNameDesc;
+        data["wExplanationRequired"] = this.wExplanationRequired;
+        data["wEvaluationRequirementTypeDesc"] = this.wEvaluationRequirementTypeDesc;
+        data["wQuestionDisplayOrder"] = this.wQuestionDisplayOrder;
+        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
+        data["wExplanation"] = this.wExplanation;
+        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
+        data["wResponseAnswer"] = this.wResponseAnswer;
+        data["responseProvided"] = this.responseProvided;
+        data["explanationProvided"] = this.explanationProvided;
+        data["evaluationCriteriaMet"] = this.evaluationCriteriaMet;
+        data["errorMessage"] = this.errorMessage;
+        data["wResponseMandatory"] = this.wResponseMandatory;
+        if (Array.isArray(this.lstResponseCriteria)) {
+            data["lstResponseCriteria"] = [];
+            for (let item of this.lstResponseCriteria)
+                data["lstResponseCriteria"].push(item.toJSON());
+        }
+        data["wSourceResponseEvaluationCriteriaID"] = this.wSourceResponseEvaluationCriteriaID;
+        data["wResponseEvaluationCriteriaID"] = this.wResponseEvaluationCriteriaID;
+        data["wEvaluationReasonTypeID"] = this.wEvaluationReasonTypeID;
+        data["wNoticeResponseValueID"] = this.wNoticeResponseValueID;
+        data["wResponseOperatorTypeID"] = this.wResponseOperatorTypeID;
+        data["wEvaluationOperatorTypeDesc"] = this.wEvaluationOperatorTypeDesc;
+        data["wResponse"] = this.wResponse;
+        data["wResponseTo"] = this.wResponseTo;
+        data["wListValueID"] = this.wListValueID;
+        data["listValueDesc"] = this.listValueDesc;
+        if (this.dcMultiSelectValues) {
+            data["dcMultiSelectValues"] = {};
+            for (let key in this.dcMultiSelectValues) {
+                if (this.dcMultiSelectValues.hasOwnProperty(key))
+                    (<any>data["dcMultiSelectValues"])[key] = (<any>this.dcMultiSelectValues)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IWNoticeResponseEvaluationCriteria {
+    wNoticeID?: number | undefined;
+    wFirmNoticeID?: number;
+    wSourceNoticeID?: number;
+    wNoticeTypeID?: number;
+    wNoticeTypeDesc?: string | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wEmailNotificationContent?: string | undefined;
+    wCreatedBy?: number;
+    wNoticeIssuerShortName?: string | undefined;
+    wResponseRequired?: boolean;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    wNoticeSignOffText?: string | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+    wNoticeQuestionnaireID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wNoticeQuestionNumber?: string | undefined;
+    wNoticeQuestion?: string | undefined;
+    wResponseTypeID?: number | undefined;
+    wResponseTypeDesc?: string | undefined;
+    wListNameID?: number | undefined;
+    wListNameDesc?: string | undefined;
+    wExplanationRequired?: number | undefined;
+    wEvaluationRequirementTypeDesc?: string | undefined;
+    wQuestionDisplayOrder?: number;
+    wNoticeResponseItemID?: number | undefined;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wResponseAnswer?: string | undefined;
+    responseProvided?: boolean | undefined;
+    explanationProvided?: boolean | undefined;
+    evaluationCriteriaMet?: number | undefined;
+    errorMessage?: string | undefined;
+    wResponseMandatory?: boolean;
+    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+    wSourceResponseEvaluationCriteriaID?: number;
+    wResponseEvaluationCriteriaID?: number | undefined;
+    wEvaluationReasonTypeID?: number;
+    wNoticeResponseValueID?: number | undefined;
+    wResponseOperatorTypeID?: number | undefined;
+    wEvaluationOperatorTypeDesc?: string | undefined;
+    wResponse?: string | undefined;
+    wResponseTo?: string | undefined;
+    wListValueID?: number | undefined;
+    listValueDesc?: string | undefined;
+    dcMultiSelectValues?: { [key: string]: string; } | undefined;
 }
 
 export class WUserRoles implements IWUserRoles {
