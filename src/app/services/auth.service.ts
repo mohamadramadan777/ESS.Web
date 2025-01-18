@@ -5,22 +5,12 @@ import { AuthenticateRequest } from '../services/api-client'; // Import from you
 import { Client } from './api-client'; 
 import { environment } from '../../environments/environment'; 
 import { catchError, map, Observable, of } from 'rxjs';
+import { AppConstants } from '../constants/app.constants';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'token'; // TODO: Dictionary
-  private readonly SESSION_W_USERID = 'w_userid';
-  private readonly SESSION_W_ACCESS_REQUEST_ID = 'w_access_request_id';
-  private readonly SESSION_INDIVIDUAL_NAME = 'individual_name';
-  private readonly SESSION_QFC_NO  = 'qfc_no';
-  private readonly SESSION_W_USER_LOGIN_ID  = 'w_user_login_id';
-  private readonly SESSION_B_IS_REGISTERED  = 'b_is_registered';
-  private readonly SESSION_LOGINUSER_ROLEID   = 'loginuser_roleid';
-  private readonly SESSION_EMAIL_ID   = 'email_id';
-  private readonly SESSION_REG_PASS   = 'reg_pass';
-  private readonly SESSION_FIRM_TYPE   = 'firm_type';
-  private readonly SESSION_FIRM_NAME   = 'firm_name';
+  AppConstants = AppConstants;
   constructor(private router: Router,
      private httpClient: HttpClient,
     private client: Client ) {}
@@ -39,26 +29,26 @@ export class AuthService {
         ) {
           return response.response?.message;
         } else if (response.response?.bIsPasswordReset) {
-          localStorage.setItem(this.SESSION_W_ACCESS_REQUEST_ID, response.response.userInfo?.wAccessRequestID?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_W_ACCESS_REQUEST_ID, response.response.userInfo?.wAccessRequestID?.toString() ?? ""); 
           localStorage.setItem('cf', response.response.resetPasswordFlag?.toString() ?? ""); 
           this.router.navigate(['/resetpassword']);
           console.log('Password Expired');
           return "resetpassword";
         } else if (response.response?.token) {
-          localStorage.setItem(this.TOKEN_KEY, response.response.token); 
-          localStorage.setItem(this.SESSION_W_USERID, response.response.userInfo?.wUserID?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_W_ACCESS_REQUEST_ID, response.response.userInfo?.wAccessRequestID?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_INDIVIDUAL_NAME, response.response.userInfo?.individualName?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_QFC_NO, response.response.userInfo?.firmQFCNo?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_W_USER_LOGIN_ID, response.response.userInfo?.wUserLoginID?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_B_IS_REGISTERED, response.response.bIsRegistered?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_LOGINUSER_ROLEID, response.response.userRolesString?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_FIRM_TYPE, response.response.userInfo?.firmTypeID?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_FIRM_NAME, response.response.userInfo?.firmName?.toString() ?? ""); 
-          localStorage.setItem(this.SESSION_EMAIL_ID, response.response.userInfo?.individualEmailAddress?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.TOKEN_KEY, response.response.token); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_W_USERID, response.response.userInfo?.wUserID?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_W_ACCESS_REQUEST_ID, response.response.userInfo?.wAccessRequestID?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_INDIVIDUAL_NAME, response.response.userInfo?.individualName?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_QFC_NO, response.response.userInfo?.firmQFCNo?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_W_USER_LOGIN_ID, response.response.userInfo?.wUserLoginID?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_B_IS_REGISTERED, response.response.bIsRegistered?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_LOGINUSER_ROLEID, response.response.userRolesString?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_FIRM_TYPE, response.response.userInfo?.firmTypeID?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_FIRM_NAME, response.response.userInfo?.firmName?.toString() ?? ""); 
+          localStorage.setItem(this.AppConstants.Session.SESSION_EMAIL_ID, response.response.userInfo?.individualEmailAddress?.toString() ?? ""); 
   
           if (!response.response?.bIsRegistered) {
-            localStorage.setItem(this.SESSION_REG_PASS, response.response.userInfo?.registrationPassword?.toString() ?? ""); 
+            localStorage.setItem(this.AppConstants.Session.SESSION_REG_PASS, response.response.userInfo?.registrationPassword?.toString() ?? ""); 
             console.log('Not Registered');
             this.router.navigate(['/register']);
             return "success";
@@ -85,18 +75,18 @@ export class AuthService {
    * Logs the user out by removing the token and user details from local storage.
    */
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.SESSION_W_USERID);
-    localStorage.removeItem(this.SESSION_W_ACCESS_REQUEST_ID);
-    localStorage.removeItem(this.SESSION_INDIVIDUAL_NAME);
-    localStorage.removeItem(this.SESSION_QFC_NO);
-    localStorage.removeItem(this.SESSION_W_USER_LOGIN_ID);
-    localStorage.removeItem(this.SESSION_B_IS_REGISTERED);
-    localStorage.removeItem(this.SESSION_LOGINUSER_ROLEID);
-    localStorage.removeItem(this.SESSION_EMAIL_ID);
-    localStorage.removeItem(this.SESSION_REG_PASS);
-    localStorage.removeItem(this.SESSION_FIRM_TYPE);
-    localStorage.removeItem(this.SESSION_FIRM_NAME);
+    localStorage.removeItem(this.AppConstants.Session.TOKEN_KEY);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_W_USERID);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_W_ACCESS_REQUEST_ID);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_INDIVIDUAL_NAME);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_QFC_NO);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_W_USER_LOGIN_ID);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_B_IS_REGISTERED);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_LOGINUSER_ROLEID);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_EMAIL_ID);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_REG_PASS);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_FIRM_TYPE);
+    localStorage.removeItem(this.AppConstants.Session.SESSION_FIRM_NAME);
     this.router.navigate(['/login']);
   }
 
@@ -104,14 +94,14 @@ export class AuthService {
    * Retrieves the token from local storage.
    */
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.AppConstants.Session.TOKEN_KEY);
   }
 
   /**
    * Retrieves the user details from local storage.
    */
   getUser(): any {
-    const user = localStorage.getItem(this.SESSION_W_USERID);
+    const user = localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID);
     return user ? JSON.parse(user) : null;
   }
 

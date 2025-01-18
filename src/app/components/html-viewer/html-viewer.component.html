@@ -1,0 +1,10 @@
+<div class="dialog-header">
+    <h1 mat-dialog-title class="dialog-title">
+      <span class="label">{{title}}</span>
+    </h1>
+    <button mat-icon-button class="close-button" (click)="onClose()">
+      <span class="material-icons">close</span>
+    </button>
+  </div>
+  <div class="html-content" [innerHTML]="htmlContent"></div>
+  

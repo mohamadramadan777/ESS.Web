@@ -1,0 +1,81 @@
+<div class="tab-content">
+  <input 
+    type="text" 
+    placeholder="Search questions..." 
+    class="search-bar" 
+    [(ngModel)]="searchText" 
+    (input)="filterQuestions()" />
+
+  <div *ngIf="!noticeQuestionsLoaded">Loading...</div>
+  <div 
+    class="question-card" 
+    *ngFor="let question of filteredQuestions; let i = index">
+    <div 
+      class="card-header" 
+      [ngClass]="{'hover': hoveredIndex === i}" 
+      (mouseenter)="hoveredIndex = i" 
+      (mouseleave)="hoveredIndex = null" 
+      (click)="toggleCollapse(i)">
+      <p>
+        <strong>Question {{question.wNoticeQuestionNumber}}:</strong> {{ question.wNoticeQuestion }}
+      </p>
+      <span class="toggle-icon">
+        <mat-icon>{{ collapsedIndexes[i] ? 'expand_more' : 'expand_less' }}</mat-icon>
+      </span>
+    </div>
+    <div 
+      class="card-body" 
+      *ngIf="!collapsedIndexes[i]" 
+      [@slideToggle]>
+      <div *ngIf="ReadOnly; else editableFields">
+        <p><strong>Response:</strong> {{ question.wResponseAnswer }}</p>
+        <p><strong>Explanation:</strong> {{ question.wExplanation }}</p>
+      </div>
+      <ng-template #editableFields>
+        <p>
+          <strong>Response:</strong>
+          <ng-container [ngSwitch]="question.wResponseTypeID">
+            <input 
+              *ngSwitchCase="WResponseTypes.Number" 
+              type="number" 
+              class="response-input" 
+              [(ngModel)]="question.wResponseAnswer" />
+            <input 
+              *ngSwitchCase="WResponseTypes.Date" 
+              type="date" 
+              class="response-input" 
+              [(ngModel)]="question.wResponseAnswer" />
+            <mat-select 
+              *ngSwitchCase="WResponseTypes.List_of_values_Single_Response" 
+              class="response-input" 
+              [(ngModel)]="question.wResponseAnswer">
+              <mat-option *ngFor="let option of this.options[question.wListNameID ?? 0]" [value]="option.value">
+                {{ option.text }}
+              </mat-option>
+            </mat-select>
+            <mat-select 
+              *ngSwitchCase="WResponseTypes.List_of_values_Multiple_Response" 
+              class="response-input" 
+              [(ngModel)]="question.wResponseAnswer" 
+              multiple>
+              <mat-option *ngFor="let option of this.options[question.wListNameID ?? 0]" [value]="option.value">
+                {{ option.text }}
+              </mat-option>
+            </mat-select>
+            <input 
+              *ngSwitchDefault 
+              type="text" 
+              class="response-input" 
+              [(ngModel)]="question.wResponseAnswer" />
+          </ng-container>
+        </p>
+        <p>
+          <strong>Explanation:</strong>
+          <textarea 
+            class="explanation-input" 
+            [(ngModel)]="question.wExplanation"></textarea>
+        </p>
+      </ng-template>
+    </div>
+  </div>
+</div>

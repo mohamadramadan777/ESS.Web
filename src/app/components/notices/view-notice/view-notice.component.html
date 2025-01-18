@@ -1,54 +1,75 @@
 <div class="dialog-header">
-    <h2 mat-dialog-title>View Notice</h2>
-    <button mat-icon-button class="close-button" (click)="onClose()">
+    <h1 mat-dialog-title class="dialog-title">
+        <span class="label">Reference Number:</span>
+        <span class="value">{{ data.wReferenceNumber }}</span>
+        &nbsp;|&nbsp;
+        <span class="label">Notice Number:</span>
+        <span class="value">{{ data.wIssuersReferenceNumber }}</span>
+      </h1>
+          <button mat-icon-button class="close-button" (click)="onClose()">
       <span class="material-icons">close</span>
     </button>
   </div>
-  <mat-tab-group class="custom-tab-group">
+  <mat-tab-group class="custom-tab-group" (selectedIndexChange)="onTabChange($event)">
     <!-- Notice Details Tab -->
     <mat-tab label="Notice Details">
         <div class="tab-content">
           <table class="notice-details-table">
             <tbody>
               <tr>
-                <td class="label">Notice Type:</td>
-                <td>{{ data.noticeType }}</td>
+                <td class="label">{{ AppConstants.Keywords.NoticeType}}:</td>
+                <td>{{ data.wNoticeTypeDesc }}</td>
               </tr>
               <tr>
                 <td class="label">Notice Name:</td>
-                <td>{{ data.noticeName }}</td>
+                <td>{{ data.wNoticeName }}</td>
               </tr>
               <tr>
                 <td class="label">Notice Issued By:</td>
-                <td>{{ data.noticeIssuedBy }}</td>
+                <td>{{ data.wNoticeIssuerShortName }}</td>
               </tr>
               <tr>
                 <td class="label">Notice Issued Date:</td>
-                <td>{{ data.noticeIssuedDate }}</td>
+                <td>{{ data.wNoticeIssuedDate }}</td>
               </tr>
-              <tr>
+              <tr *ngIf="this.responseRequired">
                 <td class="label">Response Due Date:</td>
-                <td>{{ data.responseDueDate }}</td>
+                <td>{{ data.wResponseDueDate }}</td>
               </tr>
               <tr>
                 <td class="label">Subject:</td>
-                <td>{{ data.subject }}</td>
+                <td>{{ data.wSubject }}</td>
               </tr>
               <tr>
                 <td class="label">References:</td>
-                <td>{{ data.references }}</td>
+                <td>{{ data.wReferences }}</td>
               </tr>
-              <tr>
+              <tr *ngIf="showLinkToNotice()">
                 <td class="label">Link to Notice:</td>
-                <td><a href="#">{{ data.linkToNotice }}</a></td>
+                <td><a href="{{ data.wLinkToNotice }}">Link to Notice</a></td>
               </tr>
+              <tr *ngIf="this.additionalAttachments.length > 0">
+                <td class="label">Additional Attachment(s) (if any):</td>
+                <td>
+                    <div *ngIf="!this.additionalAttachmentsLoaded">Loading...</div>
+                  <ul *ngIf="this.additionalAttachmentsLoaded">
+                    <li *ngFor="let attachment of additionalAttachments">
+                      <a [href]="attachment.fileURI" target="_blank" rel="noopener noreferrer">
+                        {{ attachment.fileName }}
+                      </a>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+              
               <tr>
                 <td class="label">Link to Email Notification:</td>
-                <td><a href="#">{{ data.linkToEmailNotification }}</a></td>
+                <td><a href="javascript:void(0)" (click)="openHtmlViewer()">View Email Notification</a>
+                </td>
               </tr>
-              <tr>
+              <tr *ngIf="this.responseRequired">
                 <td class="label">Sign-off Requirements:</td>
-                <td>{{ data.signOffRequirements }}</td>
+                <td>{{ data.wNoticeSignOffText }}</td>
               </tr>
             </tbody>
           </table>
@@ -58,30 +79,27 @@
   
     <!-- Questionnaire Tab -->
    <!-- Questionnaire Tab -->
-<mat-tab label="Questionnaire">
+   <mat-tab *ngIf="this.responseRequired" label="Questionnaire">
+    <app-notice-questions 
+      [noticeQuestions]="noticeQuestions" 
+      [noticeQuestionsLoaded]="noticeQuestionsLoaded">
+    </app-notice-questions>
+  </mat-tab>
+  
+  
+  
+  <mat-tab *ngIf="this.responseRequired" label="Notes">
     <div class="tab-content">
-      <div class="question-card" *ngFor="let question of data.questionnaire">
-        <div class="card-header">
-          <p><strong>Question:</strong> {{ question.question }}</p>
-        </div>
-        <div class="card-body">
-          <p><strong>Response:</strong> {{ question.response }}</p>
-          <p><strong>Explanation:</strong> {{ question.explanation }}</p>
-        </div>
+      <div class="notes-container">
+        <p>{{ data.wNotes }}</p>
+        <p *ngIf="data.wNotes == '' || !data.wNotes">No notes added.</p>
       </div>
     </div>
   </mat-tab>
   
   
-    <!-- Notes Tab -->
-    <mat-tab label="Notes">
-      <div class="tab-content">
-        <p>{{ data.note }}</p>
-      </div>
-    </mat-tab>
-  
     <!-- Attachments Tab -->
-    <mat-tab label="Attachments">
+    <mat-tab *ngIf="this.responseRequired" label="Attachments">
       <div class="tab-content">
         <div *ngFor="let attachment of data.attachments">
           <a href="#">{{ attachment }}</a>
@@ -90,10 +108,10 @@
     </mat-tab>
   
     <!-- Signature Tab -->
-    <mat-tab label="Signature">
+    <mat-tab *ngIf="this.responseRequired" label="Signature">
       <div class="tab-content">
-        <p><strong>Name of Individual:</strong> {{ data.signatureName }}</p>
-        <p><strong>Date Signed:</strong> {{ data.signatureDate }}</p>
+        <p><strong>Name of Individual:</strong> {{ this.signatoryName }}</p>
+        <p><strong>Date Signed:</strong> {{ this.dateSigned }}</p>
       </div>
     </mat-tab>
   </mat-tab-group>

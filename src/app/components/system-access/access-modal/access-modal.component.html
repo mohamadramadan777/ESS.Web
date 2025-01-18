@@ -9,15 +9,16 @@
     <div class="modal-body">
       <mat-form-field appearance="outline" class="form-input full-width">
         <mat-label>Select Access Type</mat-label>
-        <mat-select [(ngModel)]="selectedAccessType" (change)="onAccessTypeChange($event)">
-          <mat-option value="documentAdmin">Document Admin</mat-option>
-          <mat-option value="approvedIndividual">Approved Individual</mat-option>
+        <mat-select [(ngModel)]="selectedAccessType" (selectionChange)="onAccessTypeChange($event)">
+          <mat-option *ngFor="let accessType of accessTypes" [value]="accessType.value">
+            {{ accessType.text }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
       <div class="form-grid">
         <!-- Document Admin Form -->
-        <ng-container *ngIf="selectedAccessType === 'documentAdmin'">
+        <ng-container *ngIf="selectedAccessType == '19'">
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Name of the Individual</mat-label>
@@ -43,8 +44,9 @@
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Nationality</mat-label>
               <mat-select [(ngModel)]="documentAdminForm.nationality">
-                <mat-option value="US">United States</mat-option>
-                <mat-option value="IN">India</mat-option>
+                <mat-option *ngFor="let option of countries" [value]="option">
+                  {{ option }}
+                </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -65,24 +67,32 @@
         </ng-container>
 
         <!-- Approved Individual Form -->
-        <ng-container *ngIf="selectedAccessType === 'approvedIndividual'">
+        <ng-container *ngIf="selectedAccessType == '1'">
           <div class="form-item full-width">
             <mat-form-field appearance="outline" class="form-input">
-              <mat-label>Approved Individual Name</mat-label>
-              <input matInput type="text" [(ngModel)]="approvedIndividualForm.name" />
+              <mat-label>{{ this.lblAIorRI }}</mat-label>
+              <mat-select [(ngModel)]="approvedIndividualForm.controlledFunctions">
+                <mat-option *ngFor="let option of contacts" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
 
           <div class="form-item full-width">
             <mat-form-field appearance="outline" class="form-input">
-              <mat-label>Approved Controlled Functions</mat-label>
-              <mat-select [(ngModel)]="approvedIndividualForm.controlledFunctions">
-                <mat-option value="Function1">Function 1</mat-option>
-                <mat-option value="Function2">Function 2</mat-option>
+              <mat-label>{{ this.lblCFsLable }}</mat-label>
+              <mat-select >
+                <!-- <mat-select [(ngModel)]="approvedIndividualForm.controlledFunctions"> -->
+                <mat-option *ngFor="let option of contacts" [value]="option">
+                  {{ option }}
+                </mat-option>
               </mat-select>
             </mat-form-field>
           </div>
         </ng-container>
+        <div class="g-recaptcha" data-sitekey="Your_Site_Key_Here"></div>
+
       </div>
     </div>
 

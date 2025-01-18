@@ -30,7 +30,7 @@ export const paginationPageSizeSelector = [10, 25, 50];
  export const colDef = [
   { headerName: 'Notice Type', field: 'wNoticeTypeDesc', flex: 1,minWidth: 175,maxWidth: 175 },
   { headerName: 'Sent Date', field: 'wNotificationSentDate', flex: 1 ,minWidth: 120,maxWidth: 120}, //TODO: Fix Date Filter // cellDataType: 'dateString',  filter: 'agDateColumnFilter'
-  { headerName: 'Notice Ref. Number', field: 'wReferenceNumber', flex: 1,minWidth: 180,maxWidth: 180 },
+  { headerName: 'Notice Ref. Number', field: 'wReferenceNumber', flex: 1,minWidth: 185,maxWidth: 185 },
   { headerName: 'Subject', field: 'wSubject', flex: 2,  minWidth: 450},
   // {
   //   headerName: 'View/Respond',

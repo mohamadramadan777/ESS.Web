@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
 import { Client} from '../../services/api-client'; 
+import { AppConstants } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-change-email',
@@ -13,8 +14,7 @@ import { Client} from '../../services/api-client';
 export class ChangeEmailComponent implements OnInit {
   changeEmailForm!: FormGroup;
   emailsDoNotMatch: boolean = false;
-  private readonly SESSION_EMAIL_ID  = 'email_id'; //TODO: Dictionary
-
+  AppConstants = AppConstants;
   constructor(
     private fb: FormBuilder,
     private client: Client,
@@ -30,7 +30,7 @@ export class ChangeEmailComponent implements OnInit {
 
   initializeForm(): void {
     this.changeEmailForm = this.fb.group({
-      registeredEmail: [{ value: localStorage.getItem(this.SESSION_EMAIL_ID), disabled: true }],
+      registeredEmail: [{ value: localStorage.getItem(this.AppConstants.Session.SESSION_EMAIL_ID), disabled: true }],
       newEmail: ['', [Validators.required, Validators.email]],
       confirmEmail: ['', [Validators.required, Validators.email]]
     });
@@ -56,7 +56,7 @@ export class ChangeEmailComponent implements OnInit {
         this.toastr.success('Email updated successfully!', 'Success');
   
         // Update local storage with the new email
-        localStorage.setItem(this.SESSION_EMAIL_ID, formValues.newEmail);
+        localStorage.setItem(this.AppConstants.Session.SESSION_EMAIL_ID, formValues.newEmail);
   
         // Redirect to home
         this.router.navigate(['/home']);

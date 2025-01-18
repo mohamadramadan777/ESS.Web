@@ -50,6 +50,8 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { LoadingService } from './services/loader.service';
 import { ViewNoticeComponent } from './components/notices/view-notice/view-notice.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { NoticeQuestionsComponent } from './components/notices/notice-questions/notice-questions.component';
+import { HtmlViewerComponent } from './components/html-viewer/html-viewer.component';
 
 
 @NgModule({
@@ -75,6 +77,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     ChangeSecurityquestionsComponent,
     LoaderComponent,
     ViewNoticeComponent,
+    NoticeQuestionsComponent,
+    HtmlViewerComponent,
   ],
   imports: [
     BrowserModule,

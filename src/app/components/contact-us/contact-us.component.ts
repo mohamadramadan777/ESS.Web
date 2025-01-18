@@ -5,6 +5,7 @@ import { Client } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ContactUs } from '../../services/api-client'; 
 import { ToastrService } from 'ngx-toastr';
+import { AppConstants } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-contact-us',
@@ -14,11 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 export class ContactUsComponent implements OnInit {
   contactForm!: FormGroup; // FormGroup to handle form controls
   feedbackOptions: string[] = []; // Options for the dropdown
-  private readonly TOKEN_KEY = 'token'; // TODO: Dictionary
-  private readonly SESSION_W_USERID = 'w_userid';
-  private readonly SESSION_INDIVIDUAL_NAME = 'individual_name';
-  private readonly SESSION_QFC_NO  = 'qfc_no';
-  private readonly SESSION_EMAIL_ID   = 'email_id';
+  AppConstants = AppConstants; // Constants for the application
 
   constructor(
     private fb: FormBuilder,
@@ -49,9 +46,9 @@ export class ContactUsComponent implements OnInit {
   // Populate name, QFC number, and email from localStorage if the user is logged in
   populateUserDetails(): void {
     if (this.isLoggedIn()) {
-      const name = localStorage.getItem(this.SESSION_INDIVIDUAL_NAME) ?? '';
-      const qfcNo = localStorage.getItem(this.SESSION_QFC_NO) ?? '';
-      const email = localStorage.getItem(this.SESSION_EMAIL_ID) ?? '';
+      const name = localStorage.getItem(this.AppConstants.Session.SESSION_INDIVIDUAL_NAME) ?? '';
+      const qfcNo = localStorage.getItem(this.AppConstants.Session.SESSION_QFC_NO) ?? '';
+      const email = localStorage.getItem(this.AppConstants.Session.SESSION_EMAIL_ID) ?? '';
 
       this.contactForm.patchValue({
         name,
@@ -131,7 +128,7 @@ export class ContactUsComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    const userId = localStorage.getItem(this.SESSION_W_USERID);
+    const userId = localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID);
     return userId !== null && userId !== undefined;
   }
 }

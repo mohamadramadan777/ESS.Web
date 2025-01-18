@@ -434,3 +434,49 @@ button.disabled {
 .btn-info .material-icons {
   color: #555555; /* Gray color for information */
 }
+
+
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  /* Use sticky to keep the header within its parent scrolling container */
+  top: 0;
+  /* Sticks the header to the top of the viewport */
+  z-index: 1000;
+  /* Ensure the header stays on top of other content */
+  background-color: white;
+  /* Matches the background of the header */
+
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .dialog-title .label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #a51e36;
+  }
+
+  .dialog-title .value {
+    font-size: 1.3rem;
+    /* Slightly smaller font size */
+    margin-right: 15px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .close-button {
+    color: #a51e36;
+  }
+}

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Client } from '../../services/api-client'; 
 import { LoadingService } from '../../services/loader.service';
+import { AppConstants } from '../../constants/app.constants';
 
 @Component({
   selector: 'app-reset-password',
@@ -13,11 +14,7 @@ import { LoadingService } from '../../services/loader.service';
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm!: FormGroup;
   passwordsDoNotMatch: boolean = false;
-  private readonly TOKEN_KEY = 'token'; // TODO: Dictionary
-  private readonly SESSION_W_USERID = 'w_userid';
-  private readonly SESSION_INDIVIDUAL_NAME = 'individual_name';
-  private readonly SESSION_QFC_NO  = 'qfc_no';
-  private readonly SESSION_EMAIL_ID   = 'email_id';
+  Appconstants = AppConstants;
 
   constructor(
     private fb: FormBuilder,
@@ -33,7 +30,7 @@ export class ResetPasswordComponent implements OnInit {
 
   initializeForm(): void {
     this.resetPasswordForm = this.fb.group({
-      email: [{ value: localStorage.getItem(this.SESSION_EMAIL_ID) ?? '', disabled: true }], // Set email as readonly
+      email: [{ value: localStorage.getItem(this.Appconstants.Session.SESSION_EMAIL_ID) ?? '', disabled: true }], // Set email as readonly
       oldPassword: ['', Validators.required],
       newPassword: ['', Validators.required],
       confirmPassword: ['', Validators.required]
@@ -82,7 +79,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   isLoggedIn(): boolean {
-    const userId = localStorage.getItem(this.SESSION_W_USERID);
+    const userId = localStorage.getItem(this.Appconstants.Session.SESSION_W_USERID);
     return userId !== null && userId !== undefined;
   }
 

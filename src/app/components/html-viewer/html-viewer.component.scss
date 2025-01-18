@@ -1,0 +1,8 @@
+:host {
+    all: unset; /* Prevent inheriting global styles */
+  }
+  .html-content {
+    padding: 15px;
+    overflow: auto;
+  }
+  
