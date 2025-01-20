@@ -52,6 +52,7 @@ import { ViewNoticeComponent } from './components/notices/view-notice/view-notic
 import { MatDialogModule } from '@angular/material/dialog';
 import { NoticeQuestionsComponent } from './components/notices/notice-questions/notice-questions.component';
 import { HtmlViewerComponent } from './components/html-viewer/html-viewer.component';
+import { SubmissionRecordsComponent } from './components/submission-records/submission-records.component';
 
 
 @NgModule({
@@ -79,6 +80,7 @@ import { HtmlViewerComponent } from './components/html-viewer/html-viewer.compon
     ViewNoticeComponent,
     NoticeQuestionsComponent,
     HtmlViewerComponent,
+    SubmissionRecordsComponent,
   ],
   imports: [
     BrowserModule,
