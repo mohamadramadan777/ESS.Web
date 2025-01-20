@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ISubmissionRecord } from './submission-record.model';
+import { ISubmissionRecord, SUBMISSION_RECORDS_CONFIG_COLUMNS } from './submission-record-config';
 
 
 
@@ -12,7 +12,7 @@ import { ISubmissionRecord } from './submission-record.model';
   styleUrls: ['./submission-records.component.scss'],
 })
 export class SubmissionRecordsComponent implements OnInit {
-  displayedColumns: string[] = ['application', 'date', 'view'];
+  displayedColumns: string[] = SUBMISSION_RECORDS_CONFIG_COLUMNS.displayedColumns;
   dataSource: MatTableDataSource<ISubmissionRecord> = new MatTableDataSource<ISubmissionRecord>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
