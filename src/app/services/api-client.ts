@@ -1020,6 +1020,62 @@ export class Client {
     }
 
     /**
+     * @param wListNameID (optional) 
+     * @return OK
+     */
+    getListValues(wListNameID: number | undefined): Observable<Int32StringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-list-values?";
+        if (wListNameID === null)
+            throw new Error("The parameter 'wListNameID' cannot be null.");
+        else if (wListNameID !== undefined)
+            url_ += "wListNameID=" + encodeURIComponent("" + wListNameID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetListValues(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetListValues(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32StringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32StringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetListValues(response: HttpResponseBase): Observable<Int32StringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
      * @param wNoticeID (optional) 
      * @param wFirmNoticeID (optional) 
      * @return OK
@@ -3368,6 +3424,66 @@ export interface IInt32BaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: number;
+}
+
+export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: string; } | undefined;
+
+    constructor(data?: IInt32StringDictionaryBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (_data["response"]) {
+                this.response = {} as any;
+                for (let key in _data["response"]) {
+                    if (_data["response"].hasOwnProperty(key))
+                        (<any>this.response)![key] = _data["response"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): Int32StringDictionaryBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new Int32StringDictionaryBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (this.response) {
+            data["response"] = {};
+            for (let key in this.response) {
+                if (this.response.hasOwnProperty(key))
+                    (<any>data["response"])[key] = (<any>this.response)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IInt32StringDictionaryBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: string; } | undefined;
 }
 
 export class ObjTasks implements IObjTasks {

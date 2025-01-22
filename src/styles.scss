@@ -439,6 +439,7 @@ button.disabled {
 
 .dialog-header {
   display: flex;
+  flex: 0 0 auto;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
@@ -479,4 +480,13 @@ button.disabled {
   .close-button {
     color: #a51e36;
   }
+}
+.response-required-row {
+  background-color: rgba(255, 0, 0, 0.1);
+  /* Light red background */
+}
+
+.response-required-row:hover {
+  background-color: rgba(255, 0, 0, 0.2);
+  /* Slightly darker on hover */
 }

@@ -1,12 +1,14 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { WObjects } from '../../../enums/app.enums';
+import { WObjects, SignOffStatusType } from '../../../enums/app.enums';
 import { AppConstants } from '../../../constants/app.constants';
 import { Client, AttachmentDto, WNoticeQuestionnaireItemDto, ObjectSOTaskStatus } from '../../../services/api-client';
 import { LoadingService } from '../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { HtmlViewerComponent } from '../../html-viewer/html-viewer.component';
+import { MatTabGroup } from '@angular/material/tabs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-view-notice',
@@ -14,6 +16,9 @@ import { HtmlViewerComponent } from '../../html-viewer/html-viewer.component';
   styleUrls: ['./view-notice.component.scss']
 })
 export class ViewNoticeComponent {
+  @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
+  @Input() ReadOnly: boolean = false;
+  unsavedChanges: boolean = false; // Track unsaved changes
   constructor(
     private client: Client,
     private loadingService: LoadingService,
@@ -22,6 +27,7 @@ export class ViewNoticeComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialog: MatDialog,
   ) { }
+
   AppConstants = AppConstants;
   responseRequired: boolean = false;
   additionalAttachmentsLoaded: boolean = false;
@@ -42,6 +48,13 @@ export class ViewNoticeComponent {
     this.dialogRef.close();
   }
   ngOnInit(): void {
+    this.dialogRef.backdropClick().subscribe(() => this.checkUnsavedChanges());
+    this.dialogRef.beforeClosed().subscribe((result) => {
+      if (this.unsavedChanges) {
+        this.checkUnsavedChanges();
+      }
+    });
+    this.ReadOnly = !this.data?.wResponseRequired || this.data?.wsosStatusTypeID == SignOffStatusType.Submitted;
     this.responseRequired = this.data.wResponseRequired;
     this.notificationSentDate = this.data.wNotificationSentDate;
     this.wFirmNoticeID = this.data.wFirmNoticeID;
@@ -149,5 +162,61 @@ export class ViewNoticeComponent {
       this.noticeQuestions = temp; // Create a new reference
     }, 400);
   }
+
+  // Navigate to a specific tab by index
+  navigateToTab(index: number): void {
+    this.tabGroup.selectedIndex = index;
+  }
+
+  // Save functionality
+  onSave(): void {
+    this.toastr.success('Changes saved successfully!', 'Success');
+  }
+
+  // Save and close functionality
+  onSaveAndClose(): void {
+    this.toastr.success('Changes saved successfully!', 'Success');
+    this.dialogRef.close();
+
+  }
+
+  // Submit functionality
+  onSubmit(): void {
+    console.log('Submit clicked');
+  }
+
+  onNotesChange(): void {
+    this.unsavedChanges = true;
+  }
+
+  private async checkUnsavedChanges(): Promise<void> {
+    if (this.unsavedChanges) {
+      const result = await Swal.fire({
+        title: 'Unsaved Changes',
+        text: 'You have unsaved changes. Do you really want to close without saving?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#a51e36',
+        cancelButtonColor: '#555555',
+        confirmButtonText: 'Save Changes',
+        cancelButtonText: 'Discard Changes',
+      })
+
+      if (result.isConfirmed) {
+        this.toastr.success('Changes saved successfully!', 'Success');
+        this.dialogRef.close();
+      }
+    } else {
+      this.dialogRef.close();
+    }
+  }
+
+  onNoticeQuestionsChange(): void {
+    this.unsavedChanges = true;
+  }
   
+  onFileUploaded(uploadIds: number[]): void {
+    console.log('Uploaded File IDs:', uploadIds);
+  }
+
 }

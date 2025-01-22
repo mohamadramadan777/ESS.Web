@@ -1,17 +1,45 @@
 <app-header></app-header>
 <app-navbar [selectedPage]="'home'"></app-navbar>
 
-<app-signoff-section></app-signoff-section>
-<div class="content">
-  <app-sign-off></app-sign-off>
-</div>
-<div class="content">
-  <app-pending-submissions></app-pending-submissions>
-</div>
+<div class="home-container">
+  <!-- Top Notice Message -->
+  <div class="notice-message" *ngIf="showNoticeMessage">
+    <mat-icon class="blinking-icon">error_outline</mat-icon>
+    <span>{{ noticeMessage }}</span>
+    <button mat-icon-button (click)="closeNoticeMessage()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-<div class="content">
-  <app-general-communications></app-general-communications>
-</div>
-<div class="content">
-  <app-forms-submission></app-forms-submission>
+  <!-- Top Section -->
+  <div class="top-section">
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <div class="headers">
+        <span  *ngFor="let table of tables; let i = index" [class.active]="currentTableIndex === i"
+          (click)="selectTable(i)">
+          <mat-icon class="header-icon">{{ table.icon }}</mat-icon>
+          {{ table.header }} 
+          <span *ngIf="i < 2" class="row-count">{{ table.data.length }}</span>
+          
+        </span>
+      </div>
+      <div class="table-container" data-ag-theme-mode="light-red">
+        <ag-grid-angular class="ag-theme-alpine custom-ag-grid" [rowData]="currentTable.data"
+          [columnDefs]="currentTable.columns" [defaultColDef]="defaultColDef" [theme]="theme" [modules]="modules"
+          [pagination]="true" [paginationPageSize]="paginationPageSize"
+          [paginationPageSizeSelector]="paginationPageSizeSelector" [domLayout]="'autoHeight'"
+          (cellClicked)="onCellClicked($event)">
+        </ag-grid-angular>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <div class="card" *ngFor="let card of topCards" (click)="navigate(card.route)">
+        <mat-icon>{{ card.icon }}</mat-icon>
+        <h3>{{ card.title }}</h3>
+      </div>
+    </div>
+  </div>
 </div>
