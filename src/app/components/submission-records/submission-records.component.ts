@@ -2,9 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ISubmissionRecord, SUBMISSION_RECORDS_CONFIG_COLUMNS } from './submission-record-config';
-
-
+import {
+  ISubmissionRecord,
+  SUBMISSION_RECORDS_CONFIG_COLUMNS,
+} from './submission-record-config';
+import { SubmissionRecordsService } from '../../services/submission-records.service';
 
 @Component({
   selector: 'app-submission-records',
@@ -12,21 +14,17 @@ import { ISubmissionRecord, SUBMISSION_RECORDS_CONFIG_COLUMNS } from './submissi
   styleUrls: ['./submission-records.component.scss'],
 })
 export class SubmissionRecordsComponent implements OnInit {
-  displayedColumns: string[] = SUBMISSION_RECORDS_CONFIG_COLUMNS.displayedColumns;
-  dataSource: MatTableDataSource<ISubmissionRecord> = new MatTableDataSource<ISubmissionRecord>([]);
+  displayedColumns: string[] =
+    SUBMISSION_RECORDS_CONFIG_COLUMNS.displayedColumns;
+  dataSource: MatTableDataSource<ISubmissionRecord> =
+    new MatTableDataSource<ISubmissionRecord>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-
-  records: ISubmissionRecord[] = [
-    { application: 'Form G03', date: new Date('2024-02-07') },
-    { application: 'Form C12', date: new Date('2023-11-30') },
-    { application: 'Form G07', date: new Date('2023-04-13') },
-    // Add more records here...
-  ];
+  constructor(private submissionRecordsService: SubmissionRecordsService) {}
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource(this.records);
+    this.fetchData();
   }
 
   ngAfterViewInit() {
@@ -34,6 +32,16 @@ export class SubmissionRecordsComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
+  fetchData(): void {
+    this.submissionRecordsService.getSubmissionRecords().subscribe({
+      next: (data) => {
+        this.dataSource.data = data; // Assign API response to the table's data source
+      },
+      error: (err) => {
+        console.error('Error fetching submitted applications', err);
+      },
+    });
+  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
