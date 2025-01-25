@@ -7,7 +7,7 @@ import {
   PaginationModule
 } from 'ag-grid-community';
 import * as config from './notices-config';
-import { Client, WNoticeList } from '../../services/api-client'; 
+import { Client, WNoticeList } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
@@ -41,13 +41,13 @@ export class NoticesComponent implements OnInit {
   };
 
   columnDefs = config.colDef;
-
+  rowClassRules = config.rowClassRules;
   constructor(
     private client: Client,
     private loadingService: LoadingService,
     private toastr: ToastrService,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.populateYears();
@@ -95,8 +95,11 @@ export class NoticesComponent implements OnInit {
           const noticeData = response.response;
           const dialogRef = this.dialog.open(ViewNoticeComponent, {
             width: '80%',
-            height: '80%',
-            data: noticeData,
+            height: '85%',
+            data: {
+              ...noticeData,
+              wsosStatusTypeID: event.data.wsosStatusTypeID, // Pass the ReadOnly parameter
+            },
           });
 
           dialogRef.afterClosed().subscribe((result) => {
@@ -114,4 +117,5 @@ export class NoticesComponent implements OnInit {
       },
     });
   }
+  
 }

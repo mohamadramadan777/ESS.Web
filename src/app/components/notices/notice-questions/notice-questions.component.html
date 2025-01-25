@@ -1,21 +1,11 @@
 <div class="tab-content">
-  <input 
-    type="text" 
-    placeholder="Search questions..." 
-    class="search-bar" 
-    [(ngModel)]="searchText" 
+  <input type="text" placeholder="Search questions..." class="search-bar" [(ngModel)]="searchText"
     (input)="filterQuestions()" />
 
   <div *ngIf="!noticeQuestionsLoaded">Loading...</div>
-  <div 
-    class="question-card" 
-    *ngFor="let question of filteredQuestions; let i = index">
-    <div 
-      class="card-header" 
-      [ngClass]="{'hover': hoveredIndex === i}" 
-      (mouseenter)="hoveredIndex = i" 
-      (mouseleave)="hoveredIndex = null" 
-      (click)="toggleCollapse(i)">
+  <div class="question-card" *ngFor="let question of filteredQuestions; let i = index">
+    <div class="card-header" [ngClass]="{'hover': hoveredIndex === i}" (mouseenter)="hoveredIndex = i"
+      (mouseleave)="hoveredIndex = null" (click)="toggleCollapse(i)">
       <p>
         <strong>Question {{question.wNoticeQuestionNumber}}:</strong> {{ question.wNoticeQuestion }}
       </p>
@@ -23,57 +13,73 @@
         <mat-icon>{{ collapsedIndexes[i] ? 'expand_more' : 'expand_less' }}</mat-icon>
       </span>
     </div>
-    <div 
+    <!-- <div 
       class="card-body" 
       *ngIf="!collapsedIndexes[i]" 
-      [@slideToggle]>
+      [@slideToggle]> -->
+    <div class="card-body" *ngIf="!collapsedIndexes[i]" >
       <div *ngIf="ReadOnly; else editableFields">
-        <p><strong>Response:</strong> {{ question.wResponseAnswer }}</p>
-        <p><strong>Explanation:</strong> {{ question.wExplanation }}</p>
+        <p *ngIf="question.wResponseTypeID != WResponseTypes.Explanation">
+          <strong>Response:<span *ngIf="question.wResponseMandatory" matTooltip="required"
+              class="required">*</span></strong>
+          <ng-container [ngSwitch]="question.wResponseTypeID">
+            <!-- Single-select dropdown -->
+            <span *ngSwitchCase="WResponseTypes.List_of_values_Single_Response">
+              {{ getOptionText(question.wListNameID, question.wResponseAnswer) }}
+            </span>
+            <!-- Multi-select dropdown -->
+            <span *ngSwitchCase="WResponseTypes.List_of_values_Multiple_Response">
+              <span *ngFor="let value of question.wResponseAnswer?.split(','); let last = last">
+                {{ getOptionText(question.wListNameID, value) }}<span *ngIf="!last">, </span>
+              </span>
+            </span>
+            <!-- Other cases (number, date, text, etc.) -->
+            <span *ngSwitchDefault>
+              {{ question.wResponseAnswer }}
+            </span>
+          </ng-container>
+        </p>
+        <p *ngIf="question.wExplanationRequired != WEvaluationRequirementType.No"><strong>Explanation<span *ngIf="question.wExplanationRequired === WEvaluationRequirementType.Yes || 
+          (question.wExplanationRequired === WEvaluationRequirementType.Conditional &&
+           !question.explanationProvided && 
+           question.evaluationCriteriaMet === 1)" matTooltip="required" class="required">*</span>:</strong> {{
+          question.wExplanation }}</p>
       </div>
       <ng-template #editableFields>
-        <p>
-          <strong>Response:</strong>
+        <p *ngIf="question.wResponseTypeID != WResponseTypes.Explanation">
+          <strong>Response:<span *ngIf="question.wResponseMandatory" matTooltip="required" class="required">*<br>Please
+              provide a response for this question.</span></strong>
           <ng-container [ngSwitch]="question.wResponseTypeID">
-            <input 
-              *ngSwitchCase="WResponseTypes.Number" 
-              type="number" 
-              class="response-input" 
+            <input *ngSwitchCase="WResponseTypes.Number" type="number" class="response-input"
               [(ngModel)]="question.wResponseAnswer" />
-            <input 
-              *ngSwitchCase="WResponseTypes.Date" 
-              type="date" 
-              class="response-input" 
+            <input *ngSwitchCase="WResponseTypes.Date" type="date" class="response-input"
               [(ngModel)]="question.wResponseAnswer" />
-            <mat-select 
-              *ngSwitchCase="WResponseTypes.List_of_values_Single_Response" 
-              class="response-input" 
+            <mat-select *ngSwitchCase="WResponseTypes.List_of_values_Single_Response" class="response-input"
               [(ngModel)]="question.wResponseAnswer">
               <mat-option *ngFor="let option of this.options[question.wListNameID ?? 0]" [value]="option.value">
                 {{ option.text }}
               </mat-option>
             </mat-select>
-            <mat-select 
-              *ngSwitchCase="WResponseTypes.List_of_values_Multiple_Response" 
-              class="response-input" 
-              [(ngModel)]="question.wResponseAnswer" 
-              multiple>
+            <mat-select *ngSwitchCase="WResponseTypes.List_of_values_Multiple_Response" class="response-input"
+              [(ngModel)]="multiSelectValues[question.wNoticeQuestionnaireItemID ?? 0]" multiple>
               <mat-option *ngFor="let option of this.options[question.wListNameID ?? 0]" [value]="option.value">
                 {{ option.text }}
               </mat-option>
             </mat-select>
-            <input 
-              *ngSwitchDefault 
-              type="text" 
-              class="response-input" 
-              [(ngModel)]="question.wResponseAnswer" />
+            <input *ngSwitchDefault type="text" class="response-input" [(ngModel)]="question.wResponseAnswer" />
           </ng-container>
         </p>
-        <p>
-          <strong>Explanation:</strong>
-          <textarea 
-            class="explanation-input" 
-            [(ngModel)]="question.wExplanation"></textarea>
+        <p *ngIf="question.wExplanationRequired != WEvaluationRequirementType.No">
+          <strong>Explanation:<span *ngIf="question.wExplanationRequired === WEvaluationRequirementType.Yes || 
+            (question.wExplanationRequired === WEvaluationRequirementType.Conditional &&
+             !question.explanationProvided && 
+             question.evaluationCriteriaMet === 1)" matTooltip="required" class="required">* <br> Please provide an
+              explanation of (or) comments on your response (or lack thereof) for this question.
+            </span></strong>
+          <textarea class="explanation-input" [class.inputRequired]="question.wExplanationRequired === WEvaluationRequirementType.Yes || 
+            (question.wExplanationRequired === WEvaluationRequirementType.Conditional &&
+             !question.explanationProvided && 
+             question.evaluationCriteriaMet === 1)" [(ngModel)]="question.wExplanation" (ngModelChange)="onQuestionChange()"></textarea>
         </p>
       </ng-template>
     </div>

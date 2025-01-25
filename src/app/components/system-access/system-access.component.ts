@@ -15,7 +15,7 @@ import {
   PaginationNumberFormatterParams,
   RowSelectionModule,
 } from 'ag-grid-community';
-import { Client, WAccessRequests } from '../../services/api-client'; 
+import { Client, WAccessRequests } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 @Component({
@@ -51,11 +51,11 @@ export class SystemAccessComponent {
   }
 
   individualsColDef: ColDef[] = config.individualsColDef
-  systemAccountColDef : ColDef[] = config.systemAccountColDef
+  systemAccountColDef: ColDef[] = config.systemAccountColDef
   constructor(
     private client: Client,
-    private loadingService : LoadingService,
-    private toastr: ToastrService) {}
+    private loadingService: LoadingService,
+    private toastr: ToastrService) { }
   ngOnInit(): void {
     this.loadIndividials();
     this.loadSystemAccounts();
@@ -71,7 +71,7 @@ export class SystemAccessComponent {
     resizable: true,
   };
 
-  
+
 
   loadIndividials(): void {
     // Set year to 0 as the filtering will be handled in the front-end
@@ -81,7 +81,7 @@ export class SystemAccessComponent {
     this.client.getIndividualList().subscribe({
       next: (response) => {
         this.individualsLoaded = true;
-        if(this.systemAccountsLoaded){
+        if (this.systemAccountsLoaded) {
           this.loadingService.hide();
         }
         if (response && response.isSuccess && response.response) {
@@ -93,7 +93,7 @@ export class SystemAccessComponent {
       },
       error: (error) => {
         this.individualsLoaded = true;
-        if(this.systemAccountsLoaded){
+        if (this.systemAccountsLoaded) {
           this.loadingService.hide();
         }
         this.toastr.error('Error occurred while fetching individuals.', 'Error');
@@ -110,7 +110,7 @@ export class SystemAccessComponent {
     this.client.getSystemAccounts().subscribe({
       next: (response) => {
         this.systemAccountsLoaded = true;
-        if(this.individualsLoaded){
+        if (this.individualsLoaded) {
           this.loadingService.hide();
         }
         if (response && response.isSuccess && response.response) {
@@ -122,7 +122,7 @@ export class SystemAccessComponent {
       },
       error: (error) => {
         this.systemAccountsLoaded = true;
-        if(this.individualsLoaded){
+        if (this.individualsLoaded) {
           this.loadingService.hide();
         }
         this.toastr.error('Error occurred while fetching individuals.', 'Error');
@@ -142,7 +142,7 @@ export class SystemAccessComponent {
           : `${data.individualName} has not yet completed the user registration process. 
           <br> Clicking on <b>Yes</b> will <span style="color: red;">remove his/her access authorisation </span>.
           <br> Clicking on <b>No</b> will permit him/her to complete the registration process and access the system.`;
-  
+
         // Display confirmation dialog
         Swal.fire({
           // title: 'Confirm Revoke Access',

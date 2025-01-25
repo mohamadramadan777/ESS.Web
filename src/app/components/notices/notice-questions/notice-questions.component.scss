@@ -1,6 +1,5 @@
 .tab-content {
   padding: 20px;
-
   p {
     margin: 10px 0;
     font-size: 1rem;
@@ -104,4 +103,15 @@
     min-height: 80px;
     resize: vertical;
   }
+
+  .required {
+    color: red;
+     font-weight: normal;
+  }
+
+  .inputRequired {
+    background-color: #FFFACD
+      /*#EEE8AA; PaleGoldenrod*/
+  }
+
 }
