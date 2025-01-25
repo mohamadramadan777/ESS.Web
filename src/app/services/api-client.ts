@@ -803,7 +803,7 @@ export class Client {
     /**
      * @return OK
      */
-    getObjectTaskStatus(): Observable<ObjTasksListBaseResponse> {
+    getObjectTaskStatus(): Observable<StringObjectDictionaryListBaseResponse> {
         let url_ = this.baseUrl + "/api/Firms/GetObjectTaskStatus";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -822,14 +822,14 @@ export class Client {
                 try {
                     return this.processGetObjectTaskStatus(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ObjTasksListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<StringObjectDictionaryListBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ObjTasksListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<StringObjectDictionaryListBaseResponse>;
         }));
     }
 
-    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<ObjTasksListBaseResponse> {
+    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<StringObjectDictionaryListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -840,7 +840,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ObjTasksListBaseResponse.fromJS(resultData200);
+            result200 = StringObjectDictionaryListBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -848,7 +848,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ObjTasksListBaseResponse>(null as any);
+        return _observableOf<StringObjectDictionaryListBaseResponse>(null as any);
     }
 
     /**
@@ -905,6 +905,57 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getSubmittedApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-applications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSubmittedApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSubmittedApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetSubmittedApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
     }
 
     /**
@@ -1017,6 +1068,62 @@ export class Client {
             }));
         }
         return _observableOf<WNoticeListListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wListNameID (optional) 
+     * @return OK
+     */
+    getListValues(wListNameID: number | undefined): Observable<Int32StringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-list-values?";
+        if (wListNameID === null)
+            throw new Error("The parameter 'wListNameID' cannot be null.");
+        else if (wListNameID !== undefined)
+            url_ += "wListNameID=" + encodeURIComponent("" + wListNameID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetListValues(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetListValues(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32StringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32StringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetListValues(response: HttpResponseBase): Observable<Int32StringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
     }
 
     /**
@@ -3370,6 +3477,66 @@ export interface IInt32BaseResponse {
     response?: number;
 }
 
+export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: string; } | undefined;
+
+    constructor(data?: IInt32StringDictionaryBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (_data["response"]) {
+                this.response = {} as any;
+                for (let key in _data["response"]) {
+                    if (_data["response"].hasOwnProperty(key))
+                        (<any>this.response)![key] = _data["response"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): Int32StringDictionaryBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new Int32StringDictionaryBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (this.response) {
+            data["response"] = {};
+            for (let key in this.response) {
+                if (this.response.hasOwnProperty(key))
+                    (<any>data["response"])[key] = (<any>this.response)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export interface IInt32StringDictionaryBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: string; } | undefined;
+}
+
 export class ObjTasks implements IObjTasks {
     wObjTaskID?: number | undefined;
     wObjectID?: number | undefined;
@@ -3428,62 +3595,6 @@ export interface IObjTasks {
     wObjectEventTypeID?: number | undefined;
     dateCreated?: Date | undefined;
     userCreated?: number | undefined;
-}
-
-export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjTasks[] | undefined;
-
-    constructor(data?: IObjTasksListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ObjTasks.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ObjTasksListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjTasksListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IObjTasksListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjTasks[] | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
@@ -3682,6 +3793,174 @@ export interface IObjectSOTaskStatusListBaseResponse {
     response?: ObjectSOTaskStatus[] | undefined;
 }
 
+export class PendingItemsDto implements IPendingItemsDto {
+    applicationID?: number | undefined;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number | undefined;
+    statusTypeID?: number | undefined;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    description?: string | undefined;
+    submittedDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    applicantSignOffDone?: boolean;
+    attachmentResubmissionRequired?: boolean;
+    resubmissionComments?: string | undefined;
+    docTypeID?: number | undefined;
+    objectID?: number | undefined;
+    docTypeDesc?: string | undefined;
+
+    constructor(data?: IPendingItemsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationID = _data["applicationID"];
+            this.qfcNmuner = _data["qfcNmuner"];
+            this.formTypeID = _data["formTypeID"];
+            this.statusTypeID = _data["statusTypeID"];
+            this.formType = _data["formType"];
+            this.individualName = _data["individualName"];
+            this.applicationStatus = _data["applicationStatus"];
+            this.applicationContactDetailID = _data["applicationContactDetailID"];
+            this.createdDate = _data["createdDate"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.description = _data["description"];
+            this.submittedDate = _data["submittedDate"];
+            this.isItemAccessible = _data["isItemAccessible"];
+            this.userCreated = _data["userCreated"];
+            this.applicantSignOffDone = _data["applicantSignOffDone"];
+            this.attachmentResubmissionRequired = _data["attachmentResubmissionRequired"];
+            this.resubmissionComments = _data["resubmissionComments"];
+            this.docTypeID = _data["docTypeID"];
+            this.objectID = _data["objectID"];
+            this.docTypeDesc = _data["docTypeDesc"];
+        }
+    }
+
+    static fromJS(data: any): PendingItemsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PendingItemsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationID"] = this.applicationID;
+        data["qfcNmuner"] = this.qfcNmuner;
+        data["formTypeID"] = this.formTypeID;
+        data["statusTypeID"] = this.statusTypeID;
+        data["formType"] = this.formType;
+        data["individualName"] = this.individualName;
+        data["applicationStatus"] = this.applicationStatus;
+        data["applicationContactDetailID"] = this.applicationContactDetailID;
+        data["createdDate"] = this.createdDate;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["description"] = this.description;
+        data["submittedDate"] = this.submittedDate;
+        data["isItemAccessible"] = this.isItemAccessible;
+        data["userCreated"] = this.userCreated;
+        data["applicantSignOffDone"] = this.applicantSignOffDone;
+        data["attachmentResubmissionRequired"] = this.attachmentResubmissionRequired;
+        data["resubmissionComments"] = this.resubmissionComments;
+        data["docTypeID"] = this.docTypeID;
+        data["objectID"] = this.objectID;
+        data["docTypeDesc"] = this.docTypeDesc;
+        return data;
+    }
+}
+
+export interface IPendingItemsDto {
+    applicationID?: number | undefined;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number | undefined;
+    statusTypeID?: number | undefined;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    description?: string | undefined;
+    submittedDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    applicantSignOffDone?: boolean;
+    attachmentResubmissionRequired?: boolean;
+    resubmissionComments?: string | undefined;
+    docTypeID?: number | undefined;
+    objectID?: number | undefined;
+    docTypeDesc?: string | undefined;
+}
+
+export class PendingItemsDtoListBaseResponse implements IPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: PendingItemsDto[] | undefined;
+
+    constructor(data?: IPendingItemsDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(PendingItemsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PendingItemsDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PendingItemsDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: PendingItemsDto[] | undefined;
+}
+
 export class PreviousNames implements IPreviousNames {
     previousNamesID?: number | undefined;
     previousNamesGUID?: string | undefined;
@@ -3868,6 +4147,62 @@ export interface IResidencies {
     createdDate?: string | undefined;
     modifiedDate?: string | undefined;
     modifiedBy?: number;
+}
+
+export class StringObjectDictionaryListBaseResponse implements IStringObjectDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
+
+    constructor(data?: IStringObjectDictionaryListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): StringObjectDictionaryListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new StringObjectDictionaryListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IStringObjectDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
 }
 
 export class StringStringDictionaryBaseResponse implements IStringStringDictionaryBaseResponse {
@@ -6127,7 +6462,7 @@ export interface IWUserRoles {
 }
 
 export class ApiException extends Error {
-    override message: string;
+     override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };
