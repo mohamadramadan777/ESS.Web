@@ -1,11 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import {
-  ISubmissionRecord,
-  SUBMISSION_RECORDS_CONFIG_COLUMNS,
-} from './submission-record-config';
 import { SubmissionRecordsService } from '../../services/submission-records.service';
 
 @Component({
@@ -14,36 +8,101 @@ import { SubmissionRecordsService } from '../../services/submission-records.serv
   styleUrls: ['./submission-records.component.scss'],
 })
 export class SubmissionRecordsComponent implements OnInit {
-  displayedColumns: string[] =
-    SUBMISSION_RECORDS_CONFIG_COLUMNS.displayedColumns;
-  dataSource: MatTableDataSource<ISubmissionRecord> =
-    new MatTableDataSource<ISubmissionRecord>([]);
+  displayedColumns: string[] = [
+    'application',
+    'submittedDate',
+    'status',
+    'actions',
+  ];
+  dataSource = new MatTableDataSource<any>([]);
+  currentUser: any;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  constructor(private submissionRecordsService: SubmissionRecordsService) {}
+  constructor(private submissionService: SubmissionRecordsService) {}
 
-  ngOnInit() {
-    this.fetchData();
+  ngOnInit(): void {
+    this.decodeUserInfo();
+    this.fetchCompletedApplications();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  // Decode user info from JWT token
+  decodeUserInfo(): void {
+    this.currentUser = this.submissionService.decodeToken();
+    console.log('Current User:', this.currentUser);
   }
 
-  fetchData(): void {
-    this.submissionRecordsService.getSubmissionRecords().subscribe({
-      next: (data) => {
-        this.dataSource.data = data; // Assign API response to the table's data source
+  // Fetch and process completed applications
+  fetchCompletedApplications(): void {
+    this.submissionService.getSubmittedApplications().subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.dataSource.data = response.response; // Assign data to the Material table
+        } else {
+          console.error('Error fetching applications:', response.errorMessage);
+        }
       },
       error: (err) => {
-        console.error('Error fetching submitted applications', err);
+        console.error('Error fetching applications:', err);
       },
     });
   }
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+  viewApplication(application: any): void {
+    // You can log the application or perform navigation logic here
+    console.log('Viewing application:', application);
+
+    // Example: Navigate to a detailed view page (if implemented)
+    // this.router.navigate(['/application-details', application.applicationID]);
+  }
+  // Process applications logic
+  private processApplications(applications: any[]): any[] {
+    const lstOldApplications = [];
+    const lstDelete = [];
+    const SEFCOFound = false;
+
+    // Process each application
+    const filteredApplications = applications.filter((item) => {
+      let bCanView = false;
+
+      // Individual Applications
+      if (item.objectID === 15) {
+        // Assuming 15 represents Individual Applications
+        if (item.userCreated === this.currentUser.WUserID) {
+          bCanView = true;
+          if (
+            new Date(item.submittedDate) <
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          ) {
+            lstOldApplications.push(item);
+          }
+        }
+      }
+
+      // Notification of Competency
+      if (item.objectID === 16) {
+        // Assuming 16 represents Notification of Competency
+        bCanView = this.currentUser.role.includes('19'); // Example role check
+      }
+
+      // General Submission
+      if (item.objectID === 17) {
+        // Assuming 17 represents General Submission
+        if (
+          item.userCreated === this.currentUser.WUserID ||
+          this.currentUser.role.includes('19')
+        ) {
+          bCanView = true;
+        }
+      }
+
+      // Filter logic for firm type
+      if (this.currentUser.FirmQFCNo === '00173' && bCanView) {
+        return true;
+      } else {
+        lstDelete.push(item);
+        return false;
+      }
+    });
+
+    return filteredApplications;
   }
 }

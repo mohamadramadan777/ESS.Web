@@ -1,15 +1,23 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {Client} from './api-client';
+import{environment} from '../../environments/environment';
+
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SubmissionRecordsService {
+  constructor(private http: HttpClient) {}
 
-  constructor(private client :Client) { }
-  
+  // Fetch submitted applications
+  getSubmittedApplications(): Observable<any> {
+    return this.http.get(`${environment.apiBaseUrl}/api/GenSubmission/get-submitted-applications`);
+  }
 
-  getSubmissionRecords(): Observable<any> {
-    return this.client.getSubmittedApplications();
+  // Decode JWT token
+  decodeToken(): any {
+    const token = localStorage.getItem('token'); 
+    if (!token) return null;
+    return JSON.parse(atob(token.split('.')[1]));
   }
 }
