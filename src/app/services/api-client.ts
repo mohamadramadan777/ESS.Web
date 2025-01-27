@@ -730,6 +730,57 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-item-for-logged-in-user";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingItemForLoggedInUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingItemForLoggedInUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserPendingItemsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserPendingItemsListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingItemForLoggedInUser(response: HttpResponseBase): Observable<UserPendingItemsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserPendingItemsListBaseResponse>(null as any);
+    }
+
+    /**
      * @param wObjAttachementID (optional) 
      * @param wObjectID (optional) 
      * @param wObjectInstanceID (optional) 
@@ -803,7 +854,7 @@ export class Client {
     /**
      * @return OK
      */
-    getObjectTaskStatus(): Observable<ObjTasksListBaseResponse> {
+    getObjectTaskStatus(): Observable<StringObjectDictionaryListBaseResponse> {
         let url_ = this.baseUrl + "/api/Firms/GetObjectTaskStatus";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -822,14 +873,14 @@ export class Client {
                 try {
                     return this.processGetObjectTaskStatus(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ObjTasksListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<StringObjectDictionaryListBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ObjTasksListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<StringObjectDictionaryListBaseResponse>;
         }));
     }
 
-    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<ObjTasksListBaseResponse> {
+    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<StringObjectDictionaryListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -840,7 +891,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ObjTasksListBaseResponse.fromJS(resultData200);
+            result200 = StringObjectDictionaryListBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -848,7 +899,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ObjTasksListBaseResponse>(null as any);
+        return _observableOf<StringObjectDictionaryListBaseResponse>(null as any);
     }
 
     /**
@@ -905,6 +956,57 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getSubmittedApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-applications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSubmittedApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSubmittedApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetSubmittedApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
     }
 
     /**
@@ -998,6 +1100,57 @@ export class Client {
     }
 
     protected processGetWnoticeList(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WNoticeListListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WNoticeListListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getWnoticeListForHome(): Observable<WNoticeListListBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-list-for-Home";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWnoticeListForHome(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWnoticeListForHome(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WNoticeListListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WNoticeListListBaseResponse>;
+        }));
+    }
+
+    protected processGetWnoticeListForHome(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3546,62 +3699,6 @@ export interface IObjTasks {
     userCreated?: number | undefined;
 }
 
-export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjTasks[] | undefined;
-
-    constructor(data?: IObjTasksListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ObjTasks.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ObjTasksListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjTasksListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IObjTasksListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjTasks[] | undefined;
-}
-
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
     objectID?: number;
     objectInstanceID?: number;
@@ -3798,6 +3895,174 @@ export interface IObjectSOTaskStatusListBaseResponse {
     response?: ObjectSOTaskStatus[] | undefined;
 }
 
+export class PendingItemsDto implements IPendingItemsDto {
+    applicationID?: number | undefined;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number | undefined;
+    statusTypeID?: number | undefined;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    description?: string | undefined;
+    submittedDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    applicantSignOffDone?: boolean;
+    attachmentResubmissionRequired?: boolean;
+    resubmissionComments?: string | undefined;
+    docTypeID?: number | undefined;
+    objectID?: number | undefined;
+    docTypeDesc?: string | undefined;
+
+    constructor(data?: IPendingItemsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationID = _data["applicationID"];
+            this.qfcNmuner = _data["qfcNmuner"];
+            this.formTypeID = _data["formTypeID"];
+            this.statusTypeID = _data["statusTypeID"];
+            this.formType = _data["formType"];
+            this.individualName = _data["individualName"];
+            this.applicationStatus = _data["applicationStatus"];
+            this.applicationContactDetailID = _data["applicationContactDetailID"];
+            this.createdDate = _data["createdDate"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.description = _data["description"];
+            this.submittedDate = _data["submittedDate"];
+            this.isItemAccessible = _data["isItemAccessible"];
+            this.userCreated = _data["userCreated"];
+            this.applicantSignOffDone = _data["applicantSignOffDone"];
+            this.attachmentResubmissionRequired = _data["attachmentResubmissionRequired"];
+            this.resubmissionComments = _data["resubmissionComments"];
+            this.docTypeID = _data["docTypeID"];
+            this.objectID = _data["objectID"];
+            this.docTypeDesc = _data["docTypeDesc"];
+        }
+    }
+
+    static fromJS(data: any): PendingItemsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PendingItemsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationID"] = this.applicationID;
+        data["qfcNmuner"] = this.qfcNmuner;
+        data["formTypeID"] = this.formTypeID;
+        data["statusTypeID"] = this.statusTypeID;
+        data["formType"] = this.formType;
+        data["individualName"] = this.individualName;
+        data["applicationStatus"] = this.applicationStatus;
+        data["applicationContactDetailID"] = this.applicationContactDetailID;
+        data["createdDate"] = this.createdDate;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["description"] = this.description;
+        data["submittedDate"] = this.submittedDate;
+        data["isItemAccessible"] = this.isItemAccessible;
+        data["userCreated"] = this.userCreated;
+        data["applicantSignOffDone"] = this.applicantSignOffDone;
+        data["attachmentResubmissionRequired"] = this.attachmentResubmissionRequired;
+        data["resubmissionComments"] = this.resubmissionComments;
+        data["docTypeID"] = this.docTypeID;
+        data["objectID"] = this.objectID;
+        data["docTypeDesc"] = this.docTypeDesc;
+        return data;
+    }
+}
+
+export interface IPendingItemsDto {
+    applicationID?: number | undefined;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number | undefined;
+    statusTypeID?: number | undefined;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    description?: string | undefined;
+    submittedDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    applicantSignOffDone?: boolean;
+    attachmentResubmissionRequired?: boolean;
+    resubmissionComments?: string | undefined;
+    docTypeID?: number | undefined;
+    objectID?: number | undefined;
+    docTypeDesc?: string | undefined;
+}
+
+export class PendingItemsDtoListBaseResponse implements IPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: PendingItemsDto[] | undefined;
+
+    constructor(data?: IPendingItemsDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(PendingItemsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): PendingItemsDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new PendingItemsDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: PendingItemsDto[] | undefined;
+}
+
 export class PreviousNames implements IPreviousNames {
     previousNamesID?: number | undefined;
     previousNamesGUID?: string | undefined;
@@ -3986,6 +4251,62 @@ export interface IResidencies {
     modifiedBy?: number;
 }
 
+export class StringObjectDictionaryListBaseResponse implements IStringObjectDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
+
+    constructor(data?: IStringObjectDictionaryListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): StringObjectDictionaryListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new StringObjectDictionaryListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IStringObjectDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
+}
+
 export class StringStringDictionaryBaseResponse implements IStringStringDictionaryBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -4044,6 +4365,182 @@ export interface IStringStringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class UserPendingItems implements IUserPendingItems {
+    qfcNumber?: string | undefined;
+    userID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    reportOrIndName?: string | undefined;
+    reportFrom?: string | undefined;
+    reportTo?: string | undefined;
+    rptDueDate?: string | undefined;
+    purpose?: string | undefined;
+    formTypeID?: number;
+    finalDescription?: string | undefined;
+    rptSchItemID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    dateCreated?: string | undefined;
+    wRptSubmissionTypeID?: number | undefined;
+    rptSchItemFromDate?: string | undefined;
+    rptSchItemToDate?: string | undefined;
+    objectType?: string | undefined;
+    taskType?: string | undefined;
+    nextRunTime?: string | undefined;
+
+    constructor(data?: IUserPendingItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.userID = _data["userID"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.reportOrIndName = _data["reportOrIndName"];
+            this.reportFrom = _data["reportFrom"];
+            this.reportTo = _data["reportTo"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.purpose = _data["purpose"];
+            this.formTypeID = _data["formTypeID"];
+            this.finalDescription = _data["finalDescription"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.docTypeID = _data["docTypeID"];
+            this.dateCreated = _data["dateCreated"];
+            this.wRptSubmissionTypeID = _data["wRptSubmissionTypeID"];
+            this.rptSchItemFromDate = _data["rptSchItemFromDate"];
+            this.rptSchItemToDate = _data["rptSchItemToDate"];
+            this.objectType = _data["objectType"];
+            this.taskType = _data["taskType"];
+            this.nextRunTime = _data["nextRunTime"];
+        }
+    }
+
+    static fromJS(data: any): UserPendingItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["userID"] = this.userID;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["reportOrIndName"] = this.reportOrIndName;
+        data["reportFrom"] = this.reportFrom;
+        data["reportTo"] = this.reportTo;
+        data["rptDueDate"] = this.rptDueDate;
+        data["purpose"] = this.purpose;
+        data["formTypeID"] = this.formTypeID;
+        data["finalDescription"] = this.finalDescription;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["docTypeID"] = this.docTypeID;
+        data["dateCreated"] = this.dateCreated;
+        data["wRptSubmissionTypeID"] = this.wRptSubmissionTypeID;
+        data["rptSchItemFromDate"] = this.rptSchItemFromDate;
+        data["rptSchItemToDate"] = this.rptSchItemToDate;
+        data["objectType"] = this.objectType;
+        data["taskType"] = this.taskType;
+        data["nextRunTime"] = this.nextRunTime;
+        return data;
+    }
+}
+
+export interface IUserPendingItems {
+    qfcNumber?: string | undefined;
+    userID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    reportOrIndName?: string | undefined;
+    reportFrom?: string | undefined;
+    reportTo?: string | undefined;
+    rptDueDate?: string | undefined;
+    purpose?: string | undefined;
+    formTypeID?: number;
+    finalDescription?: string | undefined;
+    rptSchItemID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    dateCreated?: string | undefined;
+    wRptSubmissionTypeID?: number | undefined;
+    rptSchItemFromDate?: string | undefined;
+    rptSchItemToDate?: string | undefined;
+    objectType?: string | undefined;
+    taskType?: string | undefined;
+    nextRunTime?: string | undefined;
+}
+
+export class UserPendingItemsListBaseResponse implements IUserPendingItemsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItems[] | undefined;
+
+    constructor(data?: IUserPendingItemsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(UserPendingItems.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserPendingItemsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItemsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUserPendingItemsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItems[] | undefined;
 }
 
 export class UserQuestionAnswers implements IUserQuestionAnswers {

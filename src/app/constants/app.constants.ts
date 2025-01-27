@@ -14,6 +14,8 @@ export const AppConstants = {
       APPROVED_CONTROLLED_FUNCTIONS: "Approved Controlled Functions",
       SELECT_A_REGISTERED_INDIVIDUAL: "Select a Registered Individual",
       REQUIRED_FUNCTIONS_ASSIGNED: "Required Functions Assigned",
+      REPLACE_REPORT_NAME: "##ReportName##",
+      REPLACE_DUE_DATE: "##DueDate##",
       // Add more keywords as needed
     },
     Session:{

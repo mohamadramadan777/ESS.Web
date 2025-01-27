@@ -1,4 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AppConstants } from '../../constants/app.constants';
+import { FirmType, WObjects, PendingItemsOnHomePage } from '../../enums/app.enums';
+import { Client, UserPendingItems, WNoticeList } from '../../services/api-client';
+import { ToastrService } from 'ngx-toastr';
+import { LoadingService } from '../../services/loader.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ViewNoticeComponent } from '../notices/view-notice/view-notice.component';
+
 import {
   ColDef,
   themeAlpine,
@@ -23,22 +31,31 @@ export class HomeComponent implements OnInit, OnDestroy {
     RowSelectionModule,
     PaginationModule,
   ];
-
-  constructor(private router: Router) { }
+  firmTypeString: string = localStorage.getItem(AppConstants.Session.SESSION_FIRM_TYPE) ?? '';
+  firmType = 0;
+  constructor(
+    private client: Client,
+    private router: Router,
+    private loadingService: LoadingService,
+    private toastr: ToastrService,
+    private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.startAutoSwitch();
+    this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
+    this.displayESSAnncouncement();
+    this.getPendingForLoggedInUser();
+    this.getGeneralCommunication();
+    //this.startAutoSwitch();
   }
 
   ngOnDestroy(): void {
-    this.stopAutoSwitch();
+    //this.stopAutoSwitch();
   }
 
   // Notice Message
   showNoticeMessage: boolean = true;
-  noticeMessage: string =
-    'A new G03 form was published on the Regulatory Authority’s website effective 14 July 2021 and is now available to download from the “Forms and Fees” tab. All the authorised firms are required to use this new form for any controlled function application.';
-
+  ESSAnnoucement: string = "";
+  VIEWSTATE_NOTICE: string = "lstNotice";
   // Cards for Top-Right Section
   topCards = [
     { title: 'Reporting Schedules', icon: 'calendar_today', route: '/reports' },
@@ -46,22 +63,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: 'Notices', icon: 'notifications', route: '/notices' },
   ];
 
+  generealCommunications: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [];
+
   // Table Data
   tables = [
     {
       header: 'Required Sign-offs',
       icon: 'assignment_turned_in',
-      data: [{ title: '2023 Annual MLRO Report due on 31/May/2024',  dueDate: '31/May/2024' }],
+      data: [],
       columns: [
         { headerName: 'Your sign-off is required on the following:', field: 'title', flex: 1, minWidth: 800 },
-        {
-          headerName: 'Overdue',
-          hide: true,
-          field: 'overdueDays',
-          cellRenderer: (params: any) =>
-            `<span style="color: red; font-weight: bold;">${params.value} days</span>`,
-          flex: 1,
-        },
       ],
     },
     {
@@ -129,6 +140,14 @@ export class HomeComponent implements OnInit, OnDestroy {
             `<span style="color: red; font-weight: bold;">${params.value} days</span>`,
           flex: 1,
         },
+      ],
+    },
+    {
+      header: 'General Communication',
+      icon: 'info',
+      data: this.generealCommunications,
+      columns: [
+        { headerName: 'General Communications:', field: 'title', flex: 1, minWidth: 800 }
       ],
     },
     {
@@ -291,4 +310,155 @@ export class HomeComponent implements OnInit, OnDestroy {
   download(): void {
     alert('Download clicked');
   }
+
+  displayESSAnncouncement(): void {
+    if (this.firmType == FirmType.Authorized) {
+      this.ESSAnnoucement = "A new Q03 form was published on the Regulatory Authority’s website effective 14 July 2021 and is now available to download from the ‘Forms and Fees’ tab. All the authorised firms are required to use this new form for any controlled function application. Firms should take care to follow the new completion instructions detailed in the Q03 form."; //TODO: BALMessageSettings.GetMessageProperty((int)Announcement.AuthorisedHomePageAnnouncementMessage, true);
+    } else if (this.firmType == FirmType.DNFBP) {
+      this.ESSAnnoucement = ""; //TODO: BALMessageSettings.GetMessageProperty((int)Announcement.DNFBPHomePageAnnouncementMessage, true);
+    }
+    if (this.ESSAnnoucement == "") {
+      this.showNoticeMessage = false;
+    }
+  }
+
+  getPendingForLoggedInUser(): void {
+    this.client.getPendingItemForLoggedInUser().subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          this.processPendingItems(response.response);//map the response to the table data here.
+        } else {
+          this.toastr.error('Failed to load Pending items.', 'Error');
+          console.error('Failed to load Pending items:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error occurred while fetching Pending items.', 'Error');
+        console.error('Error occurred while fetching Pending items:', error);
+      },
+    });
+  }
+  processPendingItems(responseData: UserPendingItems[]): void {
+    const processedData: { title: string; overdueDays: number; dueDate: string }[] = [];
+
+    for (const item of responseData) {
+      let finalDescription = '';
+
+      if (item.objectID === WObjects.ReportSchedule) {
+        let reportDesc = "##ReportName## report due on ##DueDate##";//this.getMessageProperty(PendingItemsOnHomePage.ReportDesc);
+        reportDesc = reportDesc.replace(AppConstants.Keywords.REPLACE_REPORT_NAME, item.reportOrIndName || '');
+        reportDesc = reportDesc.replace(AppConstants.Keywords.REPLACE_DUE_DATE, item.rptDueDate || '');
+        finalDescription = reportDesc;
+      } else if (item.objectID === WObjects.IndividualApplications) {
+        let purposeDesc = "AI Application for ##IndividualName## for ##Purpose##";//this.getMessageProperty(PendingItemsOnHomePage.AIDesc);
+        purposeDesc = purposeDesc.replace('##IndividualName##', item.reportOrIndName || '');
+        purposeDesc = purposeDesc.replace('##Purpose##', item.purpose || '');
+        finalDescription = purposeDesc;
+      } else if (item.objectID === WObjects.NotificationOfCompetency) {
+        let purposeDesc = "Notification of Competency for ##IndividualName## created on ##CreatedDate## is pending for signature.";//this.getMessageProperty(PendingItemsOnHomePage.NocSignOffPending);
+        purposeDesc = purposeDesc.replace('##IndividualName##', item.reportOrIndName || '');
+        purposeDesc = purposeDesc.replace('##CreatedDate##', item.dateCreated || '');
+        finalDescription = purposeDesc;
+      } else if (item.objectID === WObjects.GeneralSubmission) {
+        let purposeDesc = "##FormType## created on ##CreatedDate## is pending for signature.";//this.getMessageProperty(PendingItemsOnHomePage.GenSubSignOffPending);
+        purposeDesc = purposeDesc.replace('##FormType##', item.purpose || '');
+        purposeDesc = purposeDesc.replace('##CreatedDate##', item.dateCreated || '');
+        finalDescription = purposeDesc;
+        item.formTypeID = item.docTypeID ?? 0;
+      } else if (item.objectID === WObjects.FirmNoticeResponse) {
+        let purposeDesc = "A response to Notice Reference No. ##ReferenceNumber## titled ##Subject## and sent on ##NotificationSentDate## is waiting for your signature. A response is due to the Regulatory Authority by ##ResponseDueDate##.";//this.getMessageProperty(867);
+        purposeDesc = purposeDesc.replace('##Subject##', item.purpose || '');
+        purposeDesc = purposeDesc.replace('##ReferenceNumber##', item.rptFreqTypeDesc || '');
+        purposeDesc = purposeDesc.replace('##NotificationSentDate##', item.reportOrIndName || '');
+        purposeDesc = purposeDesc.replace('##ResponseDueDate##', item.dateCreated || '');
+        finalDescription = purposeDesc;
+      }
+
+      // Push the processed data to the array
+      processedData.push({
+        title: finalDescription,
+        overdueDays: 0,
+        dueDate: ''
+      });
+    }
+
+    // Assign the processed data to the table
+    this.tables[0].data = processedData;
+  }
+
+  getGeneralCommunication(): void {
+    const generealCommunications = sessionStorage.getItem(this.VIEWSTATE_NOTICE); // Check session storage
+    if (generealCommunications) {
+      this.processGeneralCommunication(JSON.parse(generealCommunications));
+      return;
+    }
+    this.client.getWnoticeListForHome().subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          sessionStorage.setItem(this.VIEWSTATE_NOTICE, JSON.stringify(response.response)); // Store in sessionStorage
+          this.processGeneralCommunication(response.response);//map the response to the table data here.
+        } else {
+          this.toastr.error('Failed to load General Communication.', 'Error');
+          console.error('Failed to load General Communication:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error occurred while fetching General Communication.', 'Error');
+        console.error('Error occurred while fetching General Communication:', error);
+      },
+    });
+  }
+
+  processGeneralCommunication(responseData: WNoticeList[]): void {
+
+    for (const item of responseData) {
+      if (item.wResponseRequired) {
+        continue;
+      }
+      // Push the processed data to the array
+      this.generealCommunications.push({
+        title: item.wSubject ?? "",
+        wNoticeID: item.wNoticeID ?? 0,
+        wFirmNoticeID: item.wFirmNoticeID ?? 0,
+        wsosStatusTypeID: item.wsosStatusTypeID ?? 0,
+      });
+    }
+    // Assign the processed data to the table
+    // this.tables[2].data = processedData;
+  }
+
+  onRowDoubleClicked(event: any): void {
+    if (event.data.wNoticeID) {
+      this.loadingService.show();
+      this.client.getWnoticeDetails(event.data.wNoticeID, event.data.wFirmNoticeID).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess && response.response) {
+            const noticeData = response.response;
+            const dialogRef = this.dialog.open(ViewNoticeComponent, {
+              width: '80%',
+              height: '85%',
+              data: {
+                ...noticeData,
+                wsosStatusTypeID: event.data.wsosStatusTypeID, // Pass the ReadOnly parameter
+              },
+            });
+
+            dialogRef.afterClosed().subscribe((result) => {
+              console.log('The dialog was closed', result);
+            });
+          } else {
+            this.toastr.error('Failed to load notice data.', 'Error');
+            console.error('Failed to load notice data:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while fetching notice data.', 'Error');
+          console.error('Error occurred while fetching notice data:', error);
+        },
+      });
+    }
+  }
+
 }
