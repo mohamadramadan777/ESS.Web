@@ -1,108 +1,100 @@
-import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { SubmissionRecordsService } from '../../services/submission-records.service';
-
+import { ColDef } from 'ag-grid-community';
+import { Component, ViewChild } from '@angular/core';
+import * as config from './submission-record-config';
+import Swal from 'sweetalert2';
+import {
+  TextFilterModule,
+  ClientSideRowModelModule,
+  NumberEditorModule,
+  ValidationModule,
+  TextEditorModule,
+  themeQuartz,
+  PaginationModule,
+  NumberFilterModule,
+  PaginationNumberFormatterParams,
+  RowSelectionModule,
+} from 'ag-grid-community';
+import { Client, WAccessRequests } from '../../services/api-client';
+import { LoadingService } from '../../services/loader.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-submission-records',
   templateUrl: './submission-records.component.html',
   styleUrls: ['./submission-records.component.scss'],
 })
-export class SubmissionRecordsComponent implements OnInit {
-  displayedColumns: string[] = [
-    'application',
-    'submittedDate',
-    'status',
-    'actions',
+export class SubmissionRecordsComponent {
+  public modules = [
+    TextFilterModule,
+    NumberEditorModule,
+    TextEditorModule,
+    ClientSideRowModelModule,
+    ValidationModule,
+    PaginationModule,
+    NumberFilterModule,
+    RowSelectionModule,
   ];
-  dataSource = new MatTableDataSource<any>([]);
-  currentUser: any;
-
-  constructor(private submissionService: SubmissionRecordsService) {}
-
+  paginationPageSize = config.paginationPageSize;
+  theme = config.theme;
+  paginationPageSizeSelector = config.paginationPageSizeSelector;
+  paginationNumberFormatter = (params: PaginationNumberFormatterParams) => {
+    return '[' + params.value.toLocaleString() + ']';
+  };
+  SubmittedColDef: ColDef[] = config.TableColDef;
+  PendingColDef: ColDef[] = config.TableColDef;
+  constructor(
+    private client: Client,
+    private loadingService: LoadingService,
+    private toastr: ToastrService
+  ) {}
   ngOnInit(): void {
-    this.decodeUserInfo();
-    this.fetchCompletedApplications();
+    this.loadSubmittedRecords();
+    this.loadPendingRecords();
   }
+  Submitted : WAccessRequests[] = [];
+  Pending: WAccessRequests[] = [];
+  SubmittedLoaded: boolean = false;
+  PendingLoaded: boolean = false;
 
-  // Decode user info from JWT token
-  decodeUserInfo(): void {
-    this.currentUser = this.submissionService.decodeToken();
-    console.log('Current User:', this.currentUser);
-  }
+  defaultColDef = {
+    flex: 1,
+    minWidth: 150,
+    resizable: true,
+  };
 
-  // Fetch and process completed applications
-  fetchCompletedApplications(): void {
-    this.submissionService.getSubmittedApplications().subscribe({
+  loadSubmittedRecords(): void {
+    this.client.getSubmittedApplications().subscribe({
       next: (response) => {
-        if (response.isSuccess) {
-          this.dataSource.data = response.response; // Assign data to the Material table
+        this.SubmittedLoaded=true;
+        if(this.PendingLoaded){
+          this.loadingService.hide()
+        }
+        if (response && response.isSuccess && response.response) {
+          this.Submitted = response.response;
         } else {
-          console.error('Error fetching applications:', response.errorMessage);
+          this.toastr.error('Failed to load Submitted.', 'Error');
+          console.error('Failed to load Submitted:', response?.errorMessage);
         }
-      },
-      error: (err) => {
-        console.error('Error fetching applications:', err);
-      },
-    });
+
+    },
+    error: (error) => {
+      this.SubmittedLoaded = true;
+      if (this.PendingLoaded) {
+        this.loadingService.hide();
+      }
+      this.toastr.error('Error occurred while fetching Submitted.', 'Error');
+      console.error('Error occurred while fetching Submitted:', error);
+    },
+    
+  });}
+
+  loadPendingRecords(): void {
+   
   }
 
-  viewApplication(application: any): void {
-    // You can log the application or perform navigation logic here
-    console.log('Viewing application:', application);
-
-    // Example: Navigate to a detailed view page (if implemented)
-    // this.router.navigate(['/application-details', application.applicationID]);
-  }
-  // Process applications logic
-  private processApplications(applications: any[]): any[] {
-    const lstOldApplications = [];
-    const lstDelete = [];
-    const SEFCOFound = false;
-
-    // Process each application
-    const filteredApplications = applications.filter((item) => {
-      let bCanView = false;
-
-      // Individual Applications
-      if (item.objectID === 15) {
-        // Assuming 15 represents Individual Applications
-        if (item.userCreated === this.currentUser.WUserID) {
-          bCanView = true;
-          if (
-            new Date(item.submittedDate) <
-            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          ) {
-            lstOldApplications.push(item);
-          }
-        }
-      }
-
-      // Notification of Competency
-      if (item.objectID === 16) {
-        // Assuming 16 represents Notification of Competency
-        bCanView = this.currentUser.role.includes('19'); // Example role check
-      }
-
-      // General Submission
-      if (item.objectID === 17) {
-        // Assuming 17 represents General Submission
-        if (
-          item.userCreated === this.currentUser.WUserID ||
-          this.currentUser.role.includes('19')
-        ) {
-          bCanView = true;
-        }
-      }
-
-      // Filter logic for firm type
-      if (this.currentUser.FirmQFCNo === '00173' && bCanView) {
-        return true;
-      } else {
-        lstDelete.push(item);
-        return false;
-      }
-    });
-
-    return filteredApplications;
+  onCellClicked(event: any) {
+   
   }
 }
+
+//TODO: Check applyAppSecurity in Administration.aspx.cs line 84
