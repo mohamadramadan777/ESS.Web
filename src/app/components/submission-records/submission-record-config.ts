@@ -45,3 +45,10 @@ export const TableColDef = [
   },
 ];
 
+
+
+export const defaultColDef = 
+  {flex: 1,
+  minWidth: 150,
+  resizable: true,}
+

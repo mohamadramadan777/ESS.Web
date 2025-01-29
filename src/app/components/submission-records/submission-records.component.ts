@@ -1,29 +1,35 @@
-import { MatTableDataSource } from '@angular/material/table';
 import { ColDef } from 'ag-grid-community';
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as config from './submission-record-config';
-import Swal from 'sweetalert2';
+import { Client } from '../../services/api-client';
+import { LoadingService } from '../../services/loader.service';
+import { ToastrService } from 'ngx-toastr';
+import { jwtDecode } from "jwt-decode";
 import {
   TextFilterModule,
   ClientSideRowModelModule,
   NumberEditorModule,
   ValidationModule,
   TextEditorModule,
-  themeQuartz,
   PaginationModule,
   NumberFilterModule,
   PaginationNumberFormatterParams,
   RowSelectionModule,
 } from 'ag-grid-community';
-import { Client, WAccessRequests } from '../../services/api-client';
-import { LoadingService } from '../../services/loader.service';
-import { ToastrService } from 'ngx-toastr';
+
+interface CurrentUser {
+  name: string;
+  WUserID: string;
+  FirmQFCNo: string;
+  role: string;
+}
+
 @Component({
   selector: 'app-submission-records',
   templateUrl: './submission-records.component.html',
   styleUrls: ['./submission-records.component.scss'],
 })
-export class SubmissionRecordsComponent {
+export class SubmissionRecordsComponent implements OnInit {
   public modules = [
     TextFilterModule,
     NumberEditorModule,
@@ -34,67 +40,97 @@ export class SubmissionRecordsComponent {
     NumberFilterModule,
     RowSelectionModule,
   ];
-  paginationPageSize = config.paginationPageSize;
-  theme = config.theme;
-  paginationPageSizeSelector = config.paginationPageSizeSelector;
-  paginationNumberFormatter = (params: PaginationNumberFormatterParams) => {
-    return '[' + params.value.toLocaleString() + ']';
-  };
-  SubmittedColDef: ColDef[] = config.TableColDef;
-  PendingColDef: ColDef[] = config.TableColDef;
+  public paginationPageSize = config.paginationPageSize;
+  public paginationPageSizeSelector = config.paginationPageSizeSelector;
+  public SubmittedColDef: ColDef[] = config.TableColDef;
+  public PendingColDef: ColDef[] = config.TableColDef;
+  public Submitted: any[] = [];
+  public defaultColDef = config.defaultColDef;
+  private currentUser: CurrentUser | null = null;
+  public theme = config.theme;
+
   constructor(
     private client: Client,
     private loadingService: LoadingService,
     private toastr: ToastrService
   ) {}
+
   ngOnInit(): void {
+    this.decodeToken();
     this.loadSubmittedRecords();
-    this.loadPendingRecords();
   }
-  Submitted : WAccessRequests[] = [];
-  Pending: WAccessRequests[] = [];
-  SubmittedLoaded: boolean = false;
-  PendingLoaded: boolean = false;
 
-  defaultColDef = {
-    flex: 1,
-    minWidth: 150,
-    resizable: true,
-  };
+  private decodeToken(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.currentUser = jwtDecode<CurrentUser>(token);
+    } else {
+      console.error('Token not found!');
+    }
+  }
 
-  loadSubmittedRecords(): void {
+  private loadSubmittedRecords(): void {
+    this.loadingService.show();
     this.client.getSubmittedApplications().subscribe({
       next: (response) => {
-        this.SubmittedLoaded=true;
-        if(this.PendingLoaded){
-          this.loadingService.hide()
-        }
-        if (response && response.isSuccess && response.response) {
-          this.Submitted = response.response;
+
+        if (response.isSuccess && response.response) {
+          this.Submitted = this.processApplications(response.response);
         } else {
-          this.toastr.error('Failed to load Submitted.', 'Error');
-          console.error('Failed to load Submitted:', response?.errorMessage);
+          this.toastr.error('Failed to load applications.', 'Error');
+          console.error('Failed to load applications:', response?.errorMessage);
         }
-
-    },
-    error: (error) => {
-      this.SubmittedLoaded = true;
-      if (this.PendingLoaded) {
         this.loadingService.hide();
-      }
-      this.toastr.error('Error occurred while fetching Submitted.', 'Error');
-      console.error('Error occurred while fetching Submitted:', error);
-    },
-    
-  });}
+      },
+      error: (error) => {
+        this.toastr.error('Error occurred while fetching applications.', 'Error');
+        console.error('Error occurred while fetching applications:', error);
+        this.loadingService.hide();
+      },
+    });
+  }
+  
 
-  loadPendingRecords(): void {
-   
+  private processApplications(applications: any[]): any[] {
+    
+  
+    const filteredApplications = applications.filter((item) => {
+      let bCanView = false;
+  
+      // Handle Individual Applications
+      if (item.objectID === 15 && item.userCreated === this.currentUser?.WUserID) {
+        bCanView = true;
+      }
+  
+      // Handle Notification of Competency
+      if (item.objectID === 16 && this.hasRole('19')) {
+        bCanView = true;
+      }
+  
+      // Handle General Submission
+      if (item.objectID === 17 && (item.userCreated === this.currentUser?.WUserID || this.hasRole('19'))) {
+        bCanView = true;
+      }
+  
+      // Firm Role-Based Access
+      if (this.currentUser?.FirmQFCNo === '00173') {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  
+    return filteredApplications;
+    // also the filtering according to signatories is still to be set wwaiting for api 
+  }
+  
+
+  private hasRole(role: string): boolean {
+    return this.currentUser?.role.split('@').includes(role) || false;
   }
 
-  onCellClicked(event: any) {
-   
+  onRowClicked(event: any): void {
+    console.log('Row clicked:', event.data);
+    // Handle row click actions here (e.g., navigate or show modal)
   }
 }
-
-//TODO: Check applyAppSecurity in Administration.aspx.cs line 84

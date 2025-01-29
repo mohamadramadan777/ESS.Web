@@ -18,7 +18,7 @@
             [defaultColDef]="defaultColDef"
             [columnDefs]="SubmittedColDef"
             [rowData]="Submitted"
-            (cellClicked)="onCellClicked($event)"
+            (cellClicked)="onRowClicked($event)"
             [pagination]="true"
             [paginationPageSize]="paginationPageSize"
             [paginationPageSizeSelector]="paginationPageSizeSelector"
@@ -30,7 +30,7 @@
       <!-- Submitted -->
       <mat-tab label="Pending">
         <div class="table-content">
-          <ag-grid-angular
+          <!-- <ag-grid-angular
             class="ag-theme-alpine custom-ag-grid"
             [theme]="theme"
             [modules]="modules"
@@ -43,7 +43,7 @@
             [paginationPageSizeSelector]="paginationPageSizeSelector"
             [domLayout]="'autoHeight'"
           >
-          </ag-grid-angular>
+          </ag-grid-angular> -->
         </div>
       </mat-tab>
     </mat-tab-group>
