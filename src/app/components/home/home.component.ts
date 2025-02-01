@@ -327,6 +327,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.toastr.error('Error occurred while fetching Pending items.', 'Error');
         console.error('Error occurred while fetching Pending items:', error);
+        this.loadingService.hide();
       },
     });
   }
@@ -394,6 +395,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.toastr.error('Error occurred while fetching General Communication.', 'Error');
         console.error('Error occurred while fetching General Communication:', error);
+        this.loadingService.hide();
       },
     });
   }
@@ -434,6 +436,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.toastr.error('Error occurred while fetching General Submission Forms.', 'Error');
         console.error('Error occurred while fetching General Submission Forms:', error);
+        this.loadingService.hide();
       },
     });
   }
