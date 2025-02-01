@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppConstants } from '../../constants/app.constants';
 import { FirmType, WObjects, PendingItemsOnHomePage } from '../../enums/app.enums';
-import { Client, UserPendingItems, WNoticeList } from '../../services/api-client';
+import { Client, GeneralSubmissionForm, UserPendingItems, WNoticeList } from '../../services/api-client';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -40,11 +40,29 @@ export class HomeComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private dialog: MatDialog) { }
 
+    requiredSignoff: { title: string; overdueDays: number; dueDate: string }[] = [
+      { title: "Loading...", overdueDays: 0, dueDate: "" }
+    ];
+    
+    generealCommunications: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [
+      { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
+    ];
+    
+    generalSubmissionForms: { title: string; link: string; WIndFromTypeID: number; DocTypeId: number }[] = [
+      { title: "Loading...", link: "", WIndFromTypeID: 0, DocTypeId: 0 }
+    ];
+    
+  filteredTables: any[] = []; // Stores tables with data
+  requiredSignoffLoaded = false;
+  pendingSubmissionsLoaded = false;
+
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
     this.displayESSAnncouncement();
     this.getPendingForLoggedInUser();
     this.getGeneralCommunication();
+    this.getGeneralSubmissionForms();
+    this.pendingSubmissionsLoaded = true;
     //this.startAutoSwitch();
   }
 
@@ -63,14 +81,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: 'Notices', icon: 'notifications', route: '/notices' },
   ];
 
-  generealCommunications: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [];
-
   // Table Data
   tables = [
     {
       header: 'Required Sign-offs',
       icon: 'assignment_turned_in',
-      data: [],
+      data: this.requiredSignoff,
       columns: [
         { headerName: 'Your sign-off is required on the following:', field: 'title', flex: 1, minWidth: 800 },
       ],
@@ -153,45 +169,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       header: 'Forms to Download and Submit',
       icon: 'cloud_download',
-      data: [
-        {
-          formName: 'Form G03 - Controlled function application',
-          downloadLink: 'Download G03 from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form Q12 - Controlled function withdrawal',
-          downloadLink: 'Download Q12 from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form Q13 - Application by an Authorised Firm to Vary the Scope or Withdraw its Authorisation',
-          downloadLink: 'Download Q13 from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form G07 - Notifications',
-          downloadLink: 'Download G07 from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form Q05 - Application for Waiver or Modification',
-          downloadLink: 'Download Q05 from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form Q06A - Controller Notice - Authorised Firms',
-          downloadLink: 'Download Q06A from here',
-          submitLink: 'Submit to RA',
-        },
-        {
-          formName: 'Form Q14 - General Submission Form',
-          downloadLink: 'Download Q14 from here',
-          submitLink: 'Submit to RA',
-        },
-      ],
+      data: this.generalSubmissionForms,
+      // [
+      //   {
+      //     formName: 'Form G03 - Controlled function application',
+      //     downloadLink: 'Download G03 from here',
+      //     submitLink: 'Submit to RA',
+      //   }
+      // ],
       columns: [
-        { headerName: 'Form', field: 'formName', flex: 2, minWidth: 800 },
+        { headerName: 'Form', field: 'title', flex: 2, minWidth: 800 },
         {
           headerName: 'Download', field: 'downloadLink', maxWidth: 120,
           cellRenderer: (params: any) => {
@@ -245,7 +232,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   autoSwitchInterval: any;
 
   get currentTable() {
-    return this.tables[this.currentTableIndex];
+    return this.filteredTables[this.currentTableIndex];
+  }
+
+  updateFilteredTables(): void {
+    this.filteredTables = this.tables.filter(table => !(table.header === 'General Communication' && table.data.length === 0));
   }
 
   defaultColDef: ColDef = {
@@ -339,28 +330,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
   processPendingItems(responseData: UserPendingItems[]): void {
-    const processedData: { title: string; overdueDays: number; dueDate: string }[] = [];
-
+    this.requiredSignoff.pop();
     for (const item of responseData) {
       let finalDescription = '';
-
       if (item.objectID === WObjects.ReportSchedule) {
-        let reportDesc = "##ReportName## report due on ##DueDate##";//this.getMessageProperty(PendingItemsOnHomePage.ReportDesc);
+        let reportDesc = "##ReportName## report due on ##DueDate##";//TODO: this.getMessageProperty(PendingItemsOnHomePage.ReportDesc);
         reportDesc = reportDesc.replace(AppConstants.Keywords.REPLACE_REPORT_NAME, item.reportOrIndName || '');
         reportDesc = reportDesc.replace(AppConstants.Keywords.REPLACE_DUE_DATE, item.rptDueDate || '');
         finalDescription = reportDesc;
       } else if (item.objectID === WObjects.IndividualApplications) {
-        let purposeDesc = "AI Application for ##IndividualName## for ##Purpose##";//this.getMessageProperty(PendingItemsOnHomePage.AIDesc);
+        let purposeDesc = "AI Application for ##IndividualName## for ##Purpose##";//TODO: this.getMessageProperty(PendingItemsOnHomePage.AIDesc);
         purposeDesc = purposeDesc.replace('##IndividualName##', item.reportOrIndName || '');
         purposeDesc = purposeDesc.replace('##Purpose##', item.purpose || '');
         finalDescription = purposeDesc;
       } else if (item.objectID === WObjects.NotificationOfCompetency) {
-        let purposeDesc = "Notification of Competency for ##IndividualName## created on ##CreatedDate## is pending for signature.";//this.getMessageProperty(PendingItemsOnHomePage.NocSignOffPending);
+        let purposeDesc = "Notification of Competency for ##IndividualName## created on ##CreatedDate## is pending for signature."; TODO: //this.getMessageProperty(PendingItemsOnHomePage.NocSignOffPending);
         purposeDesc = purposeDesc.replace('##IndividualName##', item.reportOrIndName || '');
         purposeDesc = purposeDesc.replace('##CreatedDate##', item.dateCreated || '');
         finalDescription = purposeDesc;
       } else if (item.objectID === WObjects.GeneralSubmission) {
-        let purposeDesc = "##FormType## created on ##CreatedDate## is pending for signature.";//this.getMessageProperty(PendingItemsOnHomePage.GenSubSignOffPending);
+        let purposeDesc = "##FormType## created on ##CreatedDate## is pending for signature.";//TODO: this.getMessageProperty(PendingItemsOnHomePage.GenSubSignOffPending);
         purposeDesc = purposeDesc.replace('##FormType##', item.purpose || '');
         purposeDesc = purposeDesc.replace('##CreatedDate##', item.dateCreated || '');
         finalDescription = purposeDesc;
@@ -375,15 +364,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
 
       // Push the processed data to the array
-      processedData.push({
+      this.requiredSignoff.push({
         title: finalDescription,
         overdueDays: 0,
         dueDate: ''
       });
+      this.requiredSignoffLoaded = true;
+      this.selectDefaultTable();
     }
-
-    // Assign the processed data to the table
-    this.tables[0].data = processedData;
   }
 
   getGeneralCommunication(): void {
@@ -410,7 +398,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   processGeneralCommunication(responseData: WNoticeList[]): void {
-
+    this.generealCommunications.pop();
     for (const item of responseData) {
       if (item.wResponseRequired) {
         continue;
@@ -423,9 +411,45 @@ export class HomeComponent implements OnInit, OnDestroy {
         wsosStatusTypeID: item.wsosStatusTypeID ?? 0,
       });
     }
-    // Assign the processed data to the table
-    // this.tables[2].data = processedData;
+    const generalCommunicationTable = this.tables.find(table => table.header === "General Communication");
+    if (generalCommunicationTable) {
+      generalCommunicationTable.data = this.generealCommunications;
+    }
+
+    this.updateFilteredTables();
   }
+
+  getGeneralSubmissionForms(): void {
+
+    this.client.getGeneralSubmissionForms(this.firmType).subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          this.processGeneralSubmissionForms(response.response);//map the response to the table data here.
+        } else {
+          this.toastr.error('Failed to load General Submission Forms.', 'Error');
+          console.error('Failed to load General Submission Forms:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error occurred while fetching General Submission Forms.', 'Error');
+        console.error('Error occurred while fetching General Submission Forms:', error);
+      },
+    });
+  }
+
+  processGeneralSubmissionForms(responseData: GeneralSubmissionForm[]): void {
+    for (const item of responseData) {
+
+      // Push the processed data to the array
+      this.generalSubmissionForms.push({
+        title: item.docTypeDesc ?? "",
+        link: item.linkToDownload ?? "",
+        WIndFromTypeID: item.wIndFromTypeID ?? 0, // TODO: 
+        DocTypeId: item.docTypeId ?? 0,
+      });
+    }
+  }
+
 
   onRowDoubleClicked(event: any): void {
     if (event.data.wNoticeID) {
@@ -461,4 +485,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
+  selectDefaultTable(): void {
+    if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded) {
+      const indexToSelect = this.requiredSignoff.length > 0 ? 0 : (this.generealCommunications.length > 0 ? 1 : 2);
+      this.selectTable(indexToSelect + 1);
+      setTimeout(() => {
+        this.selectTable(indexToSelect);
+      }, 100);
+    }
+  }
 }
