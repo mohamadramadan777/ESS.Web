@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { jwtDecode } from 'jwt-decode';
 import { catchError,map } from 'rxjs/operators';
 import { Observable, forkJoin, of } from 'rxjs';
-
+import {PendingItemsOnHomePage} from '../../enums/app.enums';
 import {
   TextFilterModule,
   ClientSideRowModelModule,
@@ -164,19 +164,19 @@ export class SubmissionRecordsComponent implements OnInit {
 
   // ✅ Generate Description Asynchronously
   private generateDescription(item: any): Observable<string> {
-    let messageKey = '';
+    let messageKey = 0;
   
     // ✅ Determine message key based on status (Submitted vs Pending)
     if (item.statusTypeID === 4) { // ✅ Status 4 → Submitted Applications
       switch (item.objectID) {
         case 15: // Individual Applications
-          messageKey = 'ApplicationSubmitted';
+          messageKey = PendingItemsOnHomePage.ApplicationSubmitted;
           break;
         case 16: // Notification of Competency
-          messageKey = 'SubmittedNOCOnHomePage';
+          messageKey = PendingItemsOnHomePage.SubmittedNOCOnHomePage;
           break;
         case 17: // General Submission
-          messageKey = 'SubmittedGenSubOnHomePage';
+          messageKey = PendingItemsOnHomePage.SubmittedGenSubOnHomePage;
           break;
         default:
           return of('No description available.');
@@ -184,13 +184,13 @@ export class SubmissionRecordsComponent implements OnInit {
     } else { // ✅ Any other status → Pending Applications
       switch (item.objectID) {
         case 15: // Individual Applications
-          messageKey = item.wObjectSOStatusID ? 'ApplicationSignOffPending' : 'ApplicationNotSubmitted';
+          messageKey = item.wObjectSOStatusID ? PendingItemsOnHomePage.ApplicationSignOffPending : PendingItemsOnHomePage.ApplicationNotSubmitted;
           break;
         case 16: // Notification of Competency
-          messageKey = 'ApplicationSignOffPending';
+          messageKey = PendingItemsOnHomePage.ApplicationSignOffPending;
           break;
         case 17: // General Submission
-          messageKey = item.wObjectSOStatusID ? 'GenSubSignOffPending' : 'GenSubNotSubmitted';
+          messageKey = item.wObjectSOStatusID ? PendingItemsOnHomePage.GenSubSignOffPending : PendingItemsOnHomePage.GenSubNotSubmitted;
           break;
         default:
           return of('No description available.');
@@ -204,7 +204,7 @@ export class SubmissionRecordsComponent implements OnInit {
   
     return this.client.getConfigMessage(
         0,              // WConfigMessageID (default: 0)
-        messageKey,     // ConfigKey (actual key)
+        messageKey.toString(),     // ConfigKey (actual key)
         configDesc,     // ConfigDesc (placeholder instead of "")
         configValue,    // ConfigValue (placeholder instead of "")
         isEditable      // IsEditable (false)
