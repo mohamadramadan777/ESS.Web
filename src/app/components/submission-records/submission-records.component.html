@@ -1,0 +1,51 @@
+<app-header></app-header>
+<app-navbar [selectedPage]="'home'"></app-navbar>
+<div class="submission-records-container">
+  <h2>Submission Records</h2>
+  <p>Following applications are submitted to GFICA</p>
+  <small>Please click on the application to view details</small>
+
+  <div class="submission-records" data-ag-theme-mode="light-red">
+    <mat-tab-group class="custom-tab-group" [backgroundColor]="">
+      <!-- Submitted -->
+      <mat-tab label="Submitted">
+        <!-- Table Section -->
+        <div class="table-content">
+          <ag-grid-angular
+            class="ag-theme-alpine custom-ag-grid"
+            [theme]="theme"
+            [modules]="modules"
+            [defaultColDef]="defaultColDef"
+            [columnDefs]="SubmittedColDef"
+            [rowData]="Submitted"
+            (cellClicked)="onRowClicked($event)"
+            [pagination]="true"
+            [paginationPageSize]="paginationPageSize"
+            [paginationPageSizeSelector]="paginationPageSizeSelector"
+            [domLayout]="'autoHeight'"
+          >
+          </ag-grid-angular>
+        </div>
+      </mat-tab>
+      <!-- Submitted -->
+      <mat-tab label="Pending">
+        <div class="table-content">
+          <ag-grid-angular
+            class="ag-theme-alpine custom-ag-grid"
+            [theme]="theme"
+            [modules]="modules"
+            [defaultColDef]="defaultColDef"
+            [columnDefs]="PendingColDef"
+            [rowData]="Pending"
+            (cellClicked)="onRowClicked($event)"
+            [pagination]="true"
+            [paginationPageSize]="paginationPageSize"
+            [paginationPageSizeSelector]="paginationPageSizeSelector"
+            [domLayout]="'autoHeight'"
+          >
+          </ag-grid-angular>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

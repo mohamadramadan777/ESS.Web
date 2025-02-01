@@ -52,6 +52,7 @@ import { ViewNoticeComponent } from './components/notices/view-notice/view-notic
 import { MatDialogModule } from '@angular/material/dialog';
 import { NoticeQuestionsComponent } from './components/notices/notice-questions/notice-questions.component';
 import { HtmlViewerComponent } from './components/html-viewer/html-viewer.component';
+import { SubmissionRecordsComponent } from './components/submission-records/submission-records.component';
 import { FileUploaderComponent } from './components/file-uploader/file-uploader.component';
 
 
@@ -80,6 +81,7 @@ import { FileUploaderComponent } from './components/file-uploader/file-uploader.
     ViewNoticeComponent,
     NoticeQuestionsComponent,
     HtmlViewerComponent,
+    SubmissionRecordsComponent,
     FileUploaderComponent,
   ],
   imports: [
