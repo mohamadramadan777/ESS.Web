@@ -30,20 +30,20 @@
       <!-- Submitted -->
       <mat-tab label="Pending">
         <div class="table-content">
-          <!-- <ag-grid-angular
+          <ag-grid-angular
             class="ag-theme-alpine custom-ag-grid"
             [theme]="theme"
             [modules]="modules"
             [defaultColDef]="defaultColDef"
             [columnDefs]="PendingColDef"
             [rowData]="Pending"
-            (cellClicked)="onCellClicked($event)"
+            (cellClicked)="onRowClicked($event)"
             [pagination]="true"
             [paginationPageSize]="paginationPageSize"
             [paginationPageSizeSelector]="paginationPageSizeSelector"
             [domLayout]="'autoHeight'"
           >
-          </ag-grid-angular> -->
+          </ag-grid-angular>
         </div>
       </mat-tab>
     </mat-tab-group>

@@ -730,13 +730,594 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-item-for-logged-in-user";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingItemForLoggedInUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingItemForLoggedInUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserPendingItemsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserPendingItemsListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingItemForLoggedInUser(response: HttpResponseBase): Observable<UserPendingItemsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserPendingItemsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param firmType (optional) 
+     * @return OK
+     */
+    getGeneralSubmissionForms(firmType: string | undefined): Observable<AttachmentListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-general-submission-forms?";
+        if (firmType === null)
+            throw new Error("The parameter 'firmType' cannot be null.");
+        else if (firmType !== undefined)
+            url_ += "firmType=" + encodeURIComponent("" + firmType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGeneralSubmissionForms(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGeneralSubmissionForms(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentListBaseResponse>;
+        }));
+    }
+
+    protected processGetGeneralSubmissionForms(response: HttpResponseBase): Observable<AttachmentListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateApplicationData(body: ApplicationDataDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/insert-update-application-data";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateApplicationData(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateApplicationData(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateApplicationData(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param qfcNumber (optional) 
+     * @param aiNumber (optional) 
+     * @param formTypeID (optional) 
+     * @param windApplicationID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    isDuplicateApplication(qfcNumber: string | undefined, aiNumber: string | undefined, formTypeID: number | undefined, windApplicationID: number | undefined, body: number[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/is-duplicate-application?";
+        if (qfcNumber === null)
+            throw new Error("The parameter 'qfcNumber' cannot be null.");
+        else if (qfcNumber !== undefined)
+            url_ += "qfcNumber=" + encodeURIComponent("" + qfcNumber) + "&";
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (formTypeID === null)
+            throw new Error("The parameter 'formTypeID' cannot be null.");
+        else if (formTypeID !== undefined)
+            url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
+        if (windApplicationID === null)
+            throw new Error("The parameter 'windApplicationID' cannot be null.");
+        else if (windApplicationID !== undefined)
+            url_ += "windApplicationID=" + encodeURIComponent("" + windApplicationID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsDuplicateApplication(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsDuplicateApplication(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processIsDuplicateApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appID (optional) 
+     * @return OK
+     */
+    getIndApplDetails(appID: number | undefined): Observable<WApplicationDetailDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-ind-appl-details?";
+        if (appID === null)
+            throw new Error("The parameter 'appID' cannot be null.");
+        else if (appID !== undefined)
+            url_ += "appID=" + encodeURIComponent("" + appID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndApplDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndApplDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WApplicationDetailDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WApplicationDetailDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetIndApplDetails(response: HttpResponseBase): Observable<WApplicationDetailDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WApplicationDetailDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WApplicationDetailDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appID (optional) 
+     * @return OK
+     */
+    getIndContactDetail(appID: number | undefined): Observable<IndividualDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-ind-contact-detail?";
+        if (appID === null)
+            throw new Error("The parameter 'appID' cannot be null.");
+        else if (appID !== undefined)
+            url_ += "appID=" + encodeURIComponent("" + appID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndContactDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndContactDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<IndividualDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<IndividualDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetIndContactDetail(response: HttpResponseBase): Observable<IndividualDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = IndividualDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<IndividualDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appId (optional) 
+     * @param isPrimaryDocFlag (optional) 
+     * @return OK
+     */
+    getAttachments(appId: number | undefined, isPrimaryDocFlag: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-attachments?";
+        if (appId === null)
+            throw new Error("The parameter 'appId' cannot be null.");
+        else if (appId !== undefined)
+            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
+        if (isPrimaryDocFlag === null)
+            throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
+        else if (isPrimaryDocFlag !== undefined)
+            url_ += "isPrimaryDocFlag=" + encodeURIComponent("" + isPrimaryDocFlag) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appId (optional) 
+     * @param isPrimaryDocFlag (optional) 
+     * @return OK
+     */
+    getAttachedFiles(appId: number | undefined, isPrimaryDocFlag: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-attached-files?";
+        if (appId === null)
+            throw new Error("The parameter 'appId' cannot be null.");
+        else if (appId !== undefined)
+            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
+        if (isPrimaryDocFlag === null)
+            throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
+        else if (isPrimaryDocFlag !== undefined)
+            url_ += "isPrimaryDocFlag=" + encodeURIComponent("" + isPrimaryDocFlag) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAttachedFiles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAttachedFiles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetAttachedFiles(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getEmptyAttachment(): Observable<AttachmentDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-empty-attachment";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEmptyAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEmptyAttachment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetEmptyAttachment(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getRptSchAttachments(body: AttachmentDto | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-rpt-sch-attachments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRptSchAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRptSchAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetRptSchAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
      * @param wObjAttachementID (optional) 
      * @param wObjectID (optional) 
      * @param wObjectInstanceID (optional) 
      * @param wObjectInstanceRevNum (optional) 
+     * @param isPrimaryAttachment (optional) 
      * @return OK
      */
-    getObjAttachments(wObjAttachementID: number | undefined, wObjectID: number | undefined, wObjectInstanceID: number | undefined, wObjectInstanceRevNum: number | undefined): Observable<AttachmentDtoListBaseResponse> {
+    getObjAttachments(wObjAttachementID: number | undefined, wObjectID: number | undefined, wObjectInstanceID: number | undefined, wObjectInstanceRevNum: number | undefined, isPrimaryAttachment: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
         let url_ = this.baseUrl + "/api/Attachments/get-obj-attachments?";
         if (wObjAttachementID === null)
             throw new Error("The parameter 'wObjAttachementID' cannot be null.");
@@ -754,6 +1335,10 @@ export class Client {
             throw new Error("The parameter 'wObjectInstanceRevNum' cannot be null.");
         else if (wObjectInstanceRevNum !== undefined)
             url_ += "WObjectInstanceRevNum=" + encodeURIComponent("" + wObjectInstanceRevNum) + "&";
+        if (isPrimaryAttachment === null)
+            throw new Error("The parameter 'isPrimaryAttachment' cannot be null.");
+        else if (isPrimaryAttachment !== undefined)
+            url_ += "isPrimaryAttachment=" + encodeURIComponent("" + isPrimaryAttachment) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -798,6 +1383,708 @@ export class Client {
             }));
         }
         return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    saveObjAttachments(body: AttachmentDto[] | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/save-obj-attachments";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveObjAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveObjAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processSaveObjAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wIndAttID (optional) 
+     * @return OK
+     */
+    deleteObjAttachment(wIndAttID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/delete-obj-attachment?";
+        if (wIndAttID === null)
+            throw new Error("The parameter 'wIndAttID' cannot be null.");
+        else if (wIndAttID !== undefined)
+            url_ += "WIndAttID=" + encodeURIComponent("" + wIndAttID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteObjAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteObjAttachment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteObjAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pWObjectID (optional) 
+     * @param pWObjInstanceID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    deleteAllObjAttachments(pWObjectID: number | undefined, pWObjInstanceID: number | undefined, body: AttachmentDto[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/delete-all-obj-attachments?";
+        if (pWObjectID === null)
+            throw new Error("The parameter 'pWObjectID' cannot be null.");
+        else if (pWObjectID !== undefined)
+            url_ += "pWObjectID=" + encodeURIComponent("" + pWObjectID) + "&";
+        if (pWObjInstanceID === null)
+            throw new Error("The parameter 'pWObjInstanceID' cannot be null.");
+        else if (pWObjInstanceID !== undefined)
+            url_ += "pWObjInstanceID=" + encodeURIComponent("" + pWObjInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteAllObjAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteAllObjAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteAllObjAttachments(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getEmptyObjAttachment(): Observable<AttachmentDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-empty-obj-attachment";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEmptyObjAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEmptyObjAttachment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetEmptyObjAttachment(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateObjAttachmentStatus(body: AttachmentDto[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/update-obj-attachment-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateObjAttachmentStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateObjAttachmentStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateObjAttachmentStatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pDocTypeID (optional) 
+     * @return OK
+     */
+    getDocTypeDec(pDocTypeID: number | undefined): Observable<AttachmentDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-doc-type-dec?";
+        if (pDocTypeID === null)
+            throw new Error("The parameter 'pDocTypeID' cannot be null.");
+        else if (pDocTypeID !== undefined)
+            url_ += "pDocTypeID=" + encodeURIComponent("" + pDocTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocTypeDec(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocTypeDec(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetDocTypeDec(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pAppID (optional) 
+     * @return OK
+     */
+    getPrimaryAttachments(pAppID: number | undefined): Observable<AttachmentDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-primary-attachments?";
+        if (pAppID === null)
+            throw new Error("The parameter 'pAppID' cannot be null.");
+        else if (pAppID !== undefined)
+            url_ += "pAppID=" + encodeURIComponent("" + pAppID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPrimaryAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPrimaryAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetPrimaryAttachments(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param attachmentID (optional) 
+     * @param attachmentStatusTypeID (optional) 
+     * @return OK
+     */
+    checkAttachmentStatus(attachmentID: number | undefined, attachmentStatusTypeID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/check-attachment-status?";
+        if (attachmentID === null)
+            throw new Error("The parameter 'attachmentID' cannot be null.");
+        else if (attachmentID !== undefined)
+            url_ += "attachmentID=" + encodeURIComponent("" + attachmentID) + "&";
+        if (attachmentStatusTypeID === null)
+            throw new Error("The parameter 'attachmentStatusTypeID' cannot be null.");
+        else if (attachmentStatusTypeID !== undefined)
+            url_ += "attachmentStatusTypeID=" + encodeURIComponent("" + attachmentStatusTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckAttachmentStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckAttachmentStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckAttachmentStatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getHistoryDetails(body: HistoryDetailsDto | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-history-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetHistoryDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetHistoryDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetHistoryDetails(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param fileLocation (optional) 
+     * @param pFileName (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    uploadToFolder(fileLocation: string | undefined, pFileName: string | undefined, body: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder?";
+        if (fileLocation === null)
+            throw new Error("The parameter 'fileLocation' cannot be null.");
+        else if (fileLocation !== undefined)
+            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
+        if (pFileName === null)
+            throw new Error("The parameter 'pFileName' cannot be null.");
+        else if (pFileName !== undefined)
+            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUploadToFolder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUploadToFolder(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUploadToFolder(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pFileName (optional) 
+     * @param fileLocation (optional) 
+     * @return OK
+     */
+    downloadFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<ByteArrayBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/download-file?";
+        if (pFileName === null)
+            throw new Error("The parameter 'pFileName' cannot be null.");
+        else if (pFileName !== undefined)
+            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+        if (fileLocation === null)
+            throw new Error("The parameter 'fileLocation' cannot be null.");
+        else if (fileLocation !== undefined)
+            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDownloadFile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDownloadFile(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ByteArrayBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ByteArrayBaseResponse>;
+        }));
+    }
+
+    protected processDownloadFile(response: HttpResponseBase): Observable<ByteArrayBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ByteArrayBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ByteArrayBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pFileName (optional) 
+     * @param fileLocation (optional) 
+     * @return OK
+     */
+    deleteFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/delete-file?";
+        if (pFileName === null)
+            throw new Error("The parameter 'pFileName' cannot be null.");
+        else if (pFileName !== undefined)
+            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+        if (fileLocation === null)
+            throw new Error("The parameter 'fileLocation' cannot be null.");
+        else if (fileLocation !== undefined)
+            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteFile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteFile(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteFile(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -959,6 +2246,113 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    getPendingItems(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-pending-items";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingItems(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingItems(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationID (optional) 
+     * @return OK
+     */
+    getApplicationDetail(applicationID: number | undefined): Observable<ApplicationDetailDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-application-detail?";
+        if (applicationID === null)
+            throw new Error("The parameter 'applicationID' cannot be null.");
+        else if (applicationID !== undefined)
+            url_ += "ApplicationID=" + encodeURIComponent("" + applicationID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetApplicationDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetApplicationDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ApplicationDetailDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ApplicationDetailDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetApplicationDetail(response: HttpResponseBase): Observable<ApplicationDetailDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ApplicationDetailDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ApplicationDetailDtoBaseResponse>(null as any);
+    }
+
+    /**
      * @param tableName (optional) 
      * @return OK
      */
@@ -1015,6 +2409,62 @@ export class Client {
     }
 
     /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getConfigMessage(body: ConfigMessage | undefined): Observable<ConfigMessageListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-config-message";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetConfigMessage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConfigMessage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ConfigMessageListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ConfigMessageListBaseResponse>;
+        }));
+    }
+
+    protected processGetConfigMessage(response: HttpResponseBase): Observable<ConfigMessageListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ConfigMessageListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ConfigMessageListBaseResponse>(null as any);
+    }
+
+    /**
      * @param year (optional) 
      * @return OK
      */
@@ -1049,6 +2499,57 @@ export class Client {
     }
 
     protected processGetWnoticeList(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WNoticeListListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WNoticeListListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getWnoticeListForHome(): Observable<WNoticeListListBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-list-for-Home";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWnoticeListForHome(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWnoticeListForHome(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WNoticeListListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WNoticeListListBaseResponse>;
+        }));
+    }
+
+    protected processGetWnoticeListForHome(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1247,6 +2748,118 @@ export class Client {
         }
         return _observableOf<WNoticeQuestionnaireItemDtoListBaseResponse>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateReportSchDetails(body: InsertReportSchDetailsDto | undefined): Observable<Int32ListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-report-sch-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateReportSchDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateReportSchDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateReportSchDetails(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32ListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32ListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateObjectSoStatusDetails(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateObjectSoStatusDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
 }
 
 export class Address implements IAddress {
@@ -1435,6 +3048,54 @@ export interface IAppRoles {
     roleId?: number;
     roleDescription?: string | undefined;
     roleValid?: boolean;
+}
+
+export class ApplicationDataDto implements IApplicationDataDto {
+    objIndividualDetails?: IndividualDetailsDto;
+    lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
+
+    constructor(data?: IApplicationDataDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objIndividualDetails = _data["objIndividualDetails"] ? IndividualDetailsDto.fromJS(_data["objIndividualDetails"]) : <any>undefined;
+            if (Array.isArray(_data["lstControledFunctionIDs"])) {
+                this.lstControledFunctionIDs = [] as any;
+                for (let item of _data["lstControledFunctionIDs"])
+                    this.lstControledFunctionIDs!.push(ControlledFunctionDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ApplicationDataDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationDataDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objIndividualDetails"] = this.objIndividualDetails ? this.objIndividualDetails.toJSON() : <any>undefined;
+        if (Array.isArray(this.lstControledFunctionIDs)) {
+            data["lstControledFunctionIDs"] = [];
+            for (let item of this.lstControledFunctionIDs)
+                data["lstControledFunctionIDs"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IApplicationDataDto {
+    objIndividualDetails?: IndividualDetailsDto;
+    lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
 }
 
 export class ApplicationDetail implements IApplicationDetail {
@@ -1877,6 +3538,578 @@ export interface IApplicationDetail {
     updateWobjectStatus?: boolean;
 }
 
+export class ApplicationDetailDto implements IApplicationDetailDto {
+    applicationID?: number;
+    applStatusTypeID?: number;
+    wObjectSOStatusID?: number | undefined;
+    updateWobjectStatus?: boolean;
+    resubmissionComments?: string | undefined;
+    appUserID?: number;
+    qfcNmuner?: string | undefined;
+    aiNumber?: string | undefined;
+    formTypeID?: number;
+    arrangementTypeID?: number | undefined;
+    arrangementTypeDesc?: string | undefined;
+    arrangementTypeOtherDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    cfExcercisedDesc?: string | undefined;
+    currentJobTitle?: string | undefined;
+    jobTitleChangeFlag?: boolean | undefined;
+    proposedJobTitle?: string | undefined;
+    jobDesc?: string | undefined;
+    pastPositionFlag?: boolean | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementFlag?: boolean | undefined;
+    altArrangementDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    cfApplicationDetail?: string | undefined;
+    residencyNAFlag?: boolean | undefined;
+    aliasesNAFlag?: boolean | undefined;
+    careerHistoryNAFlag?: boolean | undefined;
+    careerHistoryNAReason?: string | undefined;
+    prevEmploymentFlag?: boolean | undefined;
+    appCreatedBy?: number;
+    reglsNAFlag?: boolean | undefined;
+    nationalIdNAFlag?: boolean | undefined;
+    qatarRelocationNAFlag?: boolean | undefined;
+    profDevFalg?: boolean | undefined;
+    profMembFlag?: boolean | undefined;
+    higherEduFlag?: boolean | undefined;
+    anyFileToAttachFlag?: boolean | undefined;
+    additionalFileFlag?: boolean | undefined;
+    applicationDate?: string | undefined;
+    prevApplicationId?: number | undefined;
+    additionalSupervisorFlag?: boolean | undefined;
+    positionHeldFlag?: boolean | undefined;
+    supervisingFlag?: boolean | undefined;
+    applicantName?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    proposedRelocationDateDay?: number;
+    proposedRelocationDateMonth?: number;
+    proposedRelocationDateYear?: number;
+
+    constructor(data?: IApplicationDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationID = _data["applicationID"];
+            this.applStatusTypeID = _data["applStatusTypeID"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.updateWobjectStatus = _data["updateWobjectStatus"];
+            this.resubmissionComments = _data["resubmissionComments"];
+            this.appUserID = _data["appUserID"];
+            this.qfcNmuner = _data["qfcNmuner"];
+            this.aiNumber = _data["aiNumber"];
+            this.formTypeID = _data["formTypeID"];
+            this.arrangementTypeID = _data["arrangementTypeID"];
+            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
+            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
+            this.competenciesAndExp = _data["competenciesAndExp"];
+            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
+            this.currentJobTitle = _data["currentJobTitle"];
+            this.jobTitleChangeFlag = _data["jobTitleChangeFlag"];
+            this.proposedJobTitle = _data["proposedJobTitle"];
+            this.jobDesc = _data["jobDesc"];
+            this.pastPositionFlag = _data["pastPositionFlag"];
+            this.pastPositionDesc = _data["pastPositionDesc"];
+            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
+            this.fandPChangeDesc = _data["fandPChangeDesc"];
+            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
+            this.altArrangementFlag = _data["altArrangementFlag"];
+            this.altArrangementDesc = _data["altArrangementDesc"];
+            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
+            this.cfApplicationDetail = _data["cfApplicationDetail"];
+            this.residencyNAFlag = _data["residencyNAFlag"];
+            this.aliasesNAFlag = _data["aliasesNAFlag"];
+            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
+            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
+            this.prevEmploymentFlag = _data["prevEmploymentFlag"];
+            this.appCreatedBy = _data["appCreatedBy"];
+            this.reglsNAFlag = _data["reglsNAFlag"];
+            this.nationalIdNAFlag = _data["nationalIdNAFlag"];
+            this.qatarRelocationNAFlag = _data["qatarRelocationNAFlag"];
+            this.profDevFalg = _data["profDevFalg"];
+            this.profMembFlag = _data["profMembFlag"];
+            this.higherEduFlag = _data["higherEduFlag"];
+            this.anyFileToAttachFlag = _data["anyFileToAttachFlag"];
+            this.additionalFileFlag = _data["additionalFileFlag"];
+            this.applicationDate = _data["applicationDate"];
+            this.prevApplicationId = _data["prevApplicationId"];
+            this.additionalSupervisorFlag = _data["additionalSupervisorFlag"];
+            this.positionHeldFlag = _data["positionHeldFlag"];
+            this.supervisingFlag = _data["supervisingFlag"];
+            this.applicantName = _data["applicantName"];
+            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
+            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
+            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
+            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
+            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
+        }
+    }
+
+    static fromJS(data: any): ApplicationDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationID"] = this.applicationID;
+        data["applStatusTypeID"] = this.applStatusTypeID;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["updateWobjectStatus"] = this.updateWobjectStatus;
+        data["resubmissionComments"] = this.resubmissionComments;
+        data["appUserID"] = this.appUserID;
+        data["qfcNmuner"] = this.qfcNmuner;
+        data["aiNumber"] = this.aiNumber;
+        data["formTypeID"] = this.formTypeID;
+        data["arrangementTypeID"] = this.arrangementTypeID;
+        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
+        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
+        data["competenciesAndExp"] = this.competenciesAndExp;
+        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
+        data["currentJobTitle"] = this.currentJobTitle;
+        data["jobTitleChangeFlag"] = this.jobTitleChangeFlag;
+        data["proposedJobTitle"] = this.proposedJobTitle;
+        data["jobDesc"] = this.jobDesc;
+        data["pastPositionFlag"] = this.pastPositionFlag;
+        data["pastPositionDesc"] = this.pastPositionDesc;
+        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
+        data["fandPChangeDesc"] = this.fandPChangeDesc;
+        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
+        data["altArrangementFlag"] = this.altArrangementFlag;
+        data["altArrangementDesc"] = this.altArrangementDesc;
+        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
+        data["cfApplicationDetail"] = this.cfApplicationDetail;
+        data["residencyNAFlag"] = this.residencyNAFlag;
+        data["aliasesNAFlag"] = this.aliasesNAFlag;
+        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
+        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
+        data["prevEmploymentFlag"] = this.prevEmploymentFlag;
+        data["appCreatedBy"] = this.appCreatedBy;
+        data["reglsNAFlag"] = this.reglsNAFlag;
+        data["nationalIdNAFlag"] = this.nationalIdNAFlag;
+        data["qatarRelocationNAFlag"] = this.qatarRelocationNAFlag;
+        data["profDevFalg"] = this.profDevFalg;
+        data["profMembFlag"] = this.profMembFlag;
+        data["higherEduFlag"] = this.higherEduFlag;
+        data["anyFileToAttachFlag"] = this.anyFileToAttachFlag;
+        data["additionalFileFlag"] = this.additionalFileFlag;
+        data["applicationDate"] = this.applicationDate;
+        data["prevApplicationId"] = this.prevApplicationId;
+        data["additionalSupervisorFlag"] = this.additionalSupervisorFlag;
+        data["positionHeldFlag"] = this.positionHeldFlag;
+        data["supervisingFlag"] = this.supervisingFlag;
+        data["applicantName"] = this.applicantName;
+        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
+        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
+        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
+        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
+        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
+        return data;
+    }
+}
+
+export interface IApplicationDetailDto {
+    applicationID?: number;
+    applStatusTypeID?: number;
+    wObjectSOStatusID?: number | undefined;
+    updateWobjectStatus?: boolean;
+    resubmissionComments?: string | undefined;
+    appUserID?: number;
+    qfcNmuner?: string | undefined;
+    aiNumber?: string | undefined;
+    formTypeID?: number;
+    arrangementTypeID?: number | undefined;
+    arrangementTypeDesc?: string | undefined;
+    arrangementTypeOtherDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    cfExcercisedDesc?: string | undefined;
+    currentJobTitle?: string | undefined;
+    jobTitleChangeFlag?: boolean | undefined;
+    proposedJobTitle?: string | undefined;
+    jobDesc?: string | undefined;
+    pastPositionFlag?: boolean | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementFlag?: boolean | undefined;
+    altArrangementDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    cfApplicationDetail?: string | undefined;
+    residencyNAFlag?: boolean | undefined;
+    aliasesNAFlag?: boolean | undefined;
+    careerHistoryNAFlag?: boolean | undefined;
+    careerHistoryNAReason?: string | undefined;
+    prevEmploymentFlag?: boolean | undefined;
+    appCreatedBy?: number;
+    reglsNAFlag?: boolean | undefined;
+    nationalIdNAFlag?: boolean | undefined;
+    qatarRelocationNAFlag?: boolean | undefined;
+    profDevFalg?: boolean | undefined;
+    profMembFlag?: boolean | undefined;
+    higherEduFlag?: boolean | undefined;
+    anyFileToAttachFlag?: boolean | undefined;
+    additionalFileFlag?: boolean | undefined;
+    applicationDate?: string | undefined;
+    prevApplicationId?: number | undefined;
+    additionalSupervisorFlag?: boolean | undefined;
+    positionHeldFlag?: boolean | undefined;
+    supervisingFlag?: boolean | undefined;
+    applicantName?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    proposedRelocationDateDay?: number;
+    proposedRelocationDateMonth?: number;
+    proposedRelocationDateYear?: number;
+}
+
+export class ApplicationDetailDtoBaseResponse implements IApplicationDetailDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ApplicationDetailDto;
+
+    constructor(data?: IApplicationDetailDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ApplicationDetailDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ApplicationDetailDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationDetailDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IApplicationDetailDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ApplicationDetailDto;
+}
+
+export class Attachment implements IAttachment {
+    wObjectID?: number | undefined;
+    wObjectInstanceID?: number | undefined;
+    wIndApplicationID?: number;
+    wIndAttachementID?: number | undefined;
+    wIndAttachementIDs?: string | undefined;
+    wObjAttachementID?: number | undefined;
+    wObjectInstanceRevNum?: number | undefined;
+    wObjAttachementIDs?: string | undefined;
+    docTypeId?: number;
+    docSubTypeId?: number;
+    docSubTypeIDs?: string | undefined;
+    csV_DocSubTypeId?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docSubTypeDesc?: string | undefined;
+    isDocSupplied?: boolean;
+    dateCreated?: Date;
+    dateModified?: Date;
+    filePath?: string | undefined;
+    reasonforNotAttaching?: string | undefined;
+    otherDocDesc?: string | undefined;
+    userId?: number;
+    isChecked?: boolean;
+    isMandatory?: boolean;
+    fileStream?: string | undefined;
+    fileName?: string | undefined;
+    fileURI?: string | undefined;
+    fileContenct?: string | undefined;
+    isPrimaryDoc?: boolean | undefined;
+    anyFileToattachFlag?: boolean;
+    additionalFileFlag?: boolean | undefined;
+    additionalFileDesc?: string | undefined;
+    statusTypeID?: number;
+    wTermID?: number | undefined;
+    agreedOnTerms?: boolean | undefined;
+    termsAgreedDate?: Date | undefined;
+    reasonForRequest?: string | undefined;
+    userCreated?: number | undefined;
+    dateCreatedStr?: string | undefined;
+    userModified?: number | undefined;
+    dateModifiedStr?: string | undefined;
+    isValidAttachment?: boolean | undefined;
+    isNonSubmissionPermitted?: boolean | undefined;
+    isFileSysGenerated?: boolean | undefined;
+    isAllowMultiple?: boolean | undefined;
+    isFileDescSysGenerated?: boolean | undefined;
+    linkToDownload?: string | undefined;
+    linkToSubmitToRA?: string | undefined;
+    docSubTypeDescCustomText?: string | undefined;
+    objectSOStatusID?: number;
+    fileUploadedByID?: number;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    userID?: number;
+    statusDesc?: string | undefined;
+    userName?: string | undefined;
+    attachmentStatusDate?: string | undefined;
+    wObjectAttachmentStatusID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    docTypeIdEffectivefromdate?: string | undefined;
+    docTypeIdEffectivetodate?: string | undefined;
+    prevAttachmentID?: number | undefined;
+    fileInvalidatedID?: number | undefined;
+
+    constructor(data?: IAttachment) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjectID = _data["wObjectID"];
+            this.wObjectInstanceID = _data["wObjectInstanceID"];
+            this.wIndApplicationID = _data["wIndApplicationID"];
+            this.wIndAttachementID = _data["wIndAttachementID"];
+            this.wIndAttachementIDs = _data["wIndAttachementIDs"];
+            this.wObjAttachementID = _data["wObjAttachementID"];
+            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
+            this.wObjAttachementIDs = _data["wObjAttachementIDs"];
+            this.docTypeId = _data["docTypeId"];
+            this.docSubTypeId = _data["docSubTypeId"];
+            this.docSubTypeIDs = _data["docSubTypeIDs"];
+            this.csV_DocSubTypeId = _data["csV_DocSubTypeId"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docSubTypeDesc = _data["docSubTypeDesc"];
+            this.isDocSupplied = _data["isDocSupplied"];
+            this.dateCreated = _data["dateCreated"] ? new Date(_data["dateCreated"].toString()) : <any>undefined;
+            this.dateModified = _data["dateModified"] ? new Date(_data["dateModified"].toString()) : <any>undefined;
+            this.filePath = _data["filePath"];
+            this.reasonforNotAttaching = _data["reasonforNotAttaching"];
+            this.otherDocDesc = _data["otherDocDesc"];
+            this.userId = _data["userId"];
+            this.isChecked = _data["isChecked"];
+            this.isMandatory = _data["isMandatory"];
+            this.fileStream = _data["fileStream"];
+            this.fileName = _data["fileName"];
+            this.fileURI = _data["fileURI"];
+            this.fileContenct = _data["fileContenct"];
+            this.isPrimaryDoc = _data["isPrimaryDoc"];
+            this.anyFileToattachFlag = _data["anyFileToattachFlag"];
+            this.additionalFileFlag = _data["additionalFileFlag"];
+            this.additionalFileDesc = _data["additionalFileDesc"];
+            this.statusTypeID = _data["statusTypeID"];
+            this.wTermID = _data["wTermID"];
+            this.agreedOnTerms = _data["agreedOnTerms"];
+            this.termsAgreedDate = _data["termsAgreedDate"] ? new Date(_data["termsAgreedDate"].toString()) : <any>undefined;
+            this.reasonForRequest = _data["reasonForRequest"];
+            this.userCreated = _data["userCreated"];
+            this.dateCreatedStr = _data["dateCreatedStr"];
+            this.userModified = _data["userModified"];
+            this.dateModifiedStr = _data["dateModifiedStr"];
+            this.isValidAttachment = _data["isValidAttachment"];
+            this.isNonSubmissionPermitted = _data["isNonSubmissionPermitted"];
+            this.isFileSysGenerated = _data["isFileSysGenerated"];
+            this.isAllowMultiple = _data["isAllowMultiple"];
+            this.isFileDescSysGenerated = _data["isFileDescSysGenerated"];
+            this.linkToDownload = _data["linkToDownload"];
+            this.linkToSubmitToRA = _data["linkToSubmitToRA"];
+            this.docSubTypeDescCustomText = _data["docSubTypeDescCustomText"];
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.fileUploadedByID = _data["fileUploadedByID"];
+            this.fileUploadedByName = _data["fileUploadedByName"];
+            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
+            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
+            this.userID = _data["userID"];
+            this.statusDesc = _data["statusDesc"];
+            this.userName = _data["userName"];
+            this.attachmentStatusDate = _data["attachmentStatusDate"];
+            this.wObjectAttachmentStatusID = _data["wObjectAttachmentStatusID"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.docTypeIdEffectivefromdate = _data["docTypeIdEffectivefromdate"];
+            this.docTypeIdEffectivetodate = _data["docTypeIdEffectivetodate"];
+            this.prevAttachmentID = _data["prevAttachmentID"];
+            this.fileInvalidatedID = _data["fileInvalidatedID"];
+        }
+    }
+
+    static fromJS(data: any): Attachment {
+        data = typeof data === 'object' ? data : {};
+        let result = new Attachment();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjectID"] = this.wObjectID;
+        data["wObjectInstanceID"] = this.wObjectInstanceID;
+        data["wIndApplicationID"] = this.wIndApplicationID;
+        data["wIndAttachementID"] = this.wIndAttachementID;
+        data["wIndAttachementIDs"] = this.wIndAttachementIDs;
+        data["wObjAttachementID"] = this.wObjAttachementID;
+        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
+        data["wObjAttachementIDs"] = this.wObjAttachementIDs;
+        data["docTypeId"] = this.docTypeId;
+        data["docSubTypeId"] = this.docSubTypeId;
+        data["docSubTypeIDs"] = this.docSubTypeIDs;
+        data["csV_DocSubTypeId"] = this.csV_DocSubTypeId;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docSubTypeDesc"] = this.docSubTypeDesc;
+        data["isDocSupplied"] = this.isDocSupplied;
+        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
+        data["dateModified"] = this.dateModified ? this.dateModified.toISOString() : <any>undefined;
+        data["filePath"] = this.filePath;
+        data["reasonforNotAttaching"] = this.reasonforNotAttaching;
+        data["otherDocDesc"] = this.otherDocDesc;
+        data["userId"] = this.userId;
+        data["isChecked"] = this.isChecked;
+        data["isMandatory"] = this.isMandatory;
+        data["fileStream"] = this.fileStream;
+        data["fileName"] = this.fileName;
+        data["fileURI"] = this.fileURI;
+        data["fileContenct"] = this.fileContenct;
+        data["isPrimaryDoc"] = this.isPrimaryDoc;
+        data["anyFileToattachFlag"] = this.anyFileToattachFlag;
+        data["additionalFileFlag"] = this.additionalFileFlag;
+        data["additionalFileDesc"] = this.additionalFileDesc;
+        data["statusTypeID"] = this.statusTypeID;
+        data["wTermID"] = this.wTermID;
+        data["agreedOnTerms"] = this.agreedOnTerms;
+        data["termsAgreedDate"] = this.termsAgreedDate ? this.termsAgreedDate.toISOString() : <any>undefined;
+        data["reasonForRequest"] = this.reasonForRequest;
+        data["userCreated"] = this.userCreated;
+        data["dateCreatedStr"] = this.dateCreatedStr;
+        data["userModified"] = this.userModified;
+        data["dateModifiedStr"] = this.dateModifiedStr;
+        data["isValidAttachment"] = this.isValidAttachment;
+        data["isNonSubmissionPermitted"] = this.isNonSubmissionPermitted;
+        data["isFileSysGenerated"] = this.isFileSysGenerated;
+        data["isAllowMultiple"] = this.isAllowMultiple;
+        data["isFileDescSysGenerated"] = this.isFileDescSysGenerated;
+        data["linkToDownload"] = this.linkToDownload;
+        data["linkToSubmitToRA"] = this.linkToSubmitToRA;
+        data["docSubTypeDescCustomText"] = this.docSubTypeDescCustomText;
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["fileUploadedByID"] = this.fileUploadedByID;
+        data["fileUploadedByName"] = this.fileUploadedByName;
+        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
+        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
+        data["userID"] = this.userID;
+        data["statusDesc"] = this.statusDesc;
+        data["userName"] = this.userName;
+        data["attachmentStatusDate"] = this.attachmentStatusDate;
+        data["wObjectAttachmentStatusID"] = this.wObjectAttachmentStatusID;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["docTypeIdEffectivefromdate"] = this.docTypeIdEffectivefromdate;
+        data["docTypeIdEffectivetodate"] = this.docTypeIdEffectivetodate;
+        data["prevAttachmentID"] = this.prevAttachmentID;
+        data["fileInvalidatedID"] = this.fileInvalidatedID;
+        return data;
+    }
+}
+
+export interface IAttachment {
+    wObjectID?: number | undefined;
+    wObjectInstanceID?: number | undefined;
+    wIndApplicationID?: number;
+    wIndAttachementID?: number | undefined;
+    wIndAttachementIDs?: string | undefined;
+    wObjAttachementID?: number | undefined;
+    wObjectInstanceRevNum?: number | undefined;
+    wObjAttachementIDs?: string | undefined;
+    docTypeId?: number;
+    docSubTypeId?: number;
+    docSubTypeIDs?: string | undefined;
+    csV_DocSubTypeId?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docSubTypeDesc?: string | undefined;
+    isDocSupplied?: boolean;
+    dateCreated?: Date;
+    dateModified?: Date;
+    filePath?: string | undefined;
+    reasonforNotAttaching?: string | undefined;
+    otherDocDesc?: string | undefined;
+    userId?: number;
+    isChecked?: boolean;
+    isMandatory?: boolean;
+    fileStream?: string | undefined;
+    fileName?: string | undefined;
+    fileURI?: string | undefined;
+    fileContenct?: string | undefined;
+    isPrimaryDoc?: boolean | undefined;
+    anyFileToattachFlag?: boolean;
+    additionalFileFlag?: boolean | undefined;
+    additionalFileDesc?: string | undefined;
+    statusTypeID?: number;
+    wTermID?: number | undefined;
+    agreedOnTerms?: boolean | undefined;
+    termsAgreedDate?: Date | undefined;
+    reasonForRequest?: string | undefined;
+    userCreated?: number | undefined;
+    dateCreatedStr?: string | undefined;
+    userModified?: number | undefined;
+    dateModifiedStr?: string | undefined;
+    isValidAttachment?: boolean | undefined;
+    isNonSubmissionPermitted?: boolean | undefined;
+    isFileSysGenerated?: boolean | undefined;
+    isAllowMultiple?: boolean | undefined;
+    isFileDescSysGenerated?: boolean | undefined;
+    linkToDownload?: string | undefined;
+    linkToSubmitToRA?: string | undefined;
+    docSubTypeDescCustomText?: string | undefined;
+    objectSOStatusID?: number;
+    fileUploadedByID?: number;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    userID?: number;
+    statusDesc?: string | undefined;
+    userName?: string | undefined;
+    attachmentStatusDate?: string | undefined;
+    wObjectAttachmentStatusID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    docTypeIdEffectivefromdate?: string | undefined;
+    docTypeIdEffectivetodate?: string | undefined;
+    prevAttachmentID?: number | undefined;
+    fileInvalidatedID?: number | undefined;
+}
+
 export class AttachmentDto implements IAttachmentDto {
     wIndApplicationID?: number;
     wObjAttachementID?: number | undefined;
@@ -1886,6 +4119,7 @@ export class AttachmentDto implements IAttachmentDto {
     wObjectInstanceRevNum?: number | undefined;
     docTypeId?: number | undefined;
     docSubTypeId?: number | undefined;
+    docTypeDesc?: string | undefined;
     docSubTypeDesc?: string | undefined;
     isPrimaryDoc?: boolean | undefined;
     fileURI?: string | undefined;
@@ -1942,6 +4176,7 @@ export class AttachmentDto implements IAttachmentDto {
             this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
             this.docTypeId = _data["docTypeId"];
             this.docSubTypeId = _data["docSubTypeId"];
+            this.docTypeDesc = _data["docTypeDesc"];
             this.docSubTypeDesc = _data["docSubTypeDesc"];
             this.isPrimaryDoc = _data["isPrimaryDoc"];
             this.fileURI = _data["fileURI"];
@@ -1998,6 +4233,7 @@ export class AttachmentDto implements IAttachmentDto {
         data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
         data["docTypeId"] = this.docTypeId;
         data["docSubTypeId"] = this.docSubTypeId;
+        data["docTypeDesc"] = this.docTypeDesc;
         data["docSubTypeDesc"] = this.docSubTypeDesc;
         data["isPrimaryDoc"] = this.isPrimaryDoc;
         data["fileURI"] = this.fileURI;
@@ -2047,6 +4283,7 @@ export interface IAttachmentDto {
     wObjectInstanceRevNum?: number | undefined;
     docTypeId?: number | undefined;
     docSubTypeId?: number | undefined;
+    docTypeDesc?: string | undefined;
     docSubTypeDesc?: string | undefined;
     isPrimaryDoc?: boolean | undefined;
     fileURI?: string | undefined;
@@ -2083,6 +4320,54 @@ export interface IAttachmentDto {
     userName?: string | undefined;
     attachmentStatusDate?: string | undefined;
     statusDesc?: string | undefined;
+}
+
+export class AttachmentDtoBaseResponse implements IAttachmentDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: AttachmentDto;
+
+    constructor(data?: IAttachmentDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? AttachmentDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): AttachmentDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttachmentDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IAttachmentDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: AttachmentDto;
 }
 
 export class AttachmentDtoListBaseResponse implements IAttachmentDtoListBaseResponse {
@@ -2139,6 +4424,62 @@ export interface IAttachmentDtoListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: AttachmentDto[] | undefined;
+}
+
+export class AttachmentListBaseResponse implements IAttachmentListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: Attachment[] | undefined;
+
+    constructor(data?: IAttachmentListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(Attachment.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AttachmentListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AttachmentListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IAttachmentListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: Attachment[] | undefined;
 }
 
 export class AuthenticateRequest implements IAuthenticateRequest {
@@ -2379,6 +4720,162 @@ export interface IBooleanBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: boolean;
+}
+
+export class ByteArrayBaseResponse implements IByteArrayBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
+
+    constructor(data?: IByteArrayBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"];
+        }
+    }
+
+    static fromJS(data: any): ByteArrayBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ByteArrayBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response;
+        return data;
+    }
+}
+
+export interface IByteArrayBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
+}
+
+export class ConfigMessage implements IConfigMessage {
+    wConfigMessageID?: number;
+    configKey?: string | undefined;
+    configDesc?: string | undefined;
+    configValue?: string | undefined;
+    isEditable?: boolean;
+
+    constructor(data?: IConfigMessage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wConfigMessageID = _data["wConfigMessageID"];
+            this.configKey = _data["configKey"];
+            this.configDesc = _data["configDesc"];
+            this.configValue = _data["configValue"];
+            this.isEditable = _data["isEditable"];
+        }
+    }
+
+    static fromJS(data: any): ConfigMessage {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConfigMessage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wConfigMessageID"] = this.wConfigMessageID;
+        data["configKey"] = this.configKey;
+        data["configDesc"] = this.configDesc;
+        data["configValue"] = this.configValue;
+        data["isEditable"] = this.isEditable;
+        return data;
+    }
+}
+
+export interface IConfigMessage {
+    wConfigMessageID?: number;
+    configKey?: string | undefined;
+    configDesc?: string | undefined;
+    configValue?: string | undefined;
+    isEditable?: boolean;
+}
+
+export class ConfigMessageListBaseResponse implements IConfigMessageListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ConfigMessage[] | undefined;
+
+    constructor(data?: IConfigMessageListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ConfigMessage.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ConfigMessageListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConfigMessageListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IConfigMessageListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ConfigMessage[] | undefined;
 }
 
 export class ContactUs implements IContactUs {
@@ -2989,6 +5486,94 @@ export interface IControledFunction {
     withdrawalCommenceUponApplApprovalFlag?: boolean;
 }
 
+export class ControlledFunctionDto implements IControlledFunctionDto {
+    controlFunctionID?: number | undefined;
+    applicationID?: number | undefined;
+    functionTypeID?: number | undefined;
+    functionTypeDesc?: string | undefined;
+    actionTypeID?: number | undefined;
+    day?: number | undefined;
+    month?: number | undefined;
+    year?: number | undefined;
+    uponApprovalFlag?: boolean | undefined;
+    conditionalApprovalFlag?: boolean | undefined;
+    userID?: number | undefined;
+    pageFlag?: string | undefined;
+    actionTypeDesc?: string | undefined;
+    appRecieveDate?: Date | undefined;
+
+    constructor(data?: IControlledFunctionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.controlFunctionID = _data["controlFunctionID"];
+            this.applicationID = _data["applicationID"];
+            this.functionTypeID = _data["functionTypeID"];
+            this.functionTypeDesc = _data["functionTypeDesc"];
+            this.actionTypeID = _data["actionTypeID"];
+            this.day = _data["day"];
+            this.month = _data["month"];
+            this.year = _data["year"];
+            this.uponApprovalFlag = _data["uponApprovalFlag"];
+            this.conditionalApprovalFlag = _data["conditionalApprovalFlag"];
+            this.userID = _data["userID"];
+            this.pageFlag = _data["pageFlag"];
+            this.actionTypeDesc = _data["actionTypeDesc"];
+            this.appRecieveDate = _data["appRecieveDate"] ? new Date(_data["appRecieveDate"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ControlledFunctionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ControlledFunctionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["controlFunctionID"] = this.controlFunctionID;
+        data["applicationID"] = this.applicationID;
+        data["functionTypeID"] = this.functionTypeID;
+        data["functionTypeDesc"] = this.functionTypeDesc;
+        data["actionTypeID"] = this.actionTypeID;
+        data["day"] = this.day;
+        data["month"] = this.month;
+        data["year"] = this.year;
+        data["uponApprovalFlag"] = this.uponApprovalFlag;
+        data["conditionalApprovalFlag"] = this.conditionalApprovalFlag;
+        data["userID"] = this.userID;
+        data["pageFlag"] = this.pageFlag;
+        data["actionTypeDesc"] = this.actionTypeDesc;
+        data["appRecieveDate"] = this.appRecieveDate ? this.appRecieveDate.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IControlledFunctionDto {
+    controlFunctionID?: number | undefined;
+    applicationID?: number | undefined;
+    functionTypeID?: number | undefined;
+    functionTypeDesc?: string | undefined;
+    actionTypeID?: number | undefined;
+    day?: number | undefined;
+    month?: number | undefined;
+    year?: number | undefined;
+    uponApprovalFlag?: boolean | undefined;
+    conditionalApprovalFlag?: boolean | undefined;
+    userID?: number | undefined;
+    pageFlag?: string | undefined;
+    actionTypeDesc?: string | undefined;
+    appRecieveDate?: Date | undefined;
+}
+
 export class FirmContactDetails implements IFirmContactDetails {
     firmID?: number;
     applicationID?: number;
@@ -3187,6 +5772,62 @@ export interface IFirmContactDetails {
     amlDirectorEmailAddress?: string | undefined;
     rsgEmailAddress?: string | undefined;
     firmTypeID?: number;
+}
+
+export class HistoryDetailsDto implements IHistoryDetailsDto {
+    objectID?: number | undefined;
+    rptSchItemID?: number | undefined;
+    docTypeID?: number | undefined;
+    lstAattachments?: AttachmentDto[] | undefined;
+
+    constructor(data?: IHistoryDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectID = _data["objectID"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.docTypeID = _data["docTypeID"];
+            if (Array.isArray(_data["lstAattachments"])) {
+                this.lstAattachments = [] as any;
+                for (let item of _data["lstAattachments"])
+                    this.lstAattachments!.push(AttachmentDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): HistoryDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new HistoryDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectID"] = this.objectID;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["docTypeID"] = this.docTypeID;
+        if (Array.isArray(this.lstAattachments)) {
+            data["lstAattachments"] = [];
+            for (let item of this.lstAattachments)
+                data["lstAattachments"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IHistoryDetailsDto {
+    objectID?: number | undefined;
+    rptSchItemID?: number | undefined;
+    docTypeID?: number | undefined;
+    lstAattachments?: AttachmentDto[] | undefined;
 }
 
 export class IndividualDetails implements IIndividualDetails {
@@ -3429,6 +6070,302 @@ export interface IIndividualDetails {
     windApplicationStatus?: number;
 }
 
+export class IndividualDetailsDto implements IIndividualDetailsDto {
+    applicationID?: number | undefined;
+    qfcNumber?: string | undefined;
+    aiNumber?: string | undefined;
+    formTypeID?: string | undefined;
+    userID?: number | undefined;
+    personalDetailID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    windApplicationStatus?: number | undefined;
+    nationalityID?: number | undefined;
+    placeOfBirthCountryID?: number | undefined;
+    modifiedBy?: number | undefined;
+    proposedRelDay?: number | undefined;
+    proposedRelMonth?: number | undefined;
+    proposedRelYear?: number | undefined;
+    countryOfResidence?: number | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    familyName?: string | undefined;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    title?: string | undefined;
+    nationality?: string | undefined;
+    placeOfBirthCountry?: string | undefined;
+    nationalIdNumber?: string | undefined;
+    resTelephoneNumber?: string | undefined;
+    workTelephonenumber?: string | undefined;
+    otherNames?: string | undefined;
+    emailAddress?: string | undefined;
+    dateOfBirth?: string | undefined;
+    passportnumber?: string | undefined;
+    jurisdiction?: string | undefined;
+    placeOfBirthCity?: string | undefined;
+
+    constructor(data?: IIndividualDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationID = _data["applicationID"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.aiNumber = _data["aiNumber"];
+            this.formTypeID = _data["formTypeID"];
+            this.userID = _data["userID"];
+            this.personalDetailID = _data["personalDetailID"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.windApplicationStatus = _data["windApplicationStatus"];
+            this.nationalityID = _data["nationalityID"];
+            this.placeOfBirthCountryID = _data["placeOfBirthCountryID"];
+            this.modifiedBy = _data["modifiedBy"];
+            this.proposedRelDay = _data["proposedRelDay"];
+            this.proposedRelMonth = _data["proposedRelMonth"];
+            this.proposedRelYear = _data["proposedRelYear"];
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
+            this.familyName = _data["familyName"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            this.title = _data["title"];
+            this.nationality = _data["nationality"];
+            this.placeOfBirthCountry = _data["placeOfBirthCountry"];
+            this.nationalIdNumber = _data["nationalIdNumber"];
+            this.resTelephoneNumber = _data["resTelephoneNumber"];
+            this.workTelephonenumber = _data["workTelephonenumber"];
+            this.otherNames = _data["otherNames"];
+            this.emailAddress = _data["emailAddress"];
+            this.dateOfBirth = _data["dateOfBirth"];
+            this.passportnumber = _data["passportnumber"];
+            this.jurisdiction = _data["jurisdiction"];
+            this.placeOfBirthCity = _data["placeOfBirthCity"];
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationID"] = this.applicationID;
+        data["qfcNumber"] = this.qfcNumber;
+        data["aiNumber"] = this.aiNumber;
+        data["formTypeID"] = this.formTypeID;
+        data["userID"] = this.userID;
+        data["personalDetailID"] = this.personalDetailID;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["windApplicationStatus"] = this.windApplicationStatus;
+        data["nationalityID"] = this.nationalityID;
+        data["placeOfBirthCountryID"] = this.placeOfBirthCountryID;
+        data["modifiedBy"] = this.modifiedBy;
+        data["proposedRelDay"] = this.proposedRelDay;
+        data["proposedRelMonth"] = this.proposedRelMonth;
+        data["proposedRelYear"] = this.proposedRelYear;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
+        data["familyName"] = this.familyName;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        data["title"] = this.title;
+        data["nationality"] = this.nationality;
+        data["placeOfBirthCountry"] = this.placeOfBirthCountry;
+        data["nationalIdNumber"] = this.nationalIdNumber;
+        data["resTelephoneNumber"] = this.resTelephoneNumber;
+        data["workTelephonenumber"] = this.workTelephonenumber;
+        data["otherNames"] = this.otherNames;
+        data["emailAddress"] = this.emailAddress;
+        data["dateOfBirth"] = this.dateOfBirth;
+        data["passportnumber"] = this.passportnumber;
+        data["jurisdiction"] = this.jurisdiction;
+        data["placeOfBirthCity"] = this.placeOfBirthCity;
+        return data;
+    }
+}
+
+export interface IIndividualDetailsDto {
+    applicationID?: number | undefined;
+    qfcNumber?: string | undefined;
+    aiNumber?: string | undefined;
+    formTypeID?: string | undefined;
+    userID?: number | undefined;
+    personalDetailID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    windApplicationStatus?: number | undefined;
+    nationalityID?: number | undefined;
+    placeOfBirthCountryID?: number | undefined;
+    modifiedBy?: number | undefined;
+    proposedRelDay?: number | undefined;
+    proposedRelMonth?: number | undefined;
+    proposedRelYear?: number | undefined;
+    countryOfResidence?: number | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    familyName?: string | undefined;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    title?: string | undefined;
+    nationality?: string | undefined;
+    placeOfBirthCountry?: string | undefined;
+    nationalIdNumber?: string | undefined;
+    resTelephoneNumber?: string | undefined;
+    workTelephonenumber?: string | undefined;
+    otherNames?: string | undefined;
+    emailAddress?: string | undefined;
+    dateOfBirth?: string | undefined;
+    passportnumber?: string | undefined;
+    jurisdiction?: string | undefined;
+    placeOfBirthCity?: string | undefined;
+}
+
+export class IndividualDetailsDtoBaseResponse implements IIndividualDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailsDto;
+
+    constructor(data?: IIndividualDetailsDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? IndividualDetailsDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailsDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailsDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IIndividualDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailsDto;
+}
+
+export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
+    objectSOStatus?: ObjectSOStatusDto;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+
+    constructor(data?: IInsertObjectSOStatusDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectSOStatus = _data["objectSOStatus"] ? ObjectSOStatusDto.fromJS(_data["objectSOStatus"]) : <any>undefined;
+            if (Array.isArray(_data["lstReportSignatories"])) {
+                this.lstReportSignatories = [] as any;
+                for (let item of _data["lstReportSignatories"])
+                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): InsertObjectSOStatusDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertObjectSOStatusDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectSOStatus"] = this.objectSOStatus ? this.objectSOStatus.toJSON() : <any>undefined;
+        if (Array.isArray(this.lstReportSignatories)) {
+            data["lstReportSignatories"] = [];
+            for (let item of this.lstReportSignatories)
+                data["lstReportSignatories"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IInsertObjectSOStatusDetailsDto {
+    objectSOStatus?: ObjectSOStatusDto;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+}
+
+export class InsertReportSchDetailsDto implements IInsertReportSchDetailsDto {
+    objReportSch?: ReportSchDto;
+    objReportSchItem?: ReportSchItem;
+    objReportSchItemAttachment?: AttachmentDto;
+
+    constructor(data?: IInsertReportSchDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objReportSch = _data["objReportSch"] ? ReportSchDto.fromJS(_data["objReportSch"]) : <any>undefined;
+            this.objReportSchItem = _data["objReportSchItem"] ? ReportSchItem.fromJS(_data["objReportSchItem"]) : <any>undefined;
+            this.objReportSchItemAttachment = _data["objReportSchItemAttachment"] ? AttachmentDto.fromJS(_data["objReportSchItemAttachment"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): InsertReportSchDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertReportSchDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objReportSch"] = this.objReportSch ? this.objReportSch.toJSON() : <any>undefined;
+        data["objReportSchItem"] = this.objReportSchItem ? this.objReportSchItem.toJSON() : <any>undefined;
+        data["objReportSchItemAttachment"] = this.objReportSchItemAttachment ? this.objReportSchItemAttachment.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IInsertReportSchDetailsDto {
+    objReportSch?: ReportSchDto;
+    objReportSchItem?: ReportSchItem;
+    objReportSchItemAttachment?: AttachmentDto;
+}
+
 export class Int32BaseResponse implements IInt32BaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -3475,6 +6412,62 @@ export interface IInt32BaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: number;
+}
+
+export class Int32ListBaseResponse implements IInt32ListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: number[] | undefined;
+
+    constructor(data?: IInt32ListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): Int32ListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new Int32ListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IInt32ListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: number[] | undefined;
 }
 
 export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
@@ -3595,6 +6588,58 @@ export interface IObjTasks {
     wObjectEventTypeID?: number | undefined;
     dateCreated?: Date | undefined;
     userCreated?: number | undefined;
+}
+
+export class ObjectSOStatusDto implements IObjectSOStatusDto {
+    objectID?: number | undefined;
+    objectInstanceID?: number | undefined;
+    soStatusTypeID?: number | undefined;
+    userID?: number | undefined;
+    soTaskValid?: boolean | undefined;
+
+    constructor(data?: IObjectSOStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.userID = _data["userID"];
+            this.soTaskValid = _data["soTaskValid"];
+        }
+    }
+
+    static fromJS(data: any): ObjectSOStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["userID"] = this.userID;
+        data["soTaskValid"] = this.soTaskValid;
+        return data;
+    }
+}
+
+export interface IObjectSOStatusDto {
+    objectID?: number | undefined;
+    objectInstanceID?: number | undefined;
+    soStatusTypeID?: number | undefined;
+    userID?: number | undefined;
+    soTaskValid?: boolean | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
@@ -4045,6 +7090,234 @@ export interface IPreviousNames {
     previousNameDate?: string | undefined;
 }
 
+export class ReportSchDto implements IReportSchDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    userID?: number | undefined;
+
+    constructor(data?: IReportSchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNum = _data["qfcNum"];
+            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
+            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.userID = _data["userID"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNum"] = this.qfcNum;
+        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
+        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["userID"] = this.userID;
+        return data;
+    }
+}
+
+export interface IReportSchDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    userID?: number | undefined;
+}
+
+export class ReportSchItem implements IReportSchItem {
+    rptSchItemID?: number;
+    rptSchID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    userID?: number;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSubmissionTypeID?: number;
+
+    constructor(data?: IReportSchItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.rptSchID = _data["rptSchID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptName = _data["rptName"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
+            this.rptPeriodToDate = _data["rptPeriodToDate"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.userID = _data["userID"];
+            this.reviewComments = _data["reviewComments"];
+            this.manuallyReceived = _data["manuallyReceived"];
+            this.allowReSubmit = _data["allowReSubmit"];
+            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["rptSchID"] = this.rptSchID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptName"] = this.rptName;
+        data["rptDueDate"] = this.rptDueDate;
+        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
+        data["rptPeriodToDate"] = this.rptPeriodToDate;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["userID"] = this.userID;
+        data["reviewComments"] = this.reviewComments;
+        data["manuallyReceived"] = this.manuallyReceived;
+        data["allowReSubmit"] = this.allowReSubmit;
+        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
+        return data;
+    }
+}
+
+export interface IReportSchItem {
+    rptSchItemID?: number;
+    rptSchID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    userID?: number;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSubmissionTypeID?: number;
+}
+
+export class ReportSignatories implements IReportSignatories {
+    rptSignatoryID?: number;
+    qfcNum?: string | undefined;
+    docTypeID?: number;
+    signOffSeqNo?: number;
+    groupSignOff?: boolean;
+    valid?: boolean;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    signedByID?: number;
+    signedOnDate?: string | undefined;
+    userID?: number;
+    docSignatoryID?: number;
+    roles?: string | undefined;
+    occurance?: number;
+    userRole?: number;
+
+    constructor(data?: IReportSignatories) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.rptSignatoryID = _data["rptSignatoryID"];
+            this.qfcNum = _data["qfcNum"];
+            this.docTypeID = _data["docTypeID"];
+            this.signOffSeqNo = _data["signOffSeqNo"];
+            this.groupSignOff = _data["groupSignOff"];
+            this.valid = _data["valid"];
+            this.individualName = _data["individualName"];
+            this.emailAdd = _data["emailAdd"];
+            this.signedByID = _data["signedByID"];
+            this.signedOnDate = _data["signedOnDate"];
+            this.userID = _data["userID"];
+            this.docSignatoryID = _data["docSignatoryID"];
+            this.roles = _data["roles"];
+            this.occurance = _data["occurance"];
+            this.userRole = _data["userRole"];
+        }
+    }
+
+    static fromJS(data: any): ReportSignatories {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatories();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["rptSignatoryID"] = this.rptSignatoryID;
+        data["qfcNum"] = this.qfcNum;
+        data["docTypeID"] = this.docTypeID;
+        data["signOffSeqNo"] = this.signOffSeqNo;
+        data["groupSignOff"] = this.groupSignOff;
+        data["valid"] = this.valid;
+        data["individualName"] = this.individualName;
+        data["emailAdd"] = this.emailAdd;
+        data["signedByID"] = this.signedByID;
+        data["signedOnDate"] = this.signedOnDate;
+        data["userID"] = this.userID;
+        data["docSignatoryID"] = this.docSignatoryID;
+        data["roles"] = this.roles;
+        data["occurance"] = this.occurance;
+        data["userRole"] = this.userRole;
+        return data;
+    }
+}
+
+export interface IReportSignatories {
+    rptSignatoryID?: number;
+    qfcNum?: string | undefined;
+    docTypeID?: number;
+    signOffSeqNo?: number;
+    groupSignOff?: boolean;
+    valid?: boolean;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    signedByID?: number;
+    signedOnDate?: string | undefined;
+    userID?: number;
+    docSignatoryID?: number;
+    roles?: string | undefined;
+    occurance?: number;
+    userRole?: number;
+}
+
 export class Residencies implements IResidencies {
     residenciesID?: number | undefined;
     residenciesGUID?: string | undefined;
@@ -4263,6 +7536,182 @@ export interface IStringStringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class UserPendingItems implements IUserPendingItems {
+    qfcNumber?: string | undefined;
+    userID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    reportOrIndName?: string | undefined;
+    reportFrom?: string | undefined;
+    reportTo?: string | undefined;
+    rptDueDate?: string | undefined;
+    purpose?: string | undefined;
+    formTypeID?: number;
+    finalDescription?: string | undefined;
+    rptSchItemID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    dateCreated?: string | undefined;
+    wRptSubmissionTypeID?: number | undefined;
+    rptSchItemFromDate?: string | undefined;
+    rptSchItemToDate?: string | undefined;
+    objectType?: string | undefined;
+    taskType?: string | undefined;
+    nextRunTime?: string | undefined;
+
+    constructor(data?: IUserPendingItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.userID = _data["userID"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.reportOrIndName = _data["reportOrIndName"];
+            this.reportFrom = _data["reportFrom"];
+            this.reportTo = _data["reportTo"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.purpose = _data["purpose"];
+            this.formTypeID = _data["formTypeID"];
+            this.finalDescription = _data["finalDescription"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.docTypeID = _data["docTypeID"];
+            this.dateCreated = _data["dateCreated"];
+            this.wRptSubmissionTypeID = _data["wRptSubmissionTypeID"];
+            this.rptSchItemFromDate = _data["rptSchItemFromDate"];
+            this.rptSchItemToDate = _data["rptSchItemToDate"];
+            this.objectType = _data["objectType"];
+            this.taskType = _data["taskType"];
+            this.nextRunTime = _data["nextRunTime"];
+        }
+    }
+
+    static fromJS(data: any): UserPendingItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["userID"] = this.userID;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["reportOrIndName"] = this.reportOrIndName;
+        data["reportFrom"] = this.reportFrom;
+        data["reportTo"] = this.reportTo;
+        data["rptDueDate"] = this.rptDueDate;
+        data["purpose"] = this.purpose;
+        data["formTypeID"] = this.formTypeID;
+        data["finalDescription"] = this.finalDescription;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["docTypeID"] = this.docTypeID;
+        data["dateCreated"] = this.dateCreated;
+        data["wRptSubmissionTypeID"] = this.wRptSubmissionTypeID;
+        data["rptSchItemFromDate"] = this.rptSchItemFromDate;
+        data["rptSchItemToDate"] = this.rptSchItemToDate;
+        data["objectType"] = this.objectType;
+        data["taskType"] = this.taskType;
+        data["nextRunTime"] = this.nextRunTime;
+        return data;
+    }
+}
+
+export interface IUserPendingItems {
+    qfcNumber?: string | undefined;
+    userID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    reportOrIndName?: string | undefined;
+    reportFrom?: string | undefined;
+    reportTo?: string | undefined;
+    rptDueDate?: string | undefined;
+    purpose?: string | undefined;
+    formTypeID?: number;
+    finalDescription?: string | undefined;
+    rptSchItemID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    dateCreated?: string | undefined;
+    wRptSubmissionTypeID?: number | undefined;
+    rptSchItemFromDate?: string | undefined;
+    rptSchItemToDate?: string | undefined;
+    objectType?: string | undefined;
+    taskType?: string | undefined;
+    nextRunTime?: string | undefined;
+}
+
+export class UserPendingItemsListBaseResponse implements IUserPendingItemsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItems[] | undefined;
+
+    constructor(data?: IUserPendingItemsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(UserPendingItems.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserPendingItemsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItemsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUserPendingItemsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItems[] | undefined;
 }
 
 export class UserQuestionAnswers implements IUserQuestionAnswers {
@@ -4911,6 +8360,242 @@ export interface IWAccessRequestsListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: WAccessRequests[] | undefined;
+}
+
+export class WApplicationDetailDto implements IWApplicationDetailDto {
+    applicationID?: number | undefined;
+    formTypeID?: number | undefined;
+    formTypeDesc?: string | undefined;
+    qfcNumber?: string | undefined;
+    aiNumber?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    arrangementTypeID?: number | undefined;
+    arrangementTypeDesc?: string | undefined;
+    arrangementTypeOtherDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    cfExcercisedDesc?: string | undefined;
+    currentJobTitle?: string | undefined;
+    proposedJobTitle?: string | undefined;
+    jobDesc?: string | undefined;
+    pastPositionFlag?: boolean | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean | undefined;
+    aliasesNAFlag?: boolean | undefined;
+    careerHistoryNAFlag?: boolean | undefined;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean | undefined;
+    userId?: number | undefined;
+    createdDate?: string | undefined;
+    userModified?: number | undefined;
+    modifiedDate?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    supervisingFlag?: boolean | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    proposedRelocationDateDay?: number | undefined;
+    proposedRelocationDateMonth?: number | undefined;
+    proposedRelocationDateYear?: number | undefined;
+
+    constructor(data?: IWApplicationDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.applicationID = _data["applicationID"];
+            this.formTypeID = _data["formTypeID"];
+            this.formTypeDesc = _data["formTypeDesc"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.aiNumber = _data["aiNumber"];
+            this.applStatusTypeID = _data["applStatusTypeID"];
+            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
+            this.arrangementTypeID = _data["arrangementTypeID"];
+            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
+            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
+            this.competenciesAndExp = _data["competenciesAndExp"];
+            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
+            this.currentJobTitle = _data["currentJobTitle"];
+            this.proposedJobTitle = _data["proposedJobTitle"];
+            this.jobDesc = _data["jobDesc"];
+            this.pastPositionFlag = _data["pastPositionFlag"];
+            this.pastPositionDesc = _data["pastPositionDesc"];
+            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
+            this.fandPChangeDesc = _data["fandPChangeDesc"];
+            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
+            this.altArrangementDesc = _data["altArrangementDesc"];
+            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
+            this.residencyNAFlag = _data["residencyNAFlag"];
+            this.aliasesNAFlag = _data["aliasesNAFlag"];
+            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
+            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
+            this.reglsNAFlag = _data["reglsNAFlag"];
+            this.userId = _data["userId"];
+            this.createdDate = _data["createdDate"];
+            this.userModified = _data["userModified"];
+            this.modifiedDate = _data["modifiedDate"];
+            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
+            this.supervisingFlag = _data["supervisingFlag"];
+            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
+            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
+            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
+            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
+        }
+    }
+
+    static fromJS(data: any): WApplicationDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WApplicationDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["applicationID"] = this.applicationID;
+        data["formTypeID"] = this.formTypeID;
+        data["formTypeDesc"] = this.formTypeDesc;
+        data["qfcNumber"] = this.qfcNumber;
+        data["aiNumber"] = this.aiNumber;
+        data["applStatusTypeID"] = this.applStatusTypeID;
+        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
+        data["arrangementTypeID"] = this.arrangementTypeID;
+        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
+        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
+        data["competenciesAndExp"] = this.competenciesAndExp;
+        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
+        data["currentJobTitle"] = this.currentJobTitle;
+        data["proposedJobTitle"] = this.proposedJobTitle;
+        data["jobDesc"] = this.jobDesc;
+        data["pastPositionFlag"] = this.pastPositionFlag;
+        data["pastPositionDesc"] = this.pastPositionDesc;
+        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
+        data["fandPChangeDesc"] = this.fandPChangeDesc;
+        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
+        data["altArrangementDesc"] = this.altArrangementDesc;
+        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
+        data["residencyNAFlag"] = this.residencyNAFlag;
+        data["aliasesNAFlag"] = this.aliasesNAFlag;
+        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
+        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
+        data["reglsNAFlag"] = this.reglsNAFlag;
+        data["userId"] = this.userId;
+        data["createdDate"] = this.createdDate;
+        data["userModified"] = this.userModified;
+        data["modifiedDate"] = this.modifiedDate;
+        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
+        data["supervisingFlag"] = this.supervisingFlag;
+        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
+        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
+        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
+        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
+        return data;
+    }
+}
+
+export interface IWApplicationDetailDto {
+    applicationID?: number | undefined;
+    formTypeID?: number | undefined;
+    formTypeDesc?: string | undefined;
+    qfcNumber?: string | undefined;
+    aiNumber?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    arrangementTypeID?: number | undefined;
+    arrangementTypeDesc?: string | undefined;
+    arrangementTypeOtherDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    cfExcercisedDesc?: string | undefined;
+    currentJobTitle?: string | undefined;
+    proposedJobTitle?: string | undefined;
+    jobDesc?: string | undefined;
+    pastPositionFlag?: boolean | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean | undefined;
+    aliasesNAFlag?: boolean | undefined;
+    careerHistoryNAFlag?: boolean | undefined;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean | undefined;
+    userId?: number | undefined;
+    createdDate?: string | undefined;
+    userModified?: number | undefined;
+    modifiedDate?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    supervisingFlag?: boolean | undefined;
+    isOrdinarilyResidentFlag?: boolean | undefined;
+    proposedRelocationDateDay?: number | undefined;
+    proposedRelocationDateMonth?: number | undefined;
+    proposedRelocationDateYear?: number | undefined;
+}
+
+export class WApplicationDetailDtoListBaseResponse implements IWApplicationDetailDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WApplicationDetailDto[] | undefined;
+
+    constructor(data?: IWApplicationDetailDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WApplicationDetailDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WApplicationDetailDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WApplicationDetailDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWApplicationDetailDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WApplicationDetailDto[] | undefined;
 }
 
 export class WNotice implements IWNotice {
@@ -6462,7 +10147,7 @@ export interface IWUserRoles {
 }
 
 export class ApiException extends Error {
-     override message: string;
+    override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };
