@@ -838,6 +838,57 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    getReportDetails(): Observable<ReportSchDetailsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-report-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsListBaseResponse>;
+        }));
+    }
+
+    protected processGetReportDetails(response: HttpResponseBase): Observable<ReportSchDetailsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsListBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -2410,21 +2461,41 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param wConfigMessageID (optional) 
+     * @param configKey (optional) 
+     * @param configDesc (optional) 
+     * @param configValue (optional) 
+     * @param isEditable (optional) 
      * @return OK
      */
-    getConfigMessage(body: ConfigMessage | undefined): Observable<ConfigMessageListBaseResponse> {
-        let url_ = this.baseUrl + "/api/MasterData/get-config-message";
+    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<ConfigMessageListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-config-message?";
+        if (wConfigMessageID === null)
+            throw new Error("The parameter 'wConfigMessageID' cannot be null.");
+        else if (wConfigMessageID !== undefined)
+            url_ += "WConfigMessageID=" + encodeURIComponent("" + wConfigMessageID) + "&";
+        if (configKey === null)
+            throw new Error("The parameter 'configKey' cannot be null.");
+        else if (configKey !== undefined)
+            url_ += "ConfigKey=" + encodeURIComponent("" + configKey) + "&";
+        if (configDesc === null)
+            throw new Error("The parameter 'configDesc' cannot be null.");
+        else if (configDesc !== undefined)
+            url_ += "ConfigDesc=" + encodeURIComponent("" + configDesc) + "&";
+        if (configValue === null)
+            throw new Error("The parameter 'configValue' cannot be null.");
+        else if (configValue !== undefined)
+            url_ += "ConfigValue=" + encodeURIComponent("" + configValue) + "&";
+        if (isEditable === null)
+            throw new Error("The parameter 'isEditable' cannot be null.");
+        else if (isEditable !== undefined)
+            url_ += "IsEditable=" + encodeURIComponent("" + isEditable) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -2748,6 +2819,118 @@ export class Client {
             }));
         }
         return _observableOf<WNoticeQuestionnaireItemDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateReportSchDetails(body: InsertReportSchDetailsDto | undefined): Observable<Int32ListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-report-sch-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateReportSchDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateReportSchDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateReportSchDetails(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32ListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32ListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateObjectSoStatusDetails(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateObjectSoStatusDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
     }
 }
 
@@ -5931,6 +6114,98 @@ export interface IIndividualDetailsDtoBaseResponse {
     response?: IndividualDetailsDto;
 }
 
+export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
+    objectSOStatus?: ObjectSOStatusDto;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+
+    constructor(data?: IInsertObjectSOStatusDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectSOStatus = _data["objectSOStatus"] ? ObjectSOStatusDto.fromJS(_data["objectSOStatus"]) : <any>undefined;
+            if (Array.isArray(_data["lstReportSignatories"])) {
+                this.lstReportSignatories = [] as any;
+                for (let item of _data["lstReportSignatories"])
+                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): InsertObjectSOStatusDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertObjectSOStatusDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectSOStatus"] = this.objectSOStatus ? this.objectSOStatus.toJSON() : <any>undefined;
+        if (Array.isArray(this.lstReportSignatories)) {
+            data["lstReportSignatories"] = [];
+            for (let item of this.lstReportSignatories)
+                data["lstReportSignatories"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IInsertObjectSOStatusDetailsDto {
+    objectSOStatus?: ObjectSOStatusDto;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+}
+
+export class InsertReportSchDetailsDto implements IInsertReportSchDetailsDto {
+    objReportSch?: ReportSchDto;
+    objReportSchItem?: ReportSchItem;
+    objReportSchItemAttachment?: AttachmentDto;
+
+    constructor(data?: IInsertReportSchDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objReportSch = _data["objReportSch"] ? ReportSchDto.fromJS(_data["objReportSch"]) : <any>undefined;
+            this.objReportSchItem = _data["objReportSchItem"] ? ReportSchItem.fromJS(_data["objReportSchItem"]) : <any>undefined;
+            this.objReportSchItemAttachment = _data["objReportSchItemAttachment"] ? AttachmentDto.fromJS(_data["objReportSchItemAttachment"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): InsertReportSchDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertReportSchDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objReportSch"] = this.objReportSch ? this.objReportSch.toJSON() : <any>undefined;
+        data["objReportSchItem"] = this.objReportSchItem ? this.objReportSchItem.toJSON() : <any>undefined;
+        data["objReportSchItemAttachment"] = this.objReportSchItemAttachment ? this.objReportSchItemAttachment.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IInsertReportSchDetailsDto {
+    objReportSch?: ReportSchDto;
+    objReportSchItem?: ReportSchItem;
+    objReportSchItemAttachment?: AttachmentDto;
+}
+
 export class Int32BaseResponse implements IInt32BaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -5977,6 +6252,62 @@ export interface IInt32BaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: number;
+}
+
+export class Int32ListBaseResponse implements IInt32ListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: number[] | undefined;
+
+    constructor(data?: IInt32ListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): Int32ListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new Int32ListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IInt32ListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: number[] | undefined;
 }
 
 export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
@@ -6097,6 +6428,58 @@ export interface IObjTasks {
     wObjectEventTypeID?: number | undefined;
     dateCreated?: Date | undefined;
     userCreated?: number | undefined;
+}
+
+export class ObjectSOStatusDto implements IObjectSOStatusDto {
+    objectID?: number | undefined;
+    objectInstanceID?: number | undefined;
+    soStatusTypeID?: number | undefined;
+    userID?: number | undefined;
+    soTaskValid?: boolean | undefined;
+
+    constructor(data?: IObjectSOStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.userID = _data["userID"];
+            this.soTaskValid = _data["soTaskValid"];
+        }
+    }
+
+    static fromJS(data: any): ObjectSOStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["userID"] = this.userID;
+        data["soTaskValid"] = this.soTaskValid;
+        return data;
+    }
+}
+
+export interface IObjectSOStatusDto {
+    objectID?: number | undefined;
+    objectInstanceID?: number | undefined;
+    soStatusTypeID?: number | undefined;
+    userID?: number | undefined;
+    soTaskValid?: boolean | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
@@ -6545,6 +6928,570 @@ export interface IPreviousNames {
     modifiedBy?: number;
     applicationID?: number;
     previousNameDate?: string | undefined;
+}
+
+export class ReportSchDetails implements IReportSchDetails {
+    firmsRptSchID?: number;
+    firmsRptSchItemID?: number;
+    rptSchID?: number;
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
+    rptSchItemID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSchItemAttachmentID?: number;
+    fileName?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    attachmentFileURI?: string | undefined;
+    rptSOMethodTypeID?: number;
+    rptSOMethodTypeDesc?: string | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    validAttachment?: boolean;
+    submittedOn?: string | undefined;
+    fileStream?: string | undefined;
+    objectSOStatusID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    soStatusTypeID?: number;
+    soStatusTypeDesc?: string | undefined;
+    soInitiationDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    userID?: number;
+    description?: string | undefined;
+    isItemAccessible?: boolean;
+    submittedBy?: number;
+    isFileRecieved?: boolean;
+    lateFeeFlag?: boolean;
+    daysOverDue?: number;
+    isReportDue?: boolean;
+    rptSchAttachmentStatusDesc?: string | undefined;
+    rptSubmissionTypeID?: number;
+    rptSubmissionType?: string | undefined;
+    rptFormsToBeSubmited?: string | undefined;
+    rptNextStatus?: string | undefined;
+    attachmentStatusTypeID?: number;
+    fileAttachedUserEmail?: string | undefined;
+    rptAttachmentStatusDate?: string | undefined;
+    isReportReminderDue?: boolean;
+    rptSchAttachmentStatusId?: number | undefined;
+    isResubmissionRequested?: boolean;
+    isResubmissionNotificationRequired?: number;
+    resubmissionRequestedDate?: string | undefined;
+    docReceivedDate?: string | undefined;
+    submissionBeforeRptPeriodEnd?: boolean;
+    resubmissionDueDate?: string | undefined;
+    isAMLDocType?: boolean;
+
+    constructor(data?: IReportSchDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmsRptSchID = _data["firmsRptSchID"];
+            this.firmsRptSchItemID = _data["firmsRptSchItemID"];
+            this.rptSchID = _data["rptSchID"];
+            this.qfcNum = _data["qfcNum"];
+            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
+            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.rptSchFinYearPeriod = _data["rptSchFinYearPeriod"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptName = _data["rptName"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
+            this.rptPeriodToDate = _data["rptPeriodToDate"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.reviewComments = _data["reviewComments"];
+            this.manuallyReceived = _data["manuallyReceived"];
+            this.allowReSubmit = _data["allowReSubmit"];
+            this.rptSchItemAttachmentID = _data["rptSchItemAttachmentID"];
+            this.fileName = _data["fileName"];
+            this.attachmentFilePath = _data["attachmentFilePath"];
+            this.attachmentFileURI = _data["attachmentFileURI"];
+            this.rptSOMethodTypeID = _data["rptSOMethodTypeID"];
+            this.rptSOMethodTypeDesc = _data["rptSOMethodTypeDesc"];
+            this.fileUploadedByName = _data["fileUploadedByName"];
+            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
+            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
+            this.validAttachment = _data["validAttachment"];
+            this.submittedOn = _data["submittedOn"];
+            this.fileStream = _data["fileStream"];
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.soStatusTypeDesc = _data["soStatusTypeDesc"];
+            this.soInitiationDate = _data["soInitiationDate"];
+            this.soCompletionDate = _data["soCompletionDate"];
+            this.userID = _data["userID"];
+            this.description = _data["description"];
+            this.isItemAccessible = _data["isItemAccessible"];
+            this.submittedBy = _data["submittedBy"];
+            this.isFileRecieved = _data["isFileRecieved"];
+            this.lateFeeFlag = _data["lateFeeFlag"];
+            this.daysOverDue = _data["daysOverDue"];
+            this.isReportDue = _data["isReportDue"];
+            this.rptSchAttachmentStatusDesc = _data["rptSchAttachmentStatusDesc"];
+            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
+            this.rptSubmissionType = _data["rptSubmissionType"];
+            this.rptFormsToBeSubmited = _data["rptFormsToBeSubmited"];
+            this.rptNextStatus = _data["rptNextStatus"];
+            this.attachmentStatusTypeID = _data["attachmentStatusTypeID"];
+            this.fileAttachedUserEmail = _data["fileAttachedUserEmail"];
+            this.rptAttachmentStatusDate = _data["rptAttachmentStatusDate"];
+            this.isReportReminderDue = _data["isReportReminderDue"];
+            this.rptSchAttachmentStatusId = _data["rptSchAttachmentStatusId"];
+            this.isResubmissionRequested = _data["isResubmissionRequested"];
+            this.isResubmissionNotificationRequired = _data["isResubmissionNotificationRequired"];
+            this.resubmissionRequestedDate = _data["resubmissionRequestedDate"];
+            this.docReceivedDate = _data["docReceivedDate"];
+            this.submissionBeforeRptPeriodEnd = _data["submissionBeforeRptPeriodEnd"];
+            this.resubmissionDueDate = _data["resubmissionDueDate"];
+            this.isAMLDocType = _data["isAMLDocType"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmsRptSchID"] = this.firmsRptSchID;
+        data["firmsRptSchItemID"] = this.firmsRptSchItemID;
+        data["rptSchID"] = this.rptSchID;
+        data["qfcNum"] = this.qfcNum;
+        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
+        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["rptSchFinYearPeriod"] = this.rptSchFinYearPeriod;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptName"] = this.rptName;
+        data["rptDueDate"] = this.rptDueDate;
+        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
+        data["rptPeriodToDate"] = this.rptPeriodToDate;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["reviewComments"] = this.reviewComments;
+        data["manuallyReceived"] = this.manuallyReceived;
+        data["allowReSubmit"] = this.allowReSubmit;
+        data["rptSchItemAttachmentID"] = this.rptSchItemAttachmentID;
+        data["fileName"] = this.fileName;
+        data["attachmentFilePath"] = this.attachmentFilePath;
+        data["attachmentFileURI"] = this.attachmentFileURI;
+        data["rptSOMethodTypeID"] = this.rptSOMethodTypeID;
+        data["rptSOMethodTypeDesc"] = this.rptSOMethodTypeDesc;
+        data["fileUploadedByName"] = this.fileUploadedByName;
+        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
+        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
+        data["validAttachment"] = this.validAttachment;
+        data["submittedOn"] = this.submittedOn;
+        data["fileStream"] = this.fileStream;
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["soStatusTypeDesc"] = this.soStatusTypeDesc;
+        data["soInitiationDate"] = this.soInitiationDate;
+        data["soCompletionDate"] = this.soCompletionDate;
+        data["userID"] = this.userID;
+        data["description"] = this.description;
+        data["isItemAccessible"] = this.isItemAccessible;
+        data["submittedBy"] = this.submittedBy;
+        data["isFileRecieved"] = this.isFileRecieved;
+        data["lateFeeFlag"] = this.lateFeeFlag;
+        data["daysOverDue"] = this.daysOverDue;
+        data["isReportDue"] = this.isReportDue;
+        data["rptSchAttachmentStatusDesc"] = this.rptSchAttachmentStatusDesc;
+        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
+        data["rptSubmissionType"] = this.rptSubmissionType;
+        data["rptFormsToBeSubmited"] = this.rptFormsToBeSubmited;
+        data["rptNextStatus"] = this.rptNextStatus;
+        data["attachmentStatusTypeID"] = this.attachmentStatusTypeID;
+        data["fileAttachedUserEmail"] = this.fileAttachedUserEmail;
+        data["rptAttachmentStatusDate"] = this.rptAttachmentStatusDate;
+        data["isReportReminderDue"] = this.isReportReminderDue;
+        data["rptSchAttachmentStatusId"] = this.rptSchAttachmentStatusId;
+        data["isResubmissionRequested"] = this.isResubmissionRequested;
+        data["isResubmissionNotificationRequired"] = this.isResubmissionNotificationRequired;
+        data["resubmissionRequestedDate"] = this.resubmissionRequestedDate;
+        data["docReceivedDate"] = this.docReceivedDate;
+        data["submissionBeforeRptPeriodEnd"] = this.submissionBeforeRptPeriodEnd;
+        data["resubmissionDueDate"] = this.resubmissionDueDate;
+        data["isAMLDocType"] = this.isAMLDocType;
+        return data;
+    }
+}
+
+export interface IReportSchDetails {
+    firmsRptSchID?: number;
+    firmsRptSchItemID?: number;
+    rptSchID?: number;
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
+    rptSchItemID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSchItemAttachmentID?: number;
+    fileName?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    attachmentFileURI?: string | undefined;
+    rptSOMethodTypeID?: number;
+    rptSOMethodTypeDesc?: string | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    validAttachment?: boolean;
+    submittedOn?: string | undefined;
+    fileStream?: string | undefined;
+    objectSOStatusID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    soStatusTypeID?: number;
+    soStatusTypeDesc?: string | undefined;
+    soInitiationDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    userID?: number;
+    description?: string | undefined;
+    isItemAccessible?: boolean;
+    submittedBy?: number;
+    isFileRecieved?: boolean;
+    lateFeeFlag?: boolean;
+    daysOverDue?: number;
+    isReportDue?: boolean;
+    rptSchAttachmentStatusDesc?: string | undefined;
+    rptSubmissionTypeID?: number;
+    rptSubmissionType?: string | undefined;
+    rptFormsToBeSubmited?: string | undefined;
+    rptNextStatus?: string | undefined;
+    attachmentStatusTypeID?: number;
+    fileAttachedUserEmail?: string | undefined;
+    rptAttachmentStatusDate?: string | undefined;
+    isReportReminderDue?: boolean;
+    rptSchAttachmentStatusId?: number | undefined;
+    isResubmissionRequested?: boolean;
+    isResubmissionNotificationRequired?: number;
+    resubmissionRequestedDate?: string | undefined;
+    docReceivedDate?: string | undefined;
+    submissionBeforeRptPeriodEnd?: boolean;
+    resubmissionDueDate?: string | undefined;
+    isAMLDocType?: boolean;
+}
+
+export class ReportSchDetailsListBaseResponse implements IReportSchDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetails[] | undefined;
+
+    constructor(data?: IReportSchDetailsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ReportSchDetails.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSchDetailsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDetailsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSchDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetails[] | undefined;
+}
+
+export class ReportSchDto implements IReportSchDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    userID?: number | undefined;
+
+    constructor(data?: IReportSchDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNum = _data["qfcNum"];
+            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
+            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.userID = _data["userID"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNum"] = this.qfcNum;
+        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
+        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["userID"] = this.userID;
+        return data;
+    }
+}
+
+export interface IReportSchDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    userID?: number | undefined;
+}
+
+export class ReportSchItem implements IReportSchItem {
+    rptSchItemID?: number;
+    rptSchID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    userID?: number;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSubmissionTypeID?: number;
+
+    constructor(data?: IReportSchItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.rptSchID = _data["rptSchID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptName = _data["rptName"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
+            this.rptPeriodToDate = _data["rptPeriodToDate"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.userID = _data["userID"];
+            this.reviewComments = _data["reviewComments"];
+            this.manuallyReceived = _data["manuallyReceived"];
+            this.allowReSubmit = _data["allowReSubmit"];
+            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["rptSchID"] = this.rptSchID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptName"] = this.rptName;
+        data["rptDueDate"] = this.rptDueDate;
+        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
+        data["rptPeriodToDate"] = this.rptPeriodToDate;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["userID"] = this.userID;
+        data["reviewComments"] = this.reviewComments;
+        data["manuallyReceived"] = this.manuallyReceived;
+        data["allowReSubmit"] = this.allowReSubmit;
+        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
+        return data;
+    }
+}
+
+export interface IReportSchItem {
+    rptSchItemID?: number;
+    rptSchID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    userID?: number;
+    reviewComments?: string | undefined;
+    manuallyReceived?: boolean;
+    allowReSubmit?: boolean;
+    rptSubmissionTypeID?: number;
+}
+
+export class ReportSignatories implements IReportSignatories {
+    rptSignatoryID?: number;
+    qfcNum?: string | undefined;
+    docTypeID?: number;
+    signOffSeqNo?: number;
+    groupSignOff?: boolean;
+    valid?: boolean;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    signedByID?: number;
+    signedOnDate?: string | undefined;
+    userID?: number;
+    docSignatoryID?: number;
+    roles?: string | undefined;
+    occurance?: number;
+    userRole?: number;
+
+    constructor(data?: IReportSignatories) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.rptSignatoryID = _data["rptSignatoryID"];
+            this.qfcNum = _data["qfcNum"];
+            this.docTypeID = _data["docTypeID"];
+            this.signOffSeqNo = _data["signOffSeqNo"];
+            this.groupSignOff = _data["groupSignOff"];
+            this.valid = _data["valid"];
+            this.individualName = _data["individualName"];
+            this.emailAdd = _data["emailAdd"];
+            this.signedByID = _data["signedByID"];
+            this.signedOnDate = _data["signedOnDate"];
+            this.userID = _data["userID"];
+            this.docSignatoryID = _data["docSignatoryID"];
+            this.roles = _data["roles"];
+            this.occurance = _data["occurance"];
+            this.userRole = _data["userRole"];
+        }
+    }
+
+    static fromJS(data: any): ReportSignatories {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatories();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["rptSignatoryID"] = this.rptSignatoryID;
+        data["qfcNum"] = this.qfcNum;
+        data["docTypeID"] = this.docTypeID;
+        data["signOffSeqNo"] = this.signOffSeqNo;
+        data["groupSignOff"] = this.groupSignOff;
+        data["valid"] = this.valid;
+        data["individualName"] = this.individualName;
+        data["emailAdd"] = this.emailAdd;
+        data["signedByID"] = this.signedByID;
+        data["signedOnDate"] = this.signedOnDate;
+        data["userID"] = this.userID;
+        data["docSignatoryID"] = this.docSignatoryID;
+        data["roles"] = this.roles;
+        data["occurance"] = this.occurance;
+        data["userRole"] = this.userRole;
+        return data;
+    }
+}
+
+export interface IReportSignatories {
+    rptSignatoryID?: number;
+    qfcNum?: string | undefined;
+    docTypeID?: number;
+    signOffSeqNo?: number;
+    groupSignOff?: boolean;
+    valid?: boolean;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    signedByID?: number;
+    signedOnDate?: string | undefined;
+    userID?: number;
+    docSignatoryID?: number;
+    roles?: string | undefined;
+    occurance?: number;
+    userRole?: number;
 }
 
 export class Residencies implements IResidencies {

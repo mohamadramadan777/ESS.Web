@@ -1,64 +1,56 @@
 .submission-records-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-  
-      h2 {
-        color: #a51e36;
+  width: 95%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: left;
+    color: #a51e36;
+    margin-bottom: 20px;
+  }
+
+  .table-container {
+    margin: 20px auto;
+    max-width: 1200px;
+
+    table {
+      width: 100%;
+      background: #fff;
+      border-collapse: collapse;
+
+      th {
+        background: #a51e36;
+        color: white;
+        text-align: left;
+        padding: 10px;
       }
-  
-      p {
-        font-size: 16px;
-        font-weight: bold;
+
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
       }
-  
-      small {
-        font-size: 14px;
-        color: gray;
-      }
-    }
-  
-    .table-container {
-      margin: 20px auto;
-      max-width: 1200px;
-  
-      table {
-        width: 100%;
-        background: #fff;
-        border-collapse: collapse;
-  
-        th {
-          background: #a51e36;
-          color: white;
-          text-align: left;
-          padding: 10px;
-        }
-  
-        td {
-          padding: 10px;
-          border: 1px solid #ddd;
-        }
-  
-        button {
-          background-color: #a51e36;
-          color: white;
-          border: none;
-          padding: 5px 10px;
-          border-radius: 4px;
-          cursor: pointer;
-  
-          &:hover {
-            background-color: #870f29;
-          }
+
+      button {
+        background-color: #a51e36;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #870f29;
         }
       }
-    }
-  
-    mat-paginator {
-      margin-top: 20px;
     }
   }
-  
+
+  mat-paginator {
+    margin-top: 20px;
+  }
+}
