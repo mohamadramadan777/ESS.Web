@@ -171,17 +171,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       header: 'Forms to Download and Submit',
       icon: 'cloud_download',
       data: this.generalSubmissionForms,
-      // [
-      //   {
-      //     formName: 'Form G03 - Controlled function application',
-      //     downloadLink: 'Download G03 from here',
-      //     submitLink: 'Submit to RA',
-      //   }
-      // ],
       columns: [
         { headerName: 'Form', field: 'title', flex: 2, minWidth: 800 },
         {
-          headerName: 'Download', field: 'downloadLink', maxWidth: 120,
+          headerName: 'Download', field: 'linkToDownload', maxWidth: 120,
           cellRenderer: (params: any) => {
             const html = params.value;
             return `
@@ -210,13 +203,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onCellClicked(event: any) {
     const { colDef, event: mouseEvent, data } = event;
-    if (colDef.field === 'downloadLink') {
+    if (colDef.field === 'linkToDownload') {
       const target = mouseEvent.target as HTMLElement;
       // Determine the message based on the isRegistered field
-      const message = `          <span id="ctl00_LegislationMasterBody_gwGenSubmissionForm_ctl02_lblLnkToDownload">Download Q03 from <a href="https://qfcra-en.thomsonreuters.com/rulebook/qfc-form-03-controlled-function-application" target="_blank">here</a>, complete the form with the required signatures and attach a scanned copy using the "Submit to RA" link.
-<br><br>
-<b>NOTE:</b> <i>If you are applying for approval of a Non-Resident MLRO, download the "Appendix AML/CFT Systems and Control, Non-resident MLRO" from <a href="https://qfcra-en.thomsonreuters.com/sites/default/files/net_file_store/Appendix_AML_CFT_Final_FormQ3.docx" target="_blank">here</a>, complete the form and attach a scanned copy along with your Q03 application.</i></span>`;
-
+      const message = data.link;
       // Display confirmation dialog
       Swal.fire({
         html: message,
@@ -226,6 +216,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (result.isConfirmed) {
         }
       });
+    }
+    else if(colDef.field === 'submitLink') {
+      
     }
   }
 
