@@ -84,7 +84,7 @@ export class SubmissionRecordsComponent implements OnInit {
             .filter((id) => id !== undefined) as number[];
 
           // Fetch signatory statuses
-          this.getISignatoryStatuses(applicationIds).subscribe((signatoryData: ISignatoryStatus[][]) => {
+          this.getSignatoryStatuses(applicationIds).subscribe((signatoryData: ISignatoryStatus[][]) => {
             // Flatten the signatory data since forkJoin returns an array of arrays
             const flattenedSignatoryData: ISignatoryStatus[] = signatoryData.flat();
 
@@ -107,7 +107,7 @@ export class SubmissionRecordsComponent implements OnInit {
   }
 
   // ✅ Fetch Signatory Statuses
-  private getISignatoryStatuses(applicationIds: number[]): Observable<ISignatoryStatus[][]> {
+  private getSignatoryStatuses(applicationIds: number[]): Observable<ISignatoryStatus[][]> {
     return applicationIds.length > 0
       ? forkJoin(
           applicationIds.map((appId) =>
@@ -166,18 +166,35 @@ export class SubmissionRecordsComponent implements OnInit {
   private generateDescription(item: any): Observable<string> {
     let messageKey = '';
   
-    switch (item.objectID) {
-      case 15: // Individual Applications
-        messageKey = 'ApplicationSubmitted';
-        break;
-      case 16: // Notification of Competency
-        messageKey = 'SubmittedNOCOnHomePage';
-        break;
-      case 17: // General Submission
-        messageKey = 'SubmittedGenSubOnHomePage';
-        break;
-      default:
-        return of('No description available.');
+    // ✅ Determine message key based on status (Submitted vs Pending)
+    if (item.statusTypeID === 4) { // ✅ Status 4 → Submitted Applications
+      switch (item.objectID) {
+        case 15: // Individual Applications
+          messageKey = 'ApplicationSubmitted';
+          break;
+        case 16: // Notification of Competency
+          messageKey = 'SubmittedNOCOnHomePage';
+          break;
+        case 17: // General Submission
+          messageKey = 'SubmittedGenSubOnHomePage';
+          break;
+        default:
+          return of('No description available.');
+      }
+    } else { // ✅ Any other status → Pending Applications
+      switch (item.objectID) {
+        case 15: // Individual Applications
+          messageKey = item.wObjectSOStatusID ? 'ApplicationSignOffPending' : 'ApplicationNotSubmitted';
+          break;
+        case 16: // Notification of Competency
+          messageKey = 'ApplicationSignOffPending';
+          break;
+        case 17: // General Submission
+          messageKey = item.wObjectSOStatusID ? 'GenSubSignOffPending' : 'GenSubNotSubmitted';
+          break;
+        default:
+          return of('No description available.');
+      }
     }
   
     // ✅ Fix: Use "-" instead of empty string to avoid rejection
@@ -196,6 +213,7 @@ export class SubmissionRecordsComponent implements OnInit {
         if (response.isSuccess && response.response && response.response.length > 0) {
           let msg = response.response[0].configValue ?? '';
           msg = msg.replace('{INDIVIDUAL_NAME}', item.individualName || 'Unknown');
+          msg = msg.replace('{CREATED_DATE}', item.createdDate || 'Unknown Date');
           msg = msg.replace('{SUBMITTED_DATE}', item.submittedDate || 'Unknown Date');
           msg = msg.replace('{DOC_TYPE}', item.formType || 'Unknown Document');
           console.log(msg);
@@ -214,6 +232,70 @@ export class SubmissionRecordsComponent implements OnInit {
   
   
   
+  private loadPendingRecords(): void {
+    this.loadingService.show();
+  
+    this.client.getPendingItems().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.response) {
+          let applications = response.response;
+  
+          // Extract application IDs (ensure type safety)
+          const applicationIds: number[] = applications
+            .map((app) => app.applicationID)
+            .filter((id) => id !== undefined) as number[];
+  
+          // Fetch signatory statuses
+          this.getSignatoryStatuses(applicationIds).subscribe((signatoryData: ISignatoryStatus[][]) => {
+            // Flatten the signatory data since forkJoin returns an array of arrays
+            const flattenedSignatoryData: ISignatoryStatus[] = signatoryData.flat();
+  
+            // Process and filter applications with signatory data
+            this.Pending = this.processPendingApplications(applications, flattenedSignatoryData);
+            this.loadingService.hide();
+          });
+        } else {
+          this.toastr.error('Failed to load pending applications.', 'Error');
+          console.error('Failed to load pending applications:', response?.errorMessage);
+          this.loadingService.hide();
+        }
+      },
+      error: (error) => {
+        this.toastr.error('Error occurred while fetching pending applications.', 'Error');
+        console.error('Error occurred while fetching pending applications:', error);
+        this.loadingService.hide();
+      },
+    });
+  }
+  
+  private processPendingApplications(applications: any[], signatoryData: ISignatoryStatus[]): any[] {
+    return applications.filter((item) => {
+      let bCanView = false;
+  
+      // Generate description asynchronously
+      this.generateDescription(item).subscribe((description) => (item.description = description));
+  
+      // ✅ Check if the current user is the creator
+      if (item.userCreated === Number(this.ICurrentUser?.WUserID)) {
+        bCanView = true;
+      }
+  
+      // ✅ Check if the user is a signatory
+      const signatoryInfo = signatoryData.find((signatory) => signatory.objectInstanceID === item.applicationID);
+      if (signatoryInfo && signatoryInfo.soTaskAssignedTo === Number(this.ICurrentUser?.WUserID)) {
+        bCanView = true;
+      }
+  
+      // ✅ Allow access to SEF & Compliance Officers
+      if (this.hasRole('19')) {
+        bCanView = true;
+      }
+  
+      // ✅ Apply firm-based filtering
+      return this.ICurrentUser?.FirmQFCNo === '00173' && bCanView;
+    });
+  }
+  
   
 
   // ✅ Check User Role
@@ -221,80 +303,7 @@ export class SubmissionRecordsComponent implements OnInit {
     return this.ICurrentUser?.role.split('@').includes(role) || false;
   }
 
-  //Pending Records
-  private loadPendingRecords(): void {
-    // this.loadingService.show();
-    // this.client.getPendingApplications().subscribe({
-    //   next: (response) => {
-    //     if (response.isSuccess && response.response) {
-    //       this.Pending = this.processApplications(response.response);
-    //     } else {
-    //       this.toastr.error('Failed to load applications.', 'Error');
-    //       console.error('Failed to load applications:', response?.errorMessage);
-    //     }
-    //     this.loadingService.hide();
-    //   },
-    //   error: (error) => {
-    //     this.toastr.error('Error occurred while fetching applications.', 'Error');
-    //     console.error('Error occurred while fetching applications:', error);
-    //     this.loadingService.hide();
-    //   },
-    // });
-  }
-  private processPendingApplications(applications: any[]): any[] {
 
-
-    return applications.filter((item) => {
-      let bCanView = false;
-
-
-      // Generate description based on application status
-      if (!item.wObjectSOStatusID) {
-        if (item.applicationStatus === 'Resubmission Required') {
-          item.description = `Resubmission required for ${
-            item.individualName || 'Unknown'
-          } - ${item.formType} (Created on ${item.createdDate})`;
-        } else if (
-          item.applicationStatus === 'Accepted' &&
-          item.attachmentResubmissionRequired
-        ) {
-          item.description = `Attachment resubmission required for ${
-            item.individualName || 'Unknown'
-          } - ${item.formType} (Created on ${item.createdDate})`;
-        } else {
-          item.description = `Application not submitted for ${
-            item.individualName || 'Unknown'
-          } - ${item.formType} (Created on ${item.createdDate})`;
-        }
-      } else {
-        item.description = `Sign-off pending for ${
-          item.individualName || 'Unknown'
-        } - ${item.formType} (Created on ${item.createdDate})`;
-      }
-
-      // Allow access to Application Creator
-      if (item.userCreated === this.ICurrentUser?.WUserID) {
-        bCanView = true;
-      }
-
-      // Allow access to Signatories
-      if (item.signatories?.length) {
-        const isUserSignatory = item.signatories.some(
-          (signatory: any) => signatory.assignedTo === this.ICurrentUser?.WUserID
-        );
-        if (isUserSignatory) {
-          bCanView = true;
-        }
-      }
-
-      // Allow access to Senior Executives & Compliance Officers
-      if (this.hasRole('19')) {
-        bCanView = true;
-      }
-
-      return bCanView;
-    });
-  }
 
 
   onRowClicked(event: any): void {
