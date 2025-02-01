@@ -381,6 +381,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   getGeneralCommunication(): void {
     const generealCommunications = sessionStorage.getItem(this.VIEWSTATE_NOTICE); // Check session storage
     if (generealCommunications) {
+      this.generealCommunications.pop();
       this.processGeneralCommunication(JSON.parse(generealCommunications));
       return;
     }
