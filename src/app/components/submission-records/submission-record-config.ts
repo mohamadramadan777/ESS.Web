@@ -1,9 +1,21 @@
 import { themeQuartz,themeAlpine,themeBalham } from 'ag-grid-community';
 
 
-export interface ISubmissionRecord {
-  application: string;
-  date: Date;
+export interface ICurrentUser {
+  name: string;
+  WUserID: string;
+  FirmQFCNo: string;
+  role: string;
+}
+
+export interface ISignatoryStatus {
+  objectID: number;
+  objectInstanceID: number;
+  soTaskAssignedTo: number;
+  soTaskCompletionDate: string;
+  soTaskSeqNo: number;
+  groupSignOff: boolean;
+  isLoggedInUser: boolean;
 }
 
 export const paginationPageSize = 10;

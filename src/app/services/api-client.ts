@@ -14,6 +14,7 @@ import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
 
+
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -2409,21 +2410,41 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param wConfigMessageID (optional) 
+     * @param configKey (optional) 
+     * @param configDesc (optional) 
+     * @param configValue (optional) 
+     * @param isEditable (optional) 
      * @return OK
      */
-    getConfigMessage(body: ConfigMessage | undefined): Observable<ConfigMessageListBaseResponse> {
-        let url_ = this.baseUrl + "/api/MasterData/get-config-message";
+    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<ConfigMessageListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-config-message?";
+        if (wConfigMessageID === null)
+            throw new Error("The parameter 'wConfigMessageID' cannot be null.");
+        else if (wConfigMessageID !== undefined)
+            url_ += "WConfigMessageID=" + encodeURIComponent("" + wConfigMessageID) + "&";
+        if (configKey === null)
+            throw new Error("The parameter 'configKey' cannot be null.");
+        else if (configKey !== undefined)
+            url_ += "ConfigKey=" + encodeURIComponent("" + configKey) + "&";
+        if (configDesc === null)
+            throw new Error("The parameter 'configDesc' cannot be null.");
+        else if (configDesc !== undefined)
+            url_ += "ConfigDesc=" + encodeURIComponent("" + configDesc) + "&";
+        if (configValue === null)
+            throw new Error("The parameter 'configValue' cannot be null.");
+        else if (configValue !== undefined)
+            url_ += "ConfigValue=" + encodeURIComponent("" + configValue) + "&";
+        if (isEditable === null)
+            throw new Error("The parameter 'isEditable' cannot be null.");
+        else if (isEditable !== undefined)
+            url_ += "IsEditable=" + encodeURIComponent("" + isEditable) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };

@@ -72,7 +72,7 @@ export class ViewNoticeComponent {
   }
 
   fillAdditionalAttachments(): void {
-    this.client.getObjAttachments(undefined, Number(WObjects.FirmNotice), this.wNoticeID, 1).subscribe({
+    this.client.getObjAttachments(undefined, Number(WObjects.FirmNotice), this.wNoticeID, 1,undefined).subscribe({
       next: (response) => {
         this.loadingService.hide();
         this.additionalAttachmentsLoaded = true;
