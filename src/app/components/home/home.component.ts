@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppConstants } from '../../constants/app.constants';
-import { FirmType, WObjects, PendingItemsOnHomePage } from '../../enums/app.enums';
+import { FirmType, WObjects, DocTypes } from '../../enums/app.enums';
 import { Client, GeneralSubmissionForm, UserPendingItems, WNoticeList } from '../../services/api-client';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
@@ -18,6 +18,8 @@ import {
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { min } from 'rxjs';
+import { WithdrawalComponent } from '../submission-records/forms/withdrawal/withdrawal.component';
+import { ApprovalComponent } from '../submission-records/forms/approval/approval.component';
 
 @Component({
   selector: 'app-home',
@@ -40,18 +42,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private dialog: MatDialog) { }
 
-    requiredSignoff: { title: string; overdueDays: number; dueDate: string }[] = [
-      { title: "Loading...", overdueDays: 0, dueDate: "" }
-    ];
-    
-    generealCommunications: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [
-      { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
-    ];
-    
-    generalSubmissionForms: { title: string; link: string; WIndFromTypeID: number; DocTypeId: number }[] = [
-      { title: "Loading...", link: "", WIndFromTypeID: 0, DocTypeId: 0 }
-    ];
-    
+  requiredSignoff: { title: string; overdueDays: number; dueDate: string }[] = [
+    { title: "Loading...", overdueDays: 0, dueDate: "" }
+  ];
+
+  generealCommunications: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [
+    { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
+  ];
+
+  generalSubmissionForms: { title: string; link: string; WIndFromTypeID: number; DocTypeId: number }[] = [
+    { title: "Loading...", link: "", WIndFromTypeID: 0, DocTypeId: 0 }
+  ];
+
   filteredTables: any[] = []; // Stores tables with data
   requiredSignoffLoaded = false;
   pendingSubmissionsLoaded = false;
@@ -78,7 +80,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Cards for Top-Right Section
   topCards = [
     { title: 'Reporting Schedules', icon: 'calendar_today', route: '/reports' },
-    { title: 'Previous Submissions', icon: 'history', route: '/previous-submissions' },
+    { title: 'Previous Submissions', icon: 'history', route: '/submission-records' },
     { title: 'Notices', icon: 'notifications', route: '/notices' },
   ];
 
@@ -217,8 +219,40 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       });
     }
-    else if(colDef.field === 'submitLink') {
-      
+    else if (colDef.field === 'submitLink') {
+      if (data.DocTypeId == DocTypes.FormQ12) {
+        const dialogRef = this.dialog.open(WithdrawalComponent, {
+          width: '80%',
+          height: '85%',
+          data: {
+            Form: data.title,
+            WIndFromTypeID: data.WIndFromTypeID,
+            DocTypeId: data.DocTypeId,
+          },
+        });
+      }
+      else if (data.DocTypeId == DocTypes.FormQ03) {
+        const dialogRef = this.dialog.open(ApprovalComponent, {
+          width: '80%',
+          height: '85%',
+          data: {
+            Form: data.title,
+            WIndFromTypeID: data.WIndFromTypeID,
+            DocTypeId: data.DocTypeId,
+          },
+        });
+      }
+      else{ //GenSub Here
+        const dialogRef = this.dialog.open(ApprovalComponent, {
+          width: '80%',
+          height: '85%',
+          data: {
+            Form: data.title,
+            WIndFromTypeID: data.WIndFromTypeID,
+            DocTypeId: data.DocTypeId,
+          },
+        });
+      }
     }
   }
 

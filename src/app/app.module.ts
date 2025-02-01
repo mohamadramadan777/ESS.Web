@@ -54,7 +54,10 @@ import { NoticeQuestionsComponent } from './components/notices/notice-questions/
 import { HtmlViewerComponent } from './components/html-viewer/html-viewer.component';
 import { SubmissionRecordsComponent } from './components/submission-records/submission-records.component';
 import { FileUploaderComponent } from './components/file-uploader/file-uploader.component';
-
+import { WithdrawalComponent } from './components/submission-records/forms/withdrawal/withdrawal.component';
+import { ApprovalComponent } from './components/submission-records/forms/approval/approval.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -83,6 +86,8 @@ import { FileUploaderComponent } from './components/file-uploader/file-uploader.
     HtmlViewerComponent,
     SubmissionRecordsComponent,
     FileUploaderComponent,
+    WithdrawalComponent,
+    ApprovalComponent,
   ],
   imports: [
     BrowserModule,
@@ -107,6 +112,8 @@ import { FileUploaderComponent } from './components/file-uploader/file-uploader.
     HttpClientModule,
     MatTabsModule,
     MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)
       positionClass: 'toast-top-center', // Position on the page
@@ -114,8 +121,8 @@ import { FileUploaderComponent } from './components/file-uploader/file-uploader.
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },  Client , { provide: API_BASE_URL, useValue: environment.apiBaseUrl },LoadingService ],
+  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,0 +1,141 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+      <h1 mat-dialog-title class="dialog-title">
+        <span class="label">{{ data.Form }}</span>
+      </h1>
+      <button mat-icon-button class="close-button" (click)="onClose()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <mat-tab-group class="custom-tab-group">
+        <!-- Applicant Details Tab -->
+        <mat-tab label="Applicant Details">
+          <div class="tab-content">
+            <table class="applicant-details-table">
+              <tbody>
+                <tr>
+                  <td class="label">Family Name:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput placeholder="Enter family name" [(ngModel)]="applicant.familyName" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">Other Name:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput placeholder="Enter other name" [(ngModel)]="applicant.otherName" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">Date of Birth:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="half-width">
+                      <input matInput [matDatepicker]="picker" placeholder="Choose a date" [(ngModel)]="applicant.dob" />
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <span class="spacer"></span>
+                    <mat-form-field appearance="outline" class="half-width">
+                      <input matInput placeholder="Place of Birth" [(ngModel)]="applicant.placeOfBirth" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">Passport Number:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="half-width">
+                      <input matInput placeholder="Enter passport number" [(ngModel)]="applicant.passportNumber" />
+                    </mat-form-field>
+                    <span class="spacer"></span>
+                    <mat-form-field appearance="outline" class="half-width">
+                      <mat-select placeholder="Jurisdiction of Issue" [(value)]="applicant.jurisdiction">
+                        <mat-option *ngFor="let option of jurisdictions" [value]="option">{{ option }}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">AI Number (if Any):</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput placeholder="Enter AI number" [(ngModel)]="applicant.aiNumber" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">Controlled function(s) for which individual approval is sought:</td>
+                  <td>
+                    <div class="controlled-functions-grid">
+                        <div *ngFor="let function of controlledFunctions" class="controlled-function-item">
+                          <mat-checkbox
+                            [(ngModel)]="function.isSelected"
+                            (change)="onFunctionChange(function.name)">
+                            {{ function.name }}
+                          </mat-checkbox>
+                        </div>
+                      </div>
+                  </td>
+                </tr>
+                <tr *ngIf="showEmailField">
+                  <td class="label">Email Address:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="full-width">
+                      <input matInput placeholder="Enter email address" [(ngModel)]="applicant.email" />
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr *ngIf="showResidentQuestion">
+                  <td class="label">Will the individual be ordinarily resident in Qatar?</td>
+                  <td>
+                    <mat-radio-group [(ngModel)]="applicant.isResident" class="radio-group">
+                      <mat-radio-button [value]="true">Yes</mat-radio-button>
+                      <mat-radio-button [value]="false">No</mat-radio-button>
+                    </mat-radio-group>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+  
+        <!-- Attachments Tab -->
+        <mat-tab label="Attachments">
+          <div class="tab-content">
+            <app-file-uploader
+              [ShowHeaderPanel]="true"
+              [ShowHeaderFormName]="false"
+              [ObjectID]="123"
+              [ObjectInstanceID]="456"
+              [ObjectInstanceRevNum]="1"
+              [DocTypeID]="789"
+              [FormTypeID]="101112"
+              [ShowPrimaryDoc]="true"
+              (fileUploaded)="onFileUploaded($event)"
+            ></app-file-uploader>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div class="modal-footer" *ngIf="!ReadOnly">
+        <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(3)">
+          <mat-icon>attach_file</mat-icon>
+          <span class="animated-text">Attachments</span>
+        </button>
+        <button mat-icon-button class="animated-icon-button-small" (click)="onSave()">
+          <mat-icon>save</mat-icon>
+          <span class="animated-text">Save</span>
+        </button>
+        <button mat-icon-button class="animated-icon-button" (click)="onSaveAndClose()">
+          <mat-icon>folder_check</mat-icon>
+          <span class="animated-text">Save & Close</span>
+        </button>
+        <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+          <mat-icon>send</mat-icon> Submit
+        </button>
+      </div>
+  </div>
+  

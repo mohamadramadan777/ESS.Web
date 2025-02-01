@@ -16,6 +16,8 @@ export const AppConstants = {
       REQUIRED_FUNCTIONS_ASSIGNED: "Required Functions Assigned",
       REPLACE_REPORT_NAME: "##ReportName##",
       REPLACE_DUE_DATE: "##DueDate##",
+      ApplicantName: 'Applicant Name',
+      AINumber: 'AI Number',
       // Add more keywords as needed
     },
     Session:{

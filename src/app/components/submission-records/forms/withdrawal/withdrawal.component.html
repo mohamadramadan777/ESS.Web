@@ -1,0 +1,100 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+      <h1 mat-dialog-title class="dialog-title">
+        <span class="label">{{ data.Form }}</span>
+      </h1>
+      <button mat-icon-button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <mat-tab-group class="custom-tab-group">
+        <!-- Applicant Details Tab -->
+        <mat-tab label="Applicant Details">
+          <div class="tab-content">
+            <table class="applicant-details-table">
+              <tbody>
+                <tr>
+                  <td class="label">Applicant Name:</td>
+                  <td>
+                    <mat-form-field appearance="outline" class="applicant-name-dropdown">
+                      <mat-select
+                        placeholder="Select Applicant"
+                        [(value)]="selectedApplicant"
+                        (selectionChange)="onApplicantChange()"
+                      >
+                        <mat-option *ngFor="let applicant of applicantNames" [value]="applicant">
+                          {{ applicant.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">AI Number:</td>
+                  <td>
+                    <span class="ai-number">{{ aiNumber }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="label">Controlled function(s) for which individual withdrawal is sought:</td>
+                  <td>
+                    <table class="controlled-functions-table">
+                      <tbody>
+                        <tr *ngFor="let function of controlledFunctions; let i = index">
+                          <td>{{ function.name }}</td>
+                          <td>
+                            <mat-checkbox [(ngModel)]="function.isWithdrawn" (change)="onWithdrawChange(i)">
+                              Withdraw
+                            </mat-checkbox>
+                            <div class="approved-date">
+                              (Approved on {{ function.approvedDate }})
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-tab>
+  
+        <!-- Attachments Tab -->
+        <mat-tab label="Attachments">
+          <div class="tab-content">
+            <app-file-uploader
+              [ShowHeaderPanel]="true"
+              [ShowHeaderFormName]="false"
+              [ObjectID]="123"
+              [ObjectInstanceID]="456"
+              [ObjectInstanceRevNum]="1"
+              [DocTypeID]="789"
+              [FormTypeID]="101112"
+              [ShowPrimaryDoc]="true"
+              (fileUploaded)="onFileUploaded($event)"
+            ></app-file-uploader>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div class="modal-footer" *ngIf="!ReadOnly">
+      <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(3)">
+        <mat-icon>attach_file</mat-icon>
+        <span class="animated-text">Attachments</span>
+      </button>
+      <button mat-icon-button class="animated-icon-button-small" (click)="onSave()">
+        <mat-icon>save</mat-icon>
+        <span class="animated-text">Save</span>
+      </button>
+      <button mat-icon-button class="animated-icon-button" (click)="onSaveAndClose()">
+        <mat-icon>folder_check</mat-icon>
+        <span class="animated-text">Save & Close</span>
+      </button>
+      <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+        <mat-icon>send</mat-icon> Submit
+      </button>
+    </div>
+  </div>
+  
