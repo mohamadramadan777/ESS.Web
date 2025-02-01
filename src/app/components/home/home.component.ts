@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
+    this.loadingService.show();
     this.displayESSAnncouncement();
     this.getPendingForLoggedInUser();
     this.getGeneralCommunication();
@@ -438,8 +439,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   processGeneralSubmissionForms(responseData: GeneralSubmissionForm[]): void {
+    this.generalSubmissionForms.pop();
     for (const item of responseData) {
-
       // Push the processed data to the array
       this.generalSubmissionForms.push({
         title: item.docTypeDesc ?? "",
@@ -491,6 +492,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.selectTable(indexToSelect + 1);
       setTimeout(() => {
         this.selectTable(indexToSelect);
+        this.loadingService.hide();
       }, 100);
     }
   }
