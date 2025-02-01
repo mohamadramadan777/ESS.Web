@@ -317,14 +317,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   getPendingForLoggedInUser(): void {
     this.client.getPendingItemForLoggedInUser().subscribe({
       next: (response) => {
+        this.requiredSignoff.pop();
         if (response && response.isSuccess && response.response) {
           this.processPendingItems(response.response);//map the response to the table data here.
+          this.requiredSignoffLoaded = true;
+          this.selectDefaultTable();
         } else {
           this.toastr.error('Failed to load Pending items.', 'Error');
           console.error('Failed to load Pending items:', response?.errorMessage);
+          this.loadingService.hide();
         }
       },
       error: (error) => {
+        this.requiredSignoff.pop();
         this.toastr.error('Error occurred while fetching Pending items.', 'Error');
         console.error('Error occurred while fetching Pending items:', error);
         this.loadingService.hide();
@@ -332,7 +337,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
   processPendingItems(responseData: UserPendingItems[]): void {
-    this.requiredSignoff.pop();
     for (const item of responseData) {
       let finalDescription = '';
       if (item.objectID === WObjects.ReportSchedule) {
@@ -371,8 +375,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         overdueDays: 0,
         dueDate: ''
       });
-      this.requiredSignoffLoaded = true;
-      this.selectDefaultTable();
     }
   }
 
@@ -384,6 +386,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
     this.client.getWnoticeListForHome().subscribe({
       next: (response) => {
+        this.generealCommunications.pop();
         if (response && response.isSuccess && response.response) {
           sessionStorage.setItem(this.VIEWSTATE_NOTICE, JSON.stringify(response.response)); // Store in sessionStorage
           this.processGeneralCommunication(response.response);//map the response to the table data here.
@@ -393,15 +396,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        this.generealCommunications.pop();
         this.toastr.error('Error occurred while fetching General Communication.', 'Error');
         console.error('Error occurred while fetching General Communication:', error);
-        this.loadingService.hide();
       },
     });
   }
 
   processGeneralCommunication(responseData: WNoticeList[]): void {
-    this.generealCommunications.pop();
     for (const item of responseData) {
       if (item.wResponseRequired) {
         continue;
@@ -426,6 +428,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.client.getGeneralSubmissionForms(this.firmType).subscribe({
       next: (response) => {
+        this.generalSubmissionForms.pop();
         if (response && response.isSuccess && response.response) {
           this.processGeneralSubmissionForms(response.response);//map the response to the table data here.
         } else {
@@ -434,6 +437,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        this.generalSubmissionForms.pop();
         this.toastr.error('Error occurred while fetching General Submission Forms.', 'Error');
         console.error('Error occurred while fetching General Submission Forms:', error);
         this.loadingService.hide();
@@ -442,7 +446,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   processGeneralSubmissionForms(responseData: GeneralSubmissionForm[]): void {
-    this.generalSubmissionForms.pop();
     for (const item of responseData) {
       // Push the processed data to the array
       this.generalSubmissionForms.push({

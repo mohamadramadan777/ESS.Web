@@ -1,4 +1,5 @@
 import { themeQuartz,themeAlpine,themeBalham } from 'ag-grid-community';
+import { max } from 'rxjs';
 
 
 export interface ICurrentUser {
@@ -48,12 +49,14 @@ export const TableColDef = [
     field: 'submittedDate',
     sortable: true,
     filter: true,
+    maxWidth: 300,
   },
   {
     headerName: 'Status',
     field: 'applicationStatus',
     sortable: true,
     filter: true,
+    maxWidth: 300,
   },
 ];
 
