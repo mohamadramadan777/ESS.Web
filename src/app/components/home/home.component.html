@@ -5,7 +5,7 @@
   <!-- Top Notice Message -->
   <div class="notice-message" *ngIf="showNoticeMessage">
     <mat-icon class="blinking-icon">error_outline</mat-icon>
-    <span>{{ noticeMessage }}</span>
+    <span>{{ ESSAnnoucement }}</span>
     <button mat-icon-button (click)="closeNoticeMessage()">
       <mat-icon>close</mat-icon>
     </button>
@@ -16,12 +16,13 @@
     <!-- Left Panel -->
     <div class="left-panel">
       <div class="headers">
-        <span  *ngFor="let table of tables; let i = index" [class.active]="currentTableIndex === i"
-          (click)="selectTable(i)">
+        <span *ngFor="let table of filteredTables; let i = index"
+        [class.active]="currentTableIndex === i"
+          (click)="selectTable(i)"
+          >
           <mat-icon class="header-icon">{{ table.icon }}</mat-icon>
           {{ table.header }} 
-          <span *ngIf="i < 2" class="row-count">{{ table.data.length }}</span>
-          
+          <span *ngIf="i < 2 && table.data.length > 0" class="row-count">{{ table.data.length }}</span>
         </span>
       </div>
       <div class="table-container" data-ag-theme-mode="light-red">
@@ -29,7 +30,8 @@
           [columnDefs]="currentTable.columns" [defaultColDef]="defaultColDef" [theme]="theme" [modules]="modules"
           [pagination]="true" [paginationPageSize]="paginationPageSize"
           [paginationPageSizeSelector]="paginationPageSizeSelector" [domLayout]="'autoHeight'"
-          (cellClicked)="onCellClicked($event)">
+          (cellClicked)="onCellClicked($event)"
+          (rowDoubleClicked)="onRowDoubleClicked($event)">
         </ag-grid-angular>
       </div>
     </div>

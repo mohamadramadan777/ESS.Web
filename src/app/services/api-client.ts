@@ -12,8 +12,8 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-import { API_BASE_URL } from './tokens';
 
+import { API_BASE_URL } from './tokens';
 
 @Injectable()
 export class Client {
@@ -785,7 +785,7 @@ export class Client {
      * @param firmType (optional) 
      * @return OK
      */
-    getGeneralSubmissionForms(firmType: string | undefined): Observable<AttachmentListBaseResponse> {
+    getGeneralSubmissionForms(firmType: number | undefined): Observable<GeneralSubmissionFormListBaseResponse> {
         let url_ = this.baseUrl + "/api/AccessRequest/get-general-submission-forms?";
         if (firmType === null)
             throw new Error("The parameter 'firmType' cannot be null.");
@@ -808,14 +808,14 @@ export class Client {
                 try {
                     return this.processGetGeneralSubmissionForms(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<GeneralSubmissionFormListBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<AttachmentListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<GeneralSubmissionFormListBaseResponse>;
         }));
     }
 
-    protected processGetGeneralSubmissionForms(response: HttpResponseBase): Observable<AttachmentListBaseResponse> {
+    protected processGetGeneralSubmissionForms(response: HttpResponseBase): Observable<GeneralSubmissionFormListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -826,7 +826,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentListBaseResponse.fromJS(resultData200);
+            result200 = GeneralSubmissionFormListBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -834,7 +834,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<AttachmentListBaseResponse>(null as any);
+        return _observableOf<GeneralSubmissionFormListBaseResponse>(null as any);
     }
 
     /**
@@ -2410,41 +2410,21 @@ export class Client {
     }
 
     /**
-     * @param wConfigMessageID (optional) 
-     * @param configKey (optional) 
-     * @param configDesc (optional) 
-     * @param configValue (optional) 
-     * @param isEditable (optional) 
+     * @param body (optional) 
      * @return OK
      */
-    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<ConfigMessageListBaseResponse> {
-        let url_ = this.baseUrl + "/api/MasterData/get-config-message?";
-        if (wConfigMessageID === null)
-            throw new Error("The parameter 'wConfigMessageID' cannot be null.");
-        else if (wConfigMessageID !== undefined)
-            url_ += "WConfigMessageID=" + encodeURIComponent("" + wConfigMessageID) + "&";
-        if (configKey === null)
-            throw new Error("The parameter 'configKey' cannot be null.");
-        else if (configKey !== undefined)
-            url_ += "ConfigKey=" + encodeURIComponent("" + configKey) + "&";
-        if (configDesc === null)
-            throw new Error("The parameter 'configDesc' cannot be null.");
-        else if (configDesc !== undefined)
-            url_ += "ConfigDesc=" + encodeURIComponent("" + configDesc) + "&";
-        if (configValue === null)
-            throw new Error("The parameter 'configValue' cannot be null.");
-        else if (configValue !== undefined)
-            url_ += "ConfigValue=" + encodeURIComponent("" + configValue) + "&";
-        if (isEditable === null)
-            throw new Error("The parameter 'isEditable' cannot be null.");
-        else if (isEditable !== undefined)
-            url_ += "IsEditable=" + encodeURIComponent("" + isEditable) + "&";
+    getConfigMessage(body: ConfigMessage | undefined): Observable<ConfigMessageListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-config-message";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(body);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -2768,118 +2748,6 @@ export class Client {
             }));
         }
         return _observableOf<WNoticeQuestionnaireItemDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateReportSchDetails(body: InsertReportSchDetailsDto | undefined): Observable<Int32ListBaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-report-sch-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateReportSchDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateReportSchDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateReportSchDetails(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32ListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32ListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateObjectSoStatusDetails(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateObjectSoStatusDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32BaseResponse>(null as any);
     }
 }
 
@@ -3847,290 +3715,6 @@ export interface IApplicationDetailDtoBaseResponse {
     response?: ApplicationDetailDto;
 }
 
-export class Attachment implements IAttachment {
-    wObjectID?: number | undefined;
-    wObjectInstanceID?: number | undefined;
-    wIndApplicationID?: number;
-    wIndAttachementID?: number | undefined;
-    wIndAttachementIDs?: string | undefined;
-    wObjAttachementID?: number | undefined;
-    wObjectInstanceRevNum?: number | undefined;
-    wObjAttachementIDs?: string | undefined;
-    docTypeId?: number;
-    docSubTypeId?: number;
-    docSubTypeIDs?: string | undefined;
-    csV_DocSubTypeId?: string | undefined;
-    docTypeDesc?: string | undefined;
-    docSubTypeDesc?: string | undefined;
-    isDocSupplied?: boolean;
-    dateCreated?: Date;
-    dateModified?: Date;
-    filePath?: string | undefined;
-    reasonforNotAttaching?: string | undefined;
-    otherDocDesc?: string | undefined;
-    userId?: number;
-    isChecked?: boolean;
-    isMandatory?: boolean;
-    fileStream?: string | undefined;
-    fileName?: string | undefined;
-    fileURI?: string | undefined;
-    fileContenct?: string | undefined;
-    isPrimaryDoc?: boolean | undefined;
-    anyFileToattachFlag?: boolean;
-    additionalFileFlag?: boolean | undefined;
-    additionalFileDesc?: string | undefined;
-    statusTypeID?: number;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: Date | undefined;
-    reasonForRequest?: string | undefined;
-    userCreated?: number | undefined;
-    dateCreatedStr?: string | undefined;
-    userModified?: number | undefined;
-    dateModifiedStr?: string | undefined;
-    isValidAttachment?: boolean | undefined;
-    isNonSubmissionPermitted?: boolean | undefined;
-    isFileSysGenerated?: boolean | undefined;
-    isAllowMultiple?: boolean | undefined;
-    isFileDescSysGenerated?: boolean | undefined;
-    linkToDownload?: string | undefined;
-    linkToSubmitToRA?: string | undefined;
-    docSubTypeDescCustomText?: string | undefined;
-    objectSOStatusID?: number;
-    fileUploadedByID?: number;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    userID?: number;
-    statusDesc?: string | undefined;
-    userName?: string | undefined;
-    attachmentStatusDate?: string | undefined;
-    wObjectAttachmentStatusID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    docTypeIdEffectivefromdate?: string | undefined;
-    docTypeIdEffectivetodate?: string | undefined;
-    prevAttachmentID?: number | undefined;
-    fileInvalidatedID?: number | undefined;
-
-    constructor(data?: IAttachment) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.wObjectID = _data["wObjectID"];
-            this.wObjectInstanceID = _data["wObjectInstanceID"];
-            this.wIndApplicationID = _data["wIndApplicationID"];
-            this.wIndAttachementID = _data["wIndAttachementID"];
-            this.wIndAttachementIDs = _data["wIndAttachementIDs"];
-            this.wObjAttachementID = _data["wObjAttachementID"];
-            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
-            this.wObjAttachementIDs = _data["wObjAttachementIDs"];
-            this.docTypeId = _data["docTypeId"];
-            this.docSubTypeId = _data["docSubTypeId"];
-            this.docSubTypeIDs = _data["docSubTypeIDs"];
-            this.csV_DocSubTypeId = _data["csV_DocSubTypeId"];
-            this.docTypeDesc = _data["docTypeDesc"];
-            this.docSubTypeDesc = _data["docSubTypeDesc"];
-            this.isDocSupplied = _data["isDocSupplied"];
-            this.dateCreated = _data["dateCreated"] ? new Date(_data["dateCreated"].toString()) : <any>undefined;
-            this.dateModified = _data["dateModified"] ? new Date(_data["dateModified"].toString()) : <any>undefined;
-            this.filePath = _data["filePath"];
-            this.reasonforNotAttaching = _data["reasonforNotAttaching"];
-            this.otherDocDesc = _data["otherDocDesc"];
-            this.userId = _data["userId"];
-            this.isChecked = _data["isChecked"];
-            this.isMandatory = _data["isMandatory"];
-            this.fileStream = _data["fileStream"];
-            this.fileName = _data["fileName"];
-            this.fileURI = _data["fileURI"];
-            this.fileContenct = _data["fileContenct"];
-            this.isPrimaryDoc = _data["isPrimaryDoc"];
-            this.anyFileToattachFlag = _data["anyFileToattachFlag"];
-            this.additionalFileFlag = _data["additionalFileFlag"];
-            this.additionalFileDesc = _data["additionalFileDesc"];
-            this.statusTypeID = _data["statusTypeID"];
-            this.wTermID = _data["wTermID"];
-            this.agreedOnTerms = _data["agreedOnTerms"];
-            this.termsAgreedDate = _data["termsAgreedDate"] ? new Date(_data["termsAgreedDate"].toString()) : <any>undefined;
-            this.reasonForRequest = _data["reasonForRequest"];
-            this.userCreated = _data["userCreated"];
-            this.dateCreatedStr = _data["dateCreatedStr"];
-            this.userModified = _data["userModified"];
-            this.dateModifiedStr = _data["dateModifiedStr"];
-            this.isValidAttachment = _data["isValidAttachment"];
-            this.isNonSubmissionPermitted = _data["isNonSubmissionPermitted"];
-            this.isFileSysGenerated = _data["isFileSysGenerated"];
-            this.isAllowMultiple = _data["isAllowMultiple"];
-            this.isFileDescSysGenerated = _data["isFileDescSysGenerated"];
-            this.linkToDownload = _data["linkToDownload"];
-            this.linkToSubmitToRA = _data["linkToSubmitToRA"];
-            this.docSubTypeDescCustomText = _data["docSubTypeDescCustomText"];
-            this.objectSOStatusID = _data["objectSOStatusID"];
-            this.fileUploadedByID = _data["fileUploadedByID"];
-            this.fileUploadedByName = _data["fileUploadedByName"];
-            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
-            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
-            this.userID = _data["userID"];
-            this.statusDesc = _data["statusDesc"];
-            this.userName = _data["userName"];
-            this.attachmentStatusDate = _data["attachmentStatusDate"];
-            this.wObjectAttachmentStatusID = _data["wObjectAttachmentStatusID"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.docTypeIdEffectivefromdate = _data["docTypeIdEffectivefromdate"];
-            this.docTypeIdEffectivetodate = _data["docTypeIdEffectivetodate"];
-            this.prevAttachmentID = _data["prevAttachmentID"];
-            this.fileInvalidatedID = _data["fileInvalidatedID"];
-        }
-    }
-
-    static fromJS(data: any): Attachment {
-        data = typeof data === 'object' ? data : {};
-        let result = new Attachment();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wObjectID"] = this.wObjectID;
-        data["wObjectInstanceID"] = this.wObjectInstanceID;
-        data["wIndApplicationID"] = this.wIndApplicationID;
-        data["wIndAttachementID"] = this.wIndAttachementID;
-        data["wIndAttachementIDs"] = this.wIndAttachementIDs;
-        data["wObjAttachementID"] = this.wObjAttachementID;
-        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
-        data["wObjAttachementIDs"] = this.wObjAttachementIDs;
-        data["docTypeId"] = this.docTypeId;
-        data["docSubTypeId"] = this.docSubTypeId;
-        data["docSubTypeIDs"] = this.docSubTypeIDs;
-        data["csV_DocSubTypeId"] = this.csV_DocSubTypeId;
-        data["docTypeDesc"] = this.docTypeDesc;
-        data["docSubTypeDesc"] = this.docSubTypeDesc;
-        data["isDocSupplied"] = this.isDocSupplied;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        data["dateModified"] = this.dateModified ? this.dateModified.toISOString() : <any>undefined;
-        data["filePath"] = this.filePath;
-        data["reasonforNotAttaching"] = this.reasonforNotAttaching;
-        data["otherDocDesc"] = this.otherDocDesc;
-        data["userId"] = this.userId;
-        data["isChecked"] = this.isChecked;
-        data["isMandatory"] = this.isMandatory;
-        data["fileStream"] = this.fileStream;
-        data["fileName"] = this.fileName;
-        data["fileURI"] = this.fileURI;
-        data["fileContenct"] = this.fileContenct;
-        data["isPrimaryDoc"] = this.isPrimaryDoc;
-        data["anyFileToattachFlag"] = this.anyFileToattachFlag;
-        data["additionalFileFlag"] = this.additionalFileFlag;
-        data["additionalFileDesc"] = this.additionalFileDesc;
-        data["statusTypeID"] = this.statusTypeID;
-        data["wTermID"] = this.wTermID;
-        data["agreedOnTerms"] = this.agreedOnTerms;
-        data["termsAgreedDate"] = this.termsAgreedDate ? this.termsAgreedDate.toISOString() : <any>undefined;
-        data["reasonForRequest"] = this.reasonForRequest;
-        data["userCreated"] = this.userCreated;
-        data["dateCreatedStr"] = this.dateCreatedStr;
-        data["userModified"] = this.userModified;
-        data["dateModifiedStr"] = this.dateModifiedStr;
-        data["isValidAttachment"] = this.isValidAttachment;
-        data["isNonSubmissionPermitted"] = this.isNonSubmissionPermitted;
-        data["isFileSysGenerated"] = this.isFileSysGenerated;
-        data["isAllowMultiple"] = this.isAllowMultiple;
-        data["isFileDescSysGenerated"] = this.isFileDescSysGenerated;
-        data["linkToDownload"] = this.linkToDownload;
-        data["linkToSubmitToRA"] = this.linkToSubmitToRA;
-        data["docSubTypeDescCustomText"] = this.docSubTypeDescCustomText;
-        data["objectSOStatusID"] = this.objectSOStatusID;
-        data["fileUploadedByID"] = this.fileUploadedByID;
-        data["fileUploadedByName"] = this.fileUploadedByName;
-        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
-        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
-        data["userID"] = this.userID;
-        data["statusDesc"] = this.statusDesc;
-        data["userName"] = this.userName;
-        data["attachmentStatusDate"] = this.attachmentStatusDate;
-        data["wObjectAttachmentStatusID"] = this.wObjectAttachmentStatusID;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["docTypeIdEffectivefromdate"] = this.docTypeIdEffectivefromdate;
-        data["docTypeIdEffectivetodate"] = this.docTypeIdEffectivetodate;
-        data["prevAttachmentID"] = this.prevAttachmentID;
-        data["fileInvalidatedID"] = this.fileInvalidatedID;
-        return data;
-    }
-}
-
-export interface IAttachment {
-    wObjectID?: number | undefined;
-    wObjectInstanceID?: number | undefined;
-    wIndApplicationID?: number;
-    wIndAttachementID?: number | undefined;
-    wIndAttachementIDs?: string | undefined;
-    wObjAttachementID?: number | undefined;
-    wObjectInstanceRevNum?: number | undefined;
-    wObjAttachementIDs?: string | undefined;
-    docTypeId?: number;
-    docSubTypeId?: number;
-    docSubTypeIDs?: string | undefined;
-    csV_DocSubTypeId?: string | undefined;
-    docTypeDesc?: string | undefined;
-    docSubTypeDesc?: string | undefined;
-    isDocSupplied?: boolean;
-    dateCreated?: Date;
-    dateModified?: Date;
-    filePath?: string | undefined;
-    reasonforNotAttaching?: string | undefined;
-    otherDocDesc?: string | undefined;
-    userId?: number;
-    isChecked?: boolean;
-    isMandatory?: boolean;
-    fileStream?: string | undefined;
-    fileName?: string | undefined;
-    fileURI?: string | undefined;
-    fileContenct?: string | undefined;
-    isPrimaryDoc?: boolean | undefined;
-    anyFileToattachFlag?: boolean;
-    additionalFileFlag?: boolean | undefined;
-    additionalFileDesc?: string | undefined;
-    statusTypeID?: number;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: Date | undefined;
-    reasonForRequest?: string | undefined;
-    userCreated?: number | undefined;
-    dateCreatedStr?: string | undefined;
-    userModified?: number | undefined;
-    dateModifiedStr?: string | undefined;
-    isValidAttachment?: boolean | undefined;
-    isNonSubmissionPermitted?: boolean | undefined;
-    isFileSysGenerated?: boolean | undefined;
-    isAllowMultiple?: boolean | undefined;
-    isFileDescSysGenerated?: boolean | undefined;
-    linkToDownload?: string | undefined;
-    linkToSubmitToRA?: string | undefined;
-    docSubTypeDescCustomText?: string | undefined;
-    objectSOStatusID?: number;
-    fileUploadedByID?: number;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    userID?: number;
-    statusDesc?: string | undefined;
-    userName?: string | undefined;
-    attachmentStatusDate?: string | undefined;
-    wObjectAttachmentStatusID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    docTypeIdEffectivefromdate?: string | undefined;
-    docTypeIdEffectivetodate?: string | undefined;
-    prevAttachmentID?: number | undefined;
-    fileInvalidatedID?: number | undefined;
-}
-
 export class AttachmentDto implements IAttachmentDto {
     wIndApplicationID?: number;
     wObjAttachementID?: number | undefined;
@@ -4445,62 +4029,6 @@ export interface IAttachmentDtoListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: AttachmentDto[] | undefined;
-}
-
-export class AttachmentListBaseResponse implements IAttachmentListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: Attachment[] | undefined;
-
-    constructor(data?: IAttachmentListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(Attachment.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): AttachmentListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AttachmentListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IAttachmentListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: Attachment[] | undefined;
 }
 
 export class AuthenticateRequest implements IAuthenticateRequest {
@@ -5795,6 +5323,114 @@ export interface IFirmContactDetails {
     firmTypeID?: number;
 }
 
+export class GeneralSubmissionForm implements IGeneralSubmissionForm {
+    linkToDownload?: string | undefined;
+    linkToSubmitToRA?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeId?: number;
+    wIndFromTypeID?: number;
+
+    constructor(data?: IGeneralSubmissionForm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.linkToDownload = _data["linkToDownload"];
+            this.linkToSubmitToRA = _data["linkToSubmitToRA"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeId = _data["docTypeId"];
+            this.wIndFromTypeID = _data["wIndFromTypeID"];
+        }
+    }
+
+    static fromJS(data: any): GeneralSubmissionForm {
+        data = typeof data === 'object' ? data : {};
+        let result = new GeneralSubmissionForm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["linkToDownload"] = this.linkToDownload;
+        data["linkToSubmitToRA"] = this.linkToSubmitToRA;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeId"] = this.docTypeId;
+        data["wIndFromTypeID"] = this.wIndFromTypeID;
+        return data;
+    }
+}
+
+export interface IGeneralSubmissionForm {
+    linkToDownload?: string | undefined;
+    linkToSubmitToRA?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeId?: number;
+    wIndFromTypeID?: number;
+}
+
+export class GeneralSubmissionFormListBaseResponse implements IGeneralSubmissionFormListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: GeneralSubmissionForm[] | undefined;
+
+    constructor(data?: IGeneralSubmissionFormListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(GeneralSubmissionForm.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): GeneralSubmissionFormListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new GeneralSubmissionFormListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IGeneralSubmissionFormListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: GeneralSubmissionForm[] | undefined;
+}
+
 export class HistoryDetailsDto implements IHistoryDetailsDto {
     objectID?: number | undefined;
     rptSchItemID?: number | undefined;
@@ -6295,98 +5931,6 @@ export interface IIndividualDetailsDtoBaseResponse {
     response?: IndividualDetailsDto;
 }
 
-export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
-
-    constructor(data?: IInsertObjectSOStatusDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.objectSOStatus = _data["objectSOStatus"] ? ObjectSOStatusDto.fromJS(_data["objectSOStatus"]) : <any>undefined;
-            if (Array.isArray(_data["lstReportSignatories"])) {
-                this.lstReportSignatories = [] as any;
-                for (let item of _data["lstReportSignatories"])
-                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): InsertObjectSOStatusDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new InsertObjectSOStatusDetailsDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectSOStatus"] = this.objectSOStatus ? this.objectSOStatus.toJSON() : <any>undefined;
-        if (Array.isArray(this.lstReportSignatories)) {
-            data["lstReportSignatories"] = [];
-            for (let item of this.lstReportSignatories)
-                data["lstReportSignatories"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
-}
-
-export class InsertReportSchDetailsDto implements IInsertReportSchDetailsDto {
-    objReportSch?: ReportSchDto;
-    objReportSchItem?: ReportSchItem;
-    objReportSchItemAttachment?: AttachmentDto;
-
-    constructor(data?: IInsertReportSchDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.objReportSch = _data["objReportSch"] ? ReportSchDto.fromJS(_data["objReportSch"]) : <any>undefined;
-            this.objReportSchItem = _data["objReportSchItem"] ? ReportSchItem.fromJS(_data["objReportSchItem"]) : <any>undefined;
-            this.objReportSchItemAttachment = _data["objReportSchItemAttachment"] ? AttachmentDto.fromJS(_data["objReportSchItemAttachment"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): InsertReportSchDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new InsertReportSchDetailsDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objReportSch"] = this.objReportSch ? this.objReportSch.toJSON() : <any>undefined;
-        data["objReportSchItem"] = this.objReportSchItem ? this.objReportSchItem.toJSON() : <any>undefined;
-        data["objReportSchItemAttachment"] = this.objReportSchItemAttachment ? this.objReportSchItemAttachment.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IInsertReportSchDetailsDto {
-    objReportSch?: ReportSchDto;
-    objReportSchItem?: ReportSchItem;
-    objReportSchItemAttachment?: AttachmentDto;
-}
-
 export class Int32BaseResponse implements IInt32BaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -6433,62 +5977,6 @@ export interface IInt32BaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: number;
-}
-
-export class Int32ListBaseResponse implements IInt32ListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number[] | undefined;
-
-    constructor(data?: IInt32ListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): Int32ListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new Int32ListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IInt32ListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number[] | undefined;
 }
 
 export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
@@ -6609,58 +6097,6 @@ export interface IObjTasks {
     wObjectEventTypeID?: number | undefined;
     dateCreated?: Date | undefined;
     userCreated?: number | undefined;
-}
-
-export class ObjectSOStatusDto implements IObjectSOStatusDto {
-    objectID?: number | undefined;
-    objectInstanceID?: number | undefined;
-    soStatusTypeID?: number | undefined;
-    userID?: number | undefined;
-    soTaskValid?: boolean | undefined;
-
-    constructor(data?: IObjectSOStatusDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.soStatusTypeID = _data["soStatusTypeID"];
-            this.userID = _data["userID"];
-            this.soTaskValid = _data["soTaskValid"];
-        }
-    }
-
-    static fromJS(data: any): ObjectSOStatusDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSOStatusDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["soStatusTypeID"] = this.soStatusTypeID;
-        data["userID"] = this.userID;
-        data["soTaskValid"] = this.soTaskValid;
-        return data;
-    }
-}
-
-export interface IObjectSOStatusDto {
-    objectID?: number | undefined;
-    objectInstanceID?: number | undefined;
-    soStatusTypeID?: number | undefined;
-    userID?: number | undefined;
-    soTaskValid?: boolean | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
@@ -7109,234 +6545,6 @@ export interface IPreviousNames {
     modifiedBy?: number;
     applicationID?: number;
     previousNameDate?: string | undefined;
-}
-
-export class ReportSchDto implements IReportSchDto {
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    userID?: number | undefined;
-
-    constructor(data?: IReportSchDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.qfcNum = _data["qfcNum"];
-            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
-            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
-            this.userID = _data["userID"];
-        }
-    }
-
-    static fromJS(data: any): ReportSchDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["qfcNum"] = this.qfcNum;
-        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
-        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
-        data["userID"] = this.userID;
-        return data;
-    }
-}
-
-export interface IReportSchDto {
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    userID?: number | undefined;
-}
-
-export class ReportSchItem implements IReportSchItem {
-    rptSchItemID?: number;
-    rptSchID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    userID?: number;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSubmissionTypeID?: number;
-
-    constructor(data?: IReportSchItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.rptSchItemID = _data["rptSchItemID"];
-            this.rptSchID = _data["rptSchID"];
-            this.docTypeID = _data["docTypeID"];
-            this.rptName = _data["rptName"];
-            this.rptDueDate = _data["rptDueDate"];
-            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
-            this.rptPeriodToDate = _data["rptPeriodToDate"];
-            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
-            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
-            this.userID = _data["userID"];
-            this.reviewComments = _data["reviewComments"];
-            this.manuallyReceived = _data["manuallyReceived"];
-            this.allowReSubmit = _data["allowReSubmit"];
-            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
-        }
-    }
-
-    static fromJS(data: any): ReportSchItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchItem();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["rptSchItemID"] = this.rptSchItemID;
-        data["rptSchID"] = this.rptSchID;
-        data["docTypeID"] = this.docTypeID;
-        data["rptName"] = this.rptName;
-        data["rptDueDate"] = this.rptDueDate;
-        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
-        data["rptPeriodToDate"] = this.rptPeriodToDate;
-        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
-        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
-        data["userID"] = this.userID;
-        data["reviewComments"] = this.reviewComments;
-        data["manuallyReceived"] = this.manuallyReceived;
-        data["allowReSubmit"] = this.allowReSubmit;
-        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
-        return data;
-    }
-}
-
-export interface IReportSchItem {
-    rptSchItemID?: number;
-    rptSchID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    userID?: number;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSubmissionTypeID?: number;
-}
-
-export class ReportSignatories implements IReportSignatories {
-    rptSignatoryID?: number;
-    qfcNum?: string | undefined;
-    docTypeID?: number;
-    signOffSeqNo?: number;
-    groupSignOff?: boolean;
-    valid?: boolean;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    signedByID?: number;
-    signedOnDate?: string | undefined;
-    userID?: number;
-    docSignatoryID?: number;
-    roles?: string | undefined;
-    occurance?: number;
-    userRole?: number;
-
-    constructor(data?: IReportSignatories) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.rptSignatoryID = _data["rptSignatoryID"];
-            this.qfcNum = _data["qfcNum"];
-            this.docTypeID = _data["docTypeID"];
-            this.signOffSeqNo = _data["signOffSeqNo"];
-            this.groupSignOff = _data["groupSignOff"];
-            this.valid = _data["valid"];
-            this.individualName = _data["individualName"];
-            this.emailAdd = _data["emailAdd"];
-            this.signedByID = _data["signedByID"];
-            this.signedOnDate = _data["signedOnDate"];
-            this.userID = _data["userID"];
-            this.docSignatoryID = _data["docSignatoryID"];
-            this.roles = _data["roles"];
-            this.occurance = _data["occurance"];
-            this.userRole = _data["userRole"];
-        }
-    }
-
-    static fromJS(data: any): ReportSignatories {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSignatories();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["rptSignatoryID"] = this.rptSignatoryID;
-        data["qfcNum"] = this.qfcNum;
-        data["docTypeID"] = this.docTypeID;
-        data["signOffSeqNo"] = this.signOffSeqNo;
-        data["groupSignOff"] = this.groupSignOff;
-        data["valid"] = this.valid;
-        data["individualName"] = this.individualName;
-        data["emailAdd"] = this.emailAdd;
-        data["signedByID"] = this.signedByID;
-        data["signedOnDate"] = this.signedOnDate;
-        data["userID"] = this.userID;
-        data["docSignatoryID"] = this.docSignatoryID;
-        data["roles"] = this.roles;
-        data["occurance"] = this.occurance;
-        data["userRole"] = this.userRole;
-        return data;
-    }
-}
-
-export interface IReportSignatories {
-    rptSignatoryID?: number;
-    qfcNum?: string | undefined;
-    docTypeID?: number;
-    signOffSeqNo?: number;
-    groupSignOff?: boolean;
-    valid?: boolean;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    signedByID?: number;
-    signedOnDate?: string | undefined;
-    userID?: number;
-    docSignatoryID?: number;
-    roles?: string | undefined;
-    occurance?: number;
-    userRole?: number;
 }
 
 export class Residencies implements IResidencies {

@@ -87,6 +87,8 @@ export class AuthService {
     localStorage.removeItem(this.AppConstants.Session.SESSION_REG_PASS);
     localStorage.removeItem(this.AppConstants.Session.SESSION_FIRM_TYPE);
     localStorage.removeItem(this.AppConstants.Session.SESSION_FIRM_NAME);
+    sessionStorage.removeItem("lstNotice");
+    
     this.router.navigate(['/login']);
   }
 
