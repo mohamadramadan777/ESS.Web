@@ -1,5 +1,6 @@
 import { themeQuartz,themeAlpine,themeBalham } from 'ag-grid-community';
 import { max } from 'rxjs';
+import { ColDef } from 'ag-grid-community';
 
 
 export interface ICurrentUser {
@@ -7,6 +8,10 @@ export interface ICurrentUser {
   WUserID: string;
   FirmQFCNo: string;
   role: string;
+}
+interface ISubmissionRecord {
+  description: string;
+  attachments: { name: string; url: string }[];
 }
 
 export interface ISignatoryStatus {
@@ -42,22 +47,34 @@ export const theme = themeAlpine .withParams(
 export const paginationPageSizeSelector = [10, 25, 50];
 
 
-export const TableColDef = [
-  { headerName: 'Application', field: 'description', sortable: true, filter: true },
-  {
-    headerName: 'Attachments',
-    field: 'attachments',
-    // cellRenderer: (params) => {
-    //   if (params.value && params.value.length > 0) {
-    //     return params.value.map(file => `<a href="${file.url}" target="_blank">${file.name}</a>`).join('<br>');
-    //   }
-    //   return 'No Attachments';
-    // },
-    sortable: false,
-    filter: false,
-    maxWidth: 300
-  }
-];
+export const TableColDef :  ColDef<ISubmissionRecord>[] = [
+    {
+      headerName: 'Description',
+      field: 'description',
+      sortable: true,
+      filter: true,
+    },
+    {
+      headerName: 'Attachments',
+      field: 'attachments',
+      autoHeight: true, // This allows rows to expand based on content
+      wrapText: true,
+      cellRenderer: (params: { value: { name: string; url: string }[] }) => {
+        if (params.value && params.value.length > 0) {
+          return params.value
+            .map(
+              (file: { name: string; url: string }) =>
+                `<a href="${file.url}" target="_blank">${file.name}</a>`
+            )
+            .join('<br>');
+        }
+        return 'No Attachments';
+      },
+      sortable: false,
+      filter: false,
+      maxWidth: 400,
+    },
+  ];
 
 
 
