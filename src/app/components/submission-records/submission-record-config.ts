@@ -64,7 +64,11 @@ export const TableColDef :  ColDef<ISubmissionRecord>[] = [
           return params.value
             .map(
               (file: { name: string; url: string }) =>
-                `<a href="${file.url}" target="_blank">${file.name}</a>`
+                `
+              <a href="${file.url}" target="_blank" style="display: inline-flex; align-items: center; gap: 2px; margin-right: 5px;">
+                📄 ${file.name}
+              </a>
+            `
             )
             .join('<br>');
         }
