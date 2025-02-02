@@ -8,10363 +8,12538 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
-import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
+import {
+  mergeMap as _observableMergeMap,
+  catchError as _observableCatch,
+} from 'rxjs/operators';
+import {
+  Observable,
+  throwError as _observableThrow,
+  of as _observableOf,
+} from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpResponse,
+  HttpResponseBase,
+} from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
 
 @Injectable()
 export class Client {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    authenticate(body: AuthenticateRequest | undefined): Observable<AuthenticateResponseBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/authenticate";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAuthenticate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processAuthenticate(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AuthenticateResponseBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AuthenticateResponseBaseResponse>;
-        }));
-    }
-
-    protected processAuthenticate(response: HttpResponseBase): Observable<AuthenticateResponseBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AuthenticateResponseBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AuthenticateResponseBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    sendFeedback(body: ContactUs | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/sendFeedback";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSendFeedback(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSendFeedback(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
-        }));
-    }
-
-    protected processSendFeedback(response: HttpResponseBase): Observable<Int32BaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32BaseResponse>(null as any);
-    }
-
-    /**
-     * @param userQACategoryID (optional) 
-     * @return OK
-     */
-    getUserLoginQuestions(userQACategoryID: number | undefined): Observable<UserQuestionAnswersListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-user-login-questions?";
-        if (userQACategoryID === null)
-            throw new Error("The parameter 'userQACategoryID' cannot be null.");
-        else if (userQACategoryID !== undefined)
-            url_ += "UserQACategoryID=" + encodeURIComponent("" + userQACategoryID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUserLoginQuestions(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetUserLoginQuestions(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<UserQuestionAnswersListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<UserQuestionAnswersListBaseResponse>;
-        }));
-    }
-
-    protected processGetUserLoginQuestions(response: HttpResponseBase): Observable<UserQuestionAnswersListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getUserQa(): Observable<UserQuestionAnswersListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-user-qa";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUserQa(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetUserQa(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<UserQuestionAnswersListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<UserQuestionAnswersListBaseResponse>;
-        }));
-    }
-
-    protected processGetUserQa(response: HttpResponseBase): Observable<UserQuestionAnswersListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param email (optional) 
-     * @return OK
-     */
-    updateRegisteredEmail(email: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/update-registered-email?";
-        if (email === null)
-            throw new Error("The parameter 'email' cannot be null.");
-        else if (email !== undefined)
-            url_ += "email=" + encodeURIComponent("" + email) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateRegisteredEmail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateRegisteredEmail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processUpdateRegisteredEmail(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param text (optional) 
-     * @return OK
-     */
-    resetPassword(text: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/reset-password?";
-        if (text === null)
-            throw new Error("The parameter 'text' cannot be null.");
-        else if (text !== undefined)
-            url_ += "text=" + encodeURIComponent("" + text) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processResetPassword(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processResetPassword(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processResetPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    saveUserQuestionAnswer(body: UserQuestionAnswersDto[] | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/save-user-question-answer";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSaveUserQuestionAnswer(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSaveUserQuestionAnswer(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processSaveUserQuestionAnswer(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    protected(): Observable<void> {
-        let url_ = this.baseUrl + "/api/AccessRequest/protected";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processProtected(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processProtected(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processProtected(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getIndividualList(): Observable<WAccessRequestsListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-individual-list";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIndividualList(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetIndividualList(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
-        }));
-    }
-
-    protected processGetIndividualList(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getSystemAccounts(): Observable<WAccessRequestsListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-system-accounts";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetSystemAccounts(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetSystemAccounts(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
-        }));
-    }
-
-    protected processGetSystemAccounts(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param objectID (optional) 
-     * @param objectInstanceID (optional) 
-     * @param soStatusTypeID (optional) 
-     * @return OK
-     */
-    getObjectSoTaskStatus(objectID: number | undefined, objectInstanceID: number | undefined, soStatusTypeID: number | undefined): Observable<ObjectSOTaskStatusListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-object-so-task-status?";
-        if (objectID === null)
-            throw new Error("The parameter 'objectID' cannot be null.");
-        else if (objectID !== undefined)
-            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
-        if (objectInstanceID === null)
-            throw new Error("The parameter 'objectInstanceID' cannot be null.");
-        else if (objectInstanceID !== undefined)
-            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
-        if (soStatusTypeID === null)
-            throw new Error("The parameter 'soStatusTypeID' cannot be null.");
-        else if (soStatusTypeID !== undefined)
-            url_ += "soStatusTypeID=" + encodeURIComponent("" + soStatusTypeID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetObjectSoTaskStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetObjectSoTaskStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ObjectSOTaskStatusListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ObjectSOTaskStatusListBaseResponse>;
-        }));
-    }
-
-    protected processGetObjectSoTaskStatus(response: HttpResponseBase): Observable<ObjectSOTaskStatusListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ObjectSOTaskStatusListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ObjectSOTaskStatusListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    loadContacts(): Observable<StringStringDictionaryBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/load-contacts";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLoadContacts(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processLoadContacts(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
-        }));
-    }
-
-    protected processLoadContacts(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    loadRequiredIndividuals(): Observable<StringStringDictionaryBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/load-required-individuals";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLoadRequiredIndividuals(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processLoadRequiredIndividuals(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
-        }));
-    }
-
-    protected processLoadRequiredIndividuals(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-item-for-logged-in-user";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPendingItemForLoggedInUser(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetPendingItemForLoggedInUser(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<UserPendingItemsListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<UserPendingItemsListBaseResponse>;
-        }));
-    }
-
-    protected processGetPendingItemForLoggedInUser(response: HttpResponseBase): Observable<UserPendingItemsListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<UserPendingItemsListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param firmType (optional) 
-     * @return OK
-     */
-    getGeneralSubmissionForms(firmType: number | undefined): Observable<GeneralSubmissionFormListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-general-submission-forms?";
-        if (firmType === null)
-            throw new Error("The parameter 'firmType' cannot be null.");
-        else if (firmType !== undefined)
-            url_ += "firmType=" + encodeURIComponent("" + firmType) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetGeneralSubmissionForms(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetGeneralSubmissionForms(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<GeneralSubmissionFormListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<GeneralSubmissionFormListBaseResponse>;
-        }));
-    }
-
-    protected processGetGeneralSubmissionForms(response: HttpResponseBase): Observable<GeneralSubmissionFormListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GeneralSubmissionFormListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<GeneralSubmissionFormListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getReportDetails(): Observable<ReportSchDetailsListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-report-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetReportDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetReportDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ReportSchDetailsListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ReportSchDetailsListBaseResponse>;
-        }));
-    }
-
-    protected processGetReportDetails(response: HttpResponseBase): Observable<ReportSchDetailsListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ReportSchDetailsListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ReportSchDetailsListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateApplicationData(body: ApplicationDataDto | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/AIApplications/insert-update-application-data";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateApplicationData(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateApplicationData(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateApplicationData(response: HttpResponseBase): Observable<Int32BaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32BaseResponse>(null as any);
-    }
-
-    /**
-     * @param qfcNumber (optional) 
-     * @param aiNumber (optional) 
-     * @param formTypeID (optional) 
-     * @param windApplicationID (optional) 
-     * @param body (optional) 
-     * @return OK
-     */
-    isDuplicateApplication(qfcNumber: string | undefined, aiNumber: string | undefined, formTypeID: number | undefined, windApplicationID: number | undefined, body: number[] | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AIApplications/is-duplicate-application?";
-        if (qfcNumber === null)
-            throw new Error("The parameter 'qfcNumber' cannot be null.");
-        else if (qfcNumber !== undefined)
-            url_ += "qfcNumber=" + encodeURIComponent("" + qfcNumber) + "&";
-        if (aiNumber === null)
-            throw new Error("The parameter 'aiNumber' cannot be null.");
-        else if (aiNumber !== undefined)
-            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
-        if (formTypeID === null)
-            throw new Error("The parameter 'formTypeID' cannot be null.");
-        else if (formTypeID !== undefined)
-            url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
-        if (windApplicationID === null)
-            throw new Error("The parameter 'windApplicationID' cannot be null.");
-        else if (windApplicationID !== undefined)
-            url_ += "windApplicationID=" + encodeURIComponent("" + windApplicationID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processIsDuplicateApplication(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processIsDuplicateApplication(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processIsDuplicateApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param appID (optional) 
-     * @return OK
-     */
-    getIndApplDetails(appID: number | undefined): Observable<WApplicationDetailDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AIApplications/get-ind-appl-details?";
-        if (appID === null)
-            throw new Error("The parameter 'appID' cannot be null.");
-        else if (appID !== undefined)
-            url_ += "appID=" + encodeURIComponent("" + appID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIndApplDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetIndApplDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WApplicationDetailDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WApplicationDetailDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetIndApplDetails(response: HttpResponseBase): Observable<WApplicationDetailDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WApplicationDetailDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WApplicationDetailDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param appID (optional) 
-     * @return OK
-     */
-    getIndContactDetail(appID: number | undefined): Observable<IndividualDetailsDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/AIApplications/get-ind-contact-detail?";
-        if (appID === null)
-            throw new Error("The parameter 'appID' cannot be null.");
-        else if (appID !== undefined)
-            url_ += "appID=" + encodeURIComponent("" + appID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIndContactDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetIndContactDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<IndividualDetailsDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<IndividualDetailsDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetIndContactDetail(response: HttpResponseBase): Observable<IndividualDetailsDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = IndividualDetailsDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<IndividualDetailsDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param appId (optional) 
-     * @param isPrimaryDocFlag (optional) 
-     * @return OK
-     */
-    getAttachments(appId: number | undefined, isPrimaryDocFlag: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-attachments?";
-        if (appId === null)
-            throw new Error("The parameter 'appId' cannot be null.");
-        else if (appId !== undefined)
-            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
-        if (isPrimaryDocFlag === null)
-            throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
-        else if (isPrimaryDocFlag !== undefined)
-            url_ += "isPrimaryDocFlag=" + encodeURIComponent("" + isPrimaryDocFlag) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param appId (optional) 
-     * @param isPrimaryDocFlag (optional) 
-     * @return OK
-     */
-    getAttachedFiles(appId: number | undefined, isPrimaryDocFlag: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-attached-files?";
-        if (appId === null)
-            throw new Error("The parameter 'appId' cannot be null.");
-        else if (appId !== undefined)
-            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
-        if (isPrimaryDocFlag === null)
-            throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
-        else if (isPrimaryDocFlag !== undefined)
-            url_ += "isPrimaryDocFlag=" + encodeURIComponent("" + isPrimaryDocFlag) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAttachedFiles(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetAttachedFiles(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetAttachedFiles(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getEmptyAttachment(): Observable<AttachmentDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-empty-attachment";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetEmptyAttachment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetEmptyAttachment(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetEmptyAttachment(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    getRptSchAttachments(body: AttachmentDto | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-rpt-sch-attachments";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetRptSchAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetRptSchAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetRptSchAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wObjAttachementID (optional) 
-     * @param wObjectID (optional) 
-     * @param wObjectInstanceID (optional) 
-     * @param wObjectInstanceRevNum (optional) 
-     * @param isPrimaryAttachment (optional) 
-     * @return OK
-     */
-    getObjAttachments(wObjAttachementID: number | undefined, wObjectID: number | undefined, wObjectInstanceID: number | undefined, wObjectInstanceRevNum: number | undefined, isPrimaryAttachment: boolean | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-obj-attachments?";
-        if (wObjAttachementID === null)
-            throw new Error("The parameter 'wObjAttachementID' cannot be null.");
-        else if (wObjAttachementID !== undefined)
-            url_ += "WObjAttachementID=" + encodeURIComponent("" + wObjAttachementID) + "&";
-        if (wObjectID === null)
-            throw new Error("The parameter 'wObjectID' cannot be null.");
-        else if (wObjectID !== undefined)
-            url_ += "WObjectID=" + encodeURIComponent("" + wObjectID) + "&";
-        if (wObjectInstanceID === null)
-            throw new Error("The parameter 'wObjectInstanceID' cannot be null.");
-        else if (wObjectInstanceID !== undefined)
-            url_ += "WObjectInstanceID=" + encodeURIComponent("" + wObjectInstanceID) + "&";
-        if (wObjectInstanceRevNum === null)
-            throw new Error("The parameter 'wObjectInstanceRevNum' cannot be null.");
-        else if (wObjectInstanceRevNum !== undefined)
-            url_ += "WObjectInstanceRevNum=" + encodeURIComponent("" + wObjectInstanceRevNum) + "&";
-        if (isPrimaryAttachment === null)
-            throw new Error("The parameter 'isPrimaryAttachment' cannot be null.");
-        else if (isPrimaryAttachment !== undefined)
-            url_ += "isPrimaryAttachment=" + encodeURIComponent("" + isPrimaryAttachment) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetObjAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetObjAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetObjAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    saveObjAttachments(body: AttachmentDto[] | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/save-obj-attachments";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSaveObjAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSaveObjAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processSaveObjAttachments(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wIndAttID (optional) 
-     * @return OK
-     */
-    deleteObjAttachment(wIndAttID: number | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/delete-obj-attachment?";
-        if (wIndAttID === null)
-            throw new Error("The parameter 'wIndAttID' cannot be null.");
-        else if (wIndAttID !== undefined)
-            url_ += "WIndAttID=" + encodeURIComponent("" + wIndAttID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteObjAttachment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteObjAttachment(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processDeleteObjAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param pWObjectID (optional) 
-     * @param pWObjInstanceID (optional) 
-     * @param body (optional) 
-     * @return OK
-     */
-    deleteAllObjAttachments(pWObjectID: number | undefined, pWObjInstanceID: number | undefined, body: AttachmentDto[] | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/delete-all-obj-attachments?";
-        if (pWObjectID === null)
-            throw new Error("The parameter 'pWObjectID' cannot be null.");
-        else if (pWObjectID !== undefined)
-            url_ += "pWObjectID=" + encodeURIComponent("" + pWObjectID) + "&";
-        if (pWObjInstanceID === null)
-            throw new Error("The parameter 'pWObjInstanceID' cannot be null.");
-        else if (pWObjInstanceID !== undefined)
-            url_ += "pWObjInstanceID=" + encodeURIComponent("" + pWObjInstanceID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteAllObjAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteAllObjAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processDeleteAllObjAttachments(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getEmptyObjAttachment(): Observable<AttachmentDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-empty-obj-attachment";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetEmptyObjAttachment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetEmptyObjAttachment(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetEmptyObjAttachment(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    updateObjAttachmentStatus(body: AttachmentDto[] | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/update-obj-attachment-status";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateObjAttachmentStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateObjAttachmentStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processUpdateObjAttachmentStatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param pDocTypeID (optional) 
-     * @return OK
-     */
-    getDocTypeDec(pDocTypeID: number | undefined): Observable<AttachmentDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-doc-type-dec?";
-        if (pDocTypeID === null)
-            throw new Error("The parameter 'pDocTypeID' cannot be null.");
-        else if (pDocTypeID !== undefined)
-            url_ += "pDocTypeID=" + encodeURIComponent("" + pDocTypeID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDocTypeDec(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetDocTypeDec(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetDocTypeDec(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param pAppID (optional) 
-     * @return OK
-     */
-    getPrimaryAttachments(pAppID: number | undefined): Observable<AttachmentDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-primary-attachments?";
-        if (pAppID === null)
-            throw new Error("The parameter 'pAppID' cannot be null.");
-        else if (pAppID !== undefined)
-            url_ += "pAppID=" + encodeURIComponent("" + pAppID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPrimaryAttachments(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetPrimaryAttachments(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetPrimaryAttachments(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param attachmentID (optional) 
-     * @param attachmentStatusTypeID (optional) 
-     * @return OK
-     */
-    checkAttachmentStatus(attachmentID: number | undefined, attachmentStatusTypeID: number | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/check-attachment-status?";
-        if (attachmentID === null)
-            throw new Error("The parameter 'attachmentID' cannot be null.");
-        else if (attachmentID !== undefined)
-            url_ += "attachmentID=" + encodeURIComponent("" + attachmentID) + "&";
-        if (attachmentStatusTypeID === null)
-            throw new Error("The parameter 'attachmentStatusTypeID' cannot be null.");
-        else if (attachmentStatusTypeID !== undefined)
-            url_ += "attachmentStatusTypeID=" + encodeURIComponent("" + attachmentStatusTypeID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCheckAttachmentStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCheckAttachmentStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processCheckAttachmentStatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    getHistoryDetails(body: HistoryDetailsDto | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-history-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetHistoryDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetHistoryDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetHistoryDetails(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param fileLocation (optional) 
-     * @param pFileName (optional) 
-     * @param body (optional) 
-     * @return OK
-     */
-    uploadToFolder(fileLocation: string | undefined, pFileName: string | undefined, body: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder?";
-        if (fileLocation === null)
-            throw new Error("The parameter 'fileLocation' cannot be null.");
-        else if (fileLocation !== undefined)
-            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
-        if (pFileName === null)
-            throw new Error("The parameter 'pFileName' cannot be null.");
-        else if (pFileName !== undefined)
-            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUploadToFolder(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUploadToFolder(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processUploadToFolder(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @param pFileName (optional) 
-     * @param fileLocation (optional) 
-     * @return OK
-     */
-    downloadFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<ByteArrayBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/download-file?";
-        if (pFileName === null)
-            throw new Error("The parameter 'pFileName' cannot be null.");
-        else if (pFileName !== undefined)
-            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
-        if (fileLocation === null)
-            throw new Error("The parameter 'fileLocation' cannot be null.");
-        else if (fileLocation !== undefined)
-            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDownloadFile(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDownloadFile(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ByteArrayBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ByteArrayBaseResponse>;
-        }));
-    }
-
-    protected processDownloadFile(response: HttpResponseBase): Observable<ByteArrayBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ByteArrayBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ByteArrayBaseResponse>(null as any);
-    }
-
-    /**
-     * @param pFileName (optional) 
-     * @param fileLocation (optional) 
-     * @return OK
-     */
-    deleteFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/delete-file?";
-        if (pFileName === null)
-            throw new Error("The parameter 'pFileName' cannot be null.");
-        else if (pFileName !== undefined)
-            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
-        if (fileLocation === null)
-            throw new Error("The parameter 'fileLocation' cannot be null.");
-        else if (fileLocation !== undefined)
-            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteFile(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteFile(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processDeleteFile(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getObjectTaskStatus(): Observable<StringObjectDictionaryListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Firms/GetObjectTaskStatus";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetObjectTaskStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetObjectTaskStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringObjectDictionaryListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<StringObjectDictionaryListBaseResponse>;
-        }));
-    }
-
-    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<StringObjectDictionaryListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringObjectDictionaryListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<StringObjectDictionaryListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateObjTaskStatus(body: ObjTasks | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Firms/InsertUpdateObjTaskStatus";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateObjTaskStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateObjTaskStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateObjTaskStatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getSubmittedApplications(): Observable<PendingItemsDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-applications";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetSubmittedApplications(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetSubmittedApplications(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetSubmittedApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getPendingItems(): Observable<PendingItemsDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/GenSubmission/get-pending-items";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPendingItems(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetPendingItems(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetPendingItems(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param applicationID (optional) 
-     * @return OK
-     */
-    getApplicationDetail(applicationID: number | undefined): Observable<ApplicationDetailDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/GenSubmission/get-application-detail?";
-        if (applicationID === null)
-            throw new Error("The parameter 'applicationID' cannot be null.");
-        else if (applicationID !== undefined)
-            url_ += "ApplicationID=" + encodeURIComponent("" + applicationID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetApplicationDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetApplicationDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ApplicationDetailDtoBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ApplicationDetailDtoBaseResponse>;
-        }));
-    }
-
-    protected processGetApplicationDetail(response: HttpResponseBase): Observable<ApplicationDetailDtoBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ApplicationDetailDtoBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ApplicationDetailDtoBaseResponse>(null as any);
-    }
-
-    /**
-     * @param tableName (optional) 
-     * @return OK
-     */
-    getMastertableData(tableName: string | undefined): Observable<StringStringDictionaryBaseResponse> {
-        let url_ = this.baseUrl + "/api/MasterData/get-mastertable-data?";
-        if (tableName === null)
-            throw new Error("The parameter 'tableName' cannot be null.");
-        else if (tableName !== undefined)
-            url_ += "tableName=" + encodeURIComponent("" + tableName) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetMastertableData(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetMastertableData(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
-        }));
-    }
-
-    protected processGetMastertableData(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wConfigMessageID (optional) 
-     * @param configKey (optional) 
-     * @param configDesc (optional) 
-     * @param configValue (optional) 
-     * @param isEditable (optional) 
-     * @return OK
-     */
-    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<ConfigMessageListBaseResponse> {
-        let url_ = this.baseUrl + "/api/MasterData/get-config-message?";
-        if (wConfigMessageID === null)
-            throw new Error("The parameter 'wConfigMessageID' cannot be null.");
-        else if (wConfigMessageID !== undefined)
-            url_ += "WConfigMessageID=" + encodeURIComponent("" + wConfigMessageID) + "&";
-        if (configKey === null)
-            throw new Error("The parameter 'configKey' cannot be null.");
-        else if (configKey !== undefined)
-            url_ += "ConfigKey=" + encodeURIComponent("" + configKey) + "&";
-        if (configDesc === null)
-            throw new Error("The parameter 'configDesc' cannot be null.");
-        else if (configDesc !== undefined)
-            url_ += "ConfigDesc=" + encodeURIComponent("" + configDesc) + "&";
-        if (configValue === null)
-            throw new Error("The parameter 'configValue' cannot be null.");
-        else if (configValue !== undefined)
-            url_ += "ConfigValue=" + encodeURIComponent("" + configValue) + "&";
-        if (isEditable === null)
-            throw new Error("The parameter 'isEditable' cannot be null.");
-        else if (isEditable !== undefined)
-            url_ += "IsEditable=" + encodeURIComponent("" + isEditable) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConfigMessage(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetConfigMessage(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<ConfigMessageListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<ConfigMessageListBaseResponse>;
-        }));
-    }
-
-    protected processGetConfigMessage(response: HttpResponseBase): Observable<ConfigMessageListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ConfigMessageListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ConfigMessageListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param year (optional) 
-     * @return OK
-     */
-    getWnoticeList(year: number | undefined): Observable<WNoticeListListBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-list?";
-        if (year === null)
-            throw new Error("The parameter 'year' cannot be null.");
-        else if (year !== undefined)
-            url_ += "year=" + encodeURIComponent("" + year) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetWnoticeList(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetWnoticeList(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WNoticeListListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WNoticeListListBaseResponse>;
-        }));
-    }
-
-    protected processGetWnoticeList(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WNoticeListListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WNoticeListListBaseResponse>(null as any);
-    }
-
-    /**
-     * @return OK
-     */
-    getWnoticeListForHome(): Observable<WNoticeListListBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-list-for-Home";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetWnoticeListForHome(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetWnoticeListForHome(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WNoticeListListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WNoticeListListBaseResponse>;
-        }));
-    }
-
-    protected processGetWnoticeListForHome(response: HttpResponseBase): Observable<WNoticeListListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WNoticeListListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WNoticeListListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wListNameID (optional) 
-     * @return OK
-     */
-    getListValues(wListNameID: number | undefined): Observable<Int32StringDictionaryBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/get-list-values?";
-        if (wListNameID === null)
-            throw new Error("The parameter 'wListNameID' cannot be null.");
-        else if (wListNameID !== undefined)
-            url_ += "wListNameID=" + encodeURIComponent("" + wListNameID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetListValues(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetListValues(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32StringDictionaryBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32StringDictionaryBaseResponse>;
-        }));
-    }
-
-    protected processGetListValues(response: HttpResponseBase): Observable<Int32StringDictionaryBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wNoticeID (optional) 
-     * @param wFirmNoticeID (optional) 
-     * @return OK
-     */
-    getWnoticeDetails(wNoticeID: number | undefined, wFirmNoticeID: number | undefined): Observable<WNoticeBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/get-wnotice-details?";
-        if (wNoticeID === null)
-            throw new Error("The parameter 'wNoticeID' cannot be null.");
-        else if (wNoticeID !== undefined)
-            url_ += "wNoticeID=" + encodeURIComponent("" + wNoticeID) + "&";
-        if (wFirmNoticeID === null)
-            throw new Error("The parameter 'wFirmNoticeID' cannot be null.");
-        else if (wFirmNoticeID !== undefined)
-            url_ += "WFirmNoticeID=" + encodeURIComponent("" + wFirmNoticeID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetWnoticeDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetWnoticeDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WNoticeBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WNoticeBaseResponse>;
-        }));
-    }
-
-    protected processGetWnoticeDetails(response: HttpResponseBase): Observable<WNoticeBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WNoticeBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WNoticeBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wNoticeID (optional) 
-     * @param wFirmNoticeID (optional) 
-     * @return OK
-     */
-    getNoticeQuestionnaireItems(wNoticeID: number | undefined, wFirmNoticeID: number | undefined): Observable<WNoticeQuestionnaireItemDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/get-notice-questionnaire-items?";
-        if (wNoticeID === null)
-            throw new Error("The parameter 'wNoticeID' cannot be null.");
-        else if (wNoticeID !== undefined)
-            url_ += "wNoticeID=" + encodeURIComponent("" + wNoticeID) + "&";
-        if (wFirmNoticeID === null)
-            throw new Error("The parameter 'wFirmNoticeID' cannot be null.");
-        else if (wFirmNoticeID !== undefined)
-            url_ += "WFirmNoticeID=" + encodeURIComponent("" + wFirmNoticeID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetNoticeQuestionnaireItems(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetNoticeQuestionnaireItems(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<WNoticeQuestionnaireItemDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<WNoticeQuestionnaireItemDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetNoticeQuestionnaireItems(response: HttpResponseBase): Observable<WNoticeQuestionnaireItemDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = WNoticeQuestionnaireItemDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WNoticeQuestionnaireItemDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateReportSchDetails(body: InsertReportSchDetailsDto | undefined): Observable<Int32ListBaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-report-sch-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateReportSchDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateReportSchDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateReportSchDetails(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32ListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32ListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateObjectSoStatusDetails(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateObjectSoStatusDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32BaseResponse>(null as any);
-    }
+  private http: HttpClient;
+  private baseUrl: string;
+  protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+    undefined;
+
+  constructor(
+    @Inject(HttpClient) http: HttpClient,
+    @Optional() @Inject(API_BASE_URL) baseUrl?: string
+  ) {
+    this.http = http;
+    this.baseUrl = baseUrl ?? '';
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  authenticate(
+    body: AuthenticateRequest | undefined
+  ): Observable<AuthenticateResponseBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/authenticate';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processAuthenticate(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processAuthenticate(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AuthenticateResponseBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AuthenticateResponseBaseResponse>;
+        })
+      );
+  }
+
+  protected processAuthenticate(
+    response: HttpResponseBase
+  ): Observable<AuthenticateResponseBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AuthenticateResponseBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AuthenticateResponseBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  sendFeedback(body: ContactUs | undefined): Observable<Int32BaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/sendFeedback';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processSendFeedback(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processSendFeedback(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<Int32BaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<Int32BaseResponse>;
+        })
+      );
+  }
+
+  protected processSendFeedback(
+    response: HttpResponseBase
+  ): Observable<Int32BaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = Int32BaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<Int32BaseResponse>(null as any);
+  }
+
+  /**
+   * @param userQACategoryID (optional)
+   * @return OK
+   */
+  getUserLoginQuestions(
+    userQACategoryID: number | undefined
+  ): Observable<UserQuestionAnswersListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-user-login-questions?';
+    if (userQACategoryID === null)
+      throw new Error("The parameter 'userQACategoryID' cannot be null.");
+    else if (userQACategoryID !== undefined)
+      url_ +=
+        'UserQACategoryID=' + encodeURIComponent('' + userQACategoryID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetUserLoginQuestions(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetUserLoginQuestions(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<UserQuestionAnswersListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<UserQuestionAnswersListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetUserLoginQuestions(
+    response: HttpResponseBase
+  ): Observable<UserQuestionAnswersListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getUserQa(): Observable<UserQuestionAnswersListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-user-qa';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetUserQa(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetUserQa(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<UserQuestionAnswersListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<UserQuestionAnswersListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetUserQa(
+    response: HttpResponseBase
+  ): Observable<UserQuestionAnswersListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param email (optional)
+   * @return OK
+   */
+  updateRegisteredEmail(
+    email: string | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/update-registered-email?';
+    if (email === null)
+      throw new Error("The parameter 'email' cannot be null.");
+    else if (email !== undefined)
+      url_ += 'email=' + encodeURIComponent('' + email) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processUpdateRegisteredEmail(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processUpdateRegisteredEmail(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processUpdateRegisteredEmail(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param text (optional)
+   * @return OK
+   */
+  resetPassword(text: string | undefined): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/reset-password?';
+    if (text === null) throw new Error("The parameter 'text' cannot be null.");
+    else if (text !== undefined)
+      url_ += 'text=' + encodeURIComponent('' + text) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processResetPassword(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processResetPassword(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processResetPassword(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  saveUserQuestionAnswer(
+    body: UserQuestionAnswersDto[] | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/save-user-question-answer';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processSaveUserQuestionAnswer(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processSaveUserQuestionAnswer(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processSaveUserQuestionAnswer(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  protected(): Observable<void> {
+    let url_ = this.baseUrl + '/api/AccessRequest/protected';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({}),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processProtected(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processProtected(response_ as any);
+            } catch (e) {
+              return _observableThrow(e) as any as Observable<void>;
+            }
+          } else return _observableThrow(response_) as any as Observable<void>;
+        })
+      );
+  }
+
+  protected processProtected(response: HttpResponseBase): Observable<void> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return _observableOf<void>(null as any);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<void>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getIndividualList(): Observable<WAccessRequestsListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-individual-list';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetIndividualList(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetIndividualList(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WAccessRequestsListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WAccessRequestsListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetIndividualList(
+    response: HttpResponseBase
+  ): Observable<WAccessRequestsListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getSystemAccounts(): Observable<WAccessRequestsListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-system-accounts';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetSystemAccounts(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetSystemAccounts(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WAccessRequestsListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WAccessRequestsListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetSystemAccounts(
+    response: HttpResponseBase
+  ): Observable<WAccessRequestsListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param objectID (optional)
+   * @param objectInstanceID (optional)
+   * @param soStatusTypeID (optional)
+   * @return OK
+   */
+  getObjectSoTaskStatus(
+    objectID: number | undefined,
+    objectInstanceID: number | undefined,
+    soStatusTypeID: number | undefined
+  ): Observable<ObjectSOTaskStatusListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-object-so-task-status?';
+    if (objectID === null)
+      throw new Error("The parameter 'objectID' cannot be null.");
+    else if (objectID !== undefined)
+      url_ += 'objectID=' + encodeURIComponent('' + objectID) + '&';
+    if (objectInstanceID === null)
+      throw new Error("The parameter 'objectInstanceID' cannot be null.");
+    else if (objectInstanceID !== undefined)
+      url_ +=
+        'objectInstanceID=' + encodeURIComponent('' + objectInstanceID) + '&';
+    if (soStatusTypeID === null)
+      throw new Error("The parameter 'soStatusTypeID' cannot be null.");
+    else if (soStatusTypeID !== undefined)
+      url_ += 'soStatusTypeID=' + encodeURIComponent('' + soStatusTypeID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetObjectSoTaskStatus(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetObjectSoTaskStatus(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<ObjectSOTaskStatusListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<ObjectSOTaskStatusListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetObjectSoTaskStatus(
+    response: HttpResponseBase
+  ): Observable<ObjectSOTaskStatusListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = ObjectSOTaskStatusListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<ObjectSOTaskStatusListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  loadContacts(): Observable<StringStringDictionaryBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/load-contacts';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processLoadContacts(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processLoadContacts(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<StringStringDictionaryBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<StringStringDictionaryBaseResponse>;
+        })
+      );
+  }
+
+  protected processLoadContacts(
+    response: HttpResponseBase
+  ): Observable<StringStringDictionaryBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  loadRequiredIndividuals(): Observable<StringStringDictionaryBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/load-required-individuals';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processLoadRequiredIndividuals(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processLoadRequiredIndividuals(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<StringStringDictionaryBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<StringStringDictionaryBaseResponse>;
+        })
+      );
+  }
+
+  protected processLoadRequiredIndividuals(
+    response: HttpResponseBase
+  ): Observable<StringStringDictionaryBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
+    let url_ =
+      this.baseUrl + '/api/AccessRequest/get-pending-item-for-logged-in-user';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetPendingItemForLoggedInUser(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetPendingItemForLoggedInUser(
+                response_ as any
+              );
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<UserPendingItemsListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<UserPendingItemsListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetPendingItemForLoggedInUser(
+    response: HttpResponseBase
+  ): Observable<UserPendingItemsListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<UserPendingItemsListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param firmType (optional)
+   * @return OK
+   */
+  getGeneralSubmissionForms(
+    firmType: number | undefined
+  ): Observable<GeneralSubmissionFormListBaseResponse> {
+    let url_ =
+      this.baseUrl + '/api/AccessRequest/get-general-submission-forms?';
+    if (firmType === null)
+      throw new Error("The parameter 'firmType' cannot be null.");
+    else if (firmType !== undefined)
+      url_ += 'firmType=' + encodeURIComponent('' + firmType) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetGeneralSubmissionForms(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetGeneralSubmissionForms(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<GeneralSubmissionFormListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<GeneralSubmissionFormListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetGeneralSubmissionForms(
+    response: HttpResponseBase
+  ): Observable<GeneralSubmissionFormListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 =
+            GeneralSubmissionFormListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<GeneralSubmissionFormListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getReportDetails(): Observable<ReportSchDetailsListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AccessRequest/get-report-details';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetReportDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetReportDetails(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<ReportSchDetailsListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<ReportSchDetailsListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetReportDetails(
+    response: HttpResponseBase
+  ): Observable<ReportSchDetailsListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = ReportSchDetailsListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<ReportSchDetailsListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  insertUpdateApplicationData(
+    body: ApplicationDataDto | undefined
+  ): Observable<Int32BaseResponse> {
+    let url_ =
+      this.baseUrl + '/api/AIApplications/insert-update-application-data';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processInsertUpdateApplicationData(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processInsertUpdateApplicationData(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<Int32BaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<Int32BaseResponse>;
+        })
+      );
+  }
+
+  protected processInsertUpdateApplicationData(
+    response: HttpResponseBase
+  ): Observable<Int32BaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = Int32BaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<Int32BaseResponse>(null as any);
+  }
+
+  /**
+   * @param qfcNumber (optional)
+   * @param aiNumber (optional)
+   * @param formTypeID (optional)
+   * @param windApplicationID (optional)
+   * @param body (optional)
+   * @return OK
+   */
+  isDuplicateApplication(
+    qfcNumber: string | undefined,
+    aiNumber: string | undefined,
+    formTypeID: number | undefined,
+    windApplicationID: number | undefined,
+    body: number[] | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/AIApplications/is-duplicate-application?';
+    if (qfcNumber === null)
+      throw new Error("The parameter 'qfcNumber' cannot be null.");
+    else if (qfcNumber !== undefined)
+      url_ += 'qfcNumber=' + encodeURIComponent('' + qfcNumber) + '&';
+    if (aiNumber === null)
+      throw new Error("The parameter 'aiNumber' cannot be null.");
+    else if (aiNumber !== undefined)
+      url_ += 'aiNumber=' + encodeURIComponent('' + aiNumber) + '&';
+    if (formTypeID === null)
+      throw new Error("The parameter 'formTypeID' cannot be null.");
+    else if (formTypeID !== undefined)
+      url_ += 'formTypeID=' + encodeURIComponent('' + formTypeID) + '&';
+    if (windApplicationID === null)
+      throw new Error("The parameter 'windApplicationID' cannot be null.");
+    else if (windApplicationID !== undefined)
+      url_ +=
+        'windApplicationID=' + encodeURIComponent('' + windApplicationID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processIsDuplicateApplication(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processIsDuplicateApplication(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processIsDuplicateApplication(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param appID (optional)
+   * @return OK
+   */
+  getIndApplDetails(
+    appID: number | undefined
+  ): Observable<WApplicationDetailDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/AIApplications/get-ind-appl-details?';
+    if (appID === null)
+      throw new Error("The parameter 'appID' cannot be null.");
+    else if (appID !== undefined)
+      url_ += 'appID=' + encodeURIComponent('' + appID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetIndApplDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetIndApplDetails(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WApplicationDetailDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WApplicationDetailDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetIndApplDetails(
+    response: HttpResponseBase
+  ): Observable<WApplicationDetailDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 =
+            WApplicationDetailDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WApplicationDetailDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param appID (optional)
+   * @return OK
+   */
+  getIndContactDetail(
+    appID: number | undefined
+  ): Observable<IndividualDetailsDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/AIApplications/get-ind-contact-detail?';
+    if (appID === null)
+      throw new Error("The parameter 'appID' cannot be null.");
+    else if (appID !== undefined)
+      url_ += 'appID=' + encodeURIComponent('' + appID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetIndContactDetail(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetIndContactDetail(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<IndividualDetailsDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<IndividualDetailsDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetIndContactDetail(
+    response: HttpResponseBase
+  ): Observable<IndividualDetailsDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = IndividualDetailsDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<IndividualDetailsDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param appId (optional)
+   * @param isPrimaryDocFlag (optional)
+   * @return OK
+   */
+  getAttachments(
+    appId: number | undefined,
+    isPrimaryDocFlag: boolean | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-attachments?';
+    if (appId === null)
+      throw new Error("The parameter 'appId' cannot be null.");
+    else if (appId !== undefined)
+      url_ += 'appId=' + encodeURIComponent('' + appId) + '&';
+    if (isPrimaryDocFlag === null)
+      throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
+    else if (isPrimaryDocFlag !== undefined)
+      url_ +=
+        'isPrimaryDocFlag=' + encodeURIComponent('' + isPrimaryDocFlag) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetAttachments(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param appId (optional)
+   * @param isPrimaryDocFlag (optional)
+   * @return OK
+   */
+  getAttachedFiles(
+    appId: number | undefined,
+    isPrimaryDocFlag: boolean | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-attached-files?';
+    if (appId === null)
+      throw new Error("The parameter 'appId' cannot be null.");
+    else if (appId !== undefined)
+      url_ += 'appId=' + encodeURIComponent('' + appId) + '&';
+    if (isPrimaryDocFlag === null)
+      throw new Error("The parameter 'isPrimaryDocFlag' cannot be null.");
+    else if (isPrimaryDocFlag !== undefined)
+      url_ +=
+        'isPrimaryDocFlag=' + encodeURIComponent('' + isPrimaryDocFlag) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetAttachedFiles(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetAttachedFiles(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetAttachedFiles(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getEmptyAttachment(): Observable<AttachmentDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-empty-attachment';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetEmptyAttachment(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetEmptyAttachment(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetEmptyAttachment(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  getRptSchAttachments(
+    body: AttachmentDto | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-rpt-sch-attachments';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetRptSchAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetRptSchAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetRptSchAttachments(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wObjAttachementID (optional)
+   * @param wObjectID (optional)
+   * @param wObjectInstanceID (optional)
+   * @param wObjectInstanceRevNum (optional)
+   * @param isPrimaryAttachment (optional)
+   * @return OK
+   */
+  getObjAttachments(
+    wObjAttachementID: number | undefined,
+    wObjectID: number | undefined,
+    wObjectInstanceID: number | undefined,
+    wObjectInstanceRevNum: number | undefined,
+    isPrimaryAttachment: boolean | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-obj-attachments?';
+    if (wObjAttachementID === null)
+      throw new Error("The parameter 'wObjAttachementID' cannot be null.");
+    else if (wObjAttachementID !== undefined)
+      url_ +=
+        'WObjAttachementID=' + encodeURIComponent('' + wObjAttachementID) + '&';
+    if (wObjectID === null)
+      throw new Error("The parameter 'wObjectID' cannot be null.");
+    else if (wObjectID !== undefined)
+      url_ += 'WObjectID=' + encodeURIComponent('' + wObjectID) + '&';
+    if (wObjectInstanceID === null)
+      throw new Error("The parameter 'wObjectInstanceID' cannot be null.");
+    else if (wObjectInstanceID !== undefined)
+      url_ +=
+        'WObjectInstanceID=' + encodeURIComponent('' + wObjectInstanceID) + '&';
+    if (wObjectInstanceRevNum === null)
+      throw new Error("The parameter 'wObjectInstanceRevNum' cannot be null.");
+    else if (wObjectInstanceRevNum !== undefined)
+      url_ +=
+        'WObjectInstanceRevNum=' +
+        encodeURIComponent('' + wObjectInstanceRevNum) +
+        '&';
+    if (isPrimaryAttachment === null)
+      throw new Error("The parameter 'isPrimaryAttachment' cannot be null.");
+    else if (isPrimaryAttachment !== undefined)
+      url_ +=
+        'isPrimaryAttachment=' +
+        encodeURIComponent('' + isPrimaryAttachment) +
+        '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetObjAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetObjAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetObjAttachments(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  saveObjAttachments(
+    body: AttachmentDto[] | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/save-obj-attachments';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processSaveObjAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processSaveObjAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processSaveObjAttachments(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wIndAttID (optional)
+   * @return OK
+   */
+  deleteObjAttachment(
+    wIndAttID: number | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/delete-obj-attachment?';
+    if (wIndAttID === null)
+      throw new Error("The parameter 'wIndAttID' cannot be null.");
+    else if (wIndAttID !== undefined)
+      url_ += 'WIndAttID=' + encodeURIComponent('' + wIndAttID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('delete', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processDeleteObjAttachment(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processDeleteObjAttachment(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processDeleteObjAttachment(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param pWObjectID (optional)
+   * @param pWObjInstanceID (optional)
+   * @param body (optional)
+   * @return OK
+   */
+  deleteAllObjAttachments(
+    pWObjectID: number | undefined,
+    pWObjInstanceID: number | undefined,
+    body: AttachmentDto[] | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/delete-all-obj-attachments?';
+    if (pWObjectID === null)
+      throw new Error("The parameter 'pWObjectID' cannot be null.");
+    else if (pWObjectID !== undefined)
+      url_ += 'pWObjectID=' + encodeURIComponent('' + pWObjectID) + '&';
+    if (pWObjInstanceID === null)
+      throw new Error("The parameter 'pWObjInstanceID' cannot be null.");
+    else if (pWObjInstanceID !== undefined)
+      url_ +=
+        'pWObjInstanceID=' + encodeURIComponent('' + pWObjInstanceID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('delete', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processDeleteAllObjAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processDeleteAllObjAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processDeleteAllObjAttachments(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getEmptyObjAttachment(): Observable<AttachmentDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-empty-obj-attachment';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetEmptyObjAttachment(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetEmptyObjAttachment(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetEmptyObjAttachment(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  updateObjAttachmentStatus(
+    body: AttachmentDto[] | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/update-obj-attachment-status';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('put', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processUpdateObjAttachmentStatus(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processUpdateObjAttachmentStatus(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processUpdateObjAttachmentStatus(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param pDocTypeID (optional)
+   * @return OK
+   */
+  getDocTypeDec(
+    pDocTypeID: number | undefined
+  ): Observable<AttachmentDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-doc-type-dec?';
+    if (pDocTypeID === null)
+      throw new Error("The parameter 'pDocTypeID' cannot be null.");
+    else if (pDocTypeID !== undefined)
+      url_ += 'pDocTypeID=' + encodeURIComponent('' + pDocTypeID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetDocTypeDec(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetDocTypeDec(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetDocTypeDec(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param pAppID (optional)
+   * @return OK
+   */
+  getPrimaryAttachments(
+    pAppID: number | undefined
+  ): Observable<AttachmentDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-primary-attachments?';
+    if (pAppID === null)
+      throw new Error("The parameter 'pAppID' cannot be null.");
+    else if (pAppID !== undefined)
+      url_ += 'pAppID=' + encodeURIComponent('' + pAppID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetPrimaryAttachments(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetPrimaryAttachments(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetPrimaryAttachments(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param attachmentID (optional)
+   * @param attachmentStatusTypeID (optional)
+   * @return OK
+   */
+  checkAttachmentStatus(
+    attachmentID: number | undefined,
+    attachmentStatusTypeID: number | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/check-attachment-status?';
+    if (attachmentID === null)
+      throw new Error("The parameter 'attachmentID' cannot be null.");
+    else if (attachmentID !== undefined)
+      url_ += 'attachmentID=' + encodeURIComponent('' + attachmentID) + '&';
+    if (attachmentStatusTypeID === null)
+      throw new Error("The parameter 'attachmentStatusTypeID' cannot be null.");
+    else if (attachmentStatusTypeID !== undefined)
+      url_ +=
+        'attachmentStatusTypeID=' +
+        encodeURIComponent('' + attachmentStatusTypeID) +
+        '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processCheckAttachmentStatus(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processCheckAttachmentStatus(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processCheckAttachmentStatus(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  getHistoryDetails(
+    body: HistoryDetailsDto | undefined
+  ): Observable<AttachmentDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/get-history-details';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetHistoryDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetHistoryDetails(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<AttachmentDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<AttachmentDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetHistoryDetails(
+    response: HttpResponseBase
+  ): Observable<AttachmentDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param fileLocation (optional)
+   * @param pFileName (optional)
+   * @param body (optional)
+   * @return OK
+   */
+  uploadToFolder(
+    fileLocation: string | undefined,
+    pFileName: string | undefined,
+    body: string | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/upload-to-folder?';
+    if (fileLocation === null)
+      throw new Error("The parameter 'fileLocation' cannot be null.");
+    else if (fileLocation !== undefined)
+      url_ += 'FileLocation=' + encodeURIComponent('' + fileLocation) + '&';
+    if (pFileName === null)
+      throw new Error("The parameter 'pFileName' cannot be null.");
+    else if (pFileName !== undefined)
+      url_ += 'pFileName=' + encodeURIComponent('' + pFileName) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processUploadToFolder(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processUploadToFolder(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processUploadToFolder(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @param pFileName (optional)
+   * @param fileLocation (optional)
+   * @return OK
+   */
+  downloadFile(
+    pFileName: string | undefined,
+    fileLocation: string | undefined
+  ): Observable<ByteArrayBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/download-file?';
+    if (pFileName === null)
+      throw new Error("The parameter 'pFileName' cannot be null.");
+    else if (pFileName !== undefined)
+      url_ += 'pFileName=' + encodeURIComponent('' + pFileName) + '&';
+    if (fileLocation === null)
+      throw new Error("The parameter 'fileLocation' cannot be null.");
+    else if (fileLocation !== undefined)
+      url_ += 'FileLocation=' + encodeURIComponent('' + fileLocation) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processDownloadFile(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processDownloadFile(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<ByteArrayBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<ByteArrayBaseResponse>;
+        })
+      );
+  }
+
+  protected processDownloadFile(
+    response: HttpResponseBase
+  ): Observable<ByteArrayBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = ByteArrayBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<ByteArrayBaseResponse>(null as any);
+  }
+
+  /**
+   * @param pFileName (optional)
+   * @param fileLocation (optional)
+   * @return OK
+   */
+  deleteFile(
+    pFileName: string | undefined,
+    fileLocation: string | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Attachments/delete-file?';
+    if (pFileName === null)
+      throw new Error("The parameter 'pFileName' cannot be null.");
+    else if (pFileName !== undefined)
+      url_ += 'pFileName=' + encodeURIComponent('' + pFileName) + '&';
+    if (fileLocation === null)
+      throw new Error("The parameter 'fileLocation' cannot be null.");
+    else if (fileLocation !== undefined)
+      url_ += 'FileLocation=' + encodeURIComponent('' + fileLocation) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('delete', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processDeleteFile(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processDeleteFile(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processDeleteFile(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getObjectTaskStatus(): Observable<StringObjectDictionaryListBaseResponse> {
+    let url_ = this.baseUrl + '/api/Firms/GetObjectTaskStatus';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetObjectTaskStatus(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetObjectTaskStatus(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<StringObjectDictionaryListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<StringObjectDictionaryListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetObjectTaskStatus(
+    response: HttpResponseBase
+  ): Observable<StringObjectDictionaryListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 =
+            StringObjectDictionaryListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<StringObjectDictionaryListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  insertUpdateObjTaskStatus(
+    body: ObjTasks | undefined
+  ): Observable<BooleanBaseResponse> {
+    let url_ = this.baseUrl + '/api/Firms/InsertUpdateObjTaskStatus';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processInsertUpdateObjTaskStatus(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processInsertUpdateObjTaskStatus(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<BooleanBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<BooleanBaseResponse>;
+        })
+      );
+  }
+
+  protected processInsertUpdateObjTaskStatus(
+    response: HttpResponseBase
+  ): Observable<BooleanBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = BooleanBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<BooleanBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getSubmittedApplications(): Observable<PendingItemsDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/GenSubmission/get-submitted-applications';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetSubmittedApplications(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetSubmittedApplications(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<PendingItemsDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<PendingItemsDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetSubmittedApplications(
+    response: HttpResponseBase
+  ): Observable<PendingItemsDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getCompletedApplications(): Observable<PendingItemsDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/GenSubmission/get-completed-applications';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetCompletedApplications(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetCompletedApplications(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<PendingItemsDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<PendingItemsDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetCompletedApplications(
+    response: HttpResponseBase
+  ): Observable<PendingItemsDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getPendingApplications(): Observable<PendingItemsDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/GenSubmission/get-pending-applications';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetPendingApplications(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetPendingApplications(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<PendingItemsDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<PendingItemsDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetPendingApplications(
+    response: HttpResponseBase
+  ): Observable<PendingItemsDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getPendingItems(): Observable<PendingItemsDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/GenSubmission/get-pending-items';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetPendingItems(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetPendingItems(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<PendingItemsDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<PendingItemsDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetPendingItems(
+    response: HttpResponseBase
+  ): Observable<PendingItemsDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param applicationID (optional)
+   * @return OK
+   */
+  getApplicationDetail(
+    applicationID: number | undefined
+  ): Observable<ApplicationDetailDtoBaseResponse> {
+    let url_ = this.baseUrl + '/api/GenSubmission/get-application-detail?';
+    if (applicationID === null)
+      throw new Error("The parameter 'applicationID' cannot be null.");
+    else if (applicationID !== undefined)
+      url_ += 'ApplicationID=' + encodeURIComponent('' + applicationID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetApplicationDetail(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetApplicationDetail(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<ApplicationDetailDtoBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<ApplicationDetailDtoBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetApplicationDetail(
+    response: HttpResponseBase
+  ): Observable<ApplicationDetailDtoBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = ApplicationDetailDtoBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<ApplicationDetailDtoBaseResponse>(null as any);
+  }
+
+  /**
+   * @param tableName (optional)
+   * @return OK
+   */
+  getMastertableData(
+    tableName: string | undefined
+  ): Observable<StringStringDictionaryBaseResponse> {
+    let url_ = this.baseUrl + '/api/MasterData/get-mastertable-data?';
+    if (tableName === null)
+      throw new Error("The parameter 'tableName' cannot be null.");
+    else if (tableName !== undefined)
+      url_ += 'tableName=' + encodeURIComponent('' + tableName) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetMastertableData(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetMastertableData(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<StringStringDictionaryBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<StringStringDictionaryBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetMastertableData(
+    response: HttpResponseBase
+  ): Observable<StringStringDictionaryBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wConfigMessageID (optional)
+   * @param configKey (optional)
+   * @param configDesc (optional)
+   * @param configValue (optional)
+   * @param isEditable (optional)
+   * @return OK
+   */
+  getConfigMessage(
+    wConfigMessageID: number | undefined,
+    configKey: string | undefined,
+    configDesc: string | undefined,
+    configValue: string | undefined,
+    isEditable: boolean | undefined
+  ): Observable<StringBaseResponse> {
+    let url_ = this.baseUrl + '/api/MasterData/get-config-message?';
+    if (wConfigMessageID === null)
+      throw new Error("The parameter 'wConfigMessageID' cannot be null.");
+    else if (wConfigMessageID !== undefined)
+      url_ +=
+        'WConfigMessageID=' + encodeURIComponent('' + wConfigMessageID) + '&';
+    if (configKey === null)
+      throw new Error("The parameter 'configKey' cannot be null.");
+    else if (configKey !== undefined)
+      url_ += 'ConfigKey=' + encodeURIComponent('' + configKey) + '&';
+    if (configDesc === null)
+      throw new Error("The parameter 'configDesc' cannot be null.");
+    else if (configDesc !== undefined)
+      url_ += 'ConfigDesc=' + encodeURIComponent('' + configDesc) + '&';
+    if (configValue === null)
+      throw new Error("The parameter 'configValue' cannot be null.");
+    else if (configValue !== undefined)
+      url_ += 'ConfigValue=' + encodeURIComponent('' + configValue) + '&';
+    if (isEditable === null)
+      throw new Error("The parameter 'isEditable' cannot be null.");
+    else if (isEditable !== undefined)
+      url_ += 'IsEditable=' + encodeURIComponent('' + isEditable) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetConfigMessage(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetConfigMessage(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<StringBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<StringBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetConfigMessage(
+    response: HttpResponseBase
+  ): Observable<StringBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = StringBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<StringBaseResponse>(null as any);
+  }
+
+  /**
+   * @param year (optional)
+   * @return OK
+   */
+  getWnoticeList(
+    year: number | undefined
+  ): Observable<WNoticeListListBaseResponse> {
+    let url_ = this.baseUrl + '/api/NoticeData/get-wnotice-list?';
+    if (year === null) throw new Error("The parameter 'year' cannot be null.");
+    else if (year !== undefined)
+      url_ += 'year=' + encodeURIComponent('' + year) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetWnoticeList(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetWnoticeList(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WNoticeListListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WNoticeListListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetWnoticeList(
+    response: HttpResponseBase
+  ): Observable<WNoticeListListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = WNoticeListListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WNoticeListListBaseResponse>(null as any);
+  }
+
+  /**
+   * @return OK
+   */
+  getWnoticeListForHome(): Observable<WNoticeListListBaseResponse> {
+    let url_ = this.baseUrl + '/api/NoticeData/get-wnotice-list-for-Home';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetWnoticeListForHome(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetWnoticeListForHome(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WNoticeListListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WNoticeListListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetWnoticeListForHome(
+    response: HttpResponseBase
+  ): Observable<WNoticeListListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = WNoticeListListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WNoticeListListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wListNameID (optional)
+   * @return OK
+   */
+  getListValues(
+    wListNameID: number | undefined
+  ): Observable<Int32StringDictionaryBaseResponse> {
+    let url_ = this.baseUrl + '/api/NoticeData/get-list-values?';
+    if (wListNameID === null)
+      throw new Error("The parameter 'wListNameID' cannot be null.");
+    else if (wListNameID !== undefined)
+      url_ += 'wListNameID=' + encodeURIComponent('' + wListNameID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetListValues(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetListValues(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<Int32StringDictionaryBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<Int32StringDictionaryBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetListValues(
+    response: HttpResponseBase
+  ): Observable<Int32StringDictionaryBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wNoticeID (optional)
+   * @param wFirmNoticeID (optional)
+   * @return OK
+   */
+  getWnoticeDetails(
+    wNoticeID: number | undefined,
+    wFirmNoticeID: number | undefined
+  ): Observable<WNoticeBaseResponse> {
+    let url_ = this.baseUrl + '/api/NoticeData/get-wnotice-details?';
+    if (wNoticeID === null)
+      throw new Error("The parameter 'wNoticeID' cannot be null.");
+    else if (wNoticeID !== undefined)
+      url_ += 'wNoticeID=' + encodeURIComponent('' + wNoticeID) + '&';
+    if (wFirmNoticeID === null)
+      throw new Error("The parameter 'wFirmNoticeID' cannot be null.");
+    else if (wFirmNoticeID !== undefined)
+      url_ += 'WFirmNoticeID=' + encodeURIComponent('' + wFirmNoticeID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetWnoticeDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetWnoticeDetails(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WNoticeBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WNoticeBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetWnoticeDetails(
+    response: HttpResponseBase
+  ): Observable<WNoticeBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = WNoticeBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WNoticeBaseResponse>(null as any);
+  }
+
+  /**
+   * @param wNoticeID (optional)
+   * @param wFirmNoticeID (optional)
+   * @return OK
+   */
+  getNoticeQuestionnaireItems(
+    wNoticeID: number | undefined,
+    wFirmNoticeID: number | undefined
+  ): Observable<WNoticeQuestionnaireItemDtoListBaseResponse> {
+    let url_ = this.baseUrl + '/api/NoticeData/get-notice-questionnaire-items?';
+    if (wNoticeID === null)
+      throw new Error("The parameter 'wNoticeID' cannot be null.");
+    else if (wNoticeID !== undefined)
+      url_ += 'wNoticeID=' + encodeURIComponent('' + wNoticeID) + '&';
+    if (wFirmNoticeID === null)
+      throw new Error("The parameter 'wFirmNoticeID' cannot be null.");
+    else if (wFirmNoticeID !== undefined)
+      url_ += 'WFirmNoticeID=' + encodeURIComponent('' + wFirmNoticeID) + '&';
+    url_ = url_.replace(/[?&]$/, '');
+
+    let options_: any = {
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('get', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processGetNoticeQuestionnaireItems(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processGetNoticeQuestionnaireItems(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<WNoticeQuestionnaireItemDtoListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<WNoticeQuestionnaireItemDtoListBaseResponse>;
+        })
+      );
+  }
+
+  protected processGetNoticeQuestionnaireItems(
+    response: HttpResponseBase
+  ): Observable<WNoticeQuestionnaireItemDtoListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 =
+            WNoticeQuestionnaireItemDtoListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<WNoticeQuestionnaireItemDtoListBaseResponse>(
+      null as any
+    );
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  insertUpdateReportSchDetails(
+    body: InsertReportSchDetailsDto | undefined
+  ): Observable<Int32ListBaseResponse> {
+    let url_ =
+      this.baseUrl + '/api/ReportSchedule/insert-update-report-sch-details';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processInsertUpdateReportSchDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processInsertUpdateReportSchDetails(response_ as any);
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<Int32ListBaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<Int32ListBaseResponse>;
+        })
+      );
+  }
+
+  protected processInsertUpdateReportSchDetails(
+    response: HttpResponseBase
+  ): Observable<Int32ListBaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = Int32ListBaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<Int32ListBaseResponse>(null as any);
+  }
+
+  /**
+   * @param body (optional)
+   * @return OK
+   */
+  insertUpdateObjectSoStatusDetails(
+    body: InsertObjectSOStatusDetailsDto | undefined
+  ): Observable<Int32BaseResponse> {
+    let url_ =
+      this.baseUrl +
+      '/api/ReportSchedule/insert-update-object-so-status-details';
+    url_ = url_.replace(/[?&]$/, '');
+
+    const content_ = JSON.stringify(body);
+
+    let options_: any = {
+      body: content_,
+      observe: 'response',
+      responseType: 'blob',
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Accept: 'text/plain',
+      }),
+    };
+
+    return this.http
+      .request('post', url_, options_)
+      .pipe(
+        _observableMergeMap((response_: any) => {
+          return this.processInsertUpdateObjectSoStatusDetails(response_);
+        })
+      )
+      .pipe(
+        _observableCatch((response_: any) => {
+          if (response_ instanceof HttpResponseBase) {
+            try {
+              return this.processInsertUpdateObjectSoStatusDetails(
+                response_ as any
+              );
+            } catch (e) {
+              return _observableThrow(
+                e
+              ) as any as Observable<Int32BaseResponse>;
+            }
+          } else
+            return _observableThrow(
+              response_
+            ) as any as Observable<Int32BaseResponse>;
+        })
+      );
+  }
+
+  protected processInsertUpdateObjectSoStatusDetails(
+    response: HttpResponseBase
+  ): Observable<Int32BaseResponse> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse
+        ? response.body
+        : (response as any).error instanceof Blob
+        ? (response as any).error
+        : undefined;
+
+    let _headers: any = {};
+    if (response.headers) {
+      for (let key of response.headers.keys()) {
+        _headers[key] = response.headers.get(key);
+      }
+    }
+    if (status === 200) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          let result200: any = null;
+          let resultData200 =
+            _responseText === ''
+              ? null
+              : JSON.parse(_responseText, this.jsonParseReviver);
+          result200 = Int32BaseResponse.fromJS(resultData200);
+          return _observableOf(result200);
+        })
+      );
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(
+        _observableMergeMap((_responseText) => {
+          return throwException(
+            'An unexpected server error occurred.',
+            status,
+            _responseText,
+            _headers
+          );
+        })
+      );
+    }
+    return _observableOf<Int32BaseResponse>(null as any);
+  }
 }
 
 export class Address implements IAddress {
-    addressID?: number | undefined;
-    addressGUID?: string | undefined;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    country?: string | undefined;
-    countryID?: number;
-    postalCode?: string | undefined;
-    startDateDay?: string | undefined;
-    startDateMonth?: string | undefined;
-    startDateYear?: string | undefined;
-    endDateDay?: string | undefined;
-    endDateMonth?: string | undefined;
-    endDateYear?: string | undefined;
-    addressTypID?: number;
-    addressTypeDesc?: string | undefined;
-    userId?: number;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
-    applicationID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    fromDate?: Date | undefined;
-    toDate?: Date | undefined;
+  addressID?: number | undefined;
+  addressGUID?: string | undefined;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  country?: string | undefined;
+  countryID?: number;
+  postalCode?: string | undefined;
+  startDateDay?: string | undefined;
+  startDateMonth?: string | undefined;
+  startDateYear?: string | undefined;
+  endDateDay?: string | undefined;
+  endDateMonth?: string | undefined;
+  endDateYear?: string | undefined;
+  addressTypID?: number;
+  addressTypeDesc?: string | undefined;
+  userId?: number;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
+  applicationID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  fromDate?: Date | undefined;
+  toDate?: Date | undefined;
 
-    constructor(data?: IAddress) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAddress) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.addressID = _data["addressID"];
-            this.addressGUID = _data["addressGUID"];
-            this.addressLine1 = _data["addressLine1"];
-            this.addressLine2 = _data["addressLine2"];
-            this.addressLine3 = _data["addressLine3"];
-            this.addressLine4 = _data["addressLine4"];
-            this.city = _data["city"];
-            this.state = _data["state"];
-            this.country = _data["country"];
-            this.countryID = _data["countryID"];
-            this.postalCode = _data["postalCode"];
-            this.startDateDay = _data["startDateDay"];
-            this.startDateMonth = _data["startDateMonth"];
-            this.startDateYear = _data["startDateYear"];
-            this.endDateDay = _data["endDateDay"];
-            this.endDateMonth = _data["endDateMonth"];
-            this.endDateYear = _data["endDateYear"];
-            this.addressTypID = _data["addressTypID"];
-            this.addressTypeDesc = _data["addressTypeDesc"];
-            this.userId = _data["userId"];
-            this.createdDate = _data["createdDate"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.modifiedBy = _data["modifiedBy"];
-            this.applicationID = _data["applicationID"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.aiNumber = _data["aiNumber"];
-            this.fromDate = _data["fromDate"] ? new Date(_data["fromDate"].toString()) : <any>undefined;
-            this.toDate = _data["toDate"] ? new Date(_data["toDate"].toString()) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.addressID = _data['addressID'];
+      this.addressGUID = _data['addressGUID'];
+      this.addressLine1 = _data['addressLine1'];
+      this.addressLine2 = _data['addressLine2'];
+      this.addressLine3 = _data['addressLine3'];
+      this.addressLine4 = _data['addressLine4'];
+      this.city = _data['city'];
+      this.state = _data['state'];
+      this.country = _data['country'];
+      this.countryID = _data['countryID'];
+      this.postalCode = _data['postalCode'];
+      this.startDateDay = _data['startDateDay'];
+      this.startDateMonth = _data['startDateMonth'];
+      this.startDateYear = _data['startDateYear'];
+      this.endDateDay = _data['endDateDay'];
+      this.endDateMonth = _data['endDateMonth'];
+      this.endDateYear = _data['endDateYear'];
+      this.addressTypID = _data['addressTypID'];
+      this.addressTypeDesc = _data['addressTypeDesc'];
+      this.userId = _data['userId'];
+      this.createdDate = _data['createdDate'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.modifiedBy = _data['modifiedBy'];
+      this.applicationID = _data['applicationID'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.aiNumber = _data['aiNumber'];
+      this.fromDate = _data['fromDate']
+        ? new Date(_data['fromDate'].toString())
+        : <any>undefined;
+      this.toDate = _data['toDate']
+        ? new Date(_data['toDate'].toString())
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): Address {
-        data = typeof data === 'object' ? data : {};
-        let result = new Address();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Address {
+    data = typeof data === 'object' ? data : {};
+    let result = new Address();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["addressID"] = this.addressID;
-        data["addressGUID"] = this.addressGUID;
-        data["addressLine1"] = this.addressLine1;
-        data["addressLine2"] = this.addressLine2;
-        data["addressLine3"] = this.addressLine3;
-        data["addressLine4"] = this.addressLine4;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["country"] = this.country;
-        data["countryID"] = this.countryID;
-        data["postalCode"] = this.postalCode;
-        data["startDateDay"] = this.startDateDay;
-        data["startDateMonth"] = this.startDateMonth;
-        data["startDateYear"] = this.startDateYear;
-        data["endDateDay"] = this.endDateDay;
-        data["endDateMonth"] = this.endDateMonth;
-        data["endDateYear"] = this.endDateYear;
-        data["addressTypID"] = this.addressTypID;
-        data["addressTypeDesc"] = this.addressTypeDesc;
-        data["userId"] = this.userId;
-        data["createdDate"] = this.createdDate;
-        data["modifiedDate"] = this.modifiedDate;
-        data["modifiedBy"] = this.modifiedBy;
-        data["applicationID"] = this.applicationID;
-        data["qfcNumber"] = this.qfcNumber;
-        data["aiNumber"] = this.aiNumber;
-        data["fromDate"] = this.fromDate ? this.fromDate.toISOString() : <any>undefined;
-        data["toDate"] = this.toDate ? this.toDate.toISOString() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['addressID'] = this.addressID;
+    data['addressGUID'] = this.addressGUID;
+    data['addressLine1'] = this.addressLine1;
+    data['addressLine2'] = this.addressLine2;
+    data['addressLine3'] = this.addressLine3;
+    data['addressLine4'] = this.addressLine4;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['country'] = this.country;
+    data['countryID'] = this.countryID;
+    data['postalCode'] = this.postalCode;
+    data['startDateDay'] = this.startDateDay;
+    data['startDateMonth'] = this.startDateMonth;
+    data['startDateYear'] = this.startDateYear;
+    data['endDateDay'] = this.endDateDay;
+    data['endDateMonth'] = this.endDateMonth;
+    data['endDateYear'] = this.endDateYear;
+    data['addressTypID'] = this.addressTypID;
+    data['addressTypeDesc'] = this.addressTypeDesc;
+    data['userId'] = this.userId;
+    data['createdDate'] = this.createdDate;
+    data['modifiedDate'] = this.modifiedDate;
+    data['modifiedBy'] = this.modifiedBy;
+    data['applicationID'] = this.applicationID;
+    data['qfcNumber'] = this.qfcNumber;
+    data['aiNumber'] = this.aiNumber;
+    data['fromDate'] = this.fromDate
+      ? this.fromDate.toISOString()
+      : <any>undefined;
+    data['toDate'] = this.toDate ? this.toDate.toISOString() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IAddress {
-    addressID?: number | undefined;
-    addressGUID?: string | undefined;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    country?: string | undefined;
-    countryID?: number;
-    postalCode?: string | undefined;
-    startDateDay?: string | undefined;
-    startDateMonth?: string | undefined;
-    startDateYear?: string | undefined;
-    endDateDay?: string | undefined;
-    endDateMonth?: string | undefined;
-    endDateYear?: string | undefined;
-    addressTypID?: number;
-    addressTypeDesc?: string | undefined;
-    userId?: number;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
-    applicationID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    fromDate?: Date | undefined;
-    toDate?: Date | undefined;
+  addressID?: number | undefined;
+  addressGUID?: string | undefined;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  country?: string | undefined;
+  countryID?: number;
+  postalCode?: string | undefined;
+  startDateDay?: string | undefined;
+  startDateMonth?: string | undefined;
+  startDateYear?: string | undefined;
+  endDateDay?: string | undefined;
+  endDateMonth?: string | undefined;
+  endDateYear?: string | undefined;
+  addressTypID?: number;
+  addressTypeDesc?: string | undefined;
+  userId?: number;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
+  applicationID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  fromDate?: Date | undefined;
+  toDate?: Date | undefined;
 }
 
 export class AppRoles implements IAppRoles {
-    roleId?: number;
-    roleDescription?: string | undefined;
-    roleValid?: boolean;
+  roleId?: number;
+  roleDescription?: string | undefined;
+  roleValid?: boolean;
 
-    constructor(data?: IAppRoles) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAppRoles) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.roleId = _data["roleId"];
-            this.roleDescription = _data["roleDescription"];
-            this.roleValid = _data["roleValid"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.roleId = _data['roleId'];
+      this.roleDescription = _data['roleDescription'];
+      this.roleValid = _data['roleValid'];
     }
+  }
 
-    static fromJS(data: any): AppRoles {
-        data = typeof data === 'object' ? data : {};
-        let result = new AppRoles();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AppRoles {
+    data = typeof data === 'object' ? data : {};
+    let result = new AppRoles();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["roleId"] = this.roleId;
-        data["roleDescription"] = this.roleDescription;
-        data["roleValid"] = this.roleValid;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['roleId'] = this.roleId;
+    data['roleDescription'] = this.roleDescription;
+    data['roleValid'] = this.roleValid;
+    return data;
+  }
 }
 
 export interface IAppRoles {
-    roleId?: number;
-    roleDescription?: string | undefined;
-    roleValid?: boolean;
+  roleId?: number;
+  roleDescription?: string | undefined;
+  roleValid?: boolean;
 }
 
 export class ApplicationDataDto implements IApplicationDataDto {
-    objIndividualDetails?: IndividualDetailsDto;
-    lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
+  objIndividualDetails?: IndividualDetailsDto;
+  lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
 
-    constructor(data?: IApplicationDataDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IApplicationDataDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objIndividualDetails = _data["objIndividualDetails"] ? IndividualDetailsDto.fromJS(_data["objIndividualDetails"]) : <any>undefined;
-            if (Array.isArray(_data["lstControledFunctionIDs"])) {
-                this.lstControledFunctionIDs = [] as any;
-                for (let item of _data["lstControledFunctionIDs"])
-                    this.lstControledFunctionIDs!.push(ControlledFunctionDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objIndividualDetails = _data['objIndividualDetails']
+        ? IndividualDetailsDto.fromJS(_data['objIndividualDetails'])
+        : <any>undefined;
+      if (Array.isArray(_data['lstControledFunctionIDs'])) {
+        this.lstControledFunctionIDs = [] as any;
+        for (let item of _data['lstControledFunctionIDs'])
+          this.lstControledFunctionIDs!.push(
+            ControlledFunctionDto.fromJS(item)
+          );
+      }
     }
+  }
 
-    static fromJS(data: any): ApplicationDataDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationDataDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ApplicationDataDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new ApplicationDataDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objIndividualDetails"] = this.objIndividualDetails ? this.objIndividualDetails.toJSON() : <any>undefined;
-        if (Array.isArray(this.lstControledFunctionIDs)) {
-            data["lstControledFunctionIDs"] = [];
-            for (let item of this.lstControledFunctionIDs)
-                data["lstControledFunctionIDs"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objIndividualDetails'] = this.objIndividualDetails
+      ? this.objIndividualDetails.toJSON()
+      : <any>undefined;
+    if (Array.isArray(this.lstControledFunctionIDs)) {
+      data['lstControledFunctionIDs'] = [];
+      for (let item of this.lstControledFunctionIDs)
+        data['lstControledFunctionIDs'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IApplicationDataDto {
-    objIndividualDetails?: IndividualDetailsDto;
-    lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
+  objIndividualDetails?: IndividualDetailsDto;
+  lstControledFunctionIDs?: ControlledFunctionDto[] | undefined;
 }
 
 export class ApplicationDetail implements IApplicationDetail {
-    firmID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applicationID?: number;
-    formTypeID?: number;
-    applStatusTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appUserID?: number;
-    appCreatedBy?: number;
-    modifiedDate?: string | undefined;
-    userModified?: number;
-    createdDate?: string | undefined;
-    objFirmContactDetails?: FirmContactDetails;
-    objIndividualDetails?: IndividualDetails;
-    formTypeDesc?: string | undefined;
-    applStatusTypeDesc?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    appStatusDate?: Date;
-    appRecieveDate?: Date;
-    coreApplicationID?: number;
-    lstControledFunction?: ControledFunction[] | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    resubmissionComments?: string | undefined;
-    applicantName?: string | undefined;
-    pageFlag?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
-    updateWobjectStatus?: boolean;
+  firmID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applicationID?: number;
+  formTypeID?: number;
+  applStatusTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appUserID?: number;
+  appCreatedBy?: number;
+  modifiedDate?: string | undefined;
+  userModified?: number;
+  createdDate?: string | undefined;
+  objFirmContactDetails?: FirmContactDetails;
+  objIndividualDetails?: IndividualDetails;
+  formTypeDesc?: string | undefined;
+  applStatusTypeDesc?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  appStatusDate?: Date;
+  appRecieveDate?: Date;
+  coreApplicationID?: number;
+  lstControledFunction?: ControledFunction[] | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  resubmissionComments?: string | undefined;
+  applicantName?: string | undefined;
+  pageFlag?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
+  updateWobjectStatus?: boolean;
 
-    constructor(data?: IApplicationDetail) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IApplicationDetail) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.firmID = _data["firmID"];
-            this.fullName = _data["fullName"];
-            this.id = _data["id"];
-            this.userId = _data["userId"];
-            this.value = _data["value"];
-            this.qfcNmuner = _data["qfcNmuner"];
-            this.applContactDetailID = _data["applContactDetailID"];
-            this.applicationStatusTypeID = _data["applicationStatusTypeID"];
-            this.addressLine1 = _data["addressLine1"];
-            this.addressLine2 = _data["addressLine2"];
-            this.addressLine3 = _data["addressLine3"];
-            this.addressLine4 = _data["addressLine4"];
-            this.city = _data["city"];
-            this.state = _data["state"];
-            this.countryID = _data["countryID"];
-            this.countryName = _data["countryName"];
-            this.postalCode = _data["postalCode"];
-            this.firmName = _data["firmName"];
-            this.functionID = _data["functionID"];
-            this.positionOfMainContact = _data["positionOfMainContact"];
-            this.contactID = _data["contactID"];
-            this.nameOfMainContact = _data["nameOfMainContact"];
-            this.telephoneNumber = _data["telephoneNumber"];
-            this.faxNumber = _data["faxNumber"];
-            this.emailAddressOfMainAccount = _data["emailAddressOfMainAccount"];
-            this.preferredMethodOfContact = _data["preferredMethodOfContact"];
-            this.primarySupervisorEmailAddress = _data["primarySupervisorEmailAddress"];
-            this.secondarySupervisorEmailAddress = _data["secondarySupervisorEmailAddress"];
-            this.additionalSupervisorEmailAddress = _data["additionalSupervisorEmailAddress"];
-            this.amlPrimarySupervisorEmailAddress = _data["amlPrimarySupervisorEmailAddress"];
-            this.amlSecondarySupervisorEmailAddress = _data["amlSecondarySupervisorEmailAddress"];
-            this.additionalAMLSupervisorEmailAddress = _data["additionalAMLSupervisorEmailAddress"];
-            this.directorEmailAddress = _data["directorEmailAddress"];
-            this.amlDirectorEmailAddress = _data["amlDirectorEmailAddress"];
-            this.rsgEmailAddress = _data["rsgEmailAddress"];
-            this.firmTypeID = _data["firmTypeID"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.aiNumber = _data["aiNumber"];
-            this.applicationID = _data["applicationID"];
-            this.formTypeID = _data["formTypeID"];
-            this.applStatusTypeID = _data["applStatusTypeID"];
-            this.arrangementTypeID = _data["arrangementTypeID"];
-            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
-            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
-            this.competenciesAndExp = _data["competenciesAndExp"];
-            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
-            this.currentJobTitle = _data["currentJobTitle"];
-            this.jobTitleChangeFlag = _data["jobTitleChangeFlag"];
-            this.proposedJobTitle = _data["proposedJobTitle"];
-            this.jobDesc = _data["jobDesc"];
-            this.pastPositionFlag = _data["pastPositionFlag"];
-            this.pastPositionDesc = _data["pastPositionDesc"];
-            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
-            this.fandPChangeDesc = _data["fandPChangeDesc"];
-            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
-            this.altArrangementFlag = _data["altArrangementFlag"];
-            this.altArrangementDesc = _data["altArrangementDesc"];
-            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
-            this.cfApplicationDetail = _data["cfApplicationDetail"];
-            this.residencyNAFlag = _data["residencyNAFlag"];
-            this.aliasesNAFlag = _data["aliasesNAFlag"];
-            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
-            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
-            this.prevEmploymentFlag = _data["prevEmploymentFlag"];
-            this.appUserID = _data["appUserID"];
-            this.appCreatedBy = _data["appCreatedBy"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.userModified = _data["userModified"];
-            this.createdDate = _data["createdDate"];
-            this.objFirmContactDetails = _data["objFirmContactDetails"] ? FirmContactDetails.fromJS(_data["objFirmContactDetails"]) : <any>undefined;
-            this.objIndividualDetails = _data["objIndividualDetails"] ? IndividualDetails.fromJS(_data["objIndividualDetails"]) : <any>undefined;
-            this.formTypeDesc = _data["formTypeDesc"];
-            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
-            this.reglsNAFlag = _data["reglsNAFlag"];
-            this.nationalIdNAFlag = _data["nationalIdNAFlag"];
-            this.qatarRelocationNAFlag = _data["qatarRelocationNAFlag"];
-            this.profDevFalg = _data["profDevFalg"];
-            this.profMembFlag = _data["profMembFlag"];
-            this.higherEduFlag = _data["higherEduFlag"];
-            this.appStatusDate = _data["appStatusDate"] ? new Date(_data["appStatusDate"].toString()) : <any>undefined;
-            this.appRecieveDate = _data["appRecieveDate"] ? new Date(_data["appRecieveDate"].toString()) : <any>undefined;
-            this.coreApplicationID = _data["coreApplicationID"];
-            if (Array.isArray(_data["lstControledFunction"])) {
-                this.lstControledFunction = [] as any;
-                for (let item of _data["lstControledFunction"])
-                    this.lstControledFunction!.push(ControledFunction.fromJS(item));
-            }
-            this.anyFileToAttachFlag = _data["anyFileToAttachFlag"];
-            this.additionalFileFlag = _data["additionalFileFlag"];
-            this.applicationDate = _data["applicationDate"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.prevApplicationId = _data["prevApplicationId"];
-            this.additionalSupervisorFlag = _data["additionalSupervisorFlag"];
-            this.positionHeldFlag = _data["positionHeldFlag"];
-            this.supervisingFlag = _data["supervisingFlag"];
-            this.resubmissionComments = _data["resubmissionComments"];
-            this.applicantName = _data["applicantName"];
-            this.pageFlag = _data["pageFlag"];
-            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
-            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
-            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
-            this.updateWobjectStatus = _data["updateWobjectStatus"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.firmID = _data['firmID'];
+      this.fullName = _data['fullName'];
+      this.id = _data['id'];
+      this.userId = _data['userId'];
+      this.value = _data['value'];
+      this.qfcNmuner = _data['qfcNmuner'];
+      this.applContactDetailID = _data['applContactDetailID'];
+      this.applicationStatusTypeID = _data['applicationStatusTypeID'];
+      this.addressLine1 = _data['addressLine1'];
+      this.addressLine2 = _data['addressLine2'];
+      this.addressLine3 = _data['addressLine3'];
+      this.addressLine4 = _data['addressLine4'];
+      this.city = _data['city'];
+      this.state = _data['state'];
+      this.countryID = _data['countryID'];
+      this.countryName = _data['countryName'];
+      this.postalCode = _data['postalCode'];
+      this.firmName = _data['firmName'];
+      this.functionID = _data['functionID'];
+      this.positionOfMainContact = _data['positionOfMainContact'];
+      this.contactID = _data['contactID'];
+      this.nameOfMainContact = _data['nameOfMainContact'];
+      this.telephoneNumber = _data['telephoneNumber'];
+      this.faxNumber = _data['faxNumber'];
+      this.emailAddressOfMainAccount = _data['emailAddressOfMainAccount'];
+      this.preferredMethodOfContact = _data['preferredMethodOfContact'];
+      this.primarySupervisorEmailAddress =
+        _data['primarySupervisorEmailAddress'];
+      this.secondarySupervisorEmailAddress =
+        _data['secondarySupervisorEmailAddress'];
+      this.additionalSupervisorEmailAddress =
+        _data['additionalSupervisorEmailAddress'];
+      this.amlPrimarySupervisorEmailAddress =
+        _data['amlPrimarySupervisorEmailAddress'];
+      this.amlSecondarySupervisorEmailAddress =
+        _data['amlSecondarySupervisorEmailAddress'];
+      this.additionalAMLSupervisorEmailAddress =
+        _data['additionalAMLSupervisorEmailAddress'];
+      this.directorEmailAddress = _data['directorEmailAddress'];
+      this.amlDirectorEmailAddress = _data['amlDirectorEmailAddress'];
+      this.rsgEmailAddress = _data['rsgEmailAddress'];
+      this.firmTypeID = _data['firmTypeID'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.aiNumber = _data['aiNumber'];
+      this.applicationID = _data['applicationID'];
+      this.formTypeID = _data['formTypeID'];
+      this.applStatusTypeID = _data['applStatusTypeID'];
+      this.arrangementTypeID = _data['arrangementTypeID'];
+      this.arrangementTypeDesc = _data['arrangementTypeDesc'];
+      this.arrangementTypeOtherDesc = _data['arrangementTypeOtherDesc'];
+      this.competenciesAndExp = _data['competenciesAndExp'];
+      this.cfExcercisedDesc = _data['cfExcercisedDesc'];
+      this.currentJobTitle = _data['currentJobTitle'];
+      this.jobTitleChangeFlag = _data['jobTitleChangeFlag'];
+      this.proposedJobTitle = _data['proposedJobTitle'];
+      this.jobDesc = _data['jobDesc'];
+      this.pastPositionFlag = _data['pastPositionFlag'];
+      this.pastPositionDesc = _data['pastPositionDesc'];
+      this.fandPAddnlInfo = _data['fandPAddnlInfo'];
+      this.fandPChangeDesc = _data['fandPChangeDesc'];
+      this.withdrawlReasonDesc = _data['withdrawlReasonDesc'];
+      this.altArrangementFlag = _data['altArrangementFlag'];
+      this.altArrangementDesc = _data['altArrangementDesc'];
+      this.wcfAddnlInfo = _data['wcfAddnlInfo'];
+      this.cfApplicationDetail = _data['cfApplicationDetail'];
+      this.residencyNAFlag = _data['residencyNAFlag'];
+      this.aliasesNAFlag = _data['aliasesNAFlag'];
+      this.careerHistoryNAFlag = _data['careerHistoryNAFlag'];
+      this.careerHistoryNAReason = _data['careerHistoryNAReason'];
+      this.prevEmploymentFlag = _data['prevEmploymentFlag'];
+      this.appUserID = _data['appUserID'];
+      this.appCreatedBy = _data['appCreatedBy'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.userModified = _data['userModified'];
+      this.createdDate = _data['createdDate'];
+      this.objFirmContactDetails = _data['objFirmContactDetails']
+        ? FirmContactDetails.fromJS(_data['objFirmContactDetails'])
+        : <any>undefined;
+      this.objIndividualDetails = _data['objIndividualDetails']
+        ? IndividualDetails.fromJS(_data['objIndividualDetails'])
+        : <any>undefined;
+      this.formTypeDesc = _data['formTypeDesc'];
+      this.applStatusTypeDesc = _data['applStatusTypeDesc'];
+      this.reglsNAFlag = _data['reglsNAFlag'];
+      this.nationalIdNAFlag = _data['nationalIdNAFlag'];
+      this.qatarRelocationNAFlag = _data['qatarRelocationNAFlag'];
+      this.profDevFalg = _data['profDevFalg'];
+      this.profMembFlag = _data['profMembFlag'];
+      this.higherEduFlag = _data['higherEduFlag'];
+      this.appStatusDate = _data['appStatusDate']
+        ? new Date(_data['appStatusDate'].toString())
+        : <any>undefined;
+      this.appRecieveDate = _data['appRecieveDate']
+        ? new Date(_data['appRecieveDate'].toString())
+        : <any>undefined;
+      this.coreApplicationID = _data['coreApplicationID'];
+      if (Array.isArray(_data['lstControledFunction'])) {
+        this.lstControledFunction = [] as any;
+        for (let item of _data['lstControledFunction'])
+          this.lstControledFunction!.push(ControledFunction.fromJS(item));
+      }
+      this.anyFileToAttachFlag = _data['anyFileToAttachFlag'];
+      this.additionalFileFlag = _data['additionalFileFlag'];
+      this.applicationDate = _data['applicationDate'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.prevApplicationId = _data['prevApplicationId'];
+      this.additionalSupervisorFlag = _data['additionalSupervisorFlag'];
+      this.positionHeldFlag = _data['positionHeldFlag'];
+      this.supervisingFlag = _data['supervisingFlag'];
+      this.resubmissionComments = _data['resubmissionComments'];
+      this.applicantName = _data['applicantName'];
+      this.pageFlag = _data['pageFlag'];
+      this.reasonForDelayInFiling = _data['reasonForDelayInFiling'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.proposedRelocationDateDay = _data['proposedRelocationDateDay'];
+      this.proposedRelocationDateMonth = _data['proposedRelocationDateMonth'];
+      this.proposedRelocationDateYear = _data['proposedRelocationDateYear'];
+      this.updateWobjectStatus = _data['updateWobjectStatus'];
     }
+  }
 
-    static fromJS(data: any): ApplicationDetail {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationDetail();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ApplicationDetail {
+    data = typeof data === 'object' ? data : {};
+    let result = new ApplicationDetail();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["firmID"] = this.firmID;
-        data["fullName"] = this.fullName;
-        data["id"] = this.id;
-        data["userId"] = this.userId;
-        data["value"] = this.value;
-        data["qfcNmuner"] = this.qfcNmuner;
-        data["applContactDetailID"] = this.applContactDetailID;
-        data["applicationStatusTypeID"] = this.applicationStatusTypeID;
-        data["addressLine1"] = this.addressLine1;
-        data["addressLine2"] = this.addressLine2;
-        data["addressLine3"] = this.addressLine3;
-        data["addressLine4"] = this.addressLine4;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["countryID"] = this.countryID;
-        data["countryName"] = this.countryName;
-        data["postalCode"] = this.postalCode;
-        data["firmName"] = this.firmName;
-        data["functionID"] = this.functionID;
-        data["positionOfMainContact"] = this.positionOfMainContact;
-        data["contactID"] = this.contactID;
-        data["nameOfMainContact"] = this.nameOfMainContact;
-        data["telephoneNumber"] = this.telephoneNumber;
-        data["faxNumber"] = this.faxNumber;
-        data["emailAddressOfMainAccount"] = this.emailAddressOfMainAccount;
-        data["preferredMethodOfContact"] = this.preferredMethodOfContact;
-        data["primarySupervisorEmailAddress"] = this.primarySupervisorEmailAddress;
-        data["secondarySupervisorEmailAddress"] = this.secondarySupervisorEmailAddress;
-        data["additionalSupervisorEmailAddress"] = this.additionalSupervisorEmailAddress;
-        data["amlPrimarySupervisorEmailAddress"] = this.amlPrimarySupervisorEmailAddress;
-        data["amlSecondarySupervisorEmailAddress"] = this.amlSecondarySupervisorEmailAddress;
-        data["additionalAMLSupervisorEmailAddress"] = this.additionalAMLSupervisorEmailAddress;
-        data["directorEmailAddress"] = this.directorEmailAddress;
-        data["amlDirectorEmailAddress"] = this.amlDirectorEmailAddress;
-        data["rsgEmailAddress"] = this.rsgEmailAddress;
-        data["firmTypeID"] = this.firmTypeID;
-        data["qfcNumber"] = this.qfcNumber;
-        data["aiNumber"] = this.aiNumber;
-        data["applicationID"] = this.applicationID;
-        data["formTypeID"] = this.formTypeID;
-        data["applStatusTypeID"] = this.applStatusTypeID;
-        data["arrangementTypeID"] = this.arrangementTypeID;
-        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
-        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
-        data["competenciesAndExp"] = this.competenciesAndExp;
-        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
-        data["currentJobTitle"] = this.currentJobTitle;
-        data["jobTitleChangeFlag"] = this.jobTitleChangeFlag;
-        data["proposedJobTitle"] = this.proposedJobTitle;
-        data["jobDesc"] = this.jobDesc;
-        data["pastPositionFlag"] = this.pastPositionFlag;
-        data["pastPositionDesc"] = this.pastPositionDesc;
-        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
-        data["fandPChangeDesc"] = this.fandPChangeDesc;
-        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
-        data["altArrangementFlag"] = this.altArrangementFlag;
-        data["altArrangementDesc"] = this.altArrangementDesc;
-        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
-        data["cfApplicationDetail"] = this.cfApplicationDetail;
-        data["residencyNAFlag"] = this.residencyNAFlag;
-        data["aliasesNAFlag"] = this.aliasesNAFlag;
-        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
-        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
-        data["prevEmploymentFlag"] = this.prevEmploymentFlag;
-        data["appUserID"] = this.appUserID;
-        data["appCreatedBy"] = this.appCreatedBy;
-        data["modifiedDate"] = this.modifiedDate;
-        data["userModified"] = this.userModified;
-        data["createdDate"] = this.createdDate;
-        data["objFirmContactDetails"] = this.objFirmContactDetails ? this.objFirmContactDetails.toJSON() : <any>undefined;
-        data["objIndividualDetails"] = this.objIndividualDetails ? this.objIndividualDetails.toJSON() : <any>undefined;
-        data["formTypeDesc"] = this.formTypeDesc;
-        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
-        data["reglsNAFlag"] = this.reglsNAFlag;
-        data["nationalIdNAFlag"] = this.nationalIdNAFlag;
-        data["qatarRelocationNAFlag"] = this.qatarRelocationNAFlag;
-        data["profDevFalg"] = this.profDevFalg;
-        data["profMembFlag"] = this.profMembFlag;
-        data["higherEduFlag"] = this.higherEduFlag;
-        data["appStatusDate"] = this.appStatusDate ? this.appStatusDate.toISOString() : <any>undefined;
-        data["appRecieveDate"] = this.appRecieveDate ? this.appRecieveDate.toISOString() : <any>undefined;
-        data["coreApplicationID"] = this.coreApplicationID;
-        if (Array.isArray(this.lstControledFunction)) {
-            data["lstControledFunction"] = [];
-            for (let item of this.lstControledFunction)
-                data["lstControledFunction"].push(item.toJSON());
-        }
-        data["anyFileToAttachFlag"] = this.anyFileToAttachFlag;
-        data["additionalFileFlag"] = this.additionalFileFlag;
-        data["applicationDate"] = this.applicationDate;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["prevApplicationId"] = this.prevApplicationId;
-        data["additionalSupervisorFlag"] = this.additionalSupervisorFlag;
-        data["positionHeldFlag"] = this.positionHeldFlag;
-        data["supervisingFlag"] = this.supervisingFlag;
-        data["resubmissionComments"] = this.resubmissionComments;
-        data["applicantName"] = this.applicantName;
-        data["pageFlag"] = this.pageFlag;
-        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
-        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
-        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
-        data["updateWobjectStatus"] = this.updateWobjectStatus;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['firmID'] = this.firmID;
+    data['fullName'] = this.fullName;
+    data['id'] = this.id;
+    data['userId'] = this.userId;
+    data['value'] = this.value;
+    data['qfcNmuner'] = this.qfcNmuner;
+    data['applContactDetailID'] = this.applContactDetailID;
+    data['applicationStatusTypeID'] = this.applicationStatusTypeID;
+    data['addressLine1'] = this.addressLine1;
+    data['addressLine2'] = this.addressLine2;
+    data['addressLine3'] = this.addressLine3;
+    data['addressLine4'] = this.addressLine4;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['countryID'] = this.countryID;
+    data['countryName'] = this.countryName;
+    data['postalCode'] = this.postalCode;
+    data['firmName'] = this.firmName;
+    data['functionID'] = this.functionID;
+    data['positionOfMainContact'] = this.positionOfMainContact;
+    data['contactID'] = this.contactID;
+    data['nameOfMainContact'] = this.nameOfMainContact;
+    data['telephoneNumber'] = this.telephoneNumber;
+    data['faxNumber'] = this.faxNumber;
+    data['emailAddressOfMainAccount'] = this.emailAddressOfMainAccount;
+    data['preferredMethodOfContact'] = this.preferredMethodOfContact;
+    data['primarySupervisorEmailAddress'] = this.primarySupervisorEmailAddress;
+    data['secondarySupervisorEmailAddress'] =
+      this.secondarySupervisorEmailAddress;
+    data['additionalSupervisorEmailAddress'] =
+      this.additionalSupervisorEmailAddress;
+    data['amlPrimarySupervisorEmailAddress'] =
+      this.amlPrimarySupervisorEmailAddress;
+    data['amlSecondarySupervisorEmailAddress'] =
+      this.amlSecondarySupervisorEmailAddress;
+    data['additionalAMLSupervisorEmailAddress'] =
+      this.additionalAMLSupervisorEmailAddress;
+    data['directorEmailAddress'] = this.directorEmailAddress;
+    data['amlDirectorEmailAddress'] = this.amlDirectorEmailAddress;
+    data['rsgEmailAddress'] = this.rsgEmailAddress;
+    data['firmTypeID'] = this.firmTypeID;
+    data['qfcNumber'] = this.qfcNumber;
+    data['aiNumber'] = this.aiNumber;
+    data['applicationID'] = this.applicationID;
+    data['formTypeID'] = this.formTypeID;
+    data['applStatusTypeID'] = this.applStatusTypeID;
+    data['arrangementTypeID'] = this.arrangementTypeID;
+    data['arrangementTypeDesc'] = this.arrangementTypeDesc;
+    data['arrangementTypeOtherDesc'] = this.arrangementTypeOtherDesc;
+    data['competenciesAndExp'] = this.competenciesAndExp;
+    data['cfExcercisedDesc'] = this.cfExcercisedDesc;
+    data['currentJobTitle'] = this.currentJobTitle;
+    data['jobTitleChangeFlag'] = this.jobTitleChangeFlag;
+    data['proposedJobTitle'] = this.proposedJobTitle;
+    data['jobDesc'] = this.jobDesc;
+    data['pastPositionFlag'] = this.pastPositionFlag;
+    data['pastPositionDesc'] = this.pastPositionDesc;
+    data['fandPAddnlInfo'] = this.fandPAddnlInfo;
+    data['fandPChangeDesc'] = this.fandPChangeDesc;
+    data['withdrawlReasonDesc'] = this.withdrawlReasonDesc;
+    data['altArrangementFlag'] = this.altArrangementFlag;
+    data['altArrangementDesc'] = this.altArrangementDesc;
+    data['wcfAddnlInfo'] = this.wcfAddnlInfo;
+    data['cfApplicationDetail'] = this.cfApplicationDetail;
+    data['residencyNAFlag'] = this.residencyNAFlag;
+    data['aliasesNAFlag'] = this.aliasesNAFlag;
+    data['careerHistoryNAFlag'] = this.careerHistoryNAFlag;
+    data['careerHistoryNAReason'] = this.careerHistoryNAReason;
+    data['prevEmploymentFlag'] = this.prevEmploymentFlag;
+    data['appUserID'] = this.appUserID;
+    data['appCreatedBy'] = this.appCreatedBy;
+    data['modifiedDate'] = this.modifiedDate;
+    data['userModified'] = this.userModified;
+    data['createdDate'] = this.createdDate;
+    data['objFirmContactDetails'] = this.objFirmContactDetails
+      ? this.objFirmContactDetails.toJSON()
+      : <any>undefined;
+    data['objIndividualDetails'] = this.objIndividualDetails
+      ? this.objIndividualDetails.toJSON()
+      : <any>undefined;
+    data['formTypeDesc'] = this.formTypeDesc;
+    data['applStatusTypeDesc'] = this.applStatusTypeDesc;
+    data['reglsNAFlag'] = this.reglsNAFlag;
+    data['nationalIdNAFlag'] = this.nationalIdNAFlag;
+    data['qatarRelocationNAFlag'] = this.qatarRelocationNAFlag;
+    data['profDevFalg'] = this.profDevFalg;
+    data['profMembFlag'] = this.profMembFlag;
+    data['higherEduFlag'] = this.higherEduFlag;
+    data['appStatusDate'] = this.appStatusDate
+      ? this.appStatusDate.toISOString()
+      : <any>undefined;
+    data['appRecieveDate'] = this.appRecieveDate
+      ? this.appRecieveDate.toISOString()
+      : <any>undefined;
+    data['coreApplicationID'] = this.coreApplicationID;
+    if (Array.isArray(this.lstControledFunction)) {
+      data['lstControledFunction'] = [];
+      for (let item of this.lstControledFunction)
+        data['lstControledFunction'].push(item.toJSON());
     }
+    data['anyFileToAttachFlag'] = this.anyFileToAttachFlag;
+    data['additionalFileFlag'] = this.additionalFileFlag;
+    data['applicationDate'] = this.applicationDate;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['prevApplicationId'] = this.prevApplicationId;
+    data['additionalSupervisorFlag'] = this.additionalSupervisorFlag;
+    data['positionHeldFlag'] = this.positionHeldFlag;
+    data['supervisingFlag'] = this.supervisingFlag;
+    data['resubmissionComments'] = this.resubmissionComments;
+    data['applicantName'] = this.applicantName;
+    data['pageFlag'] = this.pageFlag;
+    data['reasonForDelayInFiling'] = this.reasonForDelayInFiling;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['proposedRelocationDateDay'] = this.proposedRelocationDateDay;
+    data['proposedRelocationDateMonth'] = this.proposedRelocationDateMonth;
+    data['proposedRelocationDateYear'] = this.proposedRelocationDateYear;
+    data['updateWobjectStatus'] = this.updateWobjectStatus;
+    return data;
+  }
 }
 
 export interface IApplicationDetail {
-    firmID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applicationID?: number;
-    formTypeID?: number;
-    applStatusTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appUserID?: number;
-    appCreatedBy?: number;
-    modifiedDate?: string | undefined;
-    userModified?: number;
-    createdDate?: string | undefined;
-    objFirmContactDetails?: FirmContactDetails;
-    objIndividualDetails?: IndividualDetails;
-    formTypeDesc?: string | undefined;
-    applStatusTypeDesc?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    appStatusDate?: Date;
-    appRecieveDate?: Date;
-    coreApplicationID?: number;
-    lstControledFunction?: ControledFunction[] | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    resubmissionComments?: string | undefined;
-    applicantName?: string | undefined;
-    pageFlag?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
-    updateWobjectStatus?: boolean;
+  firmID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applicationID?: number;
+  formTypeID?: number;
+  applStatusTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appUserID?: number;
+  appCreatedBy?: number;
+  modifiedDate?: string | undefined;
+  userModified?: number;
+  createdDate?: string | undefined;
+  objFirmContactDetails?: FirmContactDetails;
+  objIndividualDetails?: IndividualDetails;
+  formTypeDesc?: string | undefined;
+  applStatusTypeDesc?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  appStatusDate?: Date;
+  appRecieveDate?: Date;
+  coreApplicationID?: number;
+  lstControledFunction?: ControledFunction[] | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  resubmissionComments?: string | undefined;
+  applicantName?: string | undefined;
+  pageFlag?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
+  updateWobjectStatus?: boolean;
 }
 
 export class ApplicationDetailDto implements IApplicationDetailDto {
-    applicationID?: number;
-    applStatusTypeID?: number;
-    wObjectSOStatusID?: number | undefined;
-    updateWobjectStatus?: boolean;
-    resubmissionComments?: string | undefined;
-    appUserID?: number;
-    qfcNmuner?: string | undefined;
-    aiNumber?: string | undefined;
-    formTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appCreatedBy?: number;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    applicantName?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
+  applicationID?: number;
+  applStatusTypeID?: number;
+  wObjectSOStatusID?: number | undefined;
+  updateWobjectStatus?: boolean;
+  resubmissionComments?: string | undefined;
+  appUserID?: number;
+  qfcNmuner?: string | undefined;
+  aiNumber?: string | undefined;
+  formTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appCreatedBy?: number;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  applicantName?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
 
-    constructor(data?: IApplicationDetailDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IApplicationDetailDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.applicationID = _data["applicationID"];
-            this.applStatusTypeID = _data["applStatusTypeID"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.updateWobjectStatus = _data["updateWobjectStatus"];
-            this.resubmissionComments = _data["resubmissionComments"];
-            this.appUserID = _data["appUserID"];
-            this.qfcNmuner = _data["qfcNmuner"];
-            this.aiNumber = _data["aiNumber"];
-            this.formTypeID = _data["formTypeID"];
-            this.arrangementTypeID = _data["arrangementTypeID"];
-            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
-            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
-            this.competenciesAndExp = _data["competenciesAndExp"];
-            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
-            this.currentJobTitle = _data["currentJobTitle"];
-            this.jobTitleChangeFlag = _data["jobTitleChangeFlag"];
-            this.proposedJobTitle = _data["proposedJobTitle"];
-            this.jobDesc = _data["jobDesc"];
-            this.pastPositionFlag = _data["pastPositionFlag"];
-            this.pastPositionDesc = _data["pastPositionDesc"];
-            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
-            this.fandPChangeDesc = _data["fandPChangeDesc"];
-            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
-            this.altArrangementFlag = _data["altArrangementFlag"];
-            this.altArrangementDesc = _data["altArrangementDesc"];
-            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
-            this.cfApplicationDetail = _data["cfApplicationDetail"];
-            this.residencyNAFlag = _data["residencyNAFlag"];
-            this.aliasesNAFlag = _data["aliasesNAFlag"];
-            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
-            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
-            this.prevEmploymentFlag = _data["prevEmploymentFlag"];
-            this.appCreatedBy = _data["appCreatedBy"];
-            this.reglsNAFlag = _data["reglsNAFlag"];
-            this.nationalIdNAFlag = _data["nationalIdNAFlag"];
-            this.qatarRelocationNAFlag = _data["qatarRelocationNAFlag"];
-            this.profDevFalg = _data["profDevFalg"];
-            this.profMembFlag = _data["profMembFlag"];
-            this.higherEduFlag = _data["higherEduFlag"];
-            this.anyFileToAttachFlag = _data["anyFileToAttachFlag"];
-            this.additionalFileFlag = _data["additionalFileFlag"];
-            this.applicationDate = _data["applicationDate"];
-            this.prevApplicationId = _data["prevApplicationId"];
-            this.additionalSupervisorFlag = _data["additionalSupervisorFlag"];
-            this.positionHeldFlag = _data["positionHeldFlag"];
-            this.supervisingFlag = _data["supervisingFlag"];
-            this.applicantName = _data["applicantName"];
-            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
-            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
-            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.applicationID = _data['applicationID'];
+      this.applStatusTypeID = _data['applStatusTypeID'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.updateWobjectStatus = _data['updateWobjectStatus'];
+      this.resubmissionComments = _data['resubmissionComments'];
+      this.appUserID = _data['appUserID'];
+      this.qfcNmuner = _data['qfcNmuner'];
+      this.aiNumber = _data['aiNumber'];
+      this.formTypeID = _data['formTypeID'];
+      this.arrangementTypeID = _data['arrangementTypeID'];
+      this.arrangementTypeDesc = _data['arrangementTypeDesc'];
+      this.arrangementTypeOtherDesc = _data['arrangementTypeOtherDesc'];
+      this.competenciesAndExp = _data['competenciesAndExp'];
+      this.cfExcercisedDesc = _data['cfExcercisedDesc'];
+      this.currentJobTitle = _data['currentJobTitle'];
+      this.jobTitleChangeFlag = _data['jobTitleChangeFlag'];
+      this.proposedJobTitle = _data['proposedJobTitle'];
+      this.jobDesc = _data['jobDesc'];
+      this.pastPositionFlag = _data['pastPositionFlag'];
+      this.pastPositionDesc = _data['pastPositionDesc'];
+      this.fandPAddnlInfo = _data['fandPAddnlInfo'];
+      this.fandPChangeDesc = _data['fandPChangeDesc'];
+      this.withdrawlReasonDesc = _data['withdrawlReasonDesc'];
+      this.altArrangementFlag = _data['altArrangementFlag'];
+      this.altArrangementDesc = _data['altArrangementDesc'];
+      this.wcfAddnlInfo = _data['wcfAddnlInfo'];
+      this.cfApplicationDetail = _data['cfApplicationDetail'];
+      this.residencyNAFlag = _data['residencyNAFlag'];
+      this.aliasesNAFlag = _data['aliasesNAFlag'];
+      this.careerHistoryNAFlag = _data['careerHistoryNAFlag'];
+      this.careerHistoryNAReason = _data['careerHistoryNAReason'];
+      this.prevEmploymentFlag = _data['prevEmploymentFlag'];
+      this.appCreatedBy = _data['appCreatedBy'];
+      this.reglsNAFlag = _data['reglsNAFlag'];
+      this.nationalIdNAFlag = _data['nationalIdNAFlag'];
+      this.qatarRelocationNAFlag = _data['qatarRelocationNAFlag'];
+      this.profDevFalg = _data['profDevFalg'];
+      this.profMembFlag = _data['profMembFlag'];
+      this.higherEduFlag = _data['higherEduFlag'];
+      this.anyFileToAttachFlag = _data['anyFileToAttachFlag'];
+      this.additionalFileFlag = _data['additionalFileFlag'];
+      this.applicationDate = _data['applicationDate'];
+      this.prevApplicationId = _data['prevApplicationId'];
+      this.additionalSupervisorFlag = _data['additionalSupervisorFlag'];
+      this.positionHeldFlag = _data['positionHeldFlag'];
+      this.supervisingFlag = _data['supervisingFlag'];
+      this.applicantName = _data['applicantName'];
+      this.reasonForDelayInFiling = _data['reasonForDelayInFiling'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.proposedRelocationDateDay = _data['proposedRelocationDateDay'];
+      this.proposedRelocationDateMonth = _data['proposedRelocationDateMonth'];
+      this.proposedRelocationDateYear = _data['proposedRelocationDateYear'];
     }
+  }
 
-    static fromJS(data: any): ApplicationDetailDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationDetailDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ApplicationDetailDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new ApplicationDetailDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["applicationID"] = this.applicationID;
-        data["applStatusTypeID"] = this.applStatusTypeID;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["updateWobjectStatus"] = this.updateWobjectStatus;
-        data["resubmissionComments"] = this.resubmissionComments;
-        data["appUserID"] = this.appUserID;
-        data["qfcNmuner"] = this.qfcNmuner;
-        data["aiNumber"] = this.aiNumber;
-        data["formTypeID"] = this.formTypeID;
-        data["arrangementTypeID"] = this.arrangementTypeID;
-        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
-        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
-        data["competenciesAndExp"] = this.competenciesAndExp;
-        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
-        data["currentJobTitle"] = this.currentJobTitle;
-        data["jobTitleChangeFlag"] = this.jobTitleChangeFlag;
-        data["proposedJobTitle"] = this.proposedJobTitle;
-        data["jobDesc"] = this.jobDesc;
-        data["pastPositionFlag"] = this.pastPositionFlag;
-        data["pastPositionDesc"] = this.pastPositionDesc;
-        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
-        data["fandPChangeDesc"] = this.fandPChangeDesc;
-        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
-        data["altArrangementFlag"] = this.altArrangementFlag;
-        data["altArrangementDesc"] = this.altArrangementDesc;
-        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
-        data["cfApplicationDetail"] = this.cfApplicationDetail;
-        data["residencyNAFlag"] = this.residencyNAFlag;
-        data["aliasesNAFlag"] = this.aliasesNAFlag;
-        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
-        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
-        data["prevEmploymentFlag"] = this.prevEmploymentFlag;
-        data["appCreatedBy"] = this.appCreatedBy;
-        data["reglsNAFlag"] = this.reglsNAFlag;
-        data["nationalIdNAFlag"] = this.nationalIdNAFlag;
-        data["qatarRelocationNAFlag"] = this.qatarRelocationNAFlag;
-        data["profDevFalg"] = this.profDevFalg;
-        data["profMembFlag"] = this.profMembFlag;
-        data["higherEduFlag"] = this.higherEduFlag;
-        data["anyFileToAttachFlag"] = this.anyFileToAttachFlag;
-        data["additionalFileFlag"] = this.additionalFileFlag;
-        data["applicationDate"] = this.applicationDate;
-        data["prevApplicationId"] = this.prevApplicationId;
-        data["additionalSupervisorFlag"] = this.additionalSupervisorFlag;
-        data["positionHeldFlag"] = this.positionHeldFlag;
-        data["supervisingFlag"] = this.supervisingFlag;
-        data["applicantName"] = this.applicantName;
-        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
-        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
-        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['applicationID'] = this.applicationID;
+    data['applStatusTypeID'] = this.applStatusTypeID;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['updateWobjectStatus'] = this.updateWobjectStatus;
+    data['resubmissionComments'] = this.resubmissionComments;
+    data['appUserID'] = this.appUserID;
+    data['qfcNmuner'] = this.qfcNmuner;
+    data['aiNumber'] = this.aiNumber;
+    data['formTypeID'] = this.formTypeID;
+    data['arrangementTypeID'] = this.arrangementTypeID;
+    data['arrangementTypeDesc'] = this.arrangementTypeDesc;
+    data['arrangementTypeOtherDesc'] = this.arrangementTypeOtherDesc;
+    data['competenciesAndExp'] = this.competenciesAndExp;
+    data['cfExcercisedDesc'] = this.cfExcercisedDesc;
+    data['currentJobTitle'] = this.currentJobTitle;
+    data['jobTitleChangeFlag'] = this.jobTitleChangeFlag;
+    data['proposedJobTitle'] = this.proposedJobTitle;
+    data['jobDesc'] = this.jobDesc;
+    data['pastPositionFlag'] = this.pastPositionFlag;
+    data['pastPositionDesc'] = this.pastPositionDesc;
+    data['fandPAddnlInfo'] = this.fandPAddnlInfo;
+    data['fandPChangeDesc'] = this.fandPChangeDesc;
+    data['withdrawlReasonDesc'] = this.withdrawlReasonDesc;
+    data['altArrangementFlag'] = this.altArrangementFlag;
+    data['altArrangementDesc'] = this.altArrangementDesc;
+    data['wcfAddnlInfo'] = this.wcfAddnlInfo;
+    data['cfApplicationDetail'] = this.cfApplicationDetail;
+    data['residencyNAFlag'] = this.residencyNAFlag;
+    data['aliasesNAFlag'] = this.aliasesNAFlag;
+    data['careerHistoryNAFlag'] = this.careerHistoryNAFlag;
+    data['careerHistoryNAReason'] = this.careerHistoryNAReason;
+    data['prevEmploymentFlag'] = this.prevEmploymentFlag;
+    data['appCreatedBy'] = this.appCreatedBy;
+    data['reglsNAFlag'] = this.reglsNAFlag;
+    data['nationalIdNAFlag'] = this.nationalIdNAFlag;
+    data['qatarRelocationNAFlag'] = this.qatarRelocationNAFlag;
+    data['profDevFalg'] = this.profDevFalg;
+    data['profMembFlag'] = this.profMembFlag;
+    data['higherEduFlag'] = this.higherEduFlag;
+    data['anyFileToAttachFlag'] = this.anyFileToAttachFlag;
+    data['additionalFileFlag'] = this.additionalFileFlag;
+    data['applicationDate'] = this.applicationDate;
+    data['prevApplicationId'] = this.prevApplicationId;
+    data['additionalSupervisorFlag'] = this.additionalSupervisorFlag;
+    data['positionHeldFlag'] = this.positionHeldFlag;
+    data['supervisingFlag'] = this.supervisingFlag;
+    data['applicantName'] = this.applicantName;
+    data['reasonForDelayInFiling'] = this.reasonForDelayInFiling;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['proposedRelocationDateDay'] = this.proposedRelocationDateDay;
+    data['proposedRelocationDateMonth'] = this.proposedRelocationDateMonth;
+    data['proposedRelocationDateYear'] = this.proposedRelocationDateYear;
+    return data;
+  }
 }
 
 export interface IApplicationDetailDto {
-    applicationID?: number;
-    applStatusTypeID?: number;
-    wObjectSOStatusID?: number | undefined;
-    updateWobjectStatus?: boolean;
-    resubmissionComments?: string | undefined;
-    appUserID?: number;
-    qfcNmuner?: string | undefined;
-    aiNumber?: string | undefined;
-    formTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appCreatedBy?: number;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    applicantName?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
+  applicationID?: number;
+  applStatusTypeID?: number;
+  wObjectSOStatusID?: number | undefined;
+  updateWobjectStatus?: boolean;
+  resubmissionComments?: string | undefined;
+  appUserID?: number;
+  qfcNmuner?: string | undefined;
+  aiNumber?: string | undefined;
+  formTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appCreatedBy?: number;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  applicantName?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
 }
 
-export class ApplicationDetailDtoBaseResponse implements IApplicationDetailDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ApplicationDetailDto;
+export class ApplicationDetailDtoBaseResponse
+  implements IApplicationDetailDtoBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ApplicationDetailDto;
 
-    constructor(data?: IApplicationDetailDtoBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IApplicationDetailDtoBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? ApplicationDetailDto.fromJS(_data["response"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response']
+        ? ApplicationDetailDto.fromJS(_data['response'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): ApplicationDetailDtoBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ApplicationDetailDtoBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ApplicationDetailDtoBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new ApplicationDetailDtoBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response ? this.response.toJSON() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IApplicationDetailDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ApplicationDetailDto;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ApplicationDetailDto;
 }
 
 export class AttachmentDto implements IAttachmentDto {
-    wIndApplicationID?: number;
-    wObjAttachementID?: number | undefined;
-    wIndAttachementID?: number | undefined;
-    wObjectInstanceID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjectInstanceRevNum?: number | undefined;
-    docTypeId?: number | undefined;
-    docSubTypeId?: number | undefined;
-    docTypeDesc?: string | undefined;
-    docSubTypeDesc?: string | undefined;
-    isPrimaryDoc?: boolean | undefined;
-    fileURI?: string | undefined;
-    otherDocDesc?: string | undefined;
-    filePath?: string | undefined;
-    fileName?: string | undefined;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    statusTypeID?: number | undefined;
-    isValidAttachment?: boolean | undefined;
-    isDocSupplied?: boolean | undefined;
-    reasonforNotAttaching?: string | undefined;
-    reasonForRequest?: string | undefined;
-    userCreated?: number | undefined;
-    wObjectAttachmentStatusID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    fileUploadedByID?: number | undefined;
-    userId?: number | undefined;
-    prevAttachmentID?: number | undefined;
-    fileInvalidatedID?: number | undefined;
-    fileContenct?: string | undefined;
-    csV_DocSubTypeId?: string | undefined;
-    anyFileToattachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: Date | undefined;
-    objectSOStatusID?: number | undefined;
-    dateCreatedStr?: string | undefined;
-    userModified?: number | undefined;
-    dateModifiedStr?: string | undefined;
-    isChecked?: boolean;
-    userName?: string | undefined;
-    attachmentStatusDate?: string | undefined;
-    statusDesc?: string | undefined;
+  wIndApplicationID?: number;
+  wObjAttachementID?: number | undefined;
+  wIndAttachementID?: number | undefined;
+  wObjectInstanceID?: number | undefined;
+  wObjectID?: number | undefined;
+  wObjectInstanceRevNum?: number | undefined;
+  docTypeId?: number | undefined;
+  docSubTypeId?: number | undefined;
+  docTypeDesc?: string | undefined;
+  docSubTypeDesc?: string | undefined;
+  isPrimaryDoc?: boolean | undefined;
+  fileURI?: string | undefined;
+  otherDocDesc?: string | undefined;
+  filePath?: string | undefined;
+  fileName?: string | undefined;
+  fileUploadedByName?: string | undefined;
+  fileUploadedByEmailAdd?: string | undefined;
+  fileUploadedOnDate?: string | undefined;
+  statusTypeID?: number | undefined;
+  isValidAttachment?: boolean | undefined;
+  isDocSupplied?: boolean | undefined;
+  reasonforNotAttaching?: string | undefined;
+  reasonForRequest?: string | undefined;
+  userCreated?: number | undefined;
+  wObjectAttachmentStatusID?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  fileUploadedByID?: number | undefined;
+  userId?: number | undefined;
+  prevAttachmentID?: number | undefined;
+  fileInvalidatedID?: number | undefined;
+  fileContenct?: string | undefined;
+  csV_DocSubTypeId?: string | undefined;
+  anyFileToattachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  wTermID?: number | undefined;
+  agreedOnTerms?: boolean | undefined;
+  termsAgreedDate?: Date | undefined;
+  objectSOStatusID?: number | undefined;
+  dateCreatedStr?: string | undefined;
+  userModified?: number | undefined;
+  dateModifiedStr?: string | undefined;
+  isChecked?: boolean;
+  userName?: string | undefined;
+  attachmentStatusDate?: string | undefined;
+  statusDesc?: string | undefined;
 
-    constructor(data?: IAttachmentDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAttachmentDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wIndApplicationID = _data["wIndApplicationID"];
-            this.wObjAttachementID = _data["wObjAttachementID"];
-            this.wIndAttachementID = _data["wIndAttachementID"];
-            this.wObjectInstanceID = _data["wObjectInstanceID"];
-            this.wObjectID = _data["wObjectID"];
-            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
-            this.docTypeId = _data["docTypeId"];
-            this.docSubTypeId = _data["docSubTypeId"];
-            this.docTypeDesc = _data["docTypeDesc"];
-            this.docSubTypeDesc = _data["docSubTypeDesc"];
-            this.isPrimaryDoc = _data["isPrimaryDoc"];
-            this.fileURI = _data["fileURI"];
-            this.otherDocDesc = _data["otherDocDesc"];
-            this.filePath = _data["filePath"];
-            this.fileName = _data["fileName"];
-            this.fileUploadedByName = _data["fileUploadedByName"];
-            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
-            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
-            this.statusTypeID = _data["statusTypeID"];
-            this.isValidAttachment = _data["isValidAttachment"];
-            this.isDocSupplied = _data["isDocSupplied"];
-            this.reasonforNotAttaching = _data["reasonforNotAttaching"];
-            this.reasonForRequest = _data["reasonForRequest"];
-            this.userCreated = _data["userCreated"];
-            this.wObjectAttachmentStatusID = _data["wObjectAttachmentStatusID"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.fileUploadedByID = _data["fileUploadedByID"];
-            this.userId = _data["userId"];
-            this.prevAttachmentID = _data["prevAttachmentID"];
-            this.fileInvalidatedID = _data["fileInvalidatedID"];
-            this.fileContenct = _data["fileContenct"];
-            this.csV_DocSubTypeId = _data["csV_DocSubTypeId"];
-            this.anyFileToattachFlag = _data["anyFileToattachFlag"];
-            this.additionalFileFlag = _data["additionalFileFlag"];
-            this.wTermID = _data["wTermID"];
-            this.agreedOnTerms = _data["agreedOnTerms"];
-            this.termsAgreedDate = _data["termsAgreedDate"] ? new Date(_data["termsAgreedDate"].toString()) : <any>undefined;
-            this.objectSOStatusID = _data["objectSOStatusID"];
-            this.dateCreatedStr = _data["dateCreatedStr"];
-            this.userModified = _data["userModified"];
-            this.dateModifiedStr = _data["dateModifiedStr"];
-            this.isChecked = _data["isChecked"];
-            this.userName = _data["userName"];
-            this.attachmentStatusDate = _data["attachmentStatusDate"];
-            this.statusDesc = _data["statusDesc"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wIndApplicationID = _data['wIndApplicationID'];
+      this.wObjAttachementID = _data['wObjAttachementID'];
+      this.wIndAttachementID = _data['wIndAttachementID'];
+      this.wObjectInstanceID = _data['wObjectInstanceID'];
+      this.wObjectID = _data['wObjectID'];
+      this.wObjectInstanceRevNum = _data['wObjectInstanceRevNum'];
+      this.docTypeId = _data['docTypeId'];
+      this.docSubTypeId = _data['docSubTypeId'];
+      this.docTypeDesc = _data['docTypeDesc'];
+      this.docSubTypeDesc = _data['docSubTypeDesc'];
+      this.isPrimaryDoc = _data['isPrimaryDoc'];
+      this.fileURI = _data['fileURI'];
+      this.otherDocDesc = _data['otherDocDesc'];
+      this.filePath = _data['filePath'];
+      this.fileName = _data['fileName'];
+      this.fileUploadedByName = _data['fileUploadedByName'];
+      this.fileUploadedByEmailAdd = _data['fileUploadedByEmailAdd'];
+      this.fileUploadedOnDate = _data['fileUploadedOnDate'];
+      this.statusTypeID = _data['statusTypeID'];
+      this.isValidAttachment = _data['isValidAttachment'];
+      this.isDocSupplied = _data['isDocSupplied'];
+      this.reasonforNotAttaching = _data['reasonforNotAttaching'];
+      this.reasonForRequest = _data['reasonForRequest'];
+      this.userCreated = _data['userCreated'];
+      this.wObjectAttachmentStatusID = _data['wObjectAttachmentStatusID'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.fileUploadedByID = _data['fileUploadedByID'];
+      this.userId = _data['userId'];
+      this.prevAttachmentID = _data['prevAttachmentID'];
+      this.fileInvalidatedID = _data['fileInvalidatedID'];
+      this.fileContenct = _data['fileContenct'];
+      this.csV_DocSubTypeId = _data['csV_DocSubTypeId'];
+      this.anyFileToattachFlag = _data['anyFileToattachFlag'];
+      this.additionalFileFlag = _data['additionalFileFlag'];
+      this.wTermID = _data['wTermID'];
+      this.agreedOnTerms = _data['agreedOnTerms'];
+      this.termsAgreedDate = _data['termsAgreedDate']
+        ? new Date(_data['termsAgreedDate'].toString())
+        : <any>undefined;
+      this.objectSOStatusID = _data['objectSOStatusID'];
+      this.dateCreatedStr = _data['dateCreatedStr'];
+      this.userModified = _data['userModified'];
+      this.dateModifiedStr = _data['dateModifiedStr'];
+      this.isChecked = _data['isChecked'];
+      this.userName = _data['userName'];
+      this.attachmentStatusDate = _data['attachmentStatusDate'];
+      this.statusDesc = _data['statusDesc'];
     }
+  }
 
-    static fromJS(data: any): AttachmentDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new AttachmentDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AttachmentDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new AttachmentDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wIndApplicationID"] = this.wIndApplicationID;
-        data["wObjAttachementID"] = this.wObjAttachementID;
-        data["wIndAttachementID"] = this.wIndAttachementID;
-        data["wObjectInstanceID"] = this.wObjectInstanceID;
-        data["wObjectID"] = this.wObjectID;
-        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
-        data["docTypeId"] = this.docTypeId;
-        data["docSubTypeId"] = this.docSubTypeId;
-        data["docTypeDesc"] = this.docTypeDesc;
-        data["docSubTypeDesc"] = this.docSubTypeDesc;
-        data["isPrimaryDoc"] = this.isPrimaryDoc;
-        data["fileURI"] = this.fileURI;
-        data["otherDocDesc"] = this.otherDocDesc;
-        data["filePath"] = this.filePath;
-        data["fileName"] = this.fileName;
-        data["fileUploadedByName"] = this.fileUploadedByName;
-        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
-        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
-        data["statusTypeID"] = this.statusTypeID;
-        data["isValidAttachment"] = this.isValidAttachment;
-        data["isDocSupplied"] = this.isDocSupplied;
-        data["reasonforNotAttaching"] = this.reasonforNotAttaching;
-        data["reasonForRequest"] = this.reasonForRequest;
-        data["userCreated"] = this.userCreated;
-        data["wObjectAttachmentStatusID"] = this.wObjectAttachmentStatusID;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["fileUploadedByID"] = this.fileUploadedByID;
-        data["userId"] = this.userId;
-        data["prevAttachmentID"] = this.prevAttachmentID;
-        data["fileInvalidatedID"] = this.fileInvalidatedID;
-        data["fileContenct"] = this.fileContenct;
-        data["csV_DocSubTypeId"] = this.csV_DocSubTypeId;
-        data["anyFileToattachFlag"] = this.anyFileToattachFlag;
-        data["additionalFileFlag"] = this.additionalFileFlag;
-        data["wTermID"] = this.wTermID;
-        data["agreedOnTerms"] = this.agreedOnTerms;
-        data["termsAgreedDate"] = this.termsAgreedDate ? this.termsAgreedDate.toISOString() : <any>undefined;
-        data["objectSOStatusID"] = this.objectSOStatusID;
-        data["dateCreatedStr"] = this.dateCreatedStr;
-        data["userModified"] = this.userModified;
-        data["dateModifiedStr"] = this.dateModifiedStr;
-        data["isChecked"] = this.isChecked;
-        data["userName"] = this.userName;
-        data["attachmentStatusDate"] = this.attachmentStatusDate;
-        data["statusDesc"] = this.statusDesc;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wIndApplicationID'] = this.wIndApplicationID;
+    data['wObjAttachementID'] = this.wObjAttachementID;
+    data['wIndAttachementID'] = this.wIndAttachementID;
+    data['wObjectInstanceID'] = this.wObjectInstanceID;
+    data['wObjectID'] = this.wObjectID;
+    data['wObjectInstanceRevNum'] = this.wObjectInstanceRevNum;
+    data['docTypeId'] = this.docTypeId;
+    data['docSubTypeId'] = this.docSubTypeId;
+    data['docTypeDesc'] = this.docTypeDesc;
+    data['docSubTypeDesc'] = this.docSubTypeDesc;
+    data['isPrimaryDoc'] = this.isPrimaryDoc;
+    data['fileURI'] = this.fileURI;
+    data['otherDocDesc'] = this.otherDocDesc;
+    data['filePath'] = this.filePath;
+    data['fileName'] = this.fileName;
+    data['fileUploadedByName'] = this.fileUploadedByName;
+    data['fileUploadedByEmailAdd'] = this.fileUploadedByEmailAdd;
+    data['fileUploadedOnDate'] = this.fileUploadedOnDate;
+    data['statusTypeID'] = this.statusTypeID;
+    data['isValidAttachment'] = this.isValidAttachment;
+    data['isDocSupplied'] = this.isDocSupplied;
+    data['reasonforNotAttaching'] = this.reasonforNotAttaching;
+    data['reasonForRequest'] = this.reasonForRequest;
+    data['userCreated'] = this.userCreated;
+    data['wObjectAttachmentStatusID'] = this.wObjectAttachmentStatusID;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['fileUploadedByID'] = this.fileUploadedByID;
+    data['userId'] = this.userId;
+    data['prevAttachmentID'] = this.prevAttachmentID;
+    data['fileInvalidatedID'] = this.fileInvalidatedID;
+    data['fileContenct'] = this.fileContenct;
+    data['csV_DocSubTypeId'] = this.csV_DocSubTypeId;
+    data['anyFileToattachFlag'] = this.anyFileToattachFlag;
+    data['additionalFileFlag'] = this.additionalFileFlag;
+    data['wTermID'] = this.wTermID;
+    data['agreedOnTerms'] = this.agreedOnTerms;
+    data['termsAgreedDate'] = this.termsAgreedDate
+      ? this.termsAgreedDate.toISOString()
+      : <any>undefined;
+    data['objectSOStatusID'] = this.objectSOStatusID;
+    data['dateCreatedStr'] = this.dateCreatedStr;
+    data['userModified'] = this.userModified;
+    data['dateModifiedStr'] = this.dateModifiedStr;
+    data['isChecked'] = this.isChecked;
+    data['userName'] = this.userName;
+    data['attachmentStatusDate'] = this.attachmentStatusDate;
+    data['statusDesc'] = this.statusDesc;
+    return data;
+  }
 }
 
 export interface IAttachmentDto {
-    wIndApplicationID?: number;
-    wObjAttachementID?: number | undefined;
-    wIndAttachementID?: number | undefined;
-    wObjectInstanceID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjectInstanceRevNum?: number | undefined;
-    docTypeId?: number | undefined;
-    docSubTypeId?: number | undefined;
-    docTypeDesc?: string | undefined;
-    docSubTypeDesc?: string | undefined;
-    isPrimaryDoc?: boolean | undefined;
-    fileURI?: string | undefined;
-    otherDocDesc?: string | undefined;
-    filePath?: string | undefined;
-    fileName?: string | undefined;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    statusTypeID?: number | undefined;
-    isValidAttachment?: boolean | undefined;
-    isDocSupplied?: boolean | undefined;
-    reasonforNotAttaching?: string | undefined;
-    reasonForRequest?: string | undefined;
-    userCreated?: number | undefined;
-    wObjectAttachmentStatusID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    fileUploadedByID?: number | undefined;
-    userId?: number | undefined;
-    prevAttachmentID?: number | undefined;
-    fileInvalidatedID?: number | undefined;
-    fileContenct?: string | undefined;
-    csV_DocSubTypeId?: string | undefined;
-    anyFileToattachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: Date | undefined;
-    objectSOStatusID?: number | undefined;
-    dateCreatedStr?: string | undefined;
-    userModified?: number | undefined;
-    dateModifiedStr?: string | undefined;
-    isChecked?: boolean;
-    userName?: string | undefined;
-    attachmentStatusDate?: string | undefined;
-    statusDesc?: string | undefined;
+  wIndApplicationID?: number;
+  wObjAttachementID?: number | undefined;
+  wIndAttachementID?: number | undefined;
+  wObjectInstanceID?: number | undefined;
+  wObjectID?: number | undefined;
+  wObjectInstanceRevNum?: number | undefined;
+  docTypeId?: number | undefined;
+  docSubTypeId?: number | undefined;
+  docTypeDesc?: string | undefined;
+  docSubTypeDesc?: string | undefined;
+  isPrimaryDoc?: boolean | undefined;
+  fileURI?: string | undefined;
+  otherDocDesc?: string | undefined;
+  filePath?: string | undefined;
+  fileName?: string | undefined;
+  fileUploadedByName?: string | undefined;
+  fileUploadedByEmailAdd?: string | undefined;
+  fileUploadedOnDate?: string | undefined;
+  statusTypeID?: number | undefined;
+  isValidAttachment?: boolean | undefined;
+  isDocSupplied?: boolean | undefined;
+  reasonforNotAttaching?: string | undefined;
+  reasonForRequest?: string | undefined;
+  userCreated?: number | undefined;
+  wObjectAttachmentStatusID?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  fileUploadedByID?: number | undefined;
+  userId?: number | undefined;
+  prevAttachmentID?: number | undefined;
+  fileInvalidatedID?: number | undefined;
+  fileContenct?: string | undefined;
+  csV_DocSubTypeId?: string | undefined;
+  anyFileToattachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  wTermID?: number | undefined;
+  agreedOnTerms?: boolean | undefined;
+  termsAgreedDate?: Date | undefined;
+  objectSOStatusID?: number | undefined;
+  dateCreatedStr?: string | undefined;
+  userModified?: number | undefined;
+  dateModifiedStr?: string | undefined;
+  isChecked?: boolean;
+  userName?: string | undefined;
+  attachmentStatusDate?: string | undefined;
+  statusDesc?: string | undefined;
 }
 
 export class AttachmentDtoBaseResponse implements IAttachmentDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AttachmentDto;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AttachmentDto;
 
-    constructor(data?: IAttachmentDtoBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAttachmentDtoBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? AttachmentDto.fromJS(_data["response"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response']
+        ? AttachmentDto.fromJS(_data['response'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): AttachmentDtoBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AttachmentDtoBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AttachmentDtoBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new AttachmentDtoBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response ? this.response.toJSON() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IAttachmentDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AttachmentDto;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AttachmentDto;
 }
 
-export class AttachmentDtoListBaseResponse implements IAttachmentDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AttachmentDto[] | undefined;
+export class AttachmentDtoListBaseResponse
+  implements IAttachmentDtoListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AttachmentDto[] | undefined;
 
-    constructor(data?: IAttachmentDtoListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAttachmentDtoListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(AttachmentDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(AttachmentDto.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): AttachmentDtoListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AttachmentDtoListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AttachmentDtoListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new AttachmentDtoListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IAttachmentDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AttachmentDto[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AttachmentDto[] | undefined;
 }
 
 export class AuthenticateRequest implements IAuthenticateRequest {
-    userLoginName?: string | undefined;
-    userPassword?: string | undefined;
-    userIPAddress?: string | undefined;
-    userSessionID?: string | undefined;
-    termID?: number;
-    qfcNumber?: string | undefined;
+  userLoginName?: string | undefined;
+  userPassword?: string | undefined;
+  userIPAddress?: string | undefined;
+  userSessionID?: string | undefined;
+  termID?: number;
+  qfcNumber?: string | undefined;
 
-    constructor(data?: IAuthenticateRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAuthenticateRequest) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.userLoginName = _data["userLoginName"];
-            this.userPassword = _data["userPassword"];
-            this.userIPAddress = _data["userIPAddress"];
-            this.userSessionID = _data["userSessionID"];
-            this.termID = _data["termID"];
-            this.qfcNumber = _data["qfcNumber"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.userLoginName = _data['userLoginName'];
+      this.userPassword = _data['userPassword'];
+      this.userIPAddress = _data['userIPAddress'];
+      this.userSessionID = _data['userSessionID'];
+      this.termID = _data['termID'];
+      this.qfcNumber = _data['qfcNumber'];
     }
+  }
 
-    static fromJS(data: any): AuthenticateRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuthenticateRequest();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AuthenticateRequest {
+    data = typeof data === 'object' ? data : {};
+    let result = new AuthenticateRequest();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userLoginName"] = this.userLoginName;
-        data["userPassword"] = this.userPassword;
-        data["userIPAddress"] = this.userIPAddress;
-        data["userSessionID"] = this.userSessionID;
-        data["termID"] = this.termID;
-        data["qfcNumber"] = this.qfcNumber;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['userLoginName'] = this.userLoginName;
+    data['userPassword'] = this.userPassword;
+    data['userIPAddress'] = this.userIPAddress;
+    data['userSessionID'] = this.userSessionID;
+    data['termID'] = this.termID;
+    data['qfcNumber'] = this.qfcNumber;
+    return data;
+  }
 }
 
 export interface IAuthenticateRequest {
-    userLoginName?: string | undefined;
-    userPassword?: string | undefined;
-    userIPAddress?: string | undefined;
-    userSessionID?: string | undefined;
-    termID?: number;
-    qfcNumber?: string | undefined;
+  userLoginName?: string | undefined;
+  userPassword?: string | undefined;
+  userIPAddress?: string | undefined;
+  userSessionID?: string | undefined;
+  termID?: number;
+  qfcNumber?: string | undefined;
 }
 
 export class AuthenticateResponse implements IAuthenticateResponse {
-    userInfo?: WAccessRequests;
-    token?: string | undefined;
-    userRoles?: AppRoles[] | undefined;
-    userRolesString?: string | undefined;
-    refreshToken?: string | undefined;
-    bIsRegistered?: boolean;
-    bIsAuthenticated?: boolean;
-    bIsPasswordReset?: boolean;
-    wAccessReuestID?: number;
-    resetPasswordFlag?: number;
-    expiration?: Date;
-    message?: string | undefined;
+  userInfo?: WAccessRequests;
+  token?: string | undefined;
+  userRoles?: AppRoles[] | undefined;
+  userRolesString?: string | undefined;
+  refreshToken?: string | undefined;
+  bIsRegistered?: boolean;
+  bIsAuthenticated?: boolean;
+  bIsPasswordReset?: boolean;
+  wAccessReuestID?: number;
+  resetPasswordFlag?: number;
+  expiration?: Date;
+  message?: string | undefined;
 
-    constructor(data?: IAuthenticateResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAuthenticateResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.userInfo = _data["userInfo"] ? WAccessRequests.fromJS(_data["userInfo"]) : <any>undefined;
-            this.token = _data["token"];
-            if (Array.isArray(_data["userRoles"])) {
-                this.userRoles = [] as any;
-                for (let item of _data["userRoles"])
-                    this.userRoles!.push(AppRoles.fromJS(item));
-            }
-            this.userRolesString = _data["userRolesString"];
-            this.refreshToken = _data["refreshToken"];
-            this.bIsRegistered = _data["bIsRegistered"];
-            this.bIsAuthenticated = _data["bIsAuthenticated"];
-            this.bIsPasswordReset = _data["bIsPasswordReset"];
-            this.wAccessReuestID = _data["wAccessReuestID"];
-            this.resetPasswordFlag = _data["resetPasswordFlag"];
-            this.expiration = _data["expiration"] ? new Date(_data["expiration"].toString()) : <any>undefined;
-            this.message = _data["message"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.userInfo = _data['userInfo']
+        ? WAccessRequests.fromJS(_data['userInfo'])
+        : <any>undefined;
+      this.token = _data['token'];
+      if (Array.isArray(_data['userRoles'])) {
+        this.userRoles = [] as any;
+        for (let item of _data['userRoles'])
+          this.userRoles!.push(AppRoles.fromJS(item));
+      }
+      this.userRolesString = _data['userRolesString'];
+      this.refreshToken = _data['refreshToken'];
+      this.bIsRegistered = _data['bIsRegistered'];
+      this.bIsAuthenticated = _data['bIsAuthenticated'];
+      this.bIsPasswordReset = _data['bIsPasswordReset'];
+      this.wAccessReuestID = _data['wAccessReuestID'];
+      this.resetPasswordFlag = _data['resetPasswordFlag'];
+      this.expiration = _data['expiration']
+        ? new Date(_data['expiration'].toString())
+        : <any>undefined;
+      this.message = _data['message'];
     }
+  }
 
-    static fromJS(data: any): AuthenticateResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuthenticateResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AuthenticateResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new AuthenticateResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userInfo"] = this.userInfo ? this.userInfo.toJSON() : <any>undefined;
-        data["token"] = this.token;
-        if (Array.isArray(this.userRoles)) {
-            data["userRoles"] = [];
-            for (let item of this.userRoles)
-                data["userRoles"].push(item.toJSON());
-        }
-        data["userRolesString"] = this.userRolesString;
-        data["refreshToken"] = this.refreshToken;
-        data["bIsRegistered"] = this.bIsRegistered;
-        data["bIsAuthenticated"] = this.bIsAuthenticated;
-        data["bIsPasswordReset"] = this.bIsPasswordReset;
-        data["wAccessReuestID"] = this.wAccessReuestID;
-        data["resetPasswordFlag"] = this.resetPasswordFlag;
-        data["expiration"] = this.expiration ? this.expiration.toISOString() : <any>undefined;
-        data["message"] = this.message;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['userInfo'] = this.userInfo ? this.userInfo.toJSON() : <any>undefined;
+    data['token'] = this.token;
+    if (Array.isArray(this.userRoles)) {
+      data['userRoles'] = [];
+      for (let item of this.userRoles) data['userRoles'].push(item.toJSON());
     }
+    data['userRolesString'] = this.userRolesString;
+    data['refreshToken'] = this.refreshToken;
+    data['bIsRegistered'] = this.bIsRegistered;
+    data['bIsAuthenticated'] = this.bIsAuthenticated;
+    data['bIsPasswordReset'] = this.bIsPasswordReset;
+    data['wAccessReuestID'] = this.wAccessReuestID;
+    data['resetPasswordFlag'] = this.resetPasswordFlag;
+    data['expiration'] = this.expiration
+      ? this.expiration.toISOString()
+      : <any>undefined;
+    data['message'] = this.message;
+    return data;
+  }
 }
 
 export interface IAuthenticateResponse {
-    userInfo?: WAccessRequests;
-    token?: string | undefined;
-    userRoles?: AppRoles[] | undefined;
-    userRolesString?: string | undefined;
-    refreshToken?: string | undefined;
-    bIsRegistered?: boolean;
-    bIsAuthenticated?: boolean;
-    bIsPasswordReset?: boolean;
-    wAccessReuestID?: number;
-    resetPasswordFlag?: number;
-    expiration?: Date;
-    message?: string | undefined;
+  userInfo?: WAccessRequests;
+  token?: string | undefined;
+  userRoles?: AppRoles[] | undefined;
+  userRolesString?: string | undefined;
+  refreshToken?: string | undefined;
+  bIsRegistered?: boolean;
+  bIsAuthenticated?: boolean;
+  bIsPasswordReset?: boolean;
+  wAccessReuestID?: number;
+  resetPasswordFlag?: number;
+  expiration?: Date;
+  message?: string | undefined;
 }
 
-export class AuthenticateResponseBaseResponse implements IAuthenticateResponseBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AuthenticateResponse;
+export class AuthenticateResponseBaseResponse
+  implements IAuthenticateResponseBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AuthenticateResponse;
 
-    constructor(data?: IAuthenticateResponseBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IAuthenticateResponseBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? AuthenticateResponse.fromJS(_data["response"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response']
+        ? AuthenticateResponse.fromJS(_data['response'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): AuthenticateResponseBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AuthenticateResponseBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): AuthenticateResponseBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new AuthenticateResponseBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response ? this.response.toJSON() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IAuthenticateResponseBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: AuthenticateResponse;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: AuthenticateResponse;
 }
 
 export class BooleanBaseResponse implements IBooleanBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: boolean;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: boolean;
 
-    constructor(data?: IBooleanBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IBooleanBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response'];
     }
+  }
 
-    static fromJS(data: any): BooleanBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new BooleanBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): BooleanBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new BooleanBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response;
+    return data;
+  }
 }
 
 export interface IBooleanBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: boolean;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: boolean;
 }
 
 export class ByteArrayBaseResponse implements IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: string | undefined;
 
-    constructor(data?: IByteArrayBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IByteArrayBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response'];
     }
+  }
 
-    static fromJS(data: any): ByteArrayBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ByteArrayBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ByteArrayBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new ByteArrayBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response;
+    return data;
+  }
 }
 
 export interface IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
-}
-
-export class ConfigMessage implements IConfigMessage {
-    wConfigMessageID?: number;
-    configKey?: string | undefined;
-    configDesc?: string | undefined;
-    configValue?: string | undefined;
-    isEditable?: boolean;
-
-    constructor(data?: IConfigMessage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.wConfigMessageID = _data["wConfigMessageID"];
-            this.configKey = _data["configKey"];
-            this.configDesc = _data["configDesc"];
-            this.configValue = _data["configValue"];
-            this.isEditable = _data["isEditable"];
-        }
-    }
-
-    static fromJS(data: any): ConfigMessage {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConfigMessage();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wConfigMessageID"] = this.wConfigMessageID;
-        data["configKey"] = this.configKey;
-        data["configDesc"] = this.configDesc;
-        data["configValue"] = this.configValue;
-        data["isEditable"] = this.isEditable;
-        return data;
-    }
-}
-
-export interface IConfigMessage {
-    wConfigMessageID?: number;
-    configKey?: string | undefined;
-    configDesc?: string | undefined;
-    configValue?: string | undefined;
-    isEditable?: boolean;
-}
-
-export class ConfigMessageListBaseResponse implements IConfigMessageListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ConfigMessage[] | undefined;
-
-    constructor(data?: IConfigMessageListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ConfigMessage.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ConfigMessageListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConfigMessageListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IConfigMessageListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ConfigMessage[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: string | undefined;
 }
 
 export class ContactUs implements IContactUs {
-    wUserFeedbackID?: number | undefined;
-    wUserID?: number | undefined;
-    wFeedbackTypeID?: number | undefined;
-    wFeedbackTypeText?: string | undefined;
-    feedbackStatus?: number | undefined;
-    userCreated?: number | undefined;
-    userModified?: number | undefined;
-    userName?: string | undefined;
-    firmQFCNumber?: string | undefined;
-    userEmailAddress?: string | undefined;
-    feedbackDesc?: string | undefined;
+  wUserFeedbackID?: number | undefined;
+  wUserID?: number | undefined;
+  wFeedbackTypeID?: number | undefined;
+  wFeedbackTypeText?: string | undefined;
+  feedbackStatus?: number | undefined;
+  userCreated?: number | undefined;
+  userModified?: number | undefined;
+  userName?: string | undefined;
+  firmQFCNumber?: string | undefined;
+  userEmailAddress?: string | undefined;
+  feedbackDesc?: string | undefined;
 
-    constructor(data?: IContactUs) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IContactUs) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wUserFeedbackID = _data["wUserFeedbackID"];
-            this.wUserID = _data["wUserID"];
-            this.wFeedbackTypeID = _data["wFeedbackTypeID"];
-            this.wFeedbackTypeText = _data["wFeedbackTypeText"];
-            this.feedbackStatus = _data["feedbackStatus"];
-            this.userCreated = _data["userCreated"];
-            this.userModified = _data["userModified"];
-            this.userName = _data["userName"];
-            this.firmQFCNumber = _data["firmQFCNumber"];
-            this.userEmailAddress = _data["userEmailAddress"];
-            this.feedbackDesc = _data["feedbackDesc"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wUserFeedbackID = _data['wUserFeedbackID'];
+      this.wUserID = _data['wUserID'];
+      this.wFeedbackTypeID = _data['wFeedbackTypeID'];
+      this.wFeedbackTypeText = _data['wFeedbackTypeText'];
+      this.feedbackStatus = _data['feedbackStatus'];
+      this.userCreated = _data['userCreated'];
+      this.userModified = _data['userModified'];
+      this.userName = _data['userName'];
+      this.firmQFCNumber = _data['firmQFCNumber'];
+      this.userEmailAddress = _data['userEmailAddress'];
+      this.feedbackDesc = _data['feedbackDesc'];
     }
+  }
 
-    static fromJS(data: any): ContactUs {
-        data = typeof data === 'object' ? data : {};
-        let result = new ContactUs();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ContactUs {
+    data = typeof data === 'object' ? data : {};
+    let result = new ContactUs();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wUserFeedbackID"] = this.wUserFeedbackID;
-        data["wUserID"] = this.wUserID;
-        data["wFeedbackTypeID"] = this.wFeedbackTypeID;
-        data["wFeedbackTypeText"] = this.wFeedbackTypeText;
-        data["feedbackStatus"] = this.feedbackStatus;
-        data["userCreated"] = this.userCreated;
-        data["userModified"] = this.userModified;
-        data["userName"] = this.userName;
-        data["firmQFCNumber"] = this.firmQFCNumber;
-        data["userEmailAddress"] = this.userEmailAddress;
-        data["feedbackDesc"] = this.feedbackDesc;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wUserFeedbackID'] = this.wUserFeedbackID;
+    data['wUserID'] = this.wUserID;
+    data['wFeedbackTypeID'] = this.wFeedbackTypeID;
+    data['wFeedbackTypeText'] = this.wFeedbackTypeText;
+    data['feedbackStatus'] = this.feedbackStatus;
+    data['userCreated'] = this.userCreated;
+    data['userModified'] = this.userModified;
+    data['userName'] = this.userName;
+    data['firmQFCNumber'] = this.firmQFCNumber;
+    data['userEmailAddress'] = this.userEmailAddress;
+    data['feedbackDesc'] = this.feedbackDesc;
+    return data;
+  }
 }
 
 export interface IContactUs {
-    wUserFeedbackID?: number | undefined;
-    wUserID?: number | undefined;
-    wFeedbackTypeID?: number | undefined;
-    wFeedbackTypeText?: string | undefined;
-    feedbackStatus?: number | undefined;
-    userCreated?: number | undefined;
-    userModified?: number | undefined;
-    userName?: string | undefined;
-    firmQFCNumber?: string | undefined;
-    userEmailAddress?: string | undefined;
-    feedbackDesc?: string | undefined;
+  wUserFeedbackID?: number | undefined;
+  wUserID?: number | undefined;
+  wFeedbackTypeID?: number | undefined;
+  wFeedbackTypeText?: string | undefined;
+  feedbackStatus?: number | undefined;
+  userCreated?: number | undefined;
+  userModified?: number | undefined;
+  userName?: string | undefined;
+  firmQFCNumber?: string | undefined;
+  userEmailAddress?: string | undefined;
+  feedbackDesc?: string | undefined;
 }
 
 export class ControledFunction implements IControledFunction {
-    firmID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applicationID?: number;
-    formTypeID?: number;
-    applStatusTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appUserID?: number;
-    appCreatedBy?: number;
-    modifiedDate?: string | undefined;
-    userModified?: number;
-    createdDate?: string | undefined;
-    objFirmContactDetails?: FirmContactDetails;
-    objIndividualDetails?: IndividualDetails;
-    formTypeDesc?: string | undefined;
-    applStatusTypeDesc?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    appStatusDate?: Date;
-    appRecieveDate?: Date;
-    coreApplicationID?: number;
-    lstControledFunction?: ControledFunction[] | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    resubmissionComments?: string | undefined;
-    applicantName?: string | undefined;
-    pageFlag?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
-    updateWobjectStatus?: boolean;
-    controlFunctionID?: number | undefined;
-    controlFunctionGUID?: string | undefined;
-    functionTypeID?: number;
-    functionTypeDesc?: string | undefined;
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-    actionTypeID?: number | undefined;
-    uponApprovalFlag?: boolean | undefined;
-    functionStatusID?: number;
-    functionStatusDesc?: string | undefined;
-    functionStatusDate?: string | undefined;
-    addActionTypeDesc?: string | undefined;
-    withdrawActionTypeDesc?: string | undefined;
-    actionTypeDesc?: string | undefined;
-    conditionalApprovalFlag?: boolean | undefined;
-    activityTypeIDs?: string | undefined;
-    productTypeIDs?: string | undefined;
-    activityProductTypeDesc?: string | undefined;
-    approvalProposedCommenceDate?: string | undefined;
-    withdrawalProposedCommenceDate?: string | undefined;
-    approvalCommenceUponApplApprovalFlag?: boolean;
-    withdrawalCommenceUponApplApprovalFlag?: boolean;
+  firmID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applicationID?: number;
+  formTypeID?: number;
+  applStatusTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appUserID?: number;
+  appCreatedBy?: number;
+  modifiedDate?: string | undefined;
+  userModified?: number;
+  createdDate?: string | undefined;
+  objFirmContactDetails?: FirmContactDetails;
+  objIndividualDetails?: IndividualDetails;
+  formTypeDesc?: string | undefined;
+  applStatusTypeDesc?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  appStatusDate?: Date;
+  appRecieveDate?: Date;
+  coreApplicationID?: number;
+  lstControledFunction?: ControledFunction[] | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  resubmissionComments?: string | undefined;
+  applicantName?: string | undefined;
+  pageFlag?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
+  updateWobjectStatus?: boolean;
+  controlFunctionID?: number | undefined;
+  controlFunctionGUID?: string | undefined;
+  functionTypeID?: number;
+  functionTypeDesc?: string | undefined;
+  day?: number | undefined;
+  month?: number | undefined;
+  year?: number | undefined;
+  actionTypeID?: number | undefined;
+  uponApprovalFlag?: boolean | undefined;
+  functionStatusID?: number;
+  functionStatusDesc?: string | undefined;
+  functionStatusDate?: string | undefined;
+  addActionTypeDesc?: string | undefined;
+  withdrawActionTypeDesc?: string | undefined;
+  actionTypeDesc?: string | undefined;
+  conditionalApprovalFlag?: boolean | undefined;
+  activityTypeIDs?: string | undefined;
+  productTypeIDs?: string | undefined;
+  activityProductTypeDesc?: string | undefined;
+  approvalProposedCommenceDate?: string | undefined;
+  withdrawalProposedCommenceDate?: string | undefined;
+  approvalCommenceUponApplApprovalFlag?: boolean;
+  withdrawalCommenceUponApplApprovalFlag?: boolean;
 
-    constructor(data?: IControledFunction) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IControledFunction) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.firmID = _data["firmID"];
-            this.fullName = _data["fullName"];
-            this.id = _data["id"];
-            this.userId = _data["userId"];
-            this.value = _data["value"];
-            this.qfcNmuner = _data["qfcNmuner"];
-            this.applContactDetailID = _data["applContactDetailID"];
-            this.applicationStatusTypeID = _data["applicationStatusTypeID"];
-            this.addressLine1 = _data["addressLine1"];
-            this.addressLine2 = _data["addressLine2"];
-            this.addressLine3 = _data["addressLine3"];
-            this.addressLine4 = _data["addressLine4"];
-            this.city = _data["city"];
-            this.state = _data["state"];
-            this.countryID = _data["countryID"];
-            this.countryName = _data["countryName"];
-            this.postalCode = _data["postalCode"];
-            this.firmName = _data["firmName"];
-            this.functionID = _data["functionID"];
-            this.positionOfMainContact = _data["positionOfMainContact"];
-            this.contactID = _data["contactID"];
-            this.nameOfMainContact = _data["nameOfMainContact"];
-            this.telephoneNumber = _data["telephoneNumber"];
-            this.faxNumber = _data["faxNumber"];
-            this.emailAddressOfMainAccount = _data["emailAddressOfMainAccount"];
-            this.preferredMethodOfContact = _data["preferredMethodOfContact"];
-            this.primarySupervisorEmailAddress = _data["primarySupervisorEmailAddress"];
-            this.secondarySupervisorEmailAddress = _data["secondarySupervisorEmailAddress"];
-            this.additionalSupervisorEmailAddress = _data["additionalSupervisorEmailAddress"];
-            this.amlPrimarySupervisorEmailAddress = _data["amlPrimarySupervisorEmailAddress"];
-            this.amlSecondarySupervisorEmailAddress = _data["amlSecondarySupervisorEmailAddress"];
-            this.additionalAMLSupervisorEmailAddress = _data["additionalAMLSupervisorEmailAddress"];
-            this.directorEmailAddress = _data["directorEmailAddress"];
-            this.amlDirectorEmailAddress = _data["amlDirectorEmailAddress"];
-            this.rsgEmailAddress = _data["rsgEmailAddress"];
-            this.firmTypeID = _data["firmTypeID"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.aiNumber = _data["aiNumber"];
-            this.applicationID = _data["applicationID"];
-            this.formTypeID = _data["formTypeID"];
-            this.applStatusTypeID = _data["applStatusTypeID"];
-            this.arrangementTypeID = _data["arrangementTypeID"];
-            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
-            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
-            this.competenciesAndExp = _data["competenciesAndExp"];
-            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
-            this.currentJobTitle = _data["currentJobTitle"];
-            this.jobTitleChangeFlag = _data["jobTitleChangeFlag"];
-            this.proposedJobTitle = _data["proposedJobTitle"];
-            this.jobDesc = _data["jobDesc"];
-            this.pastPositionFlag = _data["pastPositionFlag"];
-            this.pastPositionDesc = _data["pastPositionDesc"];
-            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
-            this.fandPChangeDesc = _data["fandPChangeDesc"];
-            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
-            this.altArrangementFlag = _data["altArrangementFlag"];
-            this.altArrangementDesc = _data["altArrangementDesc"];
-            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
-            this.cfApplicationDetail = _data["cfApplicationDetail"];
-            this.residencyNAFlag = _data["residencyNAFlag"];
-            this.aliasesNAFlag = _data["aliasesNAFlag"];
-            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
-            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
-            this.prevEmploymentFlag = _data["prevEmploymentFlag"];
-            this.appUserID = _data["appUserID"];
-            this.appCreatedBy = _data["appCreatedBy"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.userModified = _data["userModified"];
-            this.createdDate = _data["createdDate"];
-            this.objFirmContactDetails = _data["objFirmContactDetails"] ? FirmContactDetails.fromJS(_data["objFirmContactDetails"]) : <any>undefined;
-            this.objIndividualDetails = _data["objIndividualDetails"] ? IndividualDetails.fromJS(_data["objIndividualDetails"]) : <any>undefined;
-            this.formTypeDesc = _data["formTypeDesc"];
-            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
-            this.reglsNAFlag = _data["reglsNAFlag"];
-            this.nationalIdNAFlag = _data["nationalIdNAFlag"];
-            this.qatarRelocationNAFlag = _data["qatarRelocationNAFlag"];
-            this.profDevFalg = _data["profDevFalg"];
-            this.profMembFlag = _data["profMembFlag"];
-            this.higherEduFlag = _data["higherEduFlag"];
-            this.appStatusDate = _data["appStatusDate"] ? new Date(_data["appStatusDate"].toString()) : <any>undefined;
-            this.appRecieveDate = _data["appRecieveDate"] ? new Date(_data["appRecieveDate"].toString()) : <any>undefined;
-            this.coreApplicationID = _data["coreApplicationID"];
-            if (Array.isArray(_data["lstControledFunction"])) {
-                this.lstControledFunction = [] as any;
-                for (let item of _data["lstControledFunction"])
-                    this.lstControledFunction!.push(ControledFunction.fromJS(item));
-            }
-            this.anyFileToAttachFlag = _data["anyFileToAttachFlag"];
-            this.additionalFileFlag = _data["additionalFileFlag"];
-            this.applicationDate = _data["applicationDate"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.prevApplicationId = _data["prevApplicationId"];
-            this.additionalSupervisorFlag = _data["additionalSupervisorFlag"];
-            this.positionHeldFlag = _data["positionHeldFlag"];
-            this.supervisingFlag = _data["supervisingFlag"];
-            this.resubmissionComments = _data["resubmissionComments"];
-            this.applicantName = _data["applicantName"];
-            this.pageFlag = _data["pageFlag"];
-            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
-            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
-            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
-            this.updateWobjectStatus = _data["updateWobjectStatus"];
-            this.controlFunctionID = _data["controlFunctionID"];
-            this.controlFunctionGUID = _data["controlFunctionGUID"];
-            this.functionTypeID = _data["functionTypeID"];
-            this.functionTypeDesc = _data["functionTypeDesc"];
-            this.day = _data["day"];
-            this.month = _data["month"];
-            this.year = _data["year"];
-            this.actionTypeID = _data["actionTypeID"];
-            this.uponApprovalFlag = _data["uponApprovalFlag"];
-            this.functionStatusID = _data["functionStatusID"];
-            this.functionStatusDesc = _data["functionStatusDesc"];
-            this.functionStatusDate = _data["functionStatusDate"];
-            this.addActionTypeDesc = _data["addActionTypeDesc"];
-            this.withdrawActionTypeDesc = _data["withdrawActionTypeDesc"];
-            this.actionTypeDesc = _data["actionTypeDesc"];
-            this.conditionalApprovalFlag = _data["conditionalApprovalFlag"];
-            this.activityTypeIDs = _data["activityTypeIDs"];
-            this.productTypeIDs = _data["productTypeIDs"];
-            this.activityProductTypeDesc = _data["activityProductTypeDesc"];
-            this.approvalProposedCommenceDate = _data["approvalProposedCommenceDate"];
-            this.withdrawalProposedCommenceDate = _data["withdrawalProposedCommenceDate"];
-            this.approvalCommenceUponApplApprovalFlag = _data["approvalCommenceUponApplApprovalFlag"];
-            this.withdrawalCommenceUponApplApprovalFlag = _data["withdrawalCommenceUponApplApprovalFlag"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.firmID = _data['firmID'];
+      this.fullName = _data['fullName'];
+      this.id = _data['id'];
+      this.userId = _data['userId'];
+      this.value = _data['value'];
+      this.qfcNmuner = _data['qfcNmuner'];
+      this.applContactDetailID = _data['applContactDetailID'];
+      this.applicationStatusTypeID = _data['applicationStatusTypeID'];
+      this.addressLine1 = _data['addressLine1'];
+      this.addressLine2 = _data['addressLine2'];
+      this.addressLine3 = _data['addressLine3'];
+      this.addressLine4 = _data['addressLine4'];
+      this.city = _data['city'];
+      this.state = _data['state'];
+      this.countryID = _data['countryID'];
+      this.countryName = _data['countryName'];
+      this.postalCode = _data['postalCode'];
+      this.firmName = _data['firmName'];
+      this.functionID = _data['functionID'];
+      this.positionOfMainContact = _data['positionOfMainContact'];
+      this.contactID = _data['contactID'];
+      this.nameOfMainContact = _data['nameOfMainContact'];
+      this.telephoneNumber = _data['telephoneNumber'];
+      this.faxNumber = _data['faxNumber'];
+      this.emailAddressOfMainAccount = _data['emailAddressOfMainAccount'];
+      this.preferredMethodOfContact = _data['preferredMethodOfContact'];
+      this.primarySupervisorEmailAddress =
+        _data['primarySupervisorEmailAddress'];
+      this.secondarySupervisorEmailAddress =
+        _data['secondarySupervisorEmailAddress'];
+      this.additionalSupervisorEmailAddress =
+        _data['additionalSupervisorEmailAddress'];
+      this.amlPrimarySupervisorEmailAddress =
+        _data['amlPrimarySupervisorEmailAddress'];
+      this.amlSecondarySupervisorEmailAddress =
+        _data['amlSecondarySupervisorEmailAddress'];
+      this.additionalAMLSupervisorEmailAddress =
+        _data['additionalAMLSupervisorEmailAddress'];
+      this.directorEmailAddress = _data['directorEmailAddress'];
+      this.amlDirectorEmailAddress = _data['amlDirectorEmailAddress'];
+      this.rsgEmailAddress = _data['rsgEmailAddress'];
+      this.firmTypeID = _data['firmTypeID'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.aiNumber = _data['aiNumber'];
+      this.applicationID = _data['applicationID'];
+      this.formTypeID = _data['formTypeID'];
+      this.applStatusTypeID = _data['applStatusTypeID'];
+      this.arrangementTypeID = _data['arrangementTypeID'];
+      this.arrangementTypeDesc = _data['arrangementTypeDesc'];
+      this.arrangementTypeOtherDesc = _data['arrangementTypeOtherDesc'];
+      this.competenciesAndExp = _data['competenciesAndExp'];
+      this.cfExcercisedDesc = _data['cfExcercisedDesc'];
+      this.currentJobTitle = _data['currentJobTitle'];
+      this.jobTitleChangeFlag = _data['jobTitleChangeFlag'];
+      this.proposedJobTitle = _data['proposedJobTitle'];
+      this.jobDesc = _data['jobDesc'];
+      this.pastPositionFlag = _data['pastPositionFlag'];
+      this.pastPositionDesc = _data['pastPositionDesc'];
+      this.fandPAddnlInfo = _data['fandPAddnlInfo'];
+      this.fandPChangeDesc = _data['fandPChangeDesc'];
+      this.withdrawlReasonDesc = _data['withdrawlReasonDesc'];
+      this.altArrangementFlag = _data['altArrangementFlag'];
+      this.altArrangementDesc = _data['altArrangementDesc'];
+      this.wcfAddnlInfo = _data['wcfAddnlInfo'];
+      this.cfApplicationDetail = _data['cfApplicationDetail'];
+      this.residencyNAFlag = _data['residencyNAFlag'];
+      this.aliasesNAFlag = _data['aliasesNAFlag'];
+      this.careerHistoryNAFlag = _data['careerHistoryNAFlag'];
+      this.careerHistoryNAReason = _data['careerHistoryNAReason'];
+      this.prevEmploymentFlag = _data['prevEmploymentFlag'];
+      this.appUserID = _data['appUserID'];
+      this.appCreatedBy = _data['appCreatedBy'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.userModified = _data['userModified'];
+      this.createdDate = _data['createdDate'];
+      this.objFirmContactDetails = _data['objFirmContactDetails']
+        ? FirmContactDetails.fromJS(_data['objFirmContactDetails'])
+        : <any>undefined;
+      this.objIndividualDetails = _data['objIndividualDetails']
+        ? IndividualDetails.fromJS(_data['objIndividualDetails'])
+        : <any>undefined;
+      this.formTypeDesc = _data['formTypeDesc'];
+      this.applStatusTypeDesc = _data['applStatusTypeDesc'];
+      this.reglsNAFlag = _data['reglsNAFlag'];
+      this.nationalIdNAFlag = _data['nationalIdNAFlag'];
+      this.qatarRelocationNAFlag = _data['qatarRelocationNAFlag'];
+      this.profDevFalg = _data['profDevFalg'];
+      this.profMembFlag = _data['profMembFlag'];
+      this.higherEduFlag = _data['higherEduFlag'];
+      this.appStatusDate = _data['appStatusDate']
+        ? new Date(_data['appStatusDate'].toString())
+        : <any>undefined;
+      this.appRecieveDate = _data['appRecieveDate']
+        ? new Date(_data['appRecieveDate'].toString())
+        : <any>undefined;
+      this.coreApplicationID = _data['coreApplicationID'];
+      if (Array.isArray(_data['lstControledFunction'])) {
+        this.lstControledFunction = [] as any;
+        for (let item of _data['lstControledFunction'])
+          this.lstControledFunction!.push(ControledFunction.fromJS(item));
+      }
+      this.anyFileToAttachFlag = _data['anyFileToAttachFlag'];
+      this.additionalFileFlag = _data['additionalFileFlag'];
+      this.applicationDate = _data['applicationDate'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.prevApplicationId = _data['prevApplicationId'];
+      this.additionalSupervisorFlag = _data['additionalSupervisorFlag'];
+      this.positionHeldFlag = _data['positionHeldFlag'];
+      this.supervisingFlag = _data['supervisingFlag'];
+      this.resubmissionComments = _data['resubmissionComments'];
+      this.applicantName = _data['applicantName'];
+      this.pageFlag = _data['pageFlag'];
+      this.reasonForDelayInFiling = _data['reasonForDelayInFiling'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.proposedRelocationDateDay = _data['proposedRelocationDateDay'];
+      this.proposedRelocationDateMonth = _data['proposedRelocationDateMonth'];
+      this.proposedRelocationDateYear = _data['proposedRelocationDateYear'];
+      this.updateWobjectStatus = _data['updateWobjectStatus'];
+      this.controlFunctionID = _data['controlFunctionID'];
+      this.controlFunctionGUID = _data['controlFunctionGUID'];
+      this.functionTypeID = _data['functionTypeID'];
+      this.functionTypeDesc = _data['functionTypeDesc'];
+      this.day = _data['day'];
+      this.month = _data['month'];
+      this.year = _data['year'];
+      this.actionTypeID = _data['actionTypeID'];
+      this.uponApprovalFlag = _data['uponApprovalFlag'];
+      this.functionStatusID = _data['functionStatusID'];
+      this.functionStatusDesc = _data['functionStatusDesc'];
+      this.functionStatusDate = _data['functionStatusDate'];
+      this.addActionTypeDesc = _data['addActionTypeDesc'];
+      this.withdrawActionTypeDesc = _data['withdrawActionTypeDesc'];
+      this.actionTypeDesc = _data['actionTypeDesc'];
+      this.conditionalApprovalFlag = _data['conditionalApprovalFlag'];
+      this.activityTypeIDs = _data['activityTypeIDs'];
+      this.productTypeIDs = _data['productTypeIDs'];
+      this.activityProductTypeDesc = _data['activityProductTypeDesc'];
+      this.approvalProposedCommenceDate = _data['approvalProposedCommenceDate'];
+      this.withdrawalProposedCommenceDate =
+        _data['withdrawalProposedCommenceDate'];
+      this.approvalCommenceUponApplApprovalFlag =
+        _data['approvalCommenceUponApplApprovalFlag'];
+      this.withdrawalCommenceUponApplApprovalFlag =
+        _data['withdrawalCommenceUponApplApprovalFlag'];
     }
+  }
 
-    static fromJS(data: any): ControledFunction {
-        data = typeof data === 'object' ? data : {};
-        let result = new ControledFunction();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ControledFunction {
+    data = typeof data === 'object' ? data : {};
+    let result = new ControledFunction();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["firmID"] = this.firmID;
-        data["fullName"] = this.fullName;
-        data["id"] = this.id;
-        data["userId"] = this.userId;
-        data["value"] = this.value;
-        data["qfcNmuner"] = this.qfcNmuner;
-        data["applContactDetailID"] = this.applContactDetailID;
-        data["applicationStatusTypeID"] = this.applicationStatusTypeID;
-        data["addressLine1"] = this.addressLine1;
-        data["addressLine2"] = this.addressLine2;
-        data["addressLine3"] = this.addressLine3;
-        data["addressLine4"] = this.addressLine4;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["countryID"] = this.countryID;
-        data["countryName"] = this.countryName;
-        data["postalCode"] = this.postalCode;
-        data["firmName"] = this.firmName;
-        data["functionID"] = this.functionID;
-        data["positionOfMainContact"] = this.positionOfMainContact;
-        data["contactID"] = this.contactID;
-        data["nameOfMainContact"] = this.nameOfMainContact;
-        data["telephoneNumber"] = this.telephoneNumber;
-        data["faxNumber"] = this.faxNumber;
-        data["emailAddressOfMainAccount"] = this.emailAddressOfMainAccount;
-        data["preferredMethodOfContact"] = this.preferredMethodOfContact;
-        data["primarySupervisorEmailAddress"] = this.primarySupervisorEmailAddress;
-        data["secondarySupervisorEmailAddress"] = this.secondarySupervisorEmailAddress;
-        data["additionalSupervisorEmailAddress"] = this.additionalSupervisorEmailAddress;
-        data["amlPrimarySupervisorEmailAddress"] = this.amlPrimarySupervisorEmailAddress;
-        data["amlSecondarySupervisorEmailAddress"] = this.amlSecondarySupervisorEmailAddress;
-        data["additionalAMLSupervisorEmailAddress"] = this.additionalAMLSupervisorEmailAddress;
-        data["directorEmailAddress"] = this.directorEmailAddress;
-        data["amlDirectorEmailAddress"] = this.amlDirectorEmailAddress;
-        data["rsgEmailAddress"] = this.rsgEmailAddress;
-        data["firmTypeID"] = this.firmTypeID;
-        data["qfcNumber"] = this.qfcNumber;
-        data["aiNumber"] = this.aiNumber;
-        data["applicationID"] = this.applicationID;
-        data["formTypeID"] = this.formTypeID;
-        data["applStatusTypeID"] = this.applStatusTypeID;
-        data["arrangementTypeID"] = this.arrangementTypeID;
-        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
-        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
-        data["competenciesAndExp"] = this.competenciesAndExp;
-        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
-        data["currentJobTitle"] = this.currentJobTitle;
-        data["jobTitleChangeFlag"] = this.jobTitleChangeFlag;
-        data["proposedJobTitle"] = this.proposedJobTitle;
-        data["jobDesc"] = this.jobDesc;
-        data["pastPositionFlag"] = this.pastPositionFlag;
-        data["pastPositionDesc"] = this.pastPositionDesc;
-        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
-        data["fandPChangeDesc"] = this.fandPChangeDesc;
-        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
-        data["altArrangementFlag"] = this.altArrangementFlag;
-        data["altArrangementDesc"] = this.altArrangementDesc;
-        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
-        data["cfApplicationDetail"] = this.cfApplicationDetail;
-        data["residencyNAFlag"] = this.residencyNAFlag;
-        data["aliasesNAFlag"] = this.aliasesNAFlag;
-        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
-        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
-        data["prevEmploymentFlag"] = this.prevEmploymentFlag;
-        data["appUserID"] = this.appUserID;
-        data["appCreatedBy"] = this.appCreatedBy;
-        data["modifiedDate"] = this.modifiedDate;
-        data["userModified"] = this.userModified;
-        data["createdDate"] = this.createdDate;
-        data["objFirmContactDetails"] = this.objFirmContactDetails ? this.objFirmContactDetails.toJSON() : <any>undefined;
-        data["objIndividualDetails"] = this.objIndividualDetails ? this.objIndividualDetails.toJSON() : <any>undefined;
-        data["formTypeDesc"] = this.formTypeDesc;
-        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
-        data["reglsNAFlag"] = this.reglsNAFlag;
-        data["nationalIdNAFlag"] = this.nationalIdNAFlag;
-        data["qatarRelocationNAFlag"] = this.qatarRelocationNAFlag;
-        data["profDevFalg"] = this.profDevFalg;
-        data["profMembFlag"] = this.profMembFlag;
-        data["higherEduFlag"] = this.higherEduFlag;
-        data["appStatusDate"] = this.appStatusDate ? this.appStatusDate.toISOString() : <any>undefined;
-        data["appRecieveDate"] = this.appRecieveDate ? this.appRecieveDate.toISOString() : <any>undefined;
-        data["coreApplicationID"] = this.coreApplicationID;
-        if (Array.isArray(this.lstControledFunction)) {
-            data["lstControledFunction"] = [];
-            for (let item of this.lstControledFunction)
-                data["lstControledFunction"].push(item.toJSON());
-        }
-        data["anyFileToAttachFlag"] = this.anyFileToAttachFlag;
-        data["additionalFileFlag"] = this.additionalFileFlag;
-        data["applicationDate"] = this.applicationDate;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["prevApplicationId"] = this.prevApplicationId;
-        data["additionalSupervisorFlag"] = this.additionalSupervisorFlag;
-        data["positionHeldFlag"] = this.positionHeldFlag;
-        data["supervisingFlag"] = this.supervisingFlag;
-        data["resubmissionComments"] = this.resubmissionComments;
-        data["applicantName"] = this.applicantName;
-        data["pageFlag"] = this.pageFlag;
-        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
-        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
-        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
-        data["updateWobjectStatus"] = this.updateWobjectStatus;
-        data["controlFunctionID"] = this.controlFunctionID;
-        data["controlFunctionGUID"] = this.controlFunctionGUID;
-        data["functionTypeID"] = this.functionTypeID;
-        data["functionTypeDesc"] = this.functionTypeDesc;
-        data["day"] = this.day;
-        data["month"] = this.month;
-        data["year"] = this.year;
-        data["actionTypeID"] = this.actionTypeID;
-        data["uponApprovalFlag"] = this.uponApprovalFlag;
-        data["functionStatusID"] = this.functionStatusID;
-        data["functionStatusDesc"] = this.functionStatusDesc;
-        data["functionStatusDate"] = this.functionStatusDate;
-        data["addActionTypeDesc"] = this.addActionTypeDesc;
-        data["withdrawActionTypeDesc"] = this.withdrawActionTypeDesc;
-        data["actionTypeDesc"] = this.actionTypeDesc;
-        data["conditionalApprovalFlag"] = this.conditionalApprovalFlag;
-        data["activityTypeIDs"] = this.activityTypeIDs;
-        data["productTypeIDs"] = this.productTypeIDs;
-        data["activityProductTypeDesc"] = this.activityProductTypeDesc;
-        data["approvalProposedCommenceDate"] = this.approvalProposedCommenceDate;
-        data["withdrawalProposedCommenceDate"] = this.withdrawalProposedCommenceDate;
-        data["approvalCommenceUponApplApprovalFlag"] = this.approvalCommenceUponApplApprovalFlag;
-        data["withdrawalCommenceUponApplApprovalFlag"] = this.withdrawalCommenceUponApplApprovalFlag;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['firmID'] = this.firmID;
+    data['fullName'] = this.fullName;
+    data['id'] = this.id;
+    data['userId'] = this.userId;
+    data['value'] = this.value;
+    data['qfcNmuner'] = this.qfcNmuner;
+    data['applContactDetailID'] = this.applContactDetailID;
+    data['applicationStatusTypeID'] = this.applicationStatusTypeID;
+    data['addressLine1'] = this.addressLine1;
+    data['addressLine2'] = this.addressLine2;
+    data['addressLine3'] = this.addressLine3;
+    data['addressLine4'] = this.addressLine4;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['countryID'] = this.countryID;
+    data['countryName'] = this.countryName;
+    data['postalCode'] = this.postalCode;
+    data['firmName'] = this.firmName;
+    data['functionID'] = this.functionID;
+    data['positionOfMainContact'] = this.positionOfMainContact;
+    data['contactID'] = this.contactID;
+    data['nameOfMainContact'] = this.nameOfMainContact;
+    data['telephoneNumber'] = this.telephoneNumber;
+    data['faxNumber'] = this.faxNumber;
+    data['emailAddressOfMainAccount'] = this.emailAddressOfMainAccount;
+    data['preferredMethodOfContact'] = this.preferredMethodOfContact;
+    data['primarySupervisorEmailAddress'] = this.primarySupervisorEmailAddress;
+    data['secondarySupervisorEmailAddress'] =
+      this.secondarySupervisorEmailAddress;
+    data['additionalSupervisorEmailAddress'] =
+      this.additionalSupervisorEmailAddress;
+    data['amlPrimarySupervisorEmailAddress'] =
+      this.amlPrimarySupervisorEmailAddress;
+    data['amlSecondarySupervisorEmailAddress'] =
+      this.amlSecondarySupervisorEmailAddress;
+    data['additionalAMLSupervisorEmailAddress'] =
+      this.additionalAMLSupervisorEmailAddress;
+    data['directorEmailAddress'] = this.directorEmailAddress;
+    data['amlDirectorEmailAddress'] = this.amlDirectorEmailAddress;
+    data['rsgEmailAddress'] = this.rsgEmailAddress;
+    data['firmTypeID'] = this.firmTypeID;
+    data['qfcNumber'] = this.qfcNumber;
+    data['aiNumber'] = this.aiNumber;
+    data['applicationID'] = this.applicationID;
+    data['formTypeID'] = this.formTypeID;
+    data['applStatusTypeID'] = this.applStatusTypeID;
+    data['arrangementTypeID'] = this.arrangementTypeID;
+    data['arrangementTypeDesc'] = this.arrangementTypeDesc;
+    data['arrangementTypeOtherDesc'] = this.arrangementTypeOtherDesc;
+    data['competenciesAndExp'] = this.competenciesAndExp;
+    data['cfExcercisedDesc'] = this.cfExcercisedDesc;
+    data['currentJobTitle'] = this.currentJobTitle;
+    data['jobTitleChangeFlag'] = this.jobTitleChangeFlag;
+    data['proposedJobTitle'] = this.proposedJobTitle;
+    data['jobDesc'] = this.jobDesc;
+    data['pastPositionFlag'] = this.pastPositionFlag;
+    data['pastPositionDesc'] = this.pastPositionDesc;
+    data['fandPAddnlInfo'] = this.fandPAddnlInfo;
+    data['fandPChangeDesc'] = this.fandPChangeDesc;
+    data['withdrawlReasonDesc'] = this.withdrawlReasonDesc;
+    data['altArrangementFlag'] = this.altArrangementFlag;
+    data['altArrangementDesc'] = this.altArrangementDesc;
+    data['wcfAddnlInfo'] = this.wcfAddnlInfo;
+    data['cfApplicationDetail'] = this.cfApplicationDetail;
+    data['residencyNAFlag'] = this.residencyNAFlag;
+    data['aliasesNAFlag'] = this.aliasesNAFlag;
+    data['careerHistoryNAFlag'] = this.careerHistoryNAFlag;
+    data['careerHistoryNAReason'] = this.careerHistoryNAReason;
+    data['prevEmploymentFlag'] = this.prevEmploymentFlag;
+    data['appUserID'] = this.appUserID;
+    data['appCreatedBy'] = this.appCreatedBy;
+    data['modifiedDate'] = this.modifiedDate;
+    data['userModified'] = this.userModified;
+    data['createdDate'] = this.createdDate;
+    data['objFirmContactDetails'] = this.objFirmContactDetails
+      ? this.objFirmContactDetails.toJSON()
+      : <any>undefined;
+    data['objIndividualDetails'] = this.objIndividualDetails
+      ? this.objIndividualDetails.toJSON()
+      : <any>undefined;
+    data['formTypeDesc'] = this.formTypeDesc;
+    data['applStatusTypeDesc'] = this.applStatusTypeDesc;
+    data['reglsNAFlag'] = this.reglsNAFlag;
+    data['nationalIdNAFlag'] = this.nationalIdNAFlag;
+    data['qatarRelocationNAFlag'] = this.qatarRelocationNAFlag;
+    data['profDevFalg'] = this.profDevFalg;
+    data['profMembFlag'] = this.profMembFlag;
+    data['higherEduFlag'] = this.higherEduFlag;
+    data['appStatusDate'] = this.appStatusDate
+      ? this.appStatusDate.toISOString()
+      : <any>undefined;
+    data['appRecieveDate'] = this.appRecieveDate
+      ? this.appRecieveDate.toISOString()
+      : <any>undefined;
+    data['coreApplicationID'] = this.coreApplicationID;
+    if (Array.isArray(this.lstControledFunction)) {
+      data['lstControledFunction'] = [];
+      for (let item of this.lstControledFunction)
+        data['lstControledFunction'].push(item.toJSON());
     }
+    data['anyFileToAttachFlag'] = this.anyFileToAttachFlag;
+    data['additionalFileFlag'] = this.additionalFileFlag;
+    data['applicationDate'] = this.applicationDate;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['prevApplicationId'] = this.prevApplicationId;
+    data['additionalSupervisorFlag'] = this.additionalSupervisorFlag;
+    data['positionHeldFlag'] = this.positionHeldFlag;
+    data['supervisingFlag'] = this.supervisingFlag;
+    data['resubmissionComments'] = this.resubmissionComments;
+    data['applicantName'] = this.applicantName;
+    data['pageFlag'] = this.pageFlag;
+    data['reasonForDelayInFiling'] = this.reasonForDelayInFiling;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['proposedRelocationDateDay'] = this.proposedRelocationDateDay;
+    data['proposedRelocationDateMonth'] = this.proposedRelocationDateMonth;
+    data['proposedRelocationDateYear'] = this.proposedRelocationDateYear;
+    data['updateWobjectStatus'] = this.updateWobjectStatus;
+    data['controlFunctionID'] = this.controlFunctionID;
+    data['controlFunctionGUID'] = this.controlFunctionGUID;
+    data['functionTypeID'] = this.functionTypeID;
+    data['functionTypeDesc'] = this.functionTypeDesc;
+    data['day'] = this.day;
+    data['month'] = this.month;
+    data['year'] = this.year;
+    data['actionTypeID'] = this.actionTypeID;
+    data['uponApprovalFlag'] = this.uponApprovalFlag;
+    data['functionStatusID'] = this.functionStatusID;
+    data['functionStatusDesc'] = this.functionStatusDesc;
+    data['functionStatusDate'] = this.functionStatusDate;
+    data['addActionTypeDesc'] = this.addActionTypeDesc;
+    data['withdrawActionTypeDesc'] = this.withdrawActionTypeDesc;
+    data['actionTypeDesc'] = this.actionTypeDesc;
+    data['conditionalApprovalFlag'] = this.conditionalApprovalFlag;
+    data['activityTypeIDs'] = this.activityTypeIDs;
+    data['productTypeIDs'] = this.productTypeIDs;
+    data['activityProductTypeDesc'] = this.activityProductTypeDesc;
+    data['approvalProposedCommenceDate'] = this.approvalProposedCommenceDate;
+    data['withdrawalProposedCommenceDate'] =
+      this.withdrawalProposedCommenceDate;
+    data['approvalCommenceUponApplApprovalFlag'] =
+      this.approvalCommenceUponApplApprovalFlag;
+    data['withdrawalCommenceUponApplApprovalFlag'] =
+      this.withdrawalCommenceUponApplApprovalFlag;
+    return data;
+  }
 }
 
 export interface IControledFunction {
-    firmID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applicationID?: number;
-    formTypeID?: number;
-    applStatusTypeID?: number;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    jobTitleChangeFlag?: boolean | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementFlag?: boolean | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    cfApplicationDetail?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    prevEmploymentFlag?: boolean | undefined;
-    appUserID?: number;
-    appCreatedBy?: number;
-    modifiedDate?: string | undefined;
-    userModified?: number;
-    createdDate?: string | undefined;
-    objFirmContactDetails?: FirmContactDetails;
-    objIndividualDetails?: IndividualDetails;
-    formTypeDesc?: string | undefined;
-    applStatusTypeDesc?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    profDevFalg?: boolean | undefined;
-    profMembFlag?: boolean | undefined;
-    higherEduFlag?: boolean | undefined;
-    appStatusDate?: Date;
-    appRecieveDate?: Date;
-    coreApplicationID?: number;
-    lstControledFunction?: ControledFunction[] | undefined;
-    anyFileToAttachFlag?: boolean | undefined;
-    additionalFileFlag?: boolean | undefined;
-    applicationDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    prevApplicationId?: number | undefined;
-    additionalSupervisorFlag?: boolean | undefined;
-    positionHeldFlag?: boolean | undefined;
-    supervisingFlag?: boolean | undefined;
-    resubmissionComments?: string | undefined;
-    applicantName?: string | undefined;
-    pageFlag?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number;
-    proposedRelocationDateMonth?: number;
-    proposedRelocationDateYear?: number;
-    updateWobjectStatus?: boolean;
-    controlFunctionID?: number | undefined;
-    controlFunctionGUID?: string | undefined;
-    functionTypeID?: number;
-    functionTypeDesc?: string | undefined;
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-    actionTypeID?: number | undefined;
-    uponApprovalFlag?: boolean | undefined;
-    functionStatusID?: number;
-    functionStatusDesc?: string | undefined;
-    functionStatusDate?: string | undefined;
-    addActionTypeDesc?: string | undefined;
-    withdrawActionTypeDesc?: string | undefined;
-    actionTypeDesc?: string | undefined;
-    conditionalApprovalFlag?: boolean | undefined;
-    activityTypeIDs?: string | undefined;
-    productTypeIDs?: string | undefined;
-    activityProductTypeDesc?: string | undefined;
-    approvalProposedCommenceDate?: string | undefined;
-    withdrawalProposedCommenceDate?: string | undefined;
-    approvalCommenceUponApplApprovalFlag?: boolean;
-    withdrawalCommenceUponApplApprovalFlag?: boolean;
+  firmID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applicationID?: number;
+  formTypeID?: number;
+  applStatusTypeID?: number;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  jobTitleChangeFlag?: boolean | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementFlag?: boolean | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  cfApplicationDetail?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  prevEmploymentFlag?: boolean | undefined;
+  appUserID?: number;
+  appCreatedBy?: number;
+  modifiedDate?: string | undefined;
+  userModified?: number;
+  createdDate?: string | undefined;
+  objFirmContactDetails?: FirmContactDetails;
+  objIndividualDetails?: IndividualDetails;
+  formTypeDesc?: string | undefined;
+  applStatusTypeDesc?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  profDevFalg?: boolean | undefined;
+  profMembFlag?: boolean | undefined;
+  higherEduFlag?: boolean | undefined;
+  appStatusDate?: Date;
+  appRecieveDate?: Date;
+  coreApplicationID?: number;
+  lstControledFunction?: ControledFunction[] | undefined;
+  anyFileToAttachFlag?: boolean | undefined;
+  additionalFileFlag?: boolean | undefined;
+  applicationDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  prevApplicationId?: number | undefined;
+  additionalSupervisorFlag?: boolean | undefined;
+  positionHeldFlag?: boolean | undefined;
+  supervisingFlag?: boolean | undefined;
+  resubmissionComments?: string | undefined;
+  applicantName?: string | undefined;
+  pageFlag?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number;
+  proposedRelocationDateMonth?: number;
+  proposedRelocationDateYear?: number;
+  updateWobjectStatus?: boolean;
+  controlFunctionID?: number | undefined;
+  controlFunctionGUID?: string | undefined;
+  functionTypeID?: number;
+  functionTypeDesc?: string | undefined;
+  day?: number | undefined;
+  month?: number | undefined;
+  year?: number | undefined;
+  actionTypeID?: number | undefined;
+  uponApprovalFlag?: boolean | undefined;
+  functionStatusID?: number;
+  functionStatusDesc?: string | undefined;
+  functionStatusDate?: string | undefined;
+  addActionTypeDesc?: string | undefined;
+  withdrawActionTypeDesc?: string | undefined;
+  actionTypeDesc?: string | undefined;
+  conditionalApprovalFlag?: boolean | undefined;
+  activityTypeIDs?: string | undefined;
+  productTypeIDs?: string | undefined;
+  activityProductTypeDesc?: string | undefined;
+  approvalProposedCommenceDate?: string | undefined;
+  withdrawalProposedCommenceDate?: string | undefined;
+  approvalCommenceUponApplApprovalFlag?: boolean;
+  withdrawalCommenceUponApplApprovalFlag?: boolean;
 }
 
 export class ControlledFunctionDto implements IControlledFunctionDto {
-    controlFunctionID?: number | undefined;
-    applicationID?: number | undefined;
-    functionTypeID?: number | undefined;
-    functionTypeDesc?: string | undefined;
-    actionTypeID?: number | undefined;
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-    uponApprovalFlag?: boolean | undefined;
-    conditionalApprovalFlag?: boolean | undefined;
-    userID?: number | undefined;
-    pageFlag?: string | undefined;
-    actionTypeDesc?: string | undefined;
-    appRecieveDate?: Date | undefined;
+  controlFunctionID?: number | undefined;
+  applicationID?: number | undefined;
+  functionTypeID?: number | undefined;
+  functionTypeDesc?: string | undefined;
+  actionTypeID?: number | undefined;
+  day?: number | undefined;
+  month?: number | undefined;
+  year?: number | undefined;
+  uponApprovalFlag?: boolean | undefined;
+  conditionalApprovalFlag?: boolean | undefined;
+  userID?: number | undefined;
+  pageFlag?: string | undefined;
+  actionTypeDesc?: string | undefined;
+  appRecieveDate?: Date | undefined;
 
-    constructor(data?: IControlledFunctionDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IControlledFunctionDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.controlFunctionID = _data["controlFunctionID"];
-            this.applicationID = _data["applicationID"];
-            this.functionTypeID = _data["functionTypeID"];
-            this.functionTypeDesc = _data["functionTypeDesc"];
-            this.actionTypeID = _data["actionTypeID"];
-            this.day = _data["day"];
-            this.month = _data["month"];
-            this.year = _data["year"];
-            this.uponApprovalFlag = _data["uponApprovalFlag"];
-            this.conditionalApprovalFlag = _data["conditionalApprovalFlag"];
-            this.userID = _data["userID"];
-            this.pageFlag = _data["pageFlag"];
-            this.actionTypeDesc = _data["actionTypeDesc"];
-            this.appRecieveDate = _data["appRecieveDate"] ? new Date(_data["appRecieveDate"].toString()) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.controlFunctionID = _data['controlFunctionID'];
+      this.applicationID = _data['applicationID'];
+      this.functionTypeID = _data['functionTypeID'];
+      this.functionTypeDesc = _data['functionTypeDesc'];
+      this.actionTypeID = _data['actionTypeID'];
+      this.day = _data['day'];
+      this.month = _data['month'];
+      this.year = _data['year'];
+      this.uponApprovalFlag = _data['uponApprovalFlag'];
+      this.conditionalApprovalFlag = _data['conditionalApprovalFlag'];
+      this.userID = _data['userID'];
+      this.pageFlag = _data['pageFlag'];
+      this.actionTypeDesc = _data['actionTypeDesc'];
+      this.appRecieveDate = _data['appRecieveDate']
+        ? new Date(_data['appRecieveDate'].toString())
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): ControlledFunctionDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ControlledFunctionDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ControlledFunctionDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new ControlledFunctionDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["controlFunctionID"] = this.controlFunctionID;
-        data["applicationID"] = this.applicationID;
-        data["functionTypeID"] = this.functionTypeID;
-        data["functionTypeDesc"] = this.functionTypeDesc;
-        data["actionTypeID"] = this.actionTypeID;
-        data["day"] = this.day;
-        data["month"] = this.month;
-        data["year"] = this.year;
-        data["uponApprovalFlag"] = this.uponApprovalFlag;
-        data["conditionalApprovalFlag"] = this.conditionalApprovalFlag;
-        data["userID"] = this.userID;
-        data["pageFlag"] = this.pageFlag;
-        data["actionTypeDesc"] = this.actionTypeDesc;
-        data["appRecieveDate"] = this.appRecieveDate ? this.appRecieveDate.toISOString() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['controlFunctionID'] = this.controlFunctionID;
+    data['applicationID'] = this.applicationID;
+    data['functionTypeID'] = this.functionTypeID;
+    data['functionTypeDesc'] = this.functionTypeDesc;
+    data['actionTypeID'] = this.actionTypeID;
+    data['day'] = this.day;
+    data['month'] = this.month;
+    data['year'] = this.year;
+    data['uponApprovalFlag'] = this.uponApprovalFlag;
+    data['conditionalApprovalFlag'] = this.conditionalApprovalFlag;
+    data['userID'] = this.userID;
+    data['pageFlag'] = this.pageFlag;
+    data['actionTypeDesc'] = this.actionTypeDesc;
+    data['appRecieveDate'] = this.appRecieveDate
+      ? this.appRecieveDate.toISOString()
+      : <any>undefined;
+    return data;
+  }
 }
 
 export interface IControlledFunctionDto {
-    controlFunctionID?: number | undefined;
-    applicationID?: number | undefined;
-    functionTypeID?: number | undefined;
-    functionTypeDesc?: string | undefined;
-    actionTypeID?: number | undefined;
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-    uponApprovalFlag?: boolean | undefined;
-    conditionalApprovalFlag?: boolean | undefined;
-    userID?: number | undefined;
-    pageFlag?: string | undefined;
-    actionTypeDesc?: string | undefined;
-    appRecieveDate?: Date | undefined;
+  controlFunctionID?: number | undefined;
+  applicationID?: number | undefined;
+  functionTypeID?: number | undefined;
+  functionTypeDesc?: string | undefined;
+  actionTypeID?: number | undefined;
+  day?: number | undefined;
+  month?: number | undefined;
+  year?: number | undefined;
+  uponApprovalFlag?: boolean | undefined;
+  conditionalApprovalFlag?: boolean | undefined;
+  userID?: number | undefined;
+  pageFlag?: string | undefined;
+  actionTypeDesc?: string | undefined;
+  appRecieveDate?: Date | undefined;
 }
 
 export class FirmContactDetails implements IFirmContactDetails {
-    firmID?: number;
-    applicationID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    userModified?: number;
-    createdDate?: string | undefined;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    formTypeID?: number;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    aiNumber?: string | undefined;
-    modifiedDate?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
+  firmID?: number;
+  applicationID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  userModified?: number;
+  createdDate?: string | undefined;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  formTypeID?: number;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  aiNumber?: string | undefined;
+  modifiedDate?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
 
-    constructor(data?: IFirmContactDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IFirmContactDetails) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.firmID = _data["firmID"];
-            this.applicationID = _data["applicationID"];
-            this.fullName = _data["fullName"];
-            this.id = _data["id"];
-            this.userId = _data["userId"];
-            this.userModified = _data["userModified"];
-            this.createdDate = _data["createdDate"];
-            this.value = _data["value"];
-            this.qfcNmuner = _data["qfcNmuner"];
-            this.formTypeID = _data["formTypeID"];
-            this.applContactDetailID = _data["applContactDetailID"];
-            this.applicationStatusTypeID = _data["applicationStatusTypeID"];
-            this.addressLine1 = _data["addressLine1"];
-            this.addressLine2 = _data["addressLine2"];
-            this.addressLine3 = _data["addressLine3"];
-            this.addressLine4 = _data["addressLine4"];
-            this.city = _data["city"];
-            this.state = _data["state"];
-            this.countryID = _data["countryID"];
-            this.countryName = _data["countryName"];
-            this.postalCode = _data["postalCode"];
-            this.firmName = _data["firmName"];
-            this.functionID = _data["functionID"];
-            this.positionOfMainContact = _data["positionOfMainContact"];
-            this.contactID = _data["contactID"];
-            this.nameOfMainContact = _data["nameOfMainContact"];
-            this.telephoneNumber = _data["telephoneNumber"];
-            this.faxNumber = _data["faxNumber"];
-            this.emailAddressOfMainAccount = _data["emailAddressOfMainAccount"];
-            this.preferredMethodOfContact = _data["preferredMethodOfContact"];
-            this.aiNumber = _data["aiNumber"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.primarySupervisorEmailAddress = _data["primarySupervisorEmailAddress"];
-            this.secondarySupervisorEmailAddress = _data["secondarySupervisorEmailAddress"];
-            this.additionalSupervisorEmailAddress = _data["additionalSupervisorEmailAddress"];
-            this.amlPrimarySupervisorEmailAddress = _data["amlPrimarySupervisorEmailAddress"];
-            this.amlSecondarySupervisorEmailAddress = _data["amlSecondarySupervisorEmailAddress"];
-            this.additionalAMLSupervisorEmailAddress = _data["additionalAMLSupervisorEmailAddress"];
-            this.directorEmailAddress = _data["directorEmailAddress"];
-            this.amlDirectorEmailAddress = _data["amlDirectorEmailAddress"];
-            this.rsgEmailAddress = _data["rsgEmailAddress"];
-            this.firmTypeID = _data["firmTypeID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.firmID = _data['firmID'];
+      this.applicationID = _data['applicationID'];
+      this.fullName = _data['fullName'];
+      this.id = _data['id'];
+      this.userId = _data['userId'];
+      this.userModified = _data['userModified'];
+      this.createdDate = _data['createdDate'];
+      this.value = _data['value'];
+      this.qfcNmuner = _data['qfcNmuner'];
+      this.formTypeID = _data['formTypeID'];
+      this.applContactDetailID = _data['applContactDetailID'];
+      this.applicationStatusTypeID = _data['applicationStatusTypeID'];
+      this.addressLine1 = _data['addressLine1'];
+      this.addressLine2 = _data['addressLine2'];
+      this.addressLine3 = _data['addressLine3'];
+      this.addressLine4 = _data['addressLine4'];
+      this.city = _data['city'];
+      this.state = _data['state'];
+      this.countryID = _data['countryID'];
+      this.countryName = _data['countryName'];
+      this.postalCode = _data['postalCode'];
+      this.firmName = _data['firmName'];
+      this.functionID = _data['functionID'];
+      this.positionOfMainContact = _data['positionOfMainContact'];
+      this.contactID = _data['contactID'];
+      this.nameOfMainContact = _data['nameOfMainContact'];
+      this.telephoneNumber = _data['telephoneNumber'];
+      this.faxNumber = _data['faxNumber'];
+      this.emailAddressOfMainAccount = _data['emailAddressOfMainAccount'];
+      this.preferredMethodOfContact = _data['preferredMethodOfContact'];
+      this.aiNumber = _data['aiNumber'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.primarySupervisorEmailAddress =
+        _data['primarySupervisorEmailAddress'];
+      this.secondarySupervisorEmailAddress =
+        _data['secondarySupervisorEmailAddress'];
+      this.additionalSupervisorEmailAddress =
+        _data['additionalSupervisorEmailAddress'];
+      this.amlPrimarySupervisorEmailAddress =
+        _data['amlPrimarySupervisorEmailAddress'];
+      this.amlSecondarySupervisorEmailAddress =
+        _data['amlSecondarySupervisorEmailAddress'];
+      this.additionalAMLSupervisorEmailAddress =
+        _data['additionalAMLSupervisorEmailAddress'];
+      this.directorEmailAddress = _data['directorEmailAddress'];
+      this.amlDirectorEmailAddress = _data['amlDirectorEmailAddress'];
+      this.rsgEmailAddress = _data['rsgEmailAddress'];
+      this.firmTypeID = _data['firmTypeID'];
     }
+  }
 
-    static fromJS(data: any): FirmContactDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new FirmContactDetails();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): FirmContactDetails {
+    data = typeof data === 'object' ? data : {};
+    let result = new FirmContactDetails();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["firmID"] = this.firmID;
-        data["applicationID"] = this.applicationID;
-        data["fullName"] = this.fullName;
-        data["id"] = this.id;
-        data["userId"] = this.userId;
-        data["userModified"] = this.userModified;
-        data["createdDate"] = this.createdDate;
-        data["value"] = this.value;
-        data["qfcNmuner"] = this.qfcNmuner;
-        data["formTypeID"] = this.formTypeID;
-        data["applContactDetailID"] = this.applContactDetailID;
-        data["applicationStatusTypeID"] = this.applicationStatusTypeID;
-        data["addressLine1"] = this.addressLine1;
-        data["addressLine2"] = this.addressLine2;
-        data["addressLine3"] = this.addressLine3;
-        data["addressLine4"] = this.addressLine4;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["countryID"] = this.countryID;
-        data["countryName"] = this.countryName;
-        data["postalCode"] = this.postalCode;
-        data["firmName"] = this.firmName;
-        data["functionID"] = this.functionID;
-        data["positionOfMainContact"] = this.positionOfMainContact;
-        data["contactID"] = this.contactID;
-        data["nameOfMainContact"] = this.nameOfMainContact;
-        data["telephoneNumber"] = this.telephoneNumber;
-        data["faxNumber"] = this.faxNumber;
-        data["emailAddressOfMainAccount"] = this.emailAddressOfMainAccount;
-        data["preferredMethodOfContact"] = this.preferredMethodOfContact;
-        data["aiNumber"] = this.aiNumber;
-        data["modifiedDate"] = this.modifiedDate;
-        data["primarySupervisorEmailAddress"] = this.primarySupervisorEmailAddress;
-        data["secondarySupervisorEmailAddress"] = this.secondarySupervisorEmailAddress;
-        data["additionalSupervisorEmailAddress"] = this.additionalSupervisorEmailAddress;
-        data["amlPrimarySupervisorEmailAddress"] = this.amlPrimarySupervisorEmailAddress;
-        data["amlSecondarySupervisorEmailAddress"] = this.amlSecondarySupervisorEmailAddress;
-        data["additionalAMLSupervisorEmailAddress"] = this.additionalAMLSupervisorEmailAddress;
-        data["directorEmailAddress"] = this.directorEmailAddress;
-        data["amlDirectorEmailAddress"] = this.amlDirectorEmailAddress;
-        data["rsgEmailAddress"] = this.rsgEmailAddress;
-        data["firmTypeID"] = this.firmTypeID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['firmID'] = this.firmID;
+    data['applicationID'] = this.applicationID;
+    data['fullName'] = this.fullName;
+    data['id'] = this.id;
+    data['userId'] = this.userId;
+    data['userModified'] = this.userModified;
+    data['createdDate'] = this.createdDate;
+    data['value'] = this.value;
+    data['qfcNmuner'] = this.qfcNmuner;
+    data['formTypeID'] = this.formTypeID;
+    data['applContactDetailID'] = this.applContactDetailID;
+    data['applicationStatusTypeID'] = this.applicationStatusTypeID;
+    data['addressLine1'] = this.addressLine1;
+    data['addressLine2'] = this.addressLine2;
+    data['addressLine3'] = this.addressLine3;
+    data['addressLine4'] = this.addressLine4;
+    data['city'] = this.city;
+    data['state'] = this.state;
+    data['countryID'] = this.countryID;
+    data['countryName'] = this.countryName;
+    data['postalCode'] = this.postalCode;
+    data['firmName'] = this.firmName;
+    data['functionID'] = this.functionID;
+    data['positionOfMainContact'] = this.positionOfMainContact;
+    data['contactID'] = this.contactID;
+    data['nameOfMainContact'] = this.nameOfMainContact;
+    data['telephoneNumber'] = this.telephoneNumber;
+    data['faxNumber'] = this.faxNumber;
+    data['emailAddressOfMainAccount'] = this.emailAddressOfMainAccount;
+    data['preferredMethodOfContact'] = this.preferredMethodOfContact;
+    data['aiNumber'] = this.aiNumber;
+    data['modifiedDate'] = this.modifiedDate;
+    data['primarySupervisorEmailAddress'] = this.primarySupervisorEmailAddress;
+    data['secondarySupervisorEmailAddress'] =
+      this.secondarySupervisorEmailAddress;
+    data['additionalSupervisorEmailAddress'] =
+      this.additionalSupervisorEmailAddress;
+    data['amlPrimarySupervisorEmailAddress'] =
+      this.amlPrimarySupervisorEmailAddress;
+    data['amlSecondarySupervisorEmailAddress'] =
+      this.amlSecondarySupervisorEmailAddress;
+    data['additionalAMLSupervisorEmailAddress'] =
+      this.additionalAMLSupervisorEmailAddress;
+    data['directorEmailAddress'] = this.directorEmailAddress;
+    data['amlDirectorEmailAddress'] = this.amlDirectorEmailAddress;
+    data['rsgEmailAddress'] = this.rsgEmailAddress;
+    data['firmTypeID'] = this.firmTypeID;
+    return data;
+  }
 }
 
 export interface IFirmContactDetails {
-    firmID?: number;
-    applicationID?: number;
-    fullName?: string | undefined;
-    id?: number;
-    userId?: number;
-    userModified?: number;
-    createdDate?: string | undefined;
-    value?: string | undefined;
-    qfcNmuner?: string | undefined;
-    formTypeID?: number;
-    applContactDetailID?: number;
-    applicationStatusTypeID?: number;
-    addressLine1?: string | undefined;
-    addressLine2?: string | undefined;
-    addressLine3?: string | undefined;
-    addressLine4?: string | undefined;
-    city?: string | undefined;
-    state?: string | undefined;
-    countryID?: string | undefined;
-    countryName?: string | undefined;
-    postalCode?: string | undefined;
-    firmName?: string | undefined;
-    functionID?: number;
-    positionOfMainContact?: string | undefined;
-    contactID?: number;
-    nameOfMainContact?: string | undefined;
-    telephoneNumber?: string | undefined;
-    faxNumber?: string | undefined;
-    emailAddressOfMainAccount?: string | undefined;
-    preferredMethodOfContact?: string | undefined;
-    aiNumber?: string | undefined;
-    modifiedDate?: string | undefined;
-    primarySupervisorEmailAddress?: string | undefined;
-    secondarySupervisorEmailAddress?: string | undefined;
-    additionalSupervisorEmailAddress?: string | undefined;
-    amlPrimarySupervisorEmailAddress?: string | undefined;
-    amlSecondarySupervisorEmailAddress?: string | undefined;
-    additionalAMLSupervisorEmailAddress?: string | undefined;
-    directorEmailAddress?: string | undefined;
-    amlDirectorEmailAddress?: string | undefined;
-    rsgEmailAddress?: string | undefined;
-    firmTypeID?: number;
+  firmID?: number;
+  applicationID?: number;
+  fullName?: string | undefined;
+  id?: number;
+  userId?: number;
+  userModified?: number;
+  createdDate?: string | undefined;
+  value?: string | undefined;
+  qfcNmuner?: string | undefined;
+  formTypeID?: number;
+  applContactDetailID?: number;
+  applicationStatusTypeID?: number;
+  addressLine1?: string | undefined;
+  addressLine2?: string | undefined;
+  addressLine3?: string | undefined;
+  addressLine4?: string | undefined;
+  city?: string | undefined;
+  state?: string | undefined;
+  countryID?: string | undefined;
+  countryName?: string | undefined;
+  postalCode?: string | undefined;
+  firmName?: string | undefined;
+  functionID?: number;
+  positionOfMainContact?: string | undefined;
+  contactID?: number;
+  nameOfMainContact?: string | undefined;
+  telephoneNumber?: string | undefined;
+  faxNumber?: string | undefined;
+  emailAddressOfMainAccount?: string | undefined;
+  preferredMethodOfContact?: string | undefined;
+  aiNumber?: string | undefined;
+  modifiedDate?: string | undefined;
+  primarySupervisorEmailAddress?: string | undefined;
+  secondarySupervisorEmailAddress?: string | undefined;
+  additionalSupervisorEmailAddress?: string | undefined;
+  amlPrimarySupervisorEmailAddress?: string | undefined;
+  amlSecondarySupervisorEmailAddress?: string | undefined;
+  additionalAMLSupervisorEmailAddress?: string | undefined;
+  directorEmailAddress?: string | undefined;
+  amlDirectorEmailAddress?: string | undefined;
+  rsgEmailAddress?: string | undefined;
+  firmTypeID?: number;
 }
 
 export class GeneralSubmissionForm implements IGeneralSubmissionForm {
-    linkToDownload?: string | undefined;
-    linkToSubmitToRA?: string | undefined;
-    docTypeDesc?: string | undefined;
-    docTypeId?: number;
-    wIndFromTypeID?: number;
+  linkToDownload?: string | undefined;
+  linkToSubmitToRA?: string | undefined;
+  docTypeDesc?: string | undefined;
+  docTypeId?: number;
+  wIndFromTypeID?: number;
 
-    constructor(data?: IGeneralSubmissionForm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IGeneralSubmissionForm) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.linkToDownload = _data["linkToDownload"];
-            this.linkToSubmitToRA = _data["linkToSubmitToRA"];
-            this.docTypeDesc = _data["docTypeDesc"];
-            this.docTypeId = _data["docTypeId"];
-            this.wIndFromTypeID = _data["wIndFromTypeID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.linkToDownload = _data['linkToDownload'];
+      this.linkToSubmitToRA = _data['linkToSubmitToRA'];
+      this.docTypeDesc = _data['docTypeDesc'];
+      this.docTypeId = _data['docTypeId'];
+      this.wIndFromTypeID = _data['wIndFromTypeID'];
     }
+  }
 
-    static fromJS(data: any): GeneralSubmissionForm {
-        data = typeof data === 'object' ? data : {};
-        let result = new GeneralSubmissionForm();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): GeneralSubmissionForm {
+    data = typeof data === 'object' ? data : {};
+    let result = new GeneralSubmissionForm();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["linkToDownload"] = this.linkToDownload;
-        data["linkToSubmitToRA"] = this.linkToSubmitToRA;
-        data["docTypeDesc"] = this.docTypeDesc;
-        data["docTypeId"] = this.docTypeId;
-        data["wIndFromTypeID"] = this.wIndFromTypeID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['linkToDownload'] = this.linkToDownload;
+    data['linkToSubmitToRA'] = this.linkToSubmitToRA;
+    data['docTypeDesc'] = this.docTypeDesc;
+    data['docTypeId'] = this.docTypeId;
+    data['wIndFromTypeID'] = this.wIndFromTypeID;
+    return data;
+  }
 }
 
 export interface IGeneralSubmissionForm {
-    linkToDownload?: string | undefined;
-    linkToSubmitToRA?: string | undefined;
-    docTypeDesc?: string | undefined;
-    docTypeId?: number;
-    wIndFromTypeID?: number;
+  linkToDownload?: string | undefined;
+  linkToSubmitToRA?: string | undefined;
+  docTypeDesc?: string | undefined;
+  docTypeId?: number;
+  wIndFromTypeID?: number;
 }
 
-export class GeneralSubmissionFormListBaseResponse implements IGeneralSubmissionFormListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: GeneralSubmissionForm[] | undefined;
+export class GeneralSubmissionFormListBaseResponse
+  implements IGeneralSubmissionFormListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: GeneralSubmissionForm[] | undefined;
 
-    constructor(data?: IGeneralSubmissionFormListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IGeneralSubmissionFormListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(GeneralSubmissionForm.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(GeneralSubmissionForm.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): GeneralSubmissionFormListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new GeneralSubmissionFormListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): GeneralSubmissionFormListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new GeneralSubmissionFormListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IGeneralSubmissionFormListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: GeneralSubmissionForm[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: GeneralSubmissionForm[] | undefined;
 }
 
 export class HistoryDetailsDto implements IHistoryDetailsDto {
-    objectID?: number | undefined;
-    rptSchItemID?: number | undefined;
-    docTypeID?: number | undefined;
-    lstAattachments?: AttachmentDto[] | undefined;
+  objectID?: number | undefined;
+  rptSchItemID?: number | undefined;
+  docTypeID?: number | undefined;
+  lstAattachments?: AttachmentDto[] | undefined;
 
-    constructor(data?: IHistoryDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IHistoryDetailsDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objectID = _data["objectID"];
-            this.rptSchItemID = _data["rptSchItemID"];
-            this.docTypeID = _data["docTypeID"];
-            if (Array.isArray(_data["lstAattachments"])) {
-                this.lstAattachments = [] as any;
-                for (let item of _data["lstAattachments"])
-                    this.lstAattachments!.push(AttachmentDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objectID = _data['objectID'];
+      this.rptSchItemID = _data['rptSchItemID'];
+      this.docTypeID = _data['docTypeID'];
+      if (Array.isArray(_data['lstAattachments'])) {
+        this.lstAattachments = [] as any;
+        for (let item of _data['lstAattachments'])
+          this.lstAattachments!.push(AttachmentDto.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): HistoryDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new HistoryDetailsDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): HistoryDetailsDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new HistoryDetailsDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectID"] = this.objectID;
-        data["rptSchItemID"] = this.rptSchItemID;
-        data["docTypeID"] = this.docTypeID;
-        if (Array.isArray(this.lstAattachments)) {
-            data["lstAattachments"] = [];
-            for (let item of this.lstAattachments)
-                data["lstAattachments"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objectID'] = this.objectID;
+    data['rptSchItemID'] = this.rptSchItemID;
+    data['docTypeID'] = this.docTypeID;
+    if (Array.isArray(this.lstAattachments)) {
+      data['lstAattachments'] = [];
+      for (let item of this.lstAattachments)
+        data['lstAattachments'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IHistoryDetailsDto {
-    objectID?: number | undefined;
-    rptSchItemID?: number | undefined;
-    docTypeID?: number | undefined;
-    lstAattachments?: AttachmentDto[] | undefined;
+  objectID?: number | undefined;
+  rptSchItemID?: number | undefined;
+  docTypeID?: number | undefined;
+  lstAattachments?: AttachmentDto[] | undefined;
 }
 
 export class IndividualDetails implements IIndividualDetails {
-    title?: string | undefined;
-    familyName?: string | undefined;
-    otherNames?: string | undefined;
-    previousNames?: PreviousNames[] | undefined;
-    dateOfBirth?: string | undefined;
-    placeOfBirthCity?: string | undefined;
-    placeOfBirthCountry?: string | undefined;
-    nationality?: string | undefined;
-    residencyList?: Residencies[] | undefined;
-    passportnumber?: string | undefined;
-    jurisdiction?: string | undefined;
-    nationalIdNumber?: string | undefined;
-    resTelephoneNumber?: string | undefined;
-    workTelephonenumber?: string | undefined;
-    emailAddress?: string | undefined;
-    addressAssnDateFrom?: string | undefined;
-    addressAssnDateTo?: string | undefined;
-    addrLessThanThreeYears?: Address[] | undefined;
-    addressQatar?: Address;
-    dateQatar?: string | undefined;
-    applicationID?: number;
-    qfcNumber?: string | undefined;
-    formTypeID?: string | undefined;
-    userID?: number;
-    personalDetailID?: number;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    aiNumber?: string | undefined;
-    nationalityID?: number;
-    placeOfBirthCountryID?: number;
-    createdDate?: string | undefined;
-    modifiedBy?: number;
-    modifiedDate?: string | undefined;
-    fullName?: string | undefined;
-    appIndividualID?: number;
-    businessEmail?: string | undefined;
-    proposedRelDay?: number;
-    proposedRelMonth?: number;
-    proposedRelYear?: number;
-    countryOfResidence?: number;
-    prevApplicationId?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    windApplicationStatus?: number;
+  title?: string | undefined;
+  familyName?: string | undefined;
+  otherNames?: string | undefined;
+  previousNames?: PreviousNames[] | undefined;
+  dateOfBirth?: string | undefined;
+  placeOfBirthCity?: string | undefined;
+  placeOfBirthCountry?: string | undefined;
+  nationality?: string | undefined;
+  residencyList?: Residencies[] | undefined;
+  passportnumber?: string | undefined;
+  jurisdiction?: string | undefined;
+  nationalIdNumber?: string | undefined;
+  resTelephoneNumber?: string | undefined;
+  workTelephonenumber?: string | undefined;
+  emailAddress?: string | undefined;
+  addressAssnDateFrom?: string | undefined;
+  addressAssnDateTo?: string | undefined;
+  addrLessThanThreeYears?: Address[] | undefined;
+  addressQatar?: Address;
+  dateQatar?: string | undefined;
+  applicationID?: number;
+  qfcNumber?: string | undefined;
+  formTypeID?: string | undefined;
+  userID?: number;
+  personalDetailID?: number;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  aiNumber?: string | undefined;
+  nationalityID?: number;
+  placeOfBirthCountryID?: number;
+  createdDate?: string | undefined;
+  modifiedBy?: number;
+  modifiedDate?: string | undefined;
+  fullName?: string | undefined;
+  appIndividualID?: number;
+  businessEmail?: string | undefined;
+  proposedRelDay?: number;
+  proposedRelMonth?: number;
+  proposedRelYear?: number;
+  countryOfResidence?: number;
+  prevApplicationId?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  windApplicationStatus?: number;
 
-    constructor(data?: IIndividualDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IIndividualDetails) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.familyName = _data["familyName"];
-            this.otherNames = _data["otherNames"];
-            if (Array.isArray(_data["previousNames"])) {
-                this.previousNames = [] as any;
-                for (let item of _data["previousNames"])
-                    this.previousNames!.push(PreviousNames.fromJS(item));
-            }
-            this.dateOfBirth = _data["dateOfBirth"];
-            this.placeOfBirthCity = _data["placeOfBirthCity"];
-            this.placeOfBirthCountry = _data["placeOfBirthCountry"];
-            this.nationality = _data["nationality"];
-            if (Array.isArray(_data["residencyList"])) {
-                this.residencyList = [] as any;
-                for (let item of _data["residencyList"])
-                    this.residencyList!.push(Residencies.fromJS(item));
-            }
-            this.passportnumber = _data["passportnumber"];
-            this.jurisdiction = _data["jurisdiction"];
-            this.nationalIdNumber = _data["nationalIdNumber"];
-            this.resTelephoneNumber = _data["resTelephoneNumber"];
-            this.workTelephonenumber = _data["workTelephonenumber"];
-            this.emailAddress = _data["emailAddress"];
-            this.addressAssnDateFrom = _data["addressAssnDateFrom"];
-            this.addressAssnDateTo = _data["addressAssnDateTo"];
-            if (Array.isArray(_data["addrLessThanThreeYears"])) {
-                this.addrLessThanThreeYears = [] as any;
-                for (let item of _data["addrLessThanThreeYears"])
-                    this.addrLessThanThreeYears!.push(Address.fromJS(item));
-            }
-            this.addressQatar = _data["addressQatar"] ? Address.fromJS(_data["addressQatar"]) : <any>undefined;
-            this.dateQatar = _data["dateQatar"];
-            this.applicationID = _data["applicationID"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.formTypeID = _data["formTypeID"];
-            this.userID = _data["userID"];
-            this.personalDetailID = _data["personalDetailID"];
-            this.residencyNAFlag = _data["residencyNAFlag"];
-            this.aliasesNAFlag = _data["aliasesNAFlag"];
-            this.nationalIdNAFlag = _data["nationalIdNAFlag"];
-            this.qatarRelocationNAFlag = _data["qatarRelocationNAFlag"];
-            this.aiNumber = _data["aiNumber"];
-            this.nationalityID = _data["nationalityID"];
-            this.placeOfBirthCountryID = _data["placeOfBirthCountryID"];
-            this.createdDate = _data["createdDate"];
-            this.modifiedBy = _data["modifiedBy"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.fullName = _data["fullName"];
-            this.appIndividualID = _data["appIndividualID"];
-            this.businessEmail = _data["businessEmail"];
-            this.proposedRelDay = _data["proposedRelDay"];
-            this.proposedRelMonth = _data["proposedRelMonth"];
-            this.proposedRelYear = _data["proposedRelYear"];
-            this.countryOfResidence = _data["countryOfResidence"];
-            this.prevApplicationId = _data["prevApplicationId"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.windApplicationStatus = _data["windApplicationStatus"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.title = _data['title'];
+      this.familyName = _data['familyName'];
+      this.otherNames = _data['otherNames'];
+      if (Array.isArray(_data['previousNames'])) {
+        this.previousNames = [] as any;
+        for (let item of _data['previousNames'])
+          this.previousNames!.push(PreviousNames.fromJS(item));
+      }
+      this.dateOfBirth = _data['dateOfBirth'];
+      this.placeOfBirthCity = _data['placeOfBirthCity'];
+      this.placeOfBirthCountry = _data['placeOfBirthCountry'];
+      this.nationality = _data['nationality'];
+      if (Array.isArray(_data['residencyList'])) {
+        this.residencyList = [] as any;
+        for (let item of _data['residencyList'])
+          this.residencyList!.push(Residencies.fromJS(item));
+      }
+      this.passportnumber = _data['passportnumber'];
+      this.jurisdiction = _data['jurisdiction'];
+      this.nationalIdNumber = _data['nationalIdNumber'];
+      this.resTelephoneNumber = _data['resTelephoneNumber'];
+      this.workTelephonenumber = _data['workTelephonenumber'];
+      this.emailAddress = _data['emailAddress'];
+      this.addressAssnDateFrom = _data['addressAssnDateFrom'];
+      this.addressAssnDateTo = _data['addressAssnDateTo'];
+      if (Array.isArray(_data['addrLessThanThreeYears'])) {
+        this.addrLessThanThreeYears = [] as any;
+        for (let item of _data['addrLessThanThreeYears'])
+          this.addrLessThanThreeYears!.push(Address.fromJS(item));
+      }
+      this.addressQatar = _data['addressQatar']
+        ? Address.fromJS(_data['addressQatar'])
+        : <any>undefined;
+      this.dateQatar = _data['dateQatar'];
+      this.applicationID = _data['applicationID'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.formTypeID = _data['formTypeID'];
+      this.userID = _data['userID'];
+      this.personalDetailID = _data['personalDetailID'];
+      this.residencyNAFlag = _data['residencyNAFlag'];
+      this.aliasesNAFlag = _data['aliasesNAFlag'];
+      this.nationalIdNAFlag = _data['nationalIdNAFlag'];
+      this.qatarRelocationNAFlag = _data['qatarRelocationNAFlag'];
+      this.aiNumber = _data['aiNumber'];
+      this.nationalityID = _data['nationalityID'];
+      this.placeOfBirthCountryID = _data['placeOfBirthCountryID'];
+      this.createdDate = _data['createdDate'];
+      this.modifiedBy = _data['modifiedBy'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.fullName = _data['fullName'];
+      this.appIndividualID = _data['appIndividualID'];
+      this.businessEmail = _data['businessEmail'];
+      this.proposedRelDay = _data['proposedRelDay'];
+      this.proposedRelMonth = _data['proposedRelMonth'];
+      this.proposedRelYear = _data['proposedRelYear'];
+      this.countryOfResidence = _data['countryOfResidence'];
+      this.prevApplicationId = _data['prevApplicationId'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.windApplicationStatus = _data['windApplicationStatus'];
     }
+  }
 
-    static fromJS(data: any): IndividualDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new IndividualDetails();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): IndividualDetails {
+    data = typeof data === 'object' ? data : {};
+    let result = new IndividualDetails();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["familyName"] = this.familyName;
-        data["otherNames"] = this.otherNames;
-        if (Array.isArray(this.previousNames)) {
-            data["previousNames"] = [];
-            for (let item of this.previousNames)
-                data["previousNames"].push(item.toJSON());
-        }
-        data["dateOfBirth"] = this.dateOfBirth;
-        data["placeOfBirthCity"] = this.placeOfBirthCity;
-        data["placeOfBirthCountry"] = this.placeOfBirthCountry;
-        data["nationality"] = this.nationality;
-        if (Array.isArray(this.residencyList)) {
-            data["residencyList"] = [];
-            for (let item of this.residencyList)
-                data["residencyList"].push(item.toJSON());
-        }
-        data["passportnumber"] = this.passportnumber;
-        data["jurisdiction"] = this.jurisdiction;
-        data["nationalIdNumber"] = this.nationalIdNumber;
-        data["resTelephoneNumber"] = this.resTelephoneNumber;
-        data["workTelephonenumber"] = this.workTelephonenumber;
-        data["emailAddress"] = this.emailAddress;
-        data["addressAssnDateFrom"] = this.addressAssnDateFrom;
-        data["addressAssnDateTo"] = this.addressAssnDateTo;
-        if (Array.isArray(this.addrLessThanThreeYears)) {
-            data["addrLessThanThreeYears"] = [];
-            for (let item of this.addrLessThanThreeYears)
-                data["addrLessThanThreeYears"].push(item.toJSON());
-        }
-        data["addressQatar"] = this.addressQatar ? this.addressQatar.toJSON() : <any>undefined;
-        data["dateQatar"] = this.dateQatar;
-        data["applicationID"] = this.applicationID;
-        data["qfcNumber"] = this.qfcNumber;
-        data["formTypeID"] = this.formTypeID;
-        data["userID"] = this.userID;
-        data["personalDetailID"] = this.personalDetailID;
-        data["residencyNAFlag"] = this.residencyNAFlag;
-        data["aliasesNAFlag"] = this.aliasesNAFlag;
-        data["nationalIdNAFlag"] = this.nationalIdNAFlag;
-        data["qatarRelocationNAFlag"] = this.qatarRelocationNAFlag;
-        data["aiNumber"] = this.aiNumber;
-        data["nationalityID"] = this.nationalityID;
-        data["placeOfBirthCountryID"] = this.placeOfBirthCountryID;
-        data["createdDate"] = this.createdDate;
-        data["modifiedBy"] = this.modifiedBy;
-        data["modifiedDate"] = this.modifiedDate;
-        data["fullName"] = this.fullName;
-        data["appIndividualID"] = this.appIndividualID;
-        data["businessEmail"] = this.businessEmail;
-        data["proposedRelDay"] = this.proposedRelDay;
-        data["proposedRelMonth"] = this.proposedRelMonth;
-        data["proposedRelYear"] = this.proposedRelYear;
-        data["countryOfResidence"] = this.countryOfResidence;
-        data["prevApplicationId"] = this.prevApplicationId;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["windApplicationStatus"] = this.windApplicationStatus;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['title'] = this.title;
+    data['familyName'] = this.familyName;
+    data['otherNames'] = this.otherNames;
+    if (Array.isArray(this.previousNames)) {
+      data['previousNames'] = [];
+      for (let item of this.previousNames)
+        data['previousNames'].push(item.toJSON());
     }
+    data['dateOfBirth'] = this.dateOfBirth;
+    data['placeOfBirthCity'] = this.placeOfBirthCity;
+    data['placeOfBirthCountry'] = this.placeOfBirthCountry;
+    data['nationality'] = this.nationality;
+    if (Array.isArray(this.residencyList)) {
+      data['residencyList'] = [];
+      for (let item of this.residencyList)
+        data['residencyList'].push(item.toJSON());
+    }
+    data['passportnumber'] = this.passportnumber;
+    data['jurisdiction'] = this.jurisdiction;
+    data['nationalIdNumber'] = this.nationalIdNumber;
+    data['resTelephoneNumber'] = this.resTelephoneNumber;
+    data['workTelephonenumber'] = this.workTelephonenumber;
+    data['emailAddress'] = this.emailAddress;
+    data['addressAssnDateFrom'] = this.addressAssnDateFrom;
+    data['addressAssnDateTo'] = this.addressAssnDateTo;
+    if (Array.isArray(this.addrLessThanThreeYears)) {
+      data['addrLessThanThreeYears'] = [];
+      for (let item of this.addrLessThanThreeYears)
+        data['addrLessThanThreeYears'].push(item.toJSON());
+    }
+    data['addressQatar'] = this.addressQatar
+      ? this.addressQatar.toJSON()
+      : <any>undefined;
+    data['dateQatar'] = this.dateQatar;
+    data['applicationID'] = this.applicationID;
+    data['qfcNumber'] = this.qfcNumber;
+    data['formTypeID'] = this.formTypeID;
+    data['userID'] = this.userID;
+    data['personalDetailID'] = this.personalDetailID;
+    data['residencyNAFlag'] = this.residencyNAFlag;
+    data['aliasesNAFlag'] = this.aliasesNAFlag;
+    data['nationalIdNAFlag'] = this.nationalIdNAFlag;
+    data['qatarRelocationNAFlag'] = this.qatarRelocationNAFlag;
+    data['aiNumber'] = this.aiNumber;
+    data['nationalityID'] = this.nationalityID;
+    data['placeOfBirthCountryID'] = this.placeOfBirthCountryID;
+    data['createdDate'] = this.createdDate;
+    data['modifiedBy'] = this.modifiedBy;
+    data['modifiedDate'] = this.modifiedDate;
+    data['fullName'] = this.fullName;
+    data['appIndividualID'] = this.appIndividualID;
+    data['businessEmail'] = this.businessEmail;
+    data['proposedRelDay'] = this.proposedRelDay;
+    data['proposedRelMonth'] = this.proposedRelMonth;
+    data['proposedRelYear'] = this.proposedRelYear;
+    data['countryOfResidence'] = this.countryOfResidence;
+    data['prevApplicationId'] = this.prevApplicationId;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['windApplicationStatus'] = this.windApplicationStatus;
+    return data;
+  }
 }
 
 export interface IIndividualDetails {
-    title?: string | undefined;
-    familyName?: string | undefined;
-    otherNames?: string | undefined;
-    previousNames?: PreviousNames[] | undefined;
-    dateOfBirth?: string | undefined;
-    placeOfBirthCity?: string | undefined;
-    placeOfBirthCountry?: string | undefined;
-    nationality?: string | undefined;
-    residencyList?: Residencies[] | undefined;
-    passportnumber?: string | undefined;
-    jurisdiction?: string | undefined;
-    nationalIdNumber?: string | undefined;
-    resTelephoneNumber?: string | undefined;
-    workTelephonenumber?: string | undefined;
-    emailAddress?: string | undefined;
-    addressAssnDateFrom?: string | undefined;
-    addressAssnDateTo?: string | undefined;
-    addrLessThanThreeYears?: Address[] | undefined;
-    addressQatar?: Address;
-    dateQatar?: string | undefined;
-    applicationID?: number;
-    qfcNumber?: string | undefined;
-    formTypeID?: string | undefined;
-    userID?: number;
-    personalDetailID?: number;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    nationalIdNAFlag?: boolean | undefined;
-    qatarRelocationNAFlag?: boolean | undefined;
-    aiNumber?: string | undefined;
-    nationalityID?: number;
-    placeOfBirthCountryID?: number;
-    createdDate?: string | undefined;
-    modifiedBy?: number;
-    modifiedDate?: string | undefined;
-    fullName?: string | undefined;
-    appIndividualID?: number;
-    businessEmail?: string | undefined;
-    proposedRelDay?: number;
-    proposedRelMonth?: number;
-    proposedRelYear?: number;
-    countryOfResidence?: number;
-    prevApplicationId?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    windApplicationStatus?: number;
+  title?: string | undefined;
+  familyName?: string | undefined;
+  otherNames?: string | undefined;
+  previousNames?: PreviousNames[] | undefined;
+  dateOfBirth?: string | undefined;
+  placeOfBirthCity?: string | undefined;
+  placeOfBirthCountry?: string | undefined;
+  nationality?: string | undefined;
+  residencyList?: Residencies[] | undefined;
+  passportnumber?: string | undefined;
+  jurisdiction?: string | undefined;
+  nationalIdNumber?: string | undefined;
+  resTelephoneNumber?: string | undefined;
+  workTelephonenumber?: string | undefined;
+  emailAddress?: string | undefined;
+  addressAssnDateFrom?: string | undefined;
+  addressAssnDateTo?: string | undefined;
+  addrLessThanThreeYears?: Address[] | undefined;
+  addressQatar?: Address;
+  dateQatar?: string | undefined;
+  applicationID?: number;
+  qfcNumber?: string | undefined;
+  formTypeID?: string | undefined;
+  userID?: number;
+  personalDetailID?: number;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  nationalIdNAFlag?: boolean | undefined;
+  qatarRelocationNAFlag?: boolean | undefined;
+  aiNumber?: string | undefined;
+  nationalityID?: number;
+  placeOfBirthCountryID?: number;
+  createdDate?: string | undefined;
+  modifiedBy?: number;
+  modifiedDate?: string | undefined;
+  fullName?: string | undefined;
+  appIndividualID?: number;
+  businessEmail?: string | undefined;
+  proposedRelDay?: number;
+  proposedRelMonth?: number;
+  proposedRelYear?: number;
+  countryOfResidence?: number;
+  prevApplicationId?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  windApplicationStatus?: number;
 }
 
 export class IndividualDetailsDto implements IIndividualDetailsDto {
-    applicationID?: number | undefined;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    formTypeID?: string | undefined;
-    userID?: number | undefined;
-    personalDetailID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    windApplicationStatus?: number | undefined;
-    nationalityID?: number | undefined;
-    placeOfBirthCountryID?: number | undefined;
-    modifiedBy?: number | undefined;
-    proposedRelDay?: number | undefined;
-    proposedRelMonth?: number | undefined;
-    proposedRelYear?: number | undefined;
-    countryOfResidence?: number | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    familyName?: string | undefined;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    title?: string | undefined;
-    nationality?: string | undefined;
-    placeOfBirthCountry?: string | undefined;
-    nationalIdNumber?: string | undefined;
-    resTelephoneNumber?: string | undefined;
-    workTelephonenumber?: string | undefined;
-    otherNames?: string | undefined;
-    emailAddress?: string | undefined;
-    dateOfBirth?: string | undefined;
-    passportnumber?: string | undefined;
-    jurisdiction?: string | undefined;
-    placeOfBirthCity?: string | undefined;
+  applicationID?: number | undefined;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  formTypeID?: string | undefined;
+  userID?: number | undefined;
+  personalDetailID?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  windApplicationStatus?: number | undefined;
+  nationalityID?: number | undefined;
+  placeOfBirthCountryID?: number | undefined;
+  modifiedBy?: number | undefined;
+  proposedRelDay?: number | undefined;
+  proposedRelMonth?: number | undefined;
+  proposedRelYear?: number | undefined;
+  countryOfResidence?: number | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  familyName?: string | undefined;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  title?: string | undefined;
+  nationality?: string | undefined;
+  placeOfBirthCountry?: string | undefined;
+  nationalIdNumber?: string | undefined;
+  resTelephoneNumber?: string | undefined;
+  workTelephonenumber?: string | undefined;
+  otherNames?: string | undefined;
+  emailAddress?: string | undefined;
+  dateOfBirth?: string | undefined;
+  passportnumber?: string | undefined;
+  jurisdiction?: string | undefined;
+  placeOfBirthCity?: string | undefined;
 
-    constructor(data?: IIndividualDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IIndividualDetailsDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.applicationID = _data["applicationID"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.aiNumber = _data["aiNumber"];
-            this.formTypeID = _data["formTypeID"];
-            this.userID = _data["userID"];
-            this.personalDetailID = _data["personalDetailID"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.windApplicationStatus = _data["windApplicationStatus"];
-            this.nationalityID = _data["nationalityID"];
-            this.placeOfBirthCountryID = _data["placeOfBirthCountryID"];
-            this.modifiedBy = _data["modifiedBy"];
-            this.proposedRelDay = _data["proposedRelDay"];
-            this.proposedRelMonth = _data["proposedRelMonth"];
-            this.proposedRelYear = _data["proposedRelYear"];
-            this.countryOfResidence = _data["countryOfResidence"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.familyName = _data["familyName"];
-            this.createdDate = _data["createdDate"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.title = _data["title"];
-            this.nationality = _data["nationality"];
-            this.placeOfBirthCountry = _data["placeOfBirthCountry"];
-            this.nationalIdNumber = _data["nationalIdNumber"];
-            this.resTelephoneNumber = _data["resTelephoneNumber"];
-            this.workTelephonenumber = _data["workTelephonenumber"];
-            this.otherNames = _data["otherNames"];
-            this.emailAddress = _data["emailAddress"];
-            this.dateOfBirth = _data["dateOfBirth"];
-            this.passportnumber = _data["passportnumber"];
-            this.jurisdiction = _data["jurisdiction"];
-            this.placeOfBirthCity = _data["placeOfBirthCity"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.applicationID = _data['applicationID'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.aiNumber = _data['aiNumber'];
+      this.formTypeID = _data['formTypeID'];
+      this.userID = _data['userID'];
+      this.personalDetailID = _data['personalDetailID'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.windApplicationStatus = _data['windApplicationStatus'];
+      this.nationalityID = _data['nationalityID'];
+      this.placeOfBirthCountryID = _data['placeOfBirthCountryID'];
+      this.modifiedBy = _data['modifiedBy'];
+      this.proposedRelDay = _data['proposedRelDay'];
+      this.proposedRelMonth = _data['proposedRelMonth'];
+      this.proposedRelYear = _data['proposedRelYear'];
+      this.countryOfResidence = _data['countryOfResidence'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.familyName = _data['familyName'];
+      this.createdDate = _data['createdDate'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.title = _data['title'];
+      this.nationality = _data['nationality'];
+      this.placeOfBirthCountry = _data['placeOfBirthCountry'];
+      this.nationalIdNumber = _data['nationalIdNumber'];
+      this.resTelephoneNumber = _data['resTelephoneNumber'];
+      this.workTelephonenumber = _data['workTelephonenumber'];
+      this.otherNames = _data['otherNames'];
+      this.emailAddress = _data['emailAddress'];
+      this.dateOfBirth = _data['dateOfBirth'];
+      this.passportnumber = _data['passportnumber'];
+      this.jurisdiction = _data['jurisdiction'];
+      this.placeOfBirthCity = _data['placeOfBirthCity'];
     }
+  }
 
-    static fromJS(data: any): IndividualDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new IndividualDetailsDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): IndividualDetailsDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new IndividualDetailsDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["applicationID"] = this.applicationID;
-        data["qfcNumber"] = this.qfcNumber;
-        data["aiNumber"] = this.aiNumber;
-        data["formTypeID"] = this.formTypeID;
-        data["userID"] = this.userID;
-        data["personalDetailID"] = this.personalDetailID;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["windApplicationStatus"] = this.windApplicationStatus;
-        data["nationalityID"] = this.nationalityID;
-        data["placeOfBirthCountryID"] = this.placeOfBirthCountryID;
-        data["modifiedBy"] = this.modifiedBy;
-        data["proposedRelDay"] = this.proposedRelDay;
-        data["proposedRelMonth"] = this.proposedRelMonth;
-        data["proposedRelYear"] = this.proposedRelYear;
-        data["countryOfResidence"] = this.countryOfResidence;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["familyName"] = this.familyName;
-        data["createdDate"] = this.createdDate;
-        data["modifiedDate"] = this.modifiedDate;
-        data["title"] = this.title;
-        data["nationality"] = this.nationality;
-        data["placeOfBirthCountry"] = this.placeOfBirthCountry;
-        data["nationalIdNumber"] = this.nationalIdNumber;
-        data["resTelephoneNumber"] = this.resTelephoneNumber;
-        data["workTelephonenumber"] = this.workTelephonenumber;
-        data["otherNames"] = this.otherNames;
-        data["emailAddress"] = this.emailAddress;
-        data["dateOfBirth"] = this.dateOfBirth;
-        data["passportnumber"] = this.passportnumber;
-        data["jurisdiction"] = this.jurisdiction;
-        data["placeOfBirthCity"] = this.placeOfBirthCity;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['applicationID'] = this.applicationID;
+    data['qfcNumber'] = this.qfcNumber;
+    data['aiNumber'] = this.aiNumber;
+    data['formTypeID'] = this.formTypeID;
+    data['userID'] = this.userID;
+    data['personalDetailID'] = this.personalDetailID;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['windApplicationStatus'] = this.windApplicationStatus;
+    data['nationalityID'] = this.nationalityID;
+    data['placeOfBirthCountryID'] = this.placeOfBirthCountryID;
+    data['modifiedBy'] = this.modifiedBy;
+    data['proposedRelDay'] = this.proposedRelDay;
+    data['proposedRelMonth'] = this.proposedRelMonth;
+    data['proposedRelYear'] = this.proposedRelYear;
+    data['countryOfResidence'] = this.countryOfResidence;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['familyName'] = this.familyName;
+    data['createdDate'] = this.createdDate;
+    data['modifiedDate'] = this.modifiedDate;
+    data['title'] = this.title;
+    data['nationality'] = this.nationality;
+    data['placeOfBirthCountry'] = this.placeOfBirthCountry;
+    data['nationalIdNumber'] = this.nationalIdNumber;
+    data['resTelephoneNumber'] = this.resTelephoneNumber;
+    data['workTelephonenumber'] = this.workTelephonenumber;
+    data['otherNames'] = this.otherNames;
+    data['emailAddress'] = this.emailAddress;
+    data['dateOfBirth'] = this.dateOfBirth;
+    data['passportnumber'] = this.passportnumber;
+    data['jurisdiction'] = this.jurisdiction;
+    data['placeOfBirthCity'] = this.placeOfBirthCity;
+    return data;
+  }
 }
 
 export interface IIndividualDetailsDto {
-    applicationID?: number | undefined;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    formTypeID?: string | undefined;
-    userID?: number | undefined;
-    personalDetailID?: number | undefined;
-    wObjectSOStatusID?: number | undefined;
-    windApplicationStatus?: number | undefined;
-    nationalityID?: number | undefined;
-    placeOfBirthCountryID?: number | undefined;
-    modifiedBy?: number | undefined;
-    proposedRelDay?: number | undefined;
-    proposedRelMonth?: number | undefined;
-    proposedRelYear?: number | undefined;
-    countryOfResidence?: number | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    familyName?: string | undefined;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    title?: string | undefined;
-    nationality?: string | undefined;
-    placeOfBirthCountry?: string | undefined;
-    nationalIdNumber?: string | undefined;
-    resTelephoneNumber?: string | undefined;
-    workTelephonenumber?: string | undefined;
-    otherNames?: string | undefined;
-    emailAddress?: string | undefined;
-    dateOfBirth?: string | undefined;
-    passportnumber?: string | undefined;
-    jurisdiction?: string | undefined;
-    placeOfBirthCity?: string | undefined;
+  applicationID?: number | undefined;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  formTypeID?: string | undefined;
+  userID?: number | undefined;
+  personalDetailID?: number | undefined;
+  wObjectSOStatusID?: number | undefined;
+  windApplicationStatus?: number | undefined;
+  nationalityID?: number | undefined;
+  placeOfBirthCountryID?: number | undefined;
+  modifiedBy?: number | undefined;
+  proposedRelDay?: number | undefined;
+  proposedRelMonth?: number | undefined;
+  proposedRelYear?: number | undefined;
+  countryOfResidence?: number | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  familyName?: string | undefined;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  title?: string | undefined;
+  nationality?: string | undefined;
+  placeOfBirthCountry?: string | undefined;
+  nationalIdNumber?: string | undefined;
+  resTelephoneNumber?: string | undefined;
+  workTelephonenumber?: string | undefined;
+  otherNames?: string | undefined;
+  emailAddress?: string | undefined;
+  dateOfBirth?: string | undefined;
+  passportnumber?: string | undefined;
+  jurisdiction?: string | undefined;
+  placeOfBirthCity?: string | undefined;
 }
 
-export class IndividualDetailsDtoBaseResponse implements IIndividualDetailsDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: IndividualDetailsDto;
+export class IndividualDetailsDtoBaseResponse
+  implements IIndividualDetailsDtoBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: IndividualDetailsDto;
 
-    constructor(data?: IIndividualDetailsDtoBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IIndividualDetailsDtoBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? IndividualDetailsDto.fromJS(_data["response"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response']
+        ? IndividualDetailsDto.fromJS(_data['response'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): IndividualDetailsDtoBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new IndividualDetailsDtoBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): IndividualDetailsDtoBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new IndividualDetailsDtoBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response ? this.response.toJSON() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IIndividualDetailsDtoBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: IndividualDetailsDto;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: IndividualDetailsDto;
 }
 
-export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
+export class InsertObjectSOStatusDetailsDto
+  implements IInsertObjectSOStatusDetailsDto
+{
+  objectSOStatus?: ObjectSOStatusDto;
+  lstReportSignatories?: ReportSignatories[] | undefined;
 
-    constructor(data?: IInsertObjectSOStatusDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IInsertObjectSOStatusDetailsDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objectSOStatus = _data["objectSOStatus"] ? ObjectSOStatusDto.fromJS(_data["objectSOStatus"]) : <any>undefined;
-            if (Array.isArray(_data["lstReportSignatories"])) {
-                this.lstReportSignatories = [] as any;
-                for (let item of _data["lstReportSignatories"])
-                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objectSOStatus = _data['objectSOStatus']
+        ? ObjectSOStatusDto.fromJS(_data['objectSOStatus'])
+        : <any>undefined;
+      if (Array.isArray(_data['lstReportSignatories'])) {
+        this.lstReportSignatories = [] as any;
+        for (let item of _data['lstReportSignatories'])
+          this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): InsertObjectSOStatusDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new InsertObjectSOStatusDetailsDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): InsertObjectSOStatusDetailsDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new InsertObjectSOStatusDetailsDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectSOStatus"] = this.objectSOStatus ? this.objectSOStatus.toJSON() : <any>undefined;
-        if (Array.isArray(this.lstReportSignatories)) {
-            data["lstReportSignatories"] = [];
-            for (let item of this.lstReportSignatories)
-                data["lstReportSignatories"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objectSOStatus'] = this.objectSOStatus
+      ? this.objectSOStatus.toJSON()
+      : <any>undefined;
+    if (Array.isArray(this.lstReportSignatories)) {
+      data['lstReportSignatories'] = [];
+      for (let item of this.lstReportSignatories)
+        data['lstReportSignatories'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
+  objectSOStatus?: ObjectSOStatusDto;
+  lstReportSignatories?: ReportSignatories[] | undefined;
 }
 
 export class InsertReportSchDetailsDto implements IInsertReportSchDetailsDto {
-    objReportSch?: ReportSchDto;
-    objReportSchItem?: ReportSchItem;
-    objReportSchItemAttachment?: AttachmentDto;
+  objReportSch?: ReportSchDto;
+  objReportSchItem?: ReportSchItem;
+  objReportSchItemAttachment?: AttachmentDto;
 
-    constructor(data?: IInsertReportSchDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IInsertReportSchDetailsDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objReportSch = _data["objReportSch"] ? ReportSchDto.fromJS(_data["objReportSch"]) : <any>undefined;
-            this.objReportSchItem = _data["objReportSchItem"] ? ReportSchItem.fromJS(_data["objReportSchItem"]) : <any>undefined;
-            this.objReportSchItemAttachment = _data["objReportSchItemAttachment"] ? AttachmentDto.fromJS(_data["objReportSchItemAttachment"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objReportSch = _data['objReportSch']
+        ? ReportSchDto.fromJS(_data['objReportSch'])
+        : <any>undefined;
+      this.objReportSchItem = _data['objReportSchItem']
+        ? ReportSchItem.fromJS(_data['objReportSchItem'])
+        : <any>undefined;
+      this.objReportSchItemAttachment = _data['objReportSchItemAttachment']
+        ? AttachmentDto.fromJS(_data['objReportSchItemAttachment'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): InsertReportSchDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new InsertReportSchDetailsDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): InsertReportSchDetailsDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new InsertReportSchDetailsDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objReportSch"] = this.objReportSch ? this.objReportSch.toJSON() : <any>undefined;
-        data["objReportSchItem"] = this.objReportSchItem ? this.objReportSchItem.toJSON() : <any>undefined;
-        data["objReportSchItemAttachment"] = this.objReportSchItemAttachment ? this.objReportSchItemAttachment.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objReportSch'] = this.objReportSch
+      ? this.objReportSch.toJSON()
+      : <any>undefined;
+    data['objReportSchItem'] = this.objReportSchItem
+      ? this.objReportSchItem.toJSON()
+      : <any>undefined;
+    data['objReportSchItemAttachment'] = this.objReportSchItemAttachment
+      ? this.objReportSchItemAttachment.toJSON()
+      : <any>undefined;
+    return data;
+  }
 }
 
 export interface IInsertReportSchDetailsDto {
-    objReportSch?: ReportSchDto;
-    objReportSchItem?: ReportSchItem;
-    objReportSchItemAttachment?: AttachmentDto;
+  objReportSch?: ReportSchDto;
+  objReportSchItem?: ReportSchItem;
+  objReportSchItemAttachment?: AttachmentDto;
 }
 
 export class Int32BaseResponse implements IInt32BaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: number;
 
-    constructor(data?: IInt32BaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IInt32BaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response'];
     }
+  }
 
-    static fromJS(data: any): Int32BaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new Int32BaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Int32BaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new Int32BaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response;
+    return data;
+  }
 }
 
 export interface IInt32BaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: number;
 }
 
 export class Int32ListBaseResponse implements IInt32ListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: number[] | undefined;
 
-    constructor(data?: IInt32ListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IInt32ListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(item);
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response']) this.response!.push(item);
+      }
     }
+  }
 
-    static fromJS(data: any): Int32ListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new Int32ListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Int32ListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new Int32ListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item);
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item);
     }
+    return data;
+  }
 }
 
 export interface IInt32ListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: number[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: number[] | undefined;
 }
 
-export class Int32StringDictionaryBaseResponse implements IInt32StringDictionaryBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: string; } | undefined;
+export class Int32StringDictionaryBaseResponse
+  implements IInt32StringDictionaryBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: string } | undefined;
 
-    constructor(data?: IInt32StringDictionaryBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
+  constructor(data?: IInt32StringDictionaryBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (_data['response']) {
+        this.response = {} as any;
+        for (let key in _data['response']) {
+          if (_data['response'].hasOwnProperty(key))
+            (<any>this.response)![key] = _data['response'][key];
         }
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (_data["response"]) {
-                this.response = {} as any;
-                for (let key in _data["response"]) {
-                    if (_data["response"].hasOwnProperty(key))
-                        (<any>this.response)![key] = _data["response"][key];
-                }
-            }
-        }
-    }
+  static fromJS(data: any): Int32StringDictionaryBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new Int32StringDictionaryBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    static fromJS(data: any): Int32StringDictionaryBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new Int32StringDictionaryBaseResponse();
-        result.init(data);
-        return result;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (this.response) {
+      data['response'] = {};
+      for (let key in this.response) {
+        if (this.response.hasOwnProperty(key))
+          (<any>data['response'])[key] = (<any>this.response)[key];
+      }
     }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (this.response) {
-            data["response"] = {};
-            for (let key in this.response) {
-                if (this.response.hasOwnProperty(key))
-                    (<any>data["response"])[key] = (<any>this.response)[key];
-            }
-        }
-        return data;
-    }
+    return data;
+  }
 }
 
 export interface IInt32StringDictionaryBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: string; } | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: string } | undefined;
 }
 
 export class ObjTasks implements IObjTasks {
-    wObjTaskID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjInstanceID?: number | undefined;
-    wObjTaskSyncStatusTypeID?: number | undefined;
-    wObjectEventTypeID?: number | undefined;
-    dateCreated?: Date | undefined;
-    userCreated?: number | undefined;
+  wObjTaskID?: number | undefined;
+  wObjectID?: number | undefined;
+  wObjInstanceID?: number | undefined;
+  wObjTaskSyncStatusTypeID?: number | undefined;
+  wObjectEventTypeID?: number | undefined;
+  dateCreated?: Date | undefined;
+  userCreated?: number | undefined;
 
-    constructor(data?: IObjTasks) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IObjTasks) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wObjTaskID = _data["wObjTaskID"];
-            this.wObjectID = _data["wObjectID"];
-            this.wObjInstanceID = _data["wObjInstanceID"];
-            this.wObjTaskSyncStatusTypeID = _data["wObjTaskSyncStatusTypeID"];
-            this.wObjectEventTypeID = _data["wObjectEventTypeID"];
-            this.dateCreated = _data["dateCreated"] ? new Date(_data["dateCreated"].toString()) : <any>undefined;
-            this.userCreated = _data["userCreated"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wObjTaskID = _data['wObjTaskID'];
+      this.wObjectID = _data['wObjectID'];
+      this.wObjInstanceID = _data['wObjInstanceID'];
+      this.wObjTaskSyncStatusTypeID = _data['wObjTaskSyncStatusTypeID'];
+      this.wObjectEventTypeID = _data['wObjectEventTypeID'];
+      this.dateCreated = _data['dateCreated']
+        ? new Date(_data['dateCreated'].toString())
+        : <any>undefined;
+      this.userCreated = _data['userCreated'];
     }
+  }
 
-    static fromJS(data: any): ObjTasks {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjTasks();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ObjTasks {
+    data = typeof data === 'object' ? data : {};
+    let result = new ObjTasks();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wObjTaskID"] = this.wObjTaskID;
-        data["wObjectID"] = this.wObjectID;
-        data["wObjInstanceID"] = this.wObjInstanceID;
-        data["wObjTaskSyncStatusTypeID"] = this.wObjTaskSyncStatusTypeID;
-        data["wObjectEventTypeID"] = this.wObjectEventTypeID;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        data["userCreated"] = this.userCreated;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wObjTaskID'] = this.wObjTaskID;
+    data['wObjectID'] = this.wObjectID;
+    data['wObjInstanceID'] = this.wObjInstanceID;
+    data['wObjTaskSyncStatusTypeID'] = this.wObjTaskSyncStatusTypeID;
+    data['wObjectEventTypeID'] = this.wObjectEventTypeID;
+    data['dateCreated'] = this.dateCreated
+      ? this.dateCreated.toISOString()
+      : <any>undefined;
+    data['userCreated'] = this.userCreated;
+    return data;
+  }
 }
 
 export interface IObjTasks {
-    wObjTaskID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjInstanceID?: number | undefined;
-    wObjTaskSyncStatusTypeID?: number | undefined;
-    wObjectEventTypeID?: number | undefined;
-    dateCreated?: Date | undefined;
-    userCreated?: number | undefined;
+  wObjTaskID?: number | undefined;
+  wObjectID?: number | undefined;
+  wObjInstanceID?: number | undefined;
+  wObjTaskSyncStatusTypeID?: number | undefined;
+  wObjectEventTypeID?: number | undefined;
+  dateCreated?: Date | undefined;
+  userCreated?: number | undefined;
 }
 
 export class ObjectSOStatusDto implements IObjectSOStatusDto {
-    objectID?: number | undefined;
-    objectInstanceID?: number | undefined;
-    soStatusTypeID?: number | undefined;
-    userID?: number | undefined;
-    soTaskValid?: boolean | undefined;
+  objectID?: number | undefined;
+  objectInstanceID?: number | undefined;
+  soStatusTypeID?: number | undefined;
+  userID?: number | undefined;
+  soTaskValid?: boolean | undefined;
 
-    constructor(data?: IObjectSOStatusDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IObjectSOStatusDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.soStatusTypeID = _data["soStatusTypeID"];
-            this.userID = _data["userID"];
-            this.soTaskValid = _data["soTaskValid"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objectID = _data['objectID'];
+      this.objectInstanceID = _data['objectInstanceID'];
+      this.soStatusTypeID = _data['soStatusTypeID'];
+      this.userID = _data['userID'];
+      this.soTaskValid = _data['soTaskValid'];
     }
+  }
 
-    static fromJS(data: any): ObjectSOStatusDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSOStatusDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ObjectSOStatusDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new ObjectSOStatusDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["soStatusTypeID"] = this.soStatusTypeID;
-        data["userID"] = this.userID;
-        data["soTaskValid"] = this.soTaskValid;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objectID'] = this.objectID;
+    data['objectInstanceID'] = this.objectInstanceID;
+    data['soStatusTypeID'] = this.soStatusTypeID;
+    data['userID'] = this.userID;
+    data['soTaskValid'] = this.soTaskValid;
+    return data;
+  }
 }
 
 export interface IObjectSOStatusDto {
-    objectID?: number | undefined;
-    objectInstanceID?: number | undefined;
-    soStatusTypeID?: number | undefined;
-    userID?: number | undefined;
-    soTaskValid?: boolean | undefined;
+  objectID?: number | undefined;
+  objectInstanceID?: number | undefined;
+  soStatusTypeID?: number | undefined;
+  userID?: number | undefined;
+  soTaskValid?: boolean | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
-    objectID?: number;
-    objectInstanceID?: number;
-    soStatusTypeDesc?: string | undefined;
-    soInitiationDate?: string | undefined;
-    soCompletionDate?: string | undefined;
-    docTypeID?: number;
-    rptFreqTypeDesc?: string | undefined;
-    attachmentID?: number;
-    objectSOTaskStatusID?: number;
-    objectSOStatusID?: number;
-    soTaskAssignedTo?: number;
-    soTaskAssignedDate?: string | undefined;
-    soTaskSeqNo?: number;
-    groupSignOff?: boolean;
-    soStatusTypeID?: number;
-    soTaskCompletionDate?: string | undefined;
-    userID?: number;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    isLoggedInUser?: boolean;
-    roles?: string | undefined;
-    individualJobTitle?: string | undefined;
-    userActive?: boolean | undefined;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: string | undefined;
-    soTaskValid?: boolean | undefined;
+  objectID?: number;
+  objectInstanceID?: number;
+  soStatusTypeDesc?: string | undefined;
+  soInitiationDate?: string | undefined;
+  soCompletionDate?: string | undefined;
+  docTypeID?: number;
+  rptFreqTypeDesc?: string | undefined;
+  attachmentID?: number;
+  objectSOTaskStatusID?: number;
+  objectSOStatusID?: number;
+  soTaskAssignedTo?: number;
+  soTaskAssignedDate?: string | undefined;
+  soTaskSeqNo?: number;
+  groupSignOff?: boolean;
+  soStatusTypeID?: number;
+  soTaskCompletionDate?: string | undefined;
+  userID?: number;
+  individualName?: string | undefined;
+  emailAdd?: string | undefined;
+  isLoggedInUser?: boolean;
+  roles?: string | undefined;
+  individualJobTitle?: string | undefined;
+  userActive?: boolean | undefined;
+  wTermID?: number | undefined;
+  agreedOnTerms?: boolean | undefined;
+  termsAgreedDate?: string | undefined;
+  soTaskValid?: boolean | undefined;
 
-    constructor(data?: IObjectSOTaskStatus) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IObjectSOTaskStatus) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.soStatusTypeDesc = _data["soStatusTypeDesc"];
-            this.soInitiationDate = _data["soInitiationDate"];
-            this.soCompletionDate = _data["soCompletionDate"];
-            this.docTypeID = _data["docTypeID"];
-            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
-            this.attachmentID = _data["attachmentID"];
-            this.objectSOTaskStatusID = _data["objectSOTaskStatusID"];
-            this.objectSOStatusID = _data["objectSOStatusID"];
-            this.soTaskAssignedTo = _data["soTaskAssignedTo"];
-            this.soTaskAssignedDate = _data["soTaskAssignedDate"];
-            this.soTaskSeqNo = _data["soTaskSeqNo"];
-            this.groupSignOff = _data["groupSignOff"];
-            this.soStatusTypeID = _data["soStatusTypeID"];
-            this.soTaskCompletionDate = _data["soTaskCompletionDate"];
-            this.userID = _data["userID"];
-            this.individualName = _data["individualName"];
-            this.emailAdd = _data["emailAdd"];
-            this.isLoggedInUser = _data["isLoggedInUser"];
-            this.roles = _data["roles"];
-            this.individualJobTitle = _data["individualJobTitle"];
-            this.userActive = _data["userActive"];
-            this.wTermID = _data["wTermID"];
-            this.agreedOnTerms = _data["agreedOnTerms"];
-            this.termsAgreedDate = _data["termsAgreedDate"];
-            this.soTaskValid = _data["soTaskValid"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.objectID = _data['objectID'];
+      this.objectInstanceID = _data['objectInstanceID'];
+      this.soStatusTypeDesc = _data['soStatusTypeDesc'];
+      this.soInitiationDate = _data['soInitiationDate'];
+      this.soCompletionDate = _data['soCompletionDate'];
+      this.docTypeID = _data['docTypeID'];
+      this.rptFreqTypeDesc = _data['rptFreqTypeDesc'];
+      this.attachmentID = _data['attachmentID'];
+      this.objectSOTaskStatusID = _data['objectSOTaskStatusID'];
+      this.objectSOStatusID = _data['objectSOStatusID'];
+      this.soTaskAssignedTo = _data['soTaskAssignedTo'];
+      this.soTaskAssignedDate = _data['soTaskAssignedDate'];
+      this.soTaskSeqNo = _data['soTaskSeqNo'];
+      this.groupSignOff = _data['groupSignOff'];
+      this.soStatusTypeID = _data['soStatusTypeID'];
+      this.soTaskCompletionDate = _data['soTaskCompletionDate'];
+      this.userID = _data['userID'];
+      this.individualName = _data['individualName'];
+      this.emailAdd = _data['emailAdd'];
+      this.isLoggedInUser = _data['isLoggedInUser'];
+      this.roles = _data['roles'];
+      this.individualJobTitle = _data['individualJobTitle'];
+      this.userActive = _data['userActive'];
+      this.wTermID = _data['wTermID'];
+      this.agreedOnTerms = _data['agreedOnTerms'];
+      this.termsAgreedDate = _data['termsAgreedDate'];
+      this.soTaskValid = _data['soTaskValid'];
     }
+  }
 
-    static fromJS(data: any): ObjectSOTaskStatus {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSOTaskStatus();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ObjectSOTaskStatus {
+    data = typeof data === 'object' ? data : {};
+    let result = new ObjectSOTaskStatus();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["soStatusTypeDesc"] = this.soStatusTypeDesc;
-        data["soInitiationDate"] = this.soInitiationDate;
-        data["soCompletionDate"] = this.soCompletionDate;
-        data["docTypeID"] = this.docTypeID;
-        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
-        data["attachmentID"] = this.attachmentID;
-        data["objectSOTaskStatusID"] = this.objectSOTaskStatusID;
-        data["objectSOStatusID"] = this.objectSOStatusID;
-        data["soTaskAssignedTo"] = this.soTaskAssignedTo;
-        data["soTaskAssignedDate"] = this.soTaskAssignedDate;
-        data["soTaskSeqNo"] = this.soTaskSeqNo;
-        data["groupSignOff"] = this.groupSignOff;
-        data["soStatusTypeID"] = this.soStatusTypeID;
-        data["soTaskCompletionDate"] = this.soTaskCompletionDate;
-        data["userID"] = this.userID;
-        data["individualName"] = this.individualName;
-        data["emailAdd"] = this.emailAdd;
-        data["isLoggedInUser"] = this.isLoggedInUser;
-        data["roles"] = this.roles;
-        data["individualJobTitle"] = this.individualJobTitle;
-        data["userActive"] = this.userActive;
-        data["wTermID"] = this.wTermID;
-        data["agreedOnTerms"] = this.agreedOnTerms;
-        data["termsAgreedDate"] = this.termsAgreedDate;
-        data["soTaskValid"] = this.soTaskValid;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['objectID'] = this.objectID;
+    data['objectInstanceID'] = this.objectInstanceID;
+    data['soStatusTypeDesc'] = this.soStatusTypeDesc;
+    data['soInitiationDate'] = this.soInitiationDate;
+    data['soCompletionDate'] = this.soCompletionDate;
+    data['docTypeID'] = this.docTypeID;
+    data['rptFreqTypeDesc'] = this.rptFreqTypeDesc;
+    data['attachmentID'] = this.attachmentID;
+    data['objectSOTaskStatusID'] = this.objectSOTaskStatusID;
+    data['objectSOStatusID'] = this.objectSOStatusID;
+    data['soTaskAssignedTo'] = this.soTaskAssignedTo;
+    data['soTaskAssignedDate'] = this.soTaskAssignedDate;
+    data['soTaskSeqNo'] = this.soTaskSeqNo;
+    data['groupSignOff'] = this.groupSignOff;
+    data['soStatusTypeID'] = this.soStatusTypeID;
+    data['soTaskCompletionDate'] = this.soTaskCompletionDate;
+    data['userID'] = this.userID;
+    data['individualName'] = this.individualName;
+    data['emailAdd'] = this.emailAdd;
+    data['isLoggedInUser'] = this.isLoggedInUser;
+    data['roles'] = this.roles;
+    data['individualJobTitle'] = this.individualJobTitle;
+    data['userActive'] = this.userActive;
+    data['wTermID'] = this.wTermID;
+    data['agreedOnTerms'] = this.agreedOnTerms;
+    data['termsAgreedDate'] = this.termsAgreedDate;
+    data['soTaskValid'] = this.soTaskValid;
+    return data;
+  }
 }
 
 export interface IObjectSOTaskStatus {
-    objectID?: number;
-    objectInstanceID?: number;
-    soStatusTypeDesc?: string | undefined;
-    soInitiationDate?: string | undefined;
-    soCompletionDate?: string | undefined;
-    docTypeID?: number;
-    rptFreqTypeDesc?: string | undefined;
-    attachmentID?: number;
-    objectSOTaskStatusID?: number;
-    objectSOStatusID?: number;
-    soTaskAssignedTo?: number;
-    soTaskAssignedDate?: string | undefined;
-    soTaskSeqNo?: number;
-    groupSignOff?: boolean;
-    soStatusTypeID?: number;
-    soTaskCompletionDate?: string | undefined;
-    userID?: number;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    isLoggedInUser?: boolean;
-    roles?: string | undefined;
-    individualJobTitle?: string | undefined;
-    userActive?: boolean | undefined;
-    wTermID?: number | undefined;
-    agreedOnTerms?: boolean | undefined;
-    termsAgreedDate?: string | undefined;
-    soTaskValid?: boolean | undefined;
+  objectID?: number;
+  objectInstanceID?: number;
+  soStatusTypeDesc?: string | undefined;
+  soInitiationDate?: string | undefined;
+  soCompletionDate?: string | undefined;
+  docTypeID?: number;
+  rptFreqTypeDesc?: string | undefined;
+  attachmentID?: number;
+  objectSOTaskStatusID?: number;
+  objectSOStatusID?: number;
+  soTaskAssignedTo?: number;
+  soTaskAssignedDate?: string | undefined;
+  soTaskSeqNo?: number;
+  groupSignOff?: boolean;
+  soStatusTypeID?: number;
+  soTaskCompletionDate?: string | undefined;
+  userID?: number;
+  individualName?: string | undefined;
+  emailAdd?: string | undefined;
+  isLoggedInUser?: boolean;
+  roles?: string | undefined;
+  individualJobTitle?: string | undefined;
+  userActive?: boolean | undefined;
+  wTermID?: number | undefined;
+  agreedOnTerms?: boolean | undefined;
+  termsAgreedDate?: string | undefined;
+  soTaskValid?: boolean | undefined;
 }
 
-export class ObjectSOTaskStatusListBaseResponse implements IObjectSOTaskStatusListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjectSOTaskStatus[] | undefined;
+export class ObjectSOTaskStatusListBaseResponse
+  implements IObjectSOTaskStatusListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ObjectSOTaskStatus[] | undefined;
 
-    constructor(data?: IObjectSOTaskStatusListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IObjectSOTaskStatusListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ObjectSOTaskStatus.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(ObjectSOTaskStatus.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): ObjectSOTaskStatusListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSOTaskStatusListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ObjectSOTaskStatusListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new ObjectSOTaskStatusListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IObjectSOTaskStatusListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjectSOTaskStatus[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ObjectSOTaskStatus[] | undefined;
 }
 
 export class PendingItemsDto implements IPendingItemsDto {
-    applicationID?: number | undefined;
-    qfcNmuner?: string | undefined;
-    formTypeID?: number | undefined;
-    statusTypeID?: number | undefined;
-    formType?: string | undefined;
-    individualName?: string | undefined;
-    applicationStatus?: string | undefined;
-    applicationContactDetailID?: number;
-    createdDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    description?: string | undefined;
-    submittedDate?: string | undefined;
-    isItemAccessible?: boolean;
-    userCreated?: number;
-    applicantSignOffDone?: boolean;
-    attachmentResubmissionRequired?: boolean;
-    resubmissionComments?: string | undefined;
-    docTypeID?: number | undefined;
-    objectID?: number | undefined;
-    docTypeDesc?: string | undefined;
+  applicationID?: number | undefined;
+  qfcNmuner?: string | undefined;
+  formTypeID?: number | undefined;
+  statusTypeID?: number | undefined;
+  formType?: string | undefined;
+  individualName?: string | undefined;
+  applicationStatus?: string | undefined;
+  applicationContactDetailID?: number;
+  createdDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  description?: string | undefined;
+  submittedDate?: string | undefined;
+  isItemAccessible?: boolean;
+  userCreated?: number;
+  applicantSignOffDone?: boolean;
+  attachmentResubmissionRequired?: boolean;
+  resubmissionComments?: string | undefined;
+  docTypeID?: number | undefined;
+  objectID?: number | undefined;
+  docTypeDesc?: string | undefined;
 
-    constructor(data?: IPendingItemsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IPendingItemsDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.applicationID = _data["applicationID"];
-            this.qfcNmuner = _data["qfcNmuner"];
-            this.formTypeID = _data["formTypeID"];
-            this.statusTypeID = _data["statusTypeID"];
-            this.formType = _data["formType"];
-            this.individualName = _data["individualName"];
-            this.applicationStatus = _data["applicationStatus"];
-            this.applicationContactDetailID = _data["applicationContactDetailID"];
-            this.createdDate = _data["createdDate"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.description = _data["description"];
-            this.submittedDate = _data["submittedDate"];
-            this.isItemAccessible = _data["isItemAccessible"];
-            this.userCreated = _data["userCreated"];
-            this.applicantSignOffDone = _data["applicantSignOffDone"];
-            this.attachmentResubmissionRequired = _data["attachmentResubmissionRequired"];
-            this.resubmissionComments = _data["resubmissionComments"];
-            this.docTypeID = _data["docTypeID"];
-            this.objectID = _data["objectID"];
-            this.docTypeDesc = _data["docTypeDesc"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.applicationID = _data['applicationID'];
+      this.qfcNmuner = _data['qfcNmuner'];
+      this.formTypeID = _data['formTypeID'];
+      this.statusTypeID = _data['statusTypeID'];
+      this.formType = _data['formType'];
+      this.individualName = _data['individualName'];
+      this.applicationStatus = _data['applicationStatus'];
+      this.applicationContactDetailID = _data['applicationContactDetailID'];
+      this.createdDate = _data['createdDate'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.description = _data['description'];
+      this.submittedDate = _data['submittedDate'];
+      this.isItemAccessible = _data['isItemAccessible'];
+      this.userCreated = _data['userCreated'];
+      this.applicantSignOffDone = _data['applicantSignOffDone'];
+      this.attachmentResubmissionRequired =
+        _data['attachmentResubmissionRequired'];
+      this.resubmissionComments = _data['resubmissionComments'];
+      this.docTypeID = _data['docTypeID'];
+      this.objectID = _data['objectID'];
+      this.docTypeDesc = _data['docTypeDesc'];
     }
+  }
 
-    static fromJS(data: any): PendingItemsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PendingItemsDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): PendingItemsDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new PendingItemsDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["applicationID"] = this.applicationID;
-        data["qfcNmuner"] = this.qfcNmuner;
-        data["formTypeID"] = this.formTypeID;
-        data["statusTypeID"] = this.statusTypeID;
-        data["formType"] = this.formType;
-        data["individualName"] = this.individualName;
-        data["applicationStatus"] = this.applicationStatus;
-        data["applicationContactDetailID"] = this.applicationContactDetailID;
-        data["createdDate"] = this.createdDate;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["description"] = this.description;
-        data["submittedDate"] = this.submittedDate;
-        data["isItemAccessible"] = this.isItemAccessible;
-        data["userCreated"] = this.userCreated;
-        data["applicantSignOffDone"] = this.applicantSignOffDone;
-        data["attachmentResubmissionRequired"] = this.attachmentResubmissionRequired;
-        data["resubmissionComments"] = this.resubmissionComments;
-        data["docTypeID"] = this.docTypeID;
-        data["objectID"] = this.objectID;
-        data["docTypeDesc"] = this.docTypeDesc;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['applicationID'] = this.applicationID;
+    data['qfcNmuner'] = this.qfcNmuner;
+    data['formTypeID'] = this.formTypeID;
+    data['statusTypeID'] = this.statusTypeID;
+    data['formType'] = this.formType;
+    data['individualName'] = this.individualName;
+    data['applicationStatus'] = this.applicationStatus;
+    data['applicationContactDetailID'] = this.applicationContactDetailID;
+    data['createdDate'] = this.createdDate;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['description'] = this.description;
+    data['submittedDate'] = this.submittedDate;
+    data['isItemAccessible'] = this.isItemAccessible;
+    data['userCreated'] = this.userCreated;
+    data['applicantSignOffDone'] = this.applicantSignOffDone;
+    data['attachmentResubmissionRequired'] =
+      this.attachmentResubmissionRequired;
+    data['resubmissionComments'] = this.resubmissionComments;
+    data['docTypeID'] = this.docTypeID;
+    data['objectID'] = this.objectID;
+    data['docTypeDesc'] = this.docTypeDesc;
+    return data;
+  }
 }
 
 export interface IPendingItemsDto {
-    applicationID?: number | undefined;
-    qfcNmuner?: string | undefined;
-    formTypeID?: number | undefined;
-    statusTypeID?: number | undefined;
-    formType?: string | undefined;
-    individualName?: string | undefined;
-    applicationStatus?: string | undefined;
-    applicationContactDetailID?: number;
-    createdDate?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    description?: string | undefined;
-    submittedDate?: string | undefined;
-    isItemAccessible?: boolean;
-    userCreated?: number;
-    applicantSignOffDone?: boolean;
-    attachmentResubmissionRequired?: boolean;
-    resubmissionComments?: string | undefined;
-    docTypeID?: number | undefined;
-    objectID?: number | undefined;
-    docTypeDesc?: string | undefined;
+  applicationID?: number | undefined;
+  qfcNmuner?: string | undefined;
+  formTypeID?: number | undefined;
+  statusTypeID?: number | undefined;
+  formType?: string | undefined;
+  individualName?: string | undefined;
+  applicationStatus?: string | undefined;
+  applicationContactDetailID?: number;
+  createdDate?: string | undefined;
+  wObjectSOStatusID?: number | undefined;
+  description?: string | undefined;
+  submittedDate?: string | undefined;
+  isItemAccessible?: boolean;
+  userCreated?: number;
+  applicantSignOffDone?: boolean;
+  attachmentResubmissionRequired?: boolean;
+  resubmissionComments?: string | undefined;
+  docTypeID?: number | undefined;
+  objectID?: number | undefined;
+  docTypeDesc?: string | undefined;
 }
 
-export class PendingItemsDtoListBaseResponse implements IPendingItemsDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: PendingItemsDto[] | undefined;
+export class PendingItemsDtoListBaseResponse
+  implements IPendingItemsDtoListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: PendingItemsDto[] | undefined;
 
-    constructor(data?: IPendingItemsDtoListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IPendingItemsDtoListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(PendingItemsDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(PendingItemsDto.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): PendingItemsDtoListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new PendingItemsDtoListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): PendingItemsDtoListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new PendingItemsDtoListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IPendingItemsDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: PendingItemsDto[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: PendingItemsDto[] | undefined;
 }
 
 export class PreviousNames implements IPreviousNames {
-    previousNamesID?: number | undefined;
-    previousNamesGUID?: string | undefined;
-    previousName?: string | undefined;
-    previousNameReason?: string | undefined;
-    userID?: number;
-    fromDay?: string | undefined;
-    fromMonth?: string | undefined;
-    fromYear?: string | undefined;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
-    applicationID?: number;
-    previousNameDate?: string | undefined;
+  previousNamesID?: number | undefined;
+  previousNamesGUID?: string | undefined;
+  previousName?: string | undefined;
+  previousNameReason?: string | undefined;
+  userID?: number;
+  fromDay?: string | undefined;
+  fromMonth?: string | undefined;
+  fromYear?: string | undefined;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
+  applicationID?: number;
+  previousNameDate?: string | undefined;
 
-    constructor(data?: IPreviousNames) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IPreviousNames) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.previousNamesID = _data["previousNamesID"];
-            this.previousNamesGUID = _data["previousNamesGUID"];
-            this.previousName = _data["previousName"];
-            this.previousNameReason = _data["previousNameReason"];
-            this.userID = _data["userID"];
-            this.fromDay = _data["fromDay"];
-            this.fromMonth = _data["fromMonth"];
-            this.fromYear = _data["fromYear"];
-            this.createdDate = _data["createdDate"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.modifiedBy = _data["modifiedBy"];
-            this.applicationID = _data["applicationID"];
-            this.previousNameDate = _data["previousNameDate"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.previousNamesID = _data['previousNamesID'];
+      this.previousNamesGUID = _data['previousNamesGUID'];
+      this.previousName = _data['previousName'];
+      this.previousNameReason = _data['previousNameReason'];
+      this.userID = _data['userID'];
+      this.fromDay = _data['fromDay'];
+      this.fromMonth = _data['fromMonth'];
+      this.fromYear = _data['fromYear'];
+      this.createdDate = _data['createdDate'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.modifiedBy = _data['modifiedBy'];
+      this.applicationID = _data['applicationID'];
+      this.previousNameDate = _data['previousNameDate'];
     }
+  }
 
-    static fromJS(data: any): PreviousNames {
-        data = typeof data === 'object' ? data : {};
-        let result = new PreviousNames();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): PreviousNames {
+    data = typeof data === 'object' ? data : {};
+    let result = new PreviousNames();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["previousNamesID"] = this.previousNamesID;
-        data["previousNamesGUID"] = this.previousNamesGUID;
-        data["previousName"] = this.previousName;
-        data["previousNameReason"] = this.previousNameReason;
-        data["userID"] = this.userID;
-        data["fromDay"] = this.fromDay;
-        data["fromMonth"] = this.fromMonth;
-        data["fromYear"] = this.fromYear;
-        data["createdDate"] = this.createdDate;
-        data["modifiedDate"] = this.modifiedDate;
-        data["modifiedBy"] = this.modifiedBy;
-        data["applicationID"] = this.applicationID;
-        data["previousNameDate"] = this.previousNameDate;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['previousNamesID'] = this.previousNamesID;
+    data['previousNamesGUID'] = this.previousNamesGUID;
+    data['previousName'] = this.previousName;
+    data['previousNameReason'] = this.previousNameReason;
+    data['userID'] = this.userID;
+    data['fromDay'] = this.fromDay;
+    data['fromMonth'] = this.fromMonth;
+    data['fromYear'] = this.fromYear;
+    data['createdDate'] = this.createdDate;
+    data['modifiedDate'] = this.modifiedDate;
+    data['modifiedBy'] = this.modifiedBy;
+    data['applicationID'] = this.applicationID;
+    data['previousNameDate'] = this.previousNameDate;
+    return data;
+  }
 }
 
 export interface IPreviousNames {
-    previousNamesID?: number | undefined;
-    previousNamesGUID?: string | undefined;
-    previousName?: string | undefined;
-    previousNameReason?: string | undefined;
-    userID?: number;
-    fromDay?: string | undefined;
-    fromMonth?: string | undefined;
-    fromYear?: string | undefined;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
-    applicationID?: number;
-    previousNameDate?: string | undefined;
+  previousNamesID?: number | undefined;
+  previousNamesGUID?: string | undefined;
+  previousName?: string | undefined;
+  previousNameReason?: string | undefined;
+  userID?: number;
+  fromDay?: string | undefined;
+  fromMonth?: string | undefined;
+  fromYear?: string | undefined;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
+  applicationID?: number;
+  previousNameDate?: string | undefined;
 }
 
 export class ReportSchDetails implements IReportSchDetails {
-    firmsRptSchID?: number;
-    firmsRptSchItemID?: number;
-    rptSchID?: number;
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    rptSchFinYearPeriod?: string | undefined;
-    rptSchItemID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSchItemAttachmentID?: number;
-    fileName?: string | undefined;
-    attachmentFilePath?: string | undefined;
-    attachmentFileURI?: string | undefined;
-    rptSOMethodTypeID?: number;
-    rptSOMethodTypeDesc?: string | undefined;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    validAttachment?: boolean;
-    submittedOn?: string | undefined;
-    fileStream?: string | undefined;
-    objectSOStatusID?: number;
-    objectID?: number;
-    objectInstanceID?: number;
-    soStatusTypeID?: number;
-    soStatusTypeDesc?: string | undefined;
-    soInitiationDate?: string | undefined;
-    soCompletionDate?: string | undefined;
-    userID?: number;
-    description?: string | undefined;
-    isItemAccessible?: boolean;
-    submittedBy?: number;
-    isFileRecieved?: boolean;
-    lateFeeFlag?: boolean;
-    daysOverDue?: number;
-    isReportDue?: boolean;
-    rptSchAttachmentStatusDesc?: string | undefined;
-    rptSubmissionTypeID?: number;
-    rptSubmissionType?: string | undefined;
-    rptFormsToBeSubmited?: string | undefined;
-    rptNextStatus?: string | undefined;
-    attachmentStatusTypeID?: number;
-    fileAttachedUserEmail?: string | undefined;
-    rptAttachmentStatusDate?: string | undefined;
-    isReportReminderDue?: boolean;
-    rptSchAttachmentStatusId?: number | undefined;
-    isResubmissionRequested?: boolean;
-    isResubmissionNotificationRequired?: number;
-    resubmissionRequestedDate?: string | undefined;
-    docReceivedDate?: string | undefined;
-    submissionBeforeRptPeriodEnd?: boolean;
-    resubmissionDueDate?: string | undefined;
-    isAMLDocType?: boolean;
+  firmsRptSchID?: number;
+  firmsRptSchItemID?: number;
+  rptSchID?: number;
+  qfcNum?: string | undefined;
+  rptSchFinYearFromDate?: string | undefined;
+  rptSchFinYearToDate?: string | undefined;
+  rptSchFinYearPeriod?: string | undefined;
+  rptSchItemID?: number;
+  docTypeID?: number;
+  rptName?: string | undefined;
+  rptDueDate?: string | undefined;
+  rptPeriodFromDate?: string | undefined;
+  rptPeriodToDate?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  rptFreqTypeDesc?: string | undefined;
+  reviewComments?: string | undefined;
+  manuallyReceived?: boolean;
+  allowReSubmit?: boolean;
+  rptSchItemAttachmentID?: number;
+  fileName?: string | undefined;
+  attachmentFilePath?: string | undefined;
+  attachmentFileURI?: string | undefined;
+  rptSOMethodTypeID?: number;
+  rptSOMethodTypeDesc?: string | undefined;
+  fileUploadedByName?: string | undefined;
+  fileUploadedByEmailAdd?: string | undefined;
+  fileUploadedOnDate?: string | undefined;
+  validAttachment?: boolean;
+  submittedOn?: string | undefined;
+  fileStream?: string | undefined;
+  objectSOStatusID?: number;
+  objectID?: number;
+  objectInstanceID?: number;
+  soStatusTypeID?: number;
+  soStatusTypeDesc?: string | undefined;
+  soInitiationDate?: string | undefined;
+  soCompletionDate?: string | undefined;
+  userID?: number;
+  description?: string | undefined;
+  isItemAccessible?: boolean;
+  submittedBy?: number;
+  isFileRecieved?: boolean;
+  lateFeeFlag?: boolean;
+  daysOverDue?: number;
+  isReportDue?: boolean;
+  rptSchAttachmentStatusDesc?: string | undefined;
+  rptSubmissionTypeID?: number;
+  rptSubmissionType?: string | undefined;
+  rptFormsToBeSubmited?: string | undefined;
+  rptNextStatus?: string | undefined;
+  attachmentStatusTypeID?: number;
+  fileAttachedUserEmail?: string | undefined;
+  rptAttachmentStatusDate?: string | undefined;
+  isReportReminderDue?: boolean;
+  rptSchAttachmentStatusId?: number | undefined;
+  isResubmissionRequested?: boolean;
+  isResubmissionNotificationRequired?: number;
+  resubmissionRequestedDate?: string | undefined;
+  docReceivedDate?: string | undefined;
+  submissionBeforeRptPeriodEnd?: boolean;
+  resubmissionDueDate?: string | undefined;
+  isAMLDocType?: boolean;
 
-    constructor(data?: IReportSchDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IReportSchDetails) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.firmsRptSchID = _data["firmsRptSchID"];
-            this.firmsRptSchItemID = _data["firmsRptSchItemID"];
-            this.rptSchID = _data["rptSchID"];
-            this.qfcNum = _data["qfcNum"];
-            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
-            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
-            this.rptSchFinYearPeriod = _data["rptSchFinYearPeriod"];
-            this.rptSchItemID = _data["rptSchItemID"];
-            this.docTypeID = _data["docTypeID"];
-            this.rptName = _data["rptName"];
-            this.rptDueDate = _data["rptDueDate"];
-            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
-            this.rptPeriodToDate = _data["rptPeriodToDate"];
-            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
-            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
-            this.reviewComments = _data["reviewComments"];
-            this.manuallyReceived = _data["manuallyReceived"];
-            this.allowReSubmit = _data["allowReSubmit"];
-            this.rptSchItemAttachmentID = _data["rptSchItemAttachmentID"];
-            this.fileName = _data["fileName"];
-            this.attachmentFilePath = _data["attachmentFilePath"];
-            this.attachmentFileURI = _data["attachmentFileURI"];
-            this.rptSOMethodTypeID = _data["rptSOMethodTypeID"];
-            this.rptSOMethodTypeDesc = _data["rptSOMethodTypeDesc"];
-            this.fileUploadedByName = _data["fileUploadedByName"];
-            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
-            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
-            this.validAttachment = _data["validAttachment"];
-            this.submittedOn = _data["submittedOn"];
-            this.fileStream = _data["fileStream"];
-            this.objectSOStatusID = _data["objectSOStatusID"];
-            this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.soStatusTypeID = _data["soStatusTypeID"];
-            this.soStatusTypeDesc = _data["soStatusTypeDesc"];
-            this.soInitiationDate = _data["soInitiationDate"];
-            this.soCompletionDate = _data["soCompletionDate"];
-            this.userID = _data["userID"];
-            this.description = _data["description"];
-            this.isItemAccessible = _data["isItemAccessible"];
-            this.submittedBy = _data["submittedBy"];
-            this.isFileRecieved = _data["isFileRecieved"];
-            this.lateFeeFlag = _data["lateFeeFlag"];
-            this.daysOverDue = _data["daysOverDue"];
-            this.isReportDue = _data["isReportDue"];
-            this.rptSchAttachmentStatusDesc = _data["rptSchAttachmentStatusDesc"];
-            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
-            this.rptSubmissionType = _data["rptSubmissionType"];
-            this.rptFormsToBeSubmited = _data["rptFormsToBeSubmited"];
-            this.rptNextStatus = _data["rptNextStatus"];
-            this.attachmentStatusTypeID = _data["attachmentStatusTypeID"];
-            this.fileAttachedUserEmail = _data["fileAttachedUserEmail"];
-            this.rptAttachmentStatusDate = _data["rptAttachmentStatusDate"];
-            this.isReportReminderDue = _data["isReportReminderDue"];
-            this.rptSchAttachmentStatusId = _data["rptSchAttachmentStatusId"];
-            this.isResubmissionRequested = _data["isResubmissionRequested"];
-            this.isResubmissionNotificationRequired = _data["isResubmissionNotificationRequired"];
-            this.resubmissionRequestedDate = _data["resubmissionRequestedDate"];
-            this.docReceivedDate = _data["docReceivedDate"];
-            this.submissionBeforeRptPeriodEnd = _data["submissionBeforeRptPeriodEnd"];
-            this.resubmissionDueDate = _data["resubmissionDueDate"];
-            this.isAMLDocType = _data["isAMLDocType"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.firmsRptSchID = _data['firmsRptSchID'];
+      this.firmsRptSchItemID = _data['firmsRptSchItemID'];
+      this.rptSchID = _data['rptSchID'];
+      this.qfcNum = _data['qfcNum'];
+      this.rptSchFinYearFromDate = _data['rptSchFinYearFromDate'];
+      this.rptSchFinYearToDate = _data['rptSchFinYearToDate'];
+      this.rptSchFinYearPeriod = _data['rptSchFinYearPeriod'];
+      this.rptSchItemID = _data['rptSchItemID'];
+      this.docTypeID = _data['docTypeID'];
+      this.rptName = _data['rptName'];
+      this.rptDueDate = _data['rptDueDate'];
+      this.rptPeriodFromDate = _data['rptPeriodFromDate'];
+      this.rptPeriodToDate = _data['rptPeriodToDate'];
+      this.rptPeriodTypeDesc = _data['rptPeriodTypeDesc'];
+      this.rptFreqTypeDesc = _data['rptFreqTypeDesc'];
+      this.reviewComments = _data['reviewComments'];
+      this.manuallyReceived = _data['manuallyReceived'];
+      this.allowReSubmit = _data['allowReSubmit'];
+      this.rptSchItemAttachmentID = _data['rptSchItemAttachmentID'];
+      this.fileName = _data['fileName'];
+      this.attachmentFilePath = _data['attachmentFilePath'];
+      this.attachmentFileURI = _data['attachmentFileURI'];
+      this.rptSOMethodTypeID = _data['rptSOMethodTypeID'];
+      this.rptSOMethodTypeDesc = _data['rptSOMethodTypeDesc'];
+      this.fileUploadedByName = _data['fileUploadedByName'];
+      this.fileUploadedByEmailAdd = _data['fileUploadedByEmailAdd'];
+      this.fileUploadedOnDate = _data['fileUploadedOnDate'];
+      this.validAttachment = _data['validAttachment'];
+      this.submittedOn = _data['submittedOn'];
+      this.fileStream = _data['fileStream'];
+      this.objectSOStatusID = _data['objectSOStatusID'];
+      this.objectID = _data['objectID'];
+      this.objectInstanceID = _data['objectInstanceID'];
+      this.soStatusTypeID = _data['soStatusTypeID'];
+      this.soStatusTypeDesc = _data['soStatusTypeDesc'];
+      this.soInitiationDate = _data['soInitiationDate'];
+      this.soCompletionDate = _data['soCompletionDate'];
+      this.userID = _data['userID'];
+      this.description = _data['description'];
+      this.isItemAccessible = _data['isItemAccessible'];
+      this.submittedBy = _data['submittedBy'];
+      this.isFileRecieved = _data['isFileRecieved'];
+      this.lateFeeFlag = _data['lateFeeFlag'];
+      this.daysOverDue = _data['daysOverDue'];
+      this.isReportDue = _data['isReportDue'];
+      this.rptSchAttachmentStatusDesc = _data['rptSchAttachmentStatusDesc'];
+      this.rptSubmissionTypeID = _data['rptSubmissionTypeID'];
+      this.rptSubmissionType = _data['rptSubmissionType'];
+      this.rptFormsToBeSubmited = _data['rptFormsToBeSubmited'];
+      this.rptNextStatus = _data['rptNextStatus'];
+      this.attachmentStatusTypeID = _data['attachmentStatusTypeID'];
+      this.fileAttachedUserEmail = _data['fileAttachedUserEmail'];
+      this.rptAttachmentStatusDate = _data['rptAttachmentStatusDate'];
+      this.isReportReminderDue = _data['isReportReminderDue'];
+      this.rptSchAttachmentStatusId = _data['rptSchAttachmentStatusId'];
+      this.isResubmissionRequested = _data['isResubmissionRequested'];
+      this.isResubmissionNotificationRequired =
+        _data['isResubmissionNotificationRequired'];
+      this.resubmissionRequestedDate = _data['resubmissionRequestedDate'];
+      this.docReceivedDate = _data['docReceivedDate'];
+      this.submissionBeforeRptPeriodEnd = _data['submissionBeforeRptPeriodEnd'];
+      this.resubmissionDueDate = _data['resubmissionDueDate'];
+      this.isAMLDocType = _data['isAMLDocType'];
     }
+  }
 
-    static fromJS(data: any): ReportSchDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchDetails();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ReportSchDetails {
+    data = typeof data === 'object' ? data : {};
+    let result = new ReportSchDetails();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["firmsRptSchID"] = this.firmsRptSchID;
-        data["firmsRptSchItemID"] = this.firmsRptSchItemID;
-        data["rptSchID"] = this.rptSchID;
-        data["qfcNum"] = this.qfcNum;
-        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
-        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
-        data["rptSchFinYearPeriod"] = this.rptSchFinYearPeriod;
-        data["rptSchItemID"] = this.rptSchItemID;
-        data["docTypeID"] = this.docTypeID;
-        data["rptName"] = this.rptName;
-        data["rptDueDate"] = this.rptDueDate;
-        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
-        data["rptPeriodToDate"] = this.rptPeriodToDate;
-        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
-        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
-        data["reviewComments"] = this.reviewComments;
-        data["manuallyReceived"] = this.manuallyReceived;
-        data["allowReSubmit"] = this.allowReSubmit;
-        data["rptSchItemAttachmentID"] = this.rptSchItemAttachmentID;
-        data["fileName"] = this.fileName;
-        data["attachmentFilePath"] = this.attachmentFilePath;
-        data["attachmentFileURI"] = this.attachmentFileURI;
-        data["rptSOMethodTypeID"] = this.rptSOMethodTypeID;
-        data["rptSOMethodTypeDesc"] = this.rptSOMethodTypeDesc;
-        data["fileUploadedByName"] = this.fileUploadedByName;
-        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
-        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
-        data["validAttachment"] = this.validAttachment;
-        data["submittedOn"] = this.submittedOn;
-        data["fileStream"] = this.fileStream;
-        data["objectSOStatusID"] = this.objectSOStatusID;
-        data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["soStatusTypeID"] = this.soStatusTypeID;
-        data["soStatusTypeDesc"] = this.soStatusTypeDesc;
-        data["soInitiationDate"] = this.soInitiationDate;
-        data["soCompletionDate"] = this.soCompletionDate;
-        data["userID"] = this.userID;
-        data["description"] = this.description;
-        data["isItemAccessible"] = this.isItemAccessible;
-        data["submittedBy"] = this.submittedBy;
-        data["isFileRecieved"] = this.isFileRecieved;
-        data["lateFeeFlag"] = this.lateFeeFlag;
-        data["daysOverDue"] = this.daysOverDue;
-        data["isReportDue"] = this.isReportDue;
-        data["rptSchAttachmentStatusDesc"] = this.rptSchAttachmentStatusDesc;
-        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
-        data["rptSubmissionType"] = this.rptSubmissionType;
-        data["rptFormsToBeSubmited"] = this.rptFormsToBeSubmited;
-        data["rptNextStatus"] = this.rptNextStatus;
-        data["attachmentStatusTypeID"] = this.attachmentStatusTypeID;
-        data["fileAttachedUserEmail"] = this.fileAttachedUserEmail;
-        data["rptAttachmentStatusDate"] = this.rptAttachmentStatusDate;
-        data["isReportReminderDue"] = this.isReportReminderDue;
-        data["rptSchAttachmentStatusId"] = this.rptSchAttachmentStatusId;
-        data["isResubmissionRequested"] = this.isResubmissionRequested;
-        data["isResubmissionNotificationRequired"] = this.isResubmissionNotificationRequired;
-        data["resubmissionRequestedDate"] = this.resubmissionRequestedDate;
-        data["docReceivedDate"] = this.docReceivedDate;
-        data["submissionBeforeRptPeriodEnd"] = this.submissionBeforeRptPeriodEnd;
-        data["resubmissionDueDate"] = this.resubmissionDueDate;
-        data["isAMLDocType"] = this.isAMLDocType;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['firmsRptSchID'] = this.firmsRptSchID;
+    data['firmsRptSchItemID'] = this.firmsRptSchItemID;
+    data['rptSchID'] = this.rptSchID;
+    data['qfcNum'] = this.qfcNum;
+    data['rptSchFinYearFromDate'] = this.rptSchFinYearFromDate;
+    data['rptSchFinYearToDate'] = this.rptSchFinYearToDate;
+    data['rptSchFinYearPeriod'] = this.rptSchFinYearPeriod;
+    data['rptSchItemID'] = this.rptSchItemID;
+    data['docTypeID'] = this.docTypeID;
+    data['rptName'] = this.rptName;
+    data['rptDueDate'] = this.rptDueDate;
+    data['rptPeriodFromDate'] = this.rptPeriodFromDate;
+    data['rptPeriodToDate'] = this.rptPeriodToDate;
+    data['rptPeriodTypeDesc'] = this.rptPeriodTypeDesc;
+    data['rptFreqTypeDesc'] = this.rptFreqTypeDesc;
+    data['reviewComments'] = this.reviewComments;
+    data['manuallyReceived'] = this.manuallyReceived;
+    data['allowReSubmit'] = this.allowReSubmit;
+    data['rptSchItemAttachmentID'] = this.rptSchItemAttachmentID;
+    data['fileName'] = this.fileName;
+    data['attachmentFilePath'] = this.attachmentFilePath;
+    data['attachmentFileURI'] = this.attachmentFileURI;
+    data['rptSOMethodTypeID'] = this.rptSOMethodTypeID;
+    data['rptSOMethodTypeDesc'] = this.rptSOMethodTypeDesc;
+    data['fileUploadedByName'] = this.fileUploadedByName;
+    data['fileUploadedByEmailAdd'] = this.fileUploadedByEmailAdd;
+    data['fileUploadedOnDate'] = this.fileUploadedOnDate;
+    data['validAttachment'] = this.validAttachment;
+    data['submittedOn'] = this.submittedOn;
+    data['fileStream'] = this.fileStream;
+    data['objectSOStatusID'] = this.objectSOStatusID;
+    data['objectID'] = this.objectID;
+    data['objectInstanceID'] = this.objectInstanceID;
+    data['soStatusTypeID'] = this.soStatusTypeID;
+    data['soStatusTypeDesc'] = this.soStatusTypeDesc;
+    data['soInitiationDate'] = this.soInitiationDate;
+    data['soCompletionDate'] = this.soCompletionDate;
+    data['userID'] = this.userID;
+    data['description'] = this.description;
+    data['isItemAccessible'] = this.isItemAccessible;
+    data['submittedBy'] = this.submittedBy;
+    data['isFileRecieved'] = this.isFileRecieved;
+    data['lateFeeFlag'] = this.lateFeeFlag;
+    data['daysOverDue'] = this.daysOverDue;
+    data['isReportDue'] = this.isReportDue;
+    data['rptSchAttachmentStatusDesc'] = this.rptSchAttachmentStatusDesc;
+    data['rptSubmissionTypeID'] = this.rptSubmissionTypeID;
+    data['rptSubmissionType'] = this.rptSubmissionType;
+    data['rptFormsToBeSubmited'] = this.rptFormsToBeSubmited;
+    data['rptNextStatus'] = this.rptNextStatus;
+    data['attachmentStatusTypeID'] = this.attachmentStatusTypeID;
+    data['fileAttachedUserEmail'] = this.fileAttachedUserEmail;
+    data['rptAttachmentStatusDate'] = this.rptAttachmentStatusDate;
+    data['isReportReminderDue'] = this.isReportReminderDue;
+    data['rptSchAttachmentStatusId'] = this.rptSchAttachmentStatusId;
+    data['isResubmissionRequested'] = this.isResubmissionRequested;
+    data['isResubmissionNotificationRequired'] =
+      this.isResubmissionNotificationRequired;
+    data['resubmissionRequestedDate'] = this.resubmissionRequestedDate;
+    data['docReceivedDate'] = this.docReceivedDate;
+    data['submissionBeforeRptPeriodEnd'] = this.submissionBeforeRptPeriodEnd;
+    data['resubmissionDueDate'] = this.resubmissionDueDate;
+    data['isAMLDocType'] = this.isAMLDocType;
+    return data;
+  }
 }
 
 export interface IReportSchDetails {
-    firmsRptSchID?: number;
-    firmsRptSchItemID?: number;
-    rptSchID?: number;
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    rptSchFinYearPeriod?: string | undefined;
-    rptSchItemID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSchItemAttachmentID?: number;
-    fileName?: string | undefined;
-    attachmentFilePath?: string | undefined;
-    attachmentFileURI?: string | undefined;
-    rptSOMethodTypeID?: number;
-    rptSOMethodTypeDesc?: string | undefined;
-    fileUploadedByName?: string | undefined;
-    fileUploadedByEmailAdd?: string | undefined;
-    fileUploadedOnDate?: string | undefined;
-    validAttachment?: boolean;
-    submittedOn?: string | undefined;
-    fileStream?: string | undefined;
-    objectSOStatusID?: number;
-    objectID?: number;
-    objectInstanceID?: number;
-    soStatusTypeID?: number;
-    soStatusTypeDesc?: string | undefined;
-    soInitiationDate?: string | undefined;
-    soCompletionDate?: string | undefined;
-    userID?: number;
-    description?: string | undefined;
-    isItemAccessible?: boolean;
-    submittedBy?: number;
-    isFileRecieved?: boolean;
-    lateFeeFlag?: boolean;
-    daysOverDue?: number;
-    isReportDue?: boolean;
-    rptSchAttachmentStatusDesc?: string | undefined;
-    rptSubmissionTypeID?: number;
-    rptSubmissionType?: string | undefined;
-    rptFormsToBeSubmited?: string | undefined;
-    rptNextStatus?: string | undefined;
-    attachmentStatusTypeID?: number;
-    fileAttachedUserEmail?: string | undefined;
-    rptAttachmentStatusDate?: string | undefined;
-    isReportReminderDue?: boolean;
-    rptSchAttachmentStatusId?: number | undefined;
-    isResubmissionRequested?: boolean;
-    isResubmissionNotificationRequired?: number;
-    resubmissionRequestedDate?: string | undefined;
-    docReceivedDate?: string | undefined;
-    submissionBeforeRptPeriodEnd?: boolean;
-    resubmissionDueDate?: string | undefined;
-    isAMLDocType?: boolean;
+  firmsRptSchID?: number;
+  firmsRptSchItemID?: number;
+  rptSchID?: number;
+  qfcNum?: string | undefined;
+  rptSchFinYearFromDate?: string | undefined;
+  rptSchFinYearToDate?: string | undefined;
+  rptSchFinYearPeriod?: string | undefined;
+  rptSchItemID?: number;
+  docTypeID?: number;
+  rptName?: string | undefined;
+  rptDueDate?: string | undefined;
+  rptPeriodFromDate?: string | undefined;
+  rptPeriodToDate?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  rptFreqTypeDesc?: string | undefined;
+  reviewComments?: string | undefined;
+  manuallyReceived?: boolean;
+  allowReSubmit?: boolean;
+  rptSchItemAttachmentID?: number;
+  fileName?: string | undefined;
+  attachmentFilePath?: string | undefined;
+  attachmentFileURI?: string | undefined;
+  rptSOMethodTypeID?: number;
+  rptSOMethodTypeDesc?: string | undefined;
+  fileUploadedByName?: string | undefined;
+  fileUploadedByEmailAdd?: string | undefined;
+  fileUploadedOnDate?: string | undefined;
+  validAttachment?: boolean;
+  submittedOn?: string | undefined;
+  fileStream?: string | undefined;
+  objectSOStatusID?: number;
+  objectID?: number;
+  objectInstanceID?: number;
+  soStatusTypeID?: number;
+  soStatusTypeDesc?: string | undefined;
+  soInitiationDate?: string | undefined;
+  soCompletionDate?: string | undefined;
+  userID?: number;
+  description?: string | undefined;
+  isItemAccessible?: boolean;
+  submittedBy?: number;
+  isFileRecieved?: boolean;
+  lateFeeFlag?: boolean;
+  daysOverDue?: number;
+  isReportDue?: boolean;
+  rptSchAttachmentStatusDesc?: string | undefined;
+  rptSubmissionTypeID?: number;
+  rptSubmissionType?: string | undefined;
+  rptFormsToBeSubmited?: string | undefined;
+  rptNextStatus?: string | undefined;
+  attachmentStatusTypeID?: number;
+  fileAttachedUserEmail?: string | undefined;
+  rptAttachmentStatusDate?: string | undefined;
+  isReportReminderDue?: boolean;
+  rptSchAttachmentStatusId?: number | undefined;
+  isResubmissionRequested?: boolean;
+  isResubmissionNotificationRequired?: number;
+  resubmissionRequestedDate?: string | undefined;
+  docReceivedDate?: string | undefined;
+  submissionBeforeRptPeriodEnd?: boolean;
+  resubmissionDueDate?: string | undefined;
+  isAMLDocType?: boolean;
 }
 
-export class ReportSchDetailsListBaseResponse implements IReportSchDetailsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ReportSchDetails[] | undefined;
+export class ReportSchDetailsListBaseResponse
+  implements IReportSchDetailsListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ReportSchDetails[] | undefined;
 
-    constructor(data?: IReportSchDetailsListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IReportSchDetailsListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ReportSchDetails.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(ReportSchDetails.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): ReportSchDetailsListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchDetailsListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ReportSchDetailsListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new ReportSchDetailsListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IReportSchDetailsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ReportSchDetails[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: ReportSchDetails[] | undefined;
 }
 
 export class ReportSchDto implements IReportSchDto {
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    userID?: number | undefined;
+  qfcNum?: string | undefined;
+  rptSchFinYearFromDate?: string | undefined;
+  rptSchFinYearToDate?: string | undefined;
+  userID?: number | undefined;
 
-    constructor(data?: IReportSchDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IReportSchDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.qfcNum = _data["qfcNum"];
-            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
-            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
-            this.userID = _data["userID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.qfcNum = _data['qfcNum'];
+      this.rptSchFinYearFromDate = _data['rptSchFinYearFromDate'];
+      this.rptSchFinYearToDate = _data['rptSchFinYearToDate'];
+      this.userID = _data['userID'];
     }
+  }
 
-    static fromJS(data: any): ReportSchDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ReportSchDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new ReportSchDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["qfcNum"] = this.qfcNum;
-        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
-        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
-        data["userID"] = this.userID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['qfcNum'] = this.qfcNum;
+    data['rptSchFinYearFromDate'] = this.rptSchFinYearFromDate;
+    data['rptSchFinYearToDate'] = this.rptSchFinYearToDate;
+    data['userID'] = this.userID;
+    return data;
+  }
 }
 
 export interface IReportSchDto {
-    qfcNum?: string | undefined;
-    rptSchFinYearFromDate?: string | undefined;
-    rptSchFinYearToDate?: string | undefined;
-    userID?: number | undefined;
+  qfcNum?: string | undefined;
+  rptSchFinYearFromDate?: string | undefined;
+  rptSchFinYearToDate?: string | undefined;
+  userID?: number | undefined;
 }
 
 export class ReportSchItem implements IReportSchItem {
-    rptSchItemID?: number;
-    rptSchID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    userID?: number;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSubmissionTypeID?: number;
+  rptSchItemID?: number;
+  rptSchID?: number;
+  docTypeID?: number;
+  rptName?: string | undefined;
+  rptDueDate?: string | undefined;
+  rptPeriodFromDate?: string | undefined;
+  rptPeriodToDate?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  rptFreqTypeDesc?: string | undefined;
+  userID?: number;
+  reviewComments?: string | undefined;
+  manuallyReceived?: boolean;
+  allowReSubmit?: boolean;
+  rptSubmissionTypeID?: number;
 
-    constructor(data?: IReportSchItem) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IReportSchItem) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.rptSchItemID = _data["rptSchItemID"];
-            this.rptSchID = _data["rptSchID"];
-            this.docTypeID = _data["docTypeID"];
-            this.rptName = _data["rptName"];
-            this.rptDueDate = _data["rptDueDate"];
-            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
-            this.rptPeriodToDate = _data["rptPeriodToDate"];
-            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
-            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
-            this.userID = _data["userID"];
-            this.reviewComments = _data["reviewComments"];
-            this.manuallyReceived = _data["manuallyReceived"];
-            this.allowReSubmit = _data["allowReSubmit"];
-            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.rptSchItemID = _data['rptSchItemID'];
+      this.rptSchID = _data['rptSchID'];
+      this.docTypeID = _data['docTypeID'];
+      this.rptName = _data['rptName'];
+      this.rptDueDate = _data['rptDueDate'];
+      this.rptPeriodFromDate = _data['rptPeriodFromDate'];
+      this.rptPeriodToDate = _data['rptPeriodToDate'];
+      this.rptPeriodTypeDesc = _data['rptPeriodTypeDesc'];
+      this.rptFreqTypeDesc = _data['rptFreqTypeDesc'];
+      this.userID = _data['userID'];
+      this.reviewComments = _data['reviewComments'];
+      this.manuallyReceived = _data['manuallyReceived'];
+      this.allowReSubmit = _data['allowReSubmit'];
+      this.rptSubmissionTypeID = _data['rptSubmissionTypeID'];
     }
+  }
 
-    static fromJS(data: any): ReportSchItem {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSchItem();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ReportSchItem {
+    data = typeof data === 'object' ? data : {};
+    let result = new ReportSchItem();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["rptSchItemID"] = this.rptSchItemID;
-        data["rptSchID"] = this.rptSchID;
-        data["docTypeID"] = this.docTypeID;
-        data["rptName"] = this.rptName;
-        data["rptDueDate"] = this.rptDueDate;
-        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
-        data["rptPeriodToDate"] = this.rptPeriodToDate;
-        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
-        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
-        data["userID"] = this.userID;
-        data["reviewComments"] = this.reviewComments;
-        data["manuallyReceived"] = this.manuallyReceived;
-        data["allowReSubmit"] = this.allowReSubmit;
-        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['rptSchItemID'] = this.rptSchItemID;
+    data['rptSchID'] = this.rptSchID;
+    data['docTypeID'] = this.docTypeID;
+    data['rptName'] = this.rptName;
+    data['rptDueDate'] = this.rptDueDate;
+    data['rptPeriodFromDate'] = this.rptPeriodFromDate;
+    data['rptPeriodToDate'] = this.rptPeriodToDate;
+    data['rptPeriodTypeDesc'] = this.rptPeriodTypeDesc;
+    data['rptFreqTypeDesc'] = this.rptFreqTypeDesc;
+    data['userID'] = this.userID;
+    data['reviewComments'] = this.reviewComments;
+    data['manuallyReceived'] = this.manuallyReceived;
+    data['allowReSubmit'] = this.allowReSubmit;
+    data['rptSubmissionTypeID'] = this.rptSubmissionTypeID;
+    return data;
+  }
 }
 
 export interface IReportSchItem {
-    rptSchItemID?: number;
-    rptSchID?: number;
-    docTypeID?: number;
-    rptName?: string | undefined;
-    rptDueDate?: string | undefined;
-    rptPeriodFromDate?: string | undefined;
-    rptPeriodToDate?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    rptFreqTypeDesc?: string | undefined;
-    userID?: number;
-    reviewComments?: string | undefined;
-    manuallyReceived?: boolean;
-    allowReSubmit?: boolean;
-    rptSubmissionTypeID?: number;
+  rptSchItemID?: number;
+  rptSchID?: number;
+  docTypeID?: number;
+  rptName?: string | undefined;
+  rptDueDate?: string | undefined;
+  rptPeriodFromDate?: string | undefined;
+  rptPeriodToDate?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  rptFreqTypeDesc?: string | undefined;
+  userID?: number;
+  reviewComments?: string | undefined;
+  manuallyReceived?: boolean;
+  allowReSubmit?: boolean;
+  rptSubmissionTypeID?: number;
 }
 
 export class ReportSignatories implements IReportSignatories {
-    rptSignatoryID?: number;
-    qfcNum?: string | undefined;
-    docTypeID?: number;
-    signOffSeqNo?: number;
-    groupSignOff?: boolean;
-    valid?: boolean;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    signedByID?: number;
-    signedOnDate?: string | undefined;
-    userID?: number;
-    docSignatoryID?: number;
-    roles?: string | undefined;
-    occurance?: number;
-    userRole?: number;
+  rptSignatoryID?: number;
+  qfcNum?: string | undefined;
+  docTypeID?: number;
+  signOffSeqNo?: number;
+  groupSignOff?: boolean;
+  valid?: boolean;
+  individualName?: string | undefined;
+  emailAdd?: string | undefined;
+  signedByID?: number;
+  signedOnDate?: string | undefined;
+  userID?: number;
+  docSignatoryID?: number;
+  roles?: string | undefined;
+  occurance?: number;
+  userRole?: number;
 
-    constructor(data?: IReportSignatories) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IReportSignatories) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.rptSignatoryID = _data["rptSignatoryID"];
-            this.qfcNum = _data["qfcNum"];
-            this.docTypeID = _data["docTypeID"];
-            this.signOffSeqNo = _data["signOffSeqNo"];
-            this.groupSignOff = _data["groupSignOff"];
-            this.valid = _data["valid"];
-            this.individualName = _data["individualName"];
-            this.emailAdd = _data["emailAdd"];
-            this.signedByID = _data["signedByID"];
-            this.signedOnDate = _data["signedOnDate"];
-            this.userID = _data["userID"];
-            this.docSignatoryID = _data["docSignatoryID"];
-            this.roles = _data["roles"];
-            this.occurance = _data["occurance"];
-            this.userRole = _data["userRole"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.rptSignatoryID = _data['rptSignatoryID'];
+      this.qfcNum = _data['qfcNum'];
+      this.docTypeID = _data['docTypeID'];
+      this.signOffSeqNo = _data['signOffSeqNo'];
+      this.groupSignOff = _data['groupSignOff'];
+      this.valid = _data['valid'];
+      this.individualName = _data['individualName'];
+      this.emailAdd = _data['emailAdd'];
+      this.signedByID = _data['signedByID'];
+      this.signedOnDate = _data['signedOnDate'];
+      this.userID = _data['userID'];
+      this.docSignatoryID = _data['docSignatoryID'];
+      this.roles = _data['roles'];
+      this.occurance = _data['occurance'];
+      this.userRole = _data['userRole'];
     }
+  }
 
-    static fromJS(data: any): ReportSignatories {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReportSignatories();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): ReportSignatories {
+    data = typeof data === 'object' ? data : {};
+    let result = new ReportSignatories();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["rptSignatoryID"] = this.rptSignatoryID;
-        data["qfcNum"] = this.qfcNum;
-        data["docTypeID"] = this.docTypeID;
-        data["signOffSeqNo"] = this.signOffSeqNo;
-        data["groupSignOff"] = this.groupSignOff;
-        data["valid"] = this.valid;
-        data["individualName"] = this.individualName;
-        data["emailAdd"] = this.emailAdd;
-        data["signedByID"] = this.signedByID;
-        data["signedOnDate"] = this.signedOnDate;
-        data["userID"] = this.userID;
-        data["docSignatoryID"] = this.docSignatoryID;
-        data["roles"] = this.roles;
-        data["occurance"] = this.occurance;
-        data["userRole"] = this.userRole;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['rptSignatoryID'] = this.rptSignatoryID;
+    data['qfcNum'] = this.qfcNum;
+    data['docTypeID'] = this.docTypeID;
+    data['signOffSeqNo'] = this.signOffSeqNo;
+    data['groupSignOff'] = this.groupSignOff;
+    data['valid'] = this.valid;
+    data['individualName'] = this.individualName;
+    data['emailAdd'] = this.emailAdd;
+    data['signedByID'] = this.signedByID;
+    data['signedOnDate'] = this.signedOnDate;
+    data['userID'] = this.userID;
+    data['docSignatoryID'] = this.docSignatoryID;
+    data['roles'] = this.roles;
+    data['occurance'] = this.occurance;
+    data['userRole'] = this.userRole;
+    return data;
+  }
 }
 
 export interface IReportSignatories {
-    rptSignatoryID?: number;
-    qfcNum?: string | undefined;
-    docTypeID?: number;
-    signOffSeqNo?: number;
-    groupSignOff?: boolean;
-    valid?: boolean;
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    signedByID?: number;
-    signedOnDate?: string | undefined;
-    userID?: number;
-    docSignatoryID?: number;
-    roles?: string | undefined;
-    occurance?: number;
-    userRole?: number;
+  rptSignatoryID?: number;
+  qfcNum?: string | undefined;
+  docTypeID?: number;
+  signOffSeqNo?: number;
+  groupSignOff?: boolean;
+  valid?: boolean;
+  individualName?: string | undefined;
+  emailAdd?: string | undefined;
+  signedByID?: number;
+  signedOnDate?: string | undefined;
+  userID?: number;
+  docSignatoryID?: number;
+  roles?: string | undefined;
+  occurance?: number;
+  userRole?: number;
 }
 
 export class Residencies implements IResidencies {
-    residenciesID?: number | undefined;
-    residenciesGUID?: string | undefined;
-    residenciesTypeID?: number | undefined;
-    residenciesTypeDesc?: string | undefined;
-    countryID?: number | undefined;
-    countryName?: string | undefined;
-    notes?: string | undefined;
-    fromDay?: string | undefined;
-    fromMonth?: string | undefined;
-    fromYear?: string | undefined;
-    toDay?: string | undefined;
-    toMonth?: string | undefined;
-    toYear?: string | undefined;
-    userID?: number;
-    applicationID?: number;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
+  residenciesID?: number | undefined;
+  residenciesGUID?: string | undefined;
+  residenciesTypeID?: number | undefined;
+  residenciesTypeDesc?: string | undefined;
+  countryID?: number | undefined;
+  countryName?: string | undefined;
+  notes?: string | undefined;
+  fromDay?: string | undefined;
+  fromMonth?: string | undefined;
+  fromYear?: string | undefined;
+  toDay?: string | undefined;
+  toMonth?: string | undefined;
+  toYear?: string | undefined;
+  userID?: number;
+  applicationID?: number;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
 
-    constructor(data?: IResidencies) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IResidencies) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.residenciesID = _data["residenciesID"];
-            this.residenciesGUID = _data["residenciesGUID"];
-            this.residenciesTypeID = _data["residenciesTypeID"];
-            this.residenciesTypeDesc = _data["residenciesTypeDesc"];
-            this.countryID = _data["countryID"];
-            this.countryName = _data["countryName"];
-            this.notes = _data["notes"];
-            this.fromDay = _data["fromDay"];
-            this.fromMonth = _data["fromMonth"];
-            this.fromYear = _data["fromYear"];
-            this.toDay = _data["toDay"];
-            this.toMonth = _data["toMonth"];
-            this.toYear = _data["toYear"];
-            this.userID = _data["userID"];
-            this.applicationID = _data["applicationID"];
-            this.createdDate = _data["createdDate"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.modifiedBy = _data["modifiedBy"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.residenciesID = _data['residenciesID'];
+      this.residenciesGUID = _data['residenciesGUID'];
+      this.residenciesTypeID = _data['residenciesTypeID'];
+      this.residenciesTypeDesc = _data['residenciesTypeDesc'];
+      this.countryID = _data['countryID'];
+      this.countryName = _data['countryName'];
+      this.notes = _data['notes'];
+      this.fromDay = _data['fromDay'];
+      this.fromMonth = _data['fromMonth'];
+      this.fromYear = _data['fromYear'];
+      this.toDay = _data['toDay'];
+      this.toMonth = _data['toMonth'];
+      this.toYear = _data['toYear'];
+      this.userID = _data['userID'];
+      this.applicationID = _data['applicationID'];
+      this.createdDate = _data['createdDate'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.modifiedBy = _data['modifiedBy'];
     }
+  }
 
-    static fromJS(data: any): Residencies {
-        data = typeof data === 'object' ? data : {};
-        let result = new Residencies();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): Residencies {
+    data = typeof data === 'object' ? data : {};
+    let result = new Residencies();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["residenciesID"] = this.residenciesID;
-        data["residenciesGUID"] = this.residenciesGUID;
-        data["residenciesTypeID"] = this.residenciesTypeID;
-        data["residenciesTypeDesc"] = this.residenciesTypeDesc;
-        data["countryID"] = this.countryID;
-        data["countryName"] = this.countryName;
-        data["notes"] = this.notes;
-        data["fromDay"] = this.fromDay;
-        data["fromMonth"] = this.fromMonth;
-        data["fromYear"] = this.fromYear;
-        data["toDay"] = this.toDay;
-        data["toMonth"] = this.toMonth;
-        data["toYear"] = this.toYear;
-        data["userID"] = this.userID;
-        data["applicationID"] = this.applicationID;
-        data["createdDate"] = this.createdDate;
-        data["modifiedDate"] = this.modifiedDate;
-        data["modifiedBy"] = this.modifiedBy;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['residenciesID'] = this.residenciesID;
+    data['residenciesGUID'] = this.residenciesGUID;
+    data['residenciesTypeID'] = this.residenciesTypeID;
+    data['residenciesTypeDesc'] = this.residenciesTypeDesc;
+    data['countryID'] = this.countryID;
+    data['countryName'] = this.countryName;
+    data['notes'] = this.notes;
+    data['fromDay'] = this.fromDay;
+    data['fromMonth'] = this.fromMonth;
+    data['fromYear'] = this.fromYear;
+    data['toDay'] = this.toDay;
+    data['toMonth'] = this.toMonth;
+    data['toYear'] = this.toYear;
+    data['userID'] = this.userID;
+    data['applicationID'] = this.applicationID;
+    data['createdDate'] = this.createdDate;
+    data['modifiedDate'] = this.modifiedDate;
+    data['modifiedBy'] = this.modifiedBy;
+    return data;
+  }
 }
 
 export interface IResidencies {
-    residenciesID?: number | undefined;
-    residenciesGUID?: string | undefined;
-    residenciesTypeID?: number | undefined;
-    residenciesTypeDesc?: string | undefined;
-    countryID?: number | undefined;
-    countryName?: string | undefined;
-    notes?: string | undefined;
-    fromDay?: string | undefined;
-    fromMonth?: string | undefined;
-    fromYear?: string | undefined;
-    toDay?: string | undefined;
-    toMonth?: string | undefined;
-    toYear?: string | undefined;
-    userID?: number;
-    applicationID?: number;
-    createdDate?: string | undefined;
-    modifiedDate?: string | undefined;
-    modifiedBy?: number;
+  residenciesID?: number | undefined;
+  residenciesGUID?: string | undefined;
+  residenciesTypeID?: number | undefined;
+  residenciesTypeDesc?: string | undefined;
+  countryID?: number | undefined;
+  countryName?: string | undefined;
+  notes?: string | undefined;
+  fromDay?: string | undefined;
+  fromMonth?: string | undefined;
+  fromYear?: string | undefined;
+  toDay?: string | undefined;
+  toMonth?: string | undefined;
+  toYear?: string | undefined;
+  userID?: number;
+  applicationID?: number;
+  createdDate?: string | undefined;
+  modifiedDate?: string | undefined;
+  modifiedBy?: number;
 }
 
-export class StringObjectDictionaryListBaseResponse implements IStringObjectDictionaryListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: any; }[] | undefined;
+export class StringBaseResponse implements IStringBaseResponse {
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: string | undefined;
 
-    constructor(data?: IStringObjectDictionaryListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IStringBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(item);
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response'];
     }
+  }
 
-    static fromJS(data: any): StringObjectDictionaryListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new StringObjectDictionaryListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): StringBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new StringBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item);
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response;
+    return data;
+  }
+}
+
+export interface IStringBaseResponse {
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: string | undefined;
+}
+
+export class StringObjectDictionaryListBaseResponse
+  implements IStringObjectDictionaryListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: any }[] | undefined;
+
+  constructor(data?: IStringObjectDictionaryListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response']) this.response!.push(item);
+      }
+    }
+  }
+
+  static fromJS(data: any): StringObjectDictionaryListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new StringObjectDictionaryListBaseResponse();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item);
+    }
+    return data;
+  }
 }
 
 export interface IStringObjectDictionaryListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: any; }[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: any }[] | undefined;
 }
 
-export class StringStringDictionaryBaseResponse implements IStringStringDictionaryBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: string; } | undefined;
+export class StringStringDictionaryBaseResponse
+  implements IStringStringDictionaryBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: string } | undefined;
 
-    constructor(data?: IStringStringDictionaryBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
+  constructor(data?: IStringStringDictionaryBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (_data['response']) {
+        this.response = {} as any;
+        for (let key in _data['response']) {
+          if (_data['response'].hasOwnProperty(key))
+            (<any>this.response)![key] = _data['response'][key];
         }
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (_data["response"]) {
-                this.response = {} as any;
-                for (let key in _data["response"]) {
-                    if (_data["response"].hasOwnProperty(key))
-                        (<any>this.response)![key] = _data["response"][key];
-                }
-            }
-        }
-    }
+  static fromJS(data: any): StringStringDictionaryBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new StringStringDictionaryBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    static fromJS(data: any): StringStringDictionaryBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new StringStringDictionaryBaseResponse();
-        result.init(data);
-        return result;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (this.response) {
+      data['response'] = {};
+      for (let key in this.response) {
+        if (this.response.hasOwnProperty(key))
+          (<any>data['response'])[key] = (<any>this.response)[key];
+      }
     }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (this.response) {
-            data["response"] = {};
-            for (let key in this.response) {
-                if (this.response.hasOwnProperty(key))
-                    (<any>data["response"])[key] = (<any>this.response)[key];
-            }
-        }
-        return data;
-    }
+    return data;
+  }
 }
 
 export interface IStringStringDictionaryBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: string; } | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: { [key: string]: string } | undefined;
 }
 
 export class UserPendingItems implements IUserPendingItems {
-    qfcNumber?: string | undefined;
-    userID?: number;
-    objectID?: number;
-    objectInstanceID?: number;
-    reportOrIndName?: string | undefined;
-    reportFrom?: string | undefined;
-    reportTo?: string | undefined;
-    rptDueDate?: string | undefined;
-    purpose?: string | undefined;
-    formTypeID?: number;
-    finalDescription?: string | undefined;
-    rptSchItemID?: number;
-    rptFreqTypeDesc?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    docTypeID?: number | undefined;
-    dateCreated?: string | undefined;
-    wRptSubmissionTypeID?: number | undefined;
-    rptSchItemFromDate?: string | undefined;
-    rptSchItemToDate?: string | undefined;
-    objectType?: string | undefined;
-    taskType?: string | undefined;
-    nextRunTime?: string | undefined;
+  qfcNumber?: string | undefined;
+  userID?: number;
+  objectID?: number;
+  objectInstanceID?: number;
+  reportOrIndName?: string | undefined;
+  reportFrom?: string | undefined;
+  reportTo?: string | undefined;
+  rptDueDate?: string | undefined;
+  purpose?: string | undefined;
+  formTypeID?: number;
+  finalDescription?: string | undefined;
+  rptSchItemID?: number;
+  rptFreqTypeDesc?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  docTypeID?: number | undefined;
+  dateCreated?: string | undefined;
+  wRptSubmissionTypeID?: number | undefined;
+  rptSchItemFromDate?: string | undefined;
+  rptSchItemToDate?: string | undefined;
+  objectType?: string | undefined;
+  taskType?: string | undefined;
+  nextRunTime?: string | undefined;
 
-    constructor(data?: IUserPendingItems) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserPendingItems) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.qfcNumber = _data["qfcNumber"];
-            this.userID = _data["userID"];
-            this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.reportOrIndName = _data["reportOrIndName"];
-            this.reportFrom = _data["reportFrom"];
-            this.reportTo = _data["reportTo"];
-            this.rptDueDate = _data["rptDueDate"];
-            this.purpose = _data["purpose"];
-            this.formTypeID = _data["formTypeID"];
-            this.finalDescription = _data["finalDescription"];
-            this.rptSchItemID = _data["rptSchItemID"];
-            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
-            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
-            this.docTypeID = _data["docTypeID"];
-            this.dateCreated = _data["dateCreated"];
-            this.wRptSubmissionTypeID = _data["wRptSubmissionTypeID"];
-            this.rptSchItemFromDate = _data["rptSchItemFromDate"];
-            this.rptSchItemToDate = _data["rptSchItemToDate"];
-            this.objectType = _data["objectType"];
-            this.taskType = _data["taskType"];
-            this.nextRunTime = _data["nextRunTime"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.qfcNumber = _data['qfcNumber'];
+      this.userID = _data['userID'];
+      this.objectID = _data['objectID'];
+      this.objectInstanceID = _data['objectInstanceID'];
+      this.reportOrIndName = _data['reportOrIndName'];
+      this.reportFrom = _data['reportFrom'];
+      this.reportTo = _data['reportTo'];
+      this.rptDueDate = _data['rptDueDate'];
+      this.purpose = _data['purpose'];
+      this.formTypeID = _data['formTypeID'];
+      this.finalDescription = _data['finalDescription'];
+      this.rptSchItemID = _data['rptSchItemID'];
+      this.rptFreqTypeDesc = _data['rptFreqTypeDesc'];
+      this.rptPeriodTypeDesc = _data['rptPeriodTypeDesc'];
+      this.docTypeID = _data['docTypeID'];
+      this.dateCreated = _data['dateCreated'];
+      this.wRptSubmissionTypeID = _data['wRptSubmissionTypeID'];
+      this.rptSchItemFromDate = _data['rptSchItemFromDate'];
+      this.rptSchItemToDate = _data['rptSchItemToDate'];
+      this.objectType = _data['objectType'];
+      this.taskType = _data['taskType'];
+      this.nextRunTime = _data['nextRunTime'];
     }
+  }
 
-    static fromJS(data: any): UserPendingItems {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserPendingItems();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserPendingItems {
+    data = typeof data === 'object' ? data : {};
+    let result = new UserPendingItems();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["qfcNumber"] = this.qfcNumber;
-        data["userID"] = this.userID;
-        data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["reportOrIndName"] = this.reportOrIndName;
-        data["reportFrom"] = this.reportFrom;
-        data["reportTo"] = this.reportTo;
-        data["rptDueDate"] = this.rptDueDate;
-        data["purpose"] = this.purpose;
-        data["formTypeID"] = this.formTypeID;
-        data["finalDescription"] = this.finalDescription;
-        data["rptSchItemID"] = this.rptSchItemID;
-        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
-        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
-        data["docTypeID"] = this.docTypeID;
-        data["dateCreated"] = this.dateCreated;
-        data["wRptSubmissionTypeID"] = this.wRptSubmissionTypeID;
-        data["rptSchItemFromDate"] = this.rptSchItemFromDate;
-        data["rptSchItemToDate"] = this.rptSchItemToDate;
-        data["objectType"] = this.objectType;
-        data["taskType"] = this.taskType;
-        data["nextRunTime"] = this.nextRunTime;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['qfcNumber'] = this.qfcNumber;
+    data['userID'] = this.userID;
+    data['objectID'] = this.objectID;
+    data['objectInstanceID'] = this.objectInstanceID;
+    data['reportOrIndName'] = this.reportOrIndName;
+    data['reportFrom'] = this.reportFrom;
+    data['reportTo'] = this.reportTo;
+    data['rptDueDate'] = this.rptDueDate;
+    data['purpose'] = this.purpose;
+    data['formTypeID'] = this.formTypeID;
+    data['finalDescription'] = this.finalDescription;
+    data['rptSchItemID'] = this.rptSchItemID;
+    data['rptFreqTypeDesc'] = this.rptFreqTypeDesc;
+    data['rptPeriodTypeDesc'] = this.rptPeriodTypeDesc;
+    data['docTypeID'] = this.docTypeID;
+    data['dateCreated'] = this.dateCreated;
+    data['wRptSubmissionTypeID'] = this.wRptSubmissionTypeID;
+    data['rptSchItemFromDate'] = this.rptSchItemFromDate;
+    data['rptSchItemToDate'] = this.rptSchItemToDate;
+    data['objectType'] = this.objectType;
+    data['taskType'] = this.taskType;
+    data['nextRunTime'] = this.nextRunTime;
+    return data;
+  }
 }
 
 export interface IUserPendingItems {
-    qfcNumber?: string | undefined;
-    userID?: number;
-    objectID?: number;
-    objectInstanceID?: number;
-    reportOrIndName?: string | undefined;
-    reportFrom?: string | undefined;
-    reportTo?: string | undefined;
-    rptDueDate?: string | undefined;
-    purpose?: string | undefined;
-    formTypeID?: number;
-    finalDescription?: string | undefined;
-    rptSchItemID?: number;
-    rptFreqTypeDesc?: string | undefined;
-    rptPeriodTypeDesc?: string | undefined;
-    docTypeID?: number | undefined;
-    dateCreated?: string | undefined;
-    wRptSubmissionTypeID?: number | undefined;
-    rptSchItemFromDate?: string | undefined;
-    rptSchItemToDate?: string | undefined;
-    objectType?: string | undefined;
-    taskType?: string | undefined;
-    nextRunTime?: string | undefined;
+  qfcNumber?: string | undefined;
+  userID?: number;
+  objectID?: number;
+  objectInstanceID?: number;
+  reportOrIndName?: string | undefined;
+  reportFrom?: string | undefined;
+  reportTo?: string | undefined;
+  rptDueDate?: string | undefined;
+  purpose?: string | undefined;
+  formTypeID?: number;
+  finalDescription?: string | undefined;
+  rptSchItemID?: number;
+  rptFreqTypeDesc?: string | undefined;
+  rptPeriodTypeDesc?: string | undefined;
+  docTypeID?: number | undefined;
+  dateCreated?: string | undefined;
+  wRptSubmissionTypeID?: number | undefined;
+  rptSchItemFromDate?: string | undefined;
+  rptSchItemToDate?: string | undefined;
+  objectType?: string | undefined;
+  taskType?: string | undefined;
+  nextRunTime?: string | undefined;
 }
 
-export class UserPendingItemsListBaseResponse implements IUserPendingItemsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: UserPendingItems[] | undefined;
+export class UserPendingItemsListBaseResponse
+  implements IUserPendingItemsListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: UserPendingItems[] | undefined;
 
-    constructor(data?: IUserPendingItemsListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserPendingItemsListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(UserPendingItems.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(UserPendingItems.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): UserPendingItemsListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserPendingItemsListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserPendingItemsListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new UserPendingItemsListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IUserPendingItemsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: UserPendingItems[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: UserPendingItems[] | undefined;
 }
 
 export class UserQuestionAnswers implements IUserQuestionAnswers {
-    wAccessRequestID?: number | undefined;
-    firmQFCNo?: string | undefined;
-    firmName?: string | undefined;
-    firmTypeID?: number;
-    firmTypeDesc?: string | undefined;
-    contactID?: number;
-    individualName?: string | undefined;
-    aiNumber?: string | undefined;
-    individualJobTitle?: string | undefined;
-    individualDateOfBirth?: string | undefined;
-    individualNationality?: string | undefined;
-    individualEmailAddress?: string | undefined;
-    registrationCode?: string | undefined;
-    registrationPassword?: string | undefined;
-    registrationDate?: string | undefined;
-    isRegistered?: boolean;
-    createdBy?: number;
-    createdDate?: string | undefined;
-    accountLocked?: boolean;
-    isAccountExpired?: boolean;
-    isLoggedIn?: boolean;
-    isActiveUser?: boolean;
-    isAccountExists?: boolean;
-    isValidReqeust?: boolean | undefined;
-    wFunctionTypeIDsList?: string | undefined;
-    withdrawnFunctionTypeIDsList?: string | undefined;
-    wRequestTypeID?: number;
-    wRequestTypeDesc?: string | undefined;
-    registrationStatus?: string | undefined;
-    wUserAccountTypeID?: number;
-    wUserAccountTypeDesc?: string | undefined;
-    roleId?: number | undefined;
-    roleDesc?: string | undefined;
-    wUserID?: number | undefined;
-    wUserLoginID?: number | undefined;
-    isRecordInsert?: boolean;
-    isSEF?: boolean;
-    isSessionActive?: boolean;
-    passwordChangeDate?: Date | undefined;
-    userPassword?: string | undefined;
-    lstApplicationDetail?: ApplicationDetail[] | undefined;
-    wObjectID?: number | undefined;
-    wRoleStartDate?: string | undefined;
-    lstWUserRoles?: WUserRoles[] | undefined;
-    objectID?: number | undefined;
-    userQuestionAnswerID?: number;
-    wAppUserID?: number;
-    wLoginQuestionTypeID?: number;
-    userQuestionAnswer?: string | undefined;
-    loginQuestion?: string | undefined;
-    answer?: string | undefined;
-    wLoginQuestionCategoryTypeID?: number;
-    userIPAddess?: string | undefined;
-    userSessionID?: string | undefined;
+  wAccessRequestID?: number | undefined;
+  firmQFCNo?: string | undefined;
+  firmName?: string | undefined;
+  firmTypeID?: number;
+  firmTypeDesc?: string | undefined;
+  contactID?: number;
+  individualName?: string | undefined;
+  aiNumber?: string | undefined;
+  individualJobTitle?: string | undefined;
+  individualDateOfBirth?: string | undefined;
+  individualNationality?: string | undefined;
+  individualEmailAddress?: string | undefined;
+  registrationCode?: string | undefined;
+  registrationPassword?: string | undefined;
+  registrationDate?: string | undefined;
+  isRegistered?: boolean;
+  createdBy?: number;
+  createdDate?: string | undefined;
+  accountLocked?: boolean;
+  isAccountExpired?: boolean;
+  isLoggedIn?: boolean;
+  isActiveUser?: boolean;
+  isAccountExists?: boolean;
+  isValidReqeust?: boolean | undefined;
+  wFunctionTypeIDsList?: string | undefined;
+  withdrawnFunctionTypeIDsList?: string | undefined;
+  wRequestTypeID?: number;
+  wRequestTypeDesc?: string | undefined;
+  registrationStatus?: string | undefined;
+  wUserAccountTypeID?: number;
+  wUserAccountTypeDesc?: string | undefined;
+  roleId?: number | undefined;
+  roleDesc?: string | undefined;
+  wUserID?: number | undefined;
+  wUserLoginID?: number | undefined;
+  isRecordInsert?: boolean;
+  isSEF?: boolean;
+  isSessionActive?: boolean;
+  passwordChangeDate?: Date | undefined;
+  userPassword?: string | undefined;
+  lstApplicationDetail?: ApplicationDetail[] | undefined;
+  wObjectID?: number | undefined;
+  wRoleStartDate?: string | undefined;
+  lstWUserRoles?: WUserRoles[] | undefined;
+  objectID?: number | undefined;
+  userQuestionAnswerID?: number;
+  wAppUserID?: number;
+  wLoginQuestionTypeID?: number;
+  userQuestionAnswer?: string | undefined;
+  loginQuestion?: string | undefined;
+  answer?: string | undefined;
+  wLoginQuestionCategoryTypeID?: number;
+  userIPAddess?: string | undefined;
+  userSessionID?: string | undefined;
 
-    constructor(data?: IUserQuestionAnswers) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserQuestionAnswers) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wAccessRequestID = _data["wAccessRequestID"];
-            this.firmQFCNo = _data["firmQFCNo"];
-            this.firmName = _data["firmName"];
-            this.firmTypeID = _data["firmTypeID"];
-            this.firmTypeDesc = _data["firmTypeDesc"];
-            this.contactID = _data["contactID"];
-            this.individualName = _data["individualName"];
-            this.aiNumber = _data["aiNumber"];
-            this.individualJobTitle = _data["individualJobTitle"];
-            this.individualDateOfBirth = _data["individualDateOfBirth"];
-            this.individualNationality = _data["individualNationality"];
-            this.individualEmailAddress = _data["individualEmailAddress"];
-            this.registrationCode = _data["registrationCode"];
-            this.registrationPassword = _data["registrationPassword"];
-            this.registrationDate = _data["registrationDate"];
-            this.isRegistered = _data["isRegistered"];
-            this.createdBy = _data["createdBy"];
-            this.createdDate = _data["createdDate"];
-            this.accountLocked = _data["accountLocked"];
-            this.isAccountExpired = _data["isAccountExpired"];
-            this.isLoggedIn = _data["isLoggedIn"];
-            this.isActiveUser = _data["isActiveUser"];
-            this.isAccountExists = _data["isAccountExists"];
-            this.isValidReqeust = _data["isValidReqeust"];
-            this.wFunctionTypeIDsList = _data["wFunctionTypeIDsList"];
-            this.withdrawnFunctionTypeIDsList = _data["withdrawnFunctionTypeIDsList"];
-            this.wRequestTypeID = _data["wRequestTypeID"];
-            this.wRequestTypeDesc = _data["wRequestTypeDesc"];
-            this.registrationStatus = _data["registrationStatus"];
-            this.wUserAccountTypeID = _data["wUserAccountTypeID"];
-            this.wUserAccountTypeDesc = _data["wUserAccountTypeDesc"];
-            this.roleId = _data["roleId"];
-            this.roleDesc = _data["roleDesc"];
-            this.wUserID = _data["wUserID"];
-            this.wUserLoginID = _data["wUserLoginID"];
-            this.isRecordInsert = _data["isRecordInsert"];
-            this.isSEF = _data["isSEF"];
-            this.isSessionActive = _data["isSessionActive"];
-            this.passwordChangeDate = _data["passwordChangeDate"] ? new Date(_data["passwordChangeDate"].toString()) : <any>undefined;
-            this.userPassword = _data["userPassword"];
-            if (Array.isArray(_data["lstApplicationDetail"])) {
-                this.lstApplicationDetail = [] as any;
-                for (let item of _data["lstApplicationDetail"])
-                    this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
-            }
-            this.wObjectID = _data["wObjectID"];
-            this.wRoleStartDate = _data["wRoleStartDate"];
-            if (Array.isArray(_data["lstWUserRoles"])) {
-                this.lstWUserRoles = [] as any;
-                for (let item of _data["lstWUserRoles"])
-                    this.lstWUserRoles!.push(WUserRoles.fromJS(item));
-            }
-            this.objectID = _data["objectID"];
-            this.userQuestionAnswerID = _data["userQuestionAnswerID"];
-            this.wAppUserID = _data["wAppUserID"];
-            this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
-            this.userQuestionAnswer = _data["userQuestionAnswer"];
-            this.loginQuestion = _data["loginQuestion"];
-            this.answer = _data["answer"];
-            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
-            this.userIPAddess = _data["userIPAddess"];
-            this.userSessionID = _data["userSessionID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wAccessRequestID = _data['wAccessRequestID'];
+      this.firmQFCNo = _data['firmQFCNo'];
+      this.firmName = _data['firmName'];
+      this.firmTypeID = _data['firmTypeID'];
+      this.firmTypeDesc = _data['firmTypeDesc'];
+      this.contactID = _data['contactID'];
+      this.individualName = _data['individualName'];
+      this.aiNumber = _data['aiNumber'];
+      this.individualJobTitle = _data['individualJobTitle'];
+      this.individualDateOfBirth = _data['individualDateOfBirth'];
+      this.individualNationality = _data['individualNationality'];
+      this.individualEmailAddress = _data['individualEmailAddress'];
+      this.registrationCode = _data['registrationCode'];
+      this.registrationPassword = _data['registrationPassword'];
+      this.registrationDate = _data['registrationDate'];
+      this.isRegistered = _data['isRegistered'];
+      this.createdBy = _data['createdBy'];
+      this.createdDate = _data['createdDate'];
+      this.accountLocked = _data['accountLocked'];
+      this.isAccountExpired = _data['isAccountExpired'];
+      this.isLoggedIn = _data['isLoggedIn'];
+      this.isActiveUser = _data['isActiveUser'];
+      this.isAccountExists = _data['isAccountExists'];
+      this.isValidReqeust = _data['isValidReqeust'];
+      this.wFunctionTypeIDsList = _data['wFunctionTypeIDsList'];
+      this.withdrawnFunctionTypeIDsList = _data['withdrawnFunctionTypeIDsList'];
+      this.wRequestTypeID = _data['wRequestTypeID'];
+      this.wRequestTypeDesc = _data['wRequestTypeDesc'];
+      this.registrationStatus = _data['registrationStatus'];
+      this.wUserAccountTypeID = _data['wUserAccountTypeID'];
+      this.wUserAccountTypeDesc = _data['wUserAccountTypeDesc'];
+      this.roleId = _data['roleId'];
+      this.roleDesc = _data['roleDesc'];
+      this.wUserID = _data['wUserID'];
+      this.wUserLoginID = _data['wUserLoginID'];
+      this.isRecordInsert = _data['isRecordInsert'];
+      this.isSEF = _data['isSEF'];
+      this.isSessionActive = _data['isSessionActive'];
+      this.passwordChangeDate = _data['passwordChangeDate']
+        ? new Date(_data['passwordChangeDate'].toString())
+        : <any>undefined;
+      this.userPassword = _data['userPassword'];
+      if (Array.isArray(_data['lstApplicationDetail'])) {
+        this.lstApplicationDetail = [] as any;
+        for (let item of _data['lstApplicationDetail'])
+          this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
+      }
+      this.wObjectID = _data['wObjectID'];
+      this.wRoleStartDate = _data['wRoleStartDate'];
+      if (Array.isArray(_data['lstWUserRoles'])) {
+        this.lstWUserRoles = [] as any;
+        for (let item of _data['lstWUserRoles'])
+          this.lstWUserRoles!.push(WUserRoles.fromJS(item));
+      }
+      this.objectID = _data['objectID'];
+      this.userQuestionAnswerID = _data['userQuestionAnswerID'];
+      this.wAppUserID = _data['wAppUserID'];
+      this.wLoginQuestionTypeID = _data['wLoginQuestionTypeID'];
+      this.userQuestionAnswer = _data['userQuestionAnswer'];
+      this.loginQuestion = _data['loginQuestion'];
+      this.answer = _data['answer'];
+      this.wLoginQuestionCategoryTypeID = _data['wLoginQuestionCategoryTypeID'];
+      this.userIPAddess = _data['userIPAddess'];
+      this.userSessionID = _data['userSessionID'];
     }
+  }
 
-    static fromJS(data: any): UserQuestionAnswers {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserQuestionAnswers();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserQuestionAnswers {
+    data = typeof data === 'object' ? data : {};
+    let result = new UserQuestionAnswers();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wAccessRequestID"] = this.wAccessRequestID;
-        data["firmQFCNo"] = this.firmQFCNo;
-        data["firmName"] = this.firmName;
-        data["firmTypeID"] = this.firmTypeID;
-        data["firmTypeDesc"] = this.firmTypeDesc;
-        data["contactID"] = this.contactID;
-        data["individualName"] = this.individualName;
-        data["aiNumber"] = this.aiNumber;
-        data["individualJobTitle"] = this.individualJobTitle;
-        data["individualDateOfBirth"] = this.individualDateOfBirth;
-        data["individualNationality"] = this.individualNationality;
-        data["individualEmailAddress"] = this.individualEmailAddress;
-        data["registrationCode"] = this.registrationCode;
-        data["registrationPassword"] = this.registrationPassword;
-        data["registrationDate"] = this.registrationDate;
-        data["isRegistered"] = this.isRegistered;
-        data["createdBy"] = this.createdBy;
-        data["createdDate"] = this.createdDate;
-        data["accountLocked"] = this.accountLocked;
-        data["isAccountExpired"] = this.isAccountExpired;
-        data["isLoggedIn"] = this.isLoggedIn;
-        data["isActiveUser"] = this.isActiveUser;
-        data["isAccountExists"] = this.isAccountExists;
-        data["isValidReqeust"] = this.isValidReqeust;
-        data["wFunctionTypeIDsList"] = this.wFunctionTypeIDsList;
-        data["withdrawnFunctionTypeIDsList"] = this.withdrawnFunctionTypeIDsList;
-        data["wRequestTypeID"] = this.wRequestTypeID;
-        data["wRequestTypeDesc"] = this.wRequestTypeDesc;
-        data["registrationStatus"] = this.registrationStatus;
-        data["wUserAccountTypeID"] = this.wUserAccountTypeID;
-        data["wUserAccountTypeDesc"] = this.wUserAccountTypeDesc;
-        data["roleId"] = this.roleId;
-        data["roleDesc"] = this.roleDesc;
-        data["wUserID"] = this.wUserID;
-        data["wUserLoginID"] = this.wUserLoginID;
-        data["isRecordInsert"] = this.isRecordInsert;
-        data["isSEF"] = this.isSEF;
-        data["isSessionActive"] = this.isSessionActive;
-        data["passwordChangeDate"] = this.passwordChangeDate ? this.passwordChangeDate.toISOString() : <any>undefined;
-        data["userPassword"] = this.userPassword;
-        if (Array.isArray(this.lstApplicationDetail)) {
-            data["lstApplicationDetail"] = [];
-            for (let item of this.lstApplicationDetail)
-                data["lstApplicationDetail"].push(item.toJSON());
-        }
-        data["wObjectID"] = this.wObjectID;
-        data["wRoleStartDate"] = this.wRoleStartDate;
-        if (Array.isArray(this.lstWUserRoles)) {
-            data["lstWUserRoles"] = [];
-            for (let item of this.lstWUserRoles)
-                data["lstWUserRoles"].push(item.toJSON());
-        }
-        data["objectID"] = this.objectID;
-        data["userQuestionAnswerID"] = this.userQuestionAnswerID;
-        data["wAppUserID"] = this.wAppUserID;
-        data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
-        data["userQuestionAnswer"] = this.userQuestionAnswer;
-        data["loginQuestion"] = this.loginQuestion;
-        data["answer"] = this.answer;
-        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
-        data["userIPAddess"] = this.userIPAddess;
-        data["userSessionID"] = this.userSessionID;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wAccessRequestID'] = this.wAccessRequestID;
+    data['firmQFCNo'] = this.firmQFCNo;
+    data['firmName'] = this.firmName;
+    data['firmTypeID'] = this.firmTypeID;
+    data['firmTypeDesc'] = this.firmTypeDesc;
+    data['contactID'] = this.contactID;
+    data['individualName'] = this.individualName;
+    data['aiNumber'] = this.aiNumber;
+    data['individualJobTitle'] = this.individualJobTitle;
+    data['individualDateOfBirth'] = this.individualDateOfBirth;
+    data['individualNationality'] = this.individualNationality;
+    data['individualEmailAddress'] = this.individualEmailAddress;
+    data['registrationCode'] = this.registrationCode;
+    data['registrationPassword'] = this.registrationPassword;
+    data['registrationDate'] = this.registrationDate;
+    data['isRegistered'] = this.isRegistered;
+    data['createdBy'] = this.createdBy;
+    data['createdDate'] = this.createdDate;
+    data['accountLocked'] = this.accountLocked;
+    data['isAccountExpired'] = this.isAccountExpired;
+    data['isLoggedIn'] = this.isLoggedIn;
+    data['isActiveUser'] = this.isActiveUser;
+    data['isAccountExists'] = this.isAccountExists;
+    data['isValidReqeust'] = this.isValidReqeust;
+    data['wFunctionTypeIDsList'] = this.wFunctionTypeIDsList;
+    data['withdrawnFunctionTypeIDsList'] = this.withdrawnFunctionTypeIDsList;
+    data['wRequestTypeID'] = this.wRequestTypeID;
+    data['wRequestTypeDesc'] = this.wRequestTypeDesc;
+    data['registrationStatus'] = this.registrationStatus;
+    data['wUserAccountTypeID'] = this.wUserAccountTypeID;
+    data['wUserAccountTypeDesc'] = this.wUserAccountTypeDesc;
+    data['roleId'] = this.roleId;
+    data['roleDesc'] = this.roleDesc;
+    data['wUserID'] = this.wUserID;
+    data['wUserLoginID'] = this.wUserLoginID;
+    data['isRecordInsert'] = this.isRecordInsert;
+    data['isSEF'] = this.isSEF;
+    data['isSessionActive'] = this.isSessionActive;
+    data['passwordChangeDate'] = this.passwordChangeDate
+      ? this.passwordChangeDate.toISOString()
+      : <any>undefined;
+    data['userPassword'] = this.userPassword;
+    if (Array.isArray(this.lstApplicationDetail)) {
+      data['lstApplicationDetail'] = [];
+      for (let item of this.lstApplicationDetail)
+        data['lstApplicationDetail'].push(item.toJSON());
     }
+    data['wObjectID'] = this.wObjectID;
+    data['wRoleStartDate'] = this.wRoleStartDate;
+    if (Array.isArray(this.lstWUserRoles)) {
+      data['lstWUserRoles'] = [];
+      for (let item of this.lstWUserRoles)
+        data['lstWUserRoles'].push(item.toJSON());
+    }
+    data['objectID'] = this.objectID;
+    data['userQuestionAnswerID'] = this.userQuestionAnswerID;
+    data['wAppUserID'] = this.wAppUserID;
+    data['wLoginQuestionTypeID'] = this.wLoginQuestionTypeID;
+    data['userQuestionAnswer'] = this.userQuestionAnswer;
+    data['loginQuestion'] = this.loginQuestion;
+    data['answer'] = this.answer;
+    data['wLoginQuestionCategoryTypeID'] = this.wLoginQuestionCategoryTypeID;
+    data['userIPAddess'] = this.userIPAddess;
+    data['userSessionID'] = this.userSessionID;
+    return data;
+  }
 }
 
 export interface IUserQuestionAnswers {
-    wAccessRequestID?: number | undefined;
-    firmQFCNo?: string | undefined;
-    firmName?: string | undefined;
-    firmTypeID?: number;
-    firmTypeDesc?: string | undefined;
-    contactID?: number;
-    individualName?: string | undefined;
-    aiNumber?: string | undefined;
-    individualJobTitle?: string | undefined;
-    individualDateOfBirth?: string | undefined;
-    individualNationality?: string | undefined;
-    individualEmailAddress?: string | undefined;
-    registrationCode?: string | undefined;
-    registrationPassword?: string | undefined;
-    registrationDate?: string | undefined;
-    isRegistered?: boolean;
-    createdBy?: number;
-    createdDate?: string | undefined;
-    accountLocked?: boolean;
-    isAccountExpired?: boolean;
-    isLoggedIn?: boolean;
-    isActiveUser?: boolean;
-    isAccountExists?: boolean;
-    isValidReqeust?: boolean | undefined;
-    wFunctionTypeIDsList?: string | undefined;
-    withdrawnFunctionTypeIDsList?: string | undefined;
-    wRequestTypeID?: number;
-    wRequestTypeDesc?: string | undefined;
-    registrationStatus?: string | undefined;
-    wUserAccountTypeID?: number;
-    wUserAccountTypeDesc?: string | undefined;
-    roleId?: number | undefined;
-    roleDesc?: string | undefined;
-    wUserID?: number | undefined;
-    wUserLoginID?: number | undefined;
-    isRecordInsert?: boolean;
-    isSEF?: boolean;
-    isSessionActive?: boolean;
-    passwordChangeDate?: Date | undefined;
-    userPassword?: string | undefined;
-    lstApplicationDetail?: ApplicationDetail[] | undefined;
-    wObjectID?: number | undefined;
-    wRoleStartDate?: string | undefined;
-    lstWUserRoles?: WUserRoles[] | undefined;
-    objectID?: number | undefined;
-    userQuestionAnswerID?: number;
-    wAppUserID?: number;
-    wLoginQuestionTypeID?: number;
-    userQuestionAnswer?: string | undefined;
-    loginQuestion?: string | undefined;
-    answer?: string | undefined;
-    wLoginQuestionCategoryTypeID?: number;
-    userIPAddess?: string | undefined;
-    userSessionID?: string | undefined;
+  wAccessRequestID?: number | undefined;
+  firmQFCNo?: string | undefined;
+  firmName?: string | undefined;
+  firmTypeID?: number;
+  firmTypeDesc?: string | undefined;
+  contactID?: number;
+  individualName?: string | undefined;
+  aiNumber?: string | undefined;
+  individualJobTitle?: string | undefined;
+  individualDateOfBirth?: string | undefined;
+  individualNationality?: string | undefined;
+  individualEmailAddress?: string | undefined;
+  registrationCode?: string | undefined;
+  registrationPassword?: string | undefined;
+  registrationDate?: string | undefined;
+  isRegistered?: boolean;
+  createdBy?: number;
+  createdDate?: string | undefined;
+  accountLocked?: boolean;
+  isAccountExpired?: boolean;
+  isLoggedIn?: boolean;
+  isActiveUser?: boolean;
+  isAccountExists?: boolean;
+  isValidReqeust?: boolean | undefined;
+  wFunctionTypeIDsList?: string | undefined;
+  withdrawnFunctionTypeIDsList?: string | undefined;
+  wRequestTypeID?: number;
+  wRequestTypeDesc?: string | undefined;
+  registrationStatus?: string | undefined;
+  wUserAccountTypeID?: number;
+  wUserAccountTypeDesc?: string | undefined;
+  roleId?: number | undefined;
+  roleDesc?: string | undefined;
+  wUserID?: number | undefined;
+  wUserLoginID?: number | undefined;
+  isRecordInsert?: boolean;
+  isSEF?: boolean;
+  isSessionActive?: boolean;
+  passwordChangeDate?: Date | undefined;
+  userPassword?: string | undefined;
+  lstApplicationDetail?: ApplicationDetail[] | undefined;
+  wObjectID?: number | undefined;
+  wRoleStartDate?: string | undefined;
+  lstWUserRoles?: WUserRoles[] | undefined;
+  objectID?: number | undefined;
+  userQuestionAnswerID?: number;
+  wAppUserID?: number;
+  wLoginQuestionTypeID?: number;
+  userQuestionAnswer?: string | undefined;
+  loginQuestion?: string | undefined;
+  answer?: string | undefined;
+  wLoginQuestionCategoryTypeID?: number;
+  userIPAddess?: string | undefined;
+  userSessionID?: string | undefined;
 }
 
 export class UserQuestionAnswersDto implements IUserQuestionAnswersDto {
-    wLoginQuestionTypeID?: number;
-    wLoginQuestionCategoryTypeID?: number;
-    answer?: string | undefined;
+  wLoginQuestionTypeID?: number;
+  wLoginQuestionCategoryTypeID?: number;
+  answer?: string | undefined;
 
-    constructor(data?: IUserQuestionAnswersDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserQuestionAnswersDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
-            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
-            this.answer = _data["answer"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wLoginQuestionTypeID = _data['wLoginQuestionTypeID'];
+      this.wLoginQuestionCategoryTypeID = _data['wLoginQuestionCategoryTypeID'];
+      this.answer = _data['answer'];
     }
+  }
 
-    static fromJS(data: any): UserQuestionAnswersDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserQuestionAnswersDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserQuestionAnswersDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new UserQuestionAnswersDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
-        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
-        data["answer"] = this.answer;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wLoginQuestionTypeID'] = this.wLoginQuestionTypeID;
+    data['wLoginQuestionCategoryTypeID'] = this.wLoginQuestionCategoryTypeID;
+    data['answer'] = this.answer;
+    return data;
+  }
 }
 
 export interface IUserQuestionAnswersDto {
-    wLoginQuestionTypeID?: number;
-    wLoginQuestionCategoryTypeID?: number;
-    answer?: string | undefined;
+  wLoginQuestionTypeID?: number;
+  wLoginQuestionCategoryTypeID?: number;
+  answer?: string | undefined;
 }
 
-export class UserQuestionAnswersListBaseResponse implements IUserQuestionAnswersListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: UserQuestionAnswers[] | undefined;
+export class UserQuestionAnswersListBaseResponse
+  implements IUserQuestionAnswersListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: UserQuestionAnswers[] | undefined;
 
-    constructor(data?: IUserQuestionAnswersListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IUserQuestionAnswersListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(UserQuestionAnswers.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(UserQuestionAnswers.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): UserQuestionAnswersListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserQuestionAnswersListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): UserQuestionAnswersListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new UserQuestionAnswersListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IUserQuestionAnswersListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: UserQuestionAnswers[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: UserQuestionAnswers[] | undefined;
 }
 
 export class WAccessRequests implements IWAccessRequests {
-    wAccessRequestID?: number | undefined;
-    firmQFCNo?: string | undefined;
-    firmName?: string | undefined;
-    firmTypeID?: number;
-    firmTypeDesc?: string | undefined;
-    contactID?: number;
-    individualName?: string | undefined;
-    aiNumber?: string | undefined;
-    individualJobTitle?: string | undefined;
-    individualDateOfBirth?: string | undefined;
-    individualNationality?: string | undefined;
-    individualEmailAddress?: string | undefined;
-    registrationCode?: string | undefined;
-    registrationPassword?: string | undefined;
-    registrationDate?: string | undefined;
-    isRegistered?: boolean;
-    createdBy?: number;
-    createdDate?: string | undefined;
-    accountLocked?: boolean;
-    isAccountExpired?: boolean;
-    isLoggedIn?: boolean;
-    isActiveUser?: boolean;
-    isAccountExists?: boolean;
-    isValidReqeust?: boolean | undefined;
-    wFunctionTypeIDsList?: string | undefined;
-    withdrawnFunctionTypeIDsList?: string | undefined;
-    wRequestTypeID?: number;
-    wRequestTypeDesc?: string | undefined;
-    registrationStatus?: string | undefined;
-    wUserAccountTypeID?: number;
-    wUserAccountTypeDesc?: string | undefined;
-    roleId?: number | undefined;
-    roleDesc?: string | undefined;
-    wUserID?: number | undefined;
-    wUserLoginID?: number | undefined;
-    isRecordInsert?: boolean;
-    isSEF?: boolean;
-    isSessionActive?: boolean;
-    passwordChangeDate?: Date | undefined;
-    userPassword?: string | undefined;
-    lstApplicationDetail?: ApplicationDetail[] | undefined;
-    wObjectID?: number | undefined;
-    wRoleStartDate?: string | undefined;
-    lstWUserRoles?: WUserRoles[] | undefined;
-    objectID?: number | undefined;
+  wAccessRequestID?: number | undefined;
+  firmQFCNo?: string | undefined;
+  firmName?: string | undefined;
+  firmTypeID?: number;
+  firmTypeDesc?: string | undefined;
+  contactID?: number;
+  individualName?: string | undefined;
+  aiNumber?: string | undefined;
+  individualJobTitle?: string | undefined;
+  individualDateOfBirth?: string | undefined;
+  individualNationality?: string | undefined;
+  individualEmailAddress?: string | undefined;
+  registrationCode?: string | undefined;
+  registrationPassword?: string | undefined;
+  registrationDate?: string | undefined;
+  isRegistered?: boolean;
+  createdBy?: number;
+  createdDate?: string | undefined;
+  accountLocked?: boolean;
+  isAccountExpired?: boolean;
+  isLoggedIn?: boolean;
+  isActiveUser?: boolean;
+  isAccountExists?: boolean;
+  isValidReqeust?: boolean | undefined;
+  wFunctionTypeIDsList?: string | undefined;
+  withdrawnFunctionTypeIDsList?: string | undefined;
+  wRequestTypeID?: number;
+  wRequestTypeDesc?: string | undefined;
+  registrationStatus?: string | undefined;
+  wUserAccountTypeID?: number;
+  wUserAccountTypeDesc?: string | undefined;
+  roleId?: number | undefined;
+  roleDesc?: string | undefined;
+  wUserID?: number | undefined;
+  wUserLoginID?: number | undefined;
+  isRecordInsert?: boolean;
+  isSEF?: boolean;
+  isSessionActive?: boolean;
+  passwordChangeDate?: Date | undefined;
+  userPassword?: string | undefined;
+  lstApplicationDetail?: ApplicationDetail[] | undefined;
+  wObjectID?: number | undefined;
+  wRoleStartDate?: string | undefined;
+  lstWUserRoles?: WUserRoles[] | undefined;
+  objectID?: number | undefined;
 
-    constructor(data?: IWAccessRequests) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWAccessRequests) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wAccessRequestID = _data["wAccessRequestID"];
-            this.firmQFCNo = _data["firmQFCNo"];
-            this.firmName = _data["firmName"];
-            this.firmTypeID = _data["firmTypeID"];
-            this.firmTypeDesc = _data["firmTypeDesc"];
-            this.contactID = _data["contactID"];
-            this.individualName = _data["individualName"];
-            this.aiNumber = _data["aiNumber"];
-            this.individualJobTitle = _data["individualJobTitle"];
-            this.individualDateOfBirth = _data["individualDateOfBirth"];
-            this.individualNationality = _data["individualNationality"];
-            this.individualEmailAddress = _data["individualEmailAddress"];
-            this.registrationCode = _data["registrationCode"];
-            this.registrationPassword = _data["registrationPassword"];
-            this.registrationDate = _data["registrationDate"];
-            this.isRegistered = _data["isRegistered"];
-            this.createdBy = _data["createdBy"];
-            this.createdDate = _data["createdDate"];
-            this.accountLocked = _data["accountLocked"];
-            this.isAccountExpired = _data["isAccountExpired"];
-            this.isLoggedIn = _data["isLoggedIn"];
-            this.isActiveUser = _data["isActiveUser"];
-            this.isAccountExists = _data["isAccountExists"];
-            this.isValidReqeust = _data["isValidReqeust"];
-            this.wFunctionTypeIDsList = _data["wFunctionTypeIDsList"];
-            this.withdrawnFunctionTypeIDsList = _data["withdrawnFunctionTypeIDsList"];
-            this.wRequestTypeID = _data["wRequestTypeID"];
-            this.wRequestTypeDesc = _data["wRequestTypeDesc"];
-            this.registrationStatus = _data["registrationStatus"];
-            this.wUserAccountTypeID = _data["wUserAccountTypeID"];
-            this.wUserAccountTypeDesc = _data["wUserAccountTypeDesc"];
-            this.roleId = _data["roleId"];
-            this.roleDesc = _data["roleDesc"];
-            this.wUserID = _data["wUserID"];
-            this.wUserLoginID = _data["wUserLoginID"];
-            this.isRecordInsert = _data["isRecordInsert"];
-            this.isSEF = _data["isSEF"];
-            this.isSessionActive = _data["isSessionActive"];
-            this.passwordChangeDate = _data["passwordChangeDate"] ? new Date(_data["passwordChangeDate"].toString()) : <any>undefined;
-            this.userPassword = _data["userPassword"];
-            if (Array.isArray(_data["lstApplicationDetail"])) {
-                this.lstApplicationDetail = [] as any;
-                for (let item of _data["lstApplicationDetail"])
-                    this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
-            }
-            this.wObjectID = _data["wObjectID"];
-            this.wRoleStartDate = _data["wRoleStartDate"];
-            if (Array.isArray(_data["lstWUserRoles"])) {
-                this.lstWUserRoles = [] as any;
-                for (let item of _data["lstWUserRoles"])
-                    this.lstWUserRoles!.push(WUserRoles.fromJS(item));
-            }
-            this.objectID = _data["objectID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wAccessRequestID = _data['wAccessRequestID'];
+      this.firmQFCNo = _data['firmQFCNo'];
+      this.firmName = _data['firmName'];
+      this.firmTypeID = _data['firmTypeID'];
+      this.firmTypeDesc = _data['firmTypeDesc'];
+      this.contactID = _data['contactID'];
+      this.individualName = _data['individualName'];
+      this.aiNumber = _data['aiNumber'];
+      this.individualJobTitle = _data['individualJobTitle'];
+      this.individualDateOfBirth = _data['individualDateOfBirth'];
+      this.individualNationality = _data['individualNationality'];
+      this.individualEmailAddress = _data['individualEmailAddress'];
+      this.registrationCode = _data['registrationCode'];
+      this.registrationPassword = _data['registrationPassword'];
+      this.registrationDate = _data['registrationDate'];
+      this.isRegistered = _data['isRegistered'];
+      this.createdBy = _data['createdBy'];
+      this.createdDate = _data['createdDate'];
+      this.accountLocked = _data['accountLocked'];
+      this.isAccountExpired = _data['isAccountExpired'];
+      this.isLoggedIn = _data['isLoggedIn'];
+      this.isActiveUser = _data['isActiveUser'];
+      this.isAccountExists = _data['isAccountExists'];
+      this.isValidReqeust = _data['isValidReqeust'];
+      this.wFunctionTypeIDsList = _data['wFunctionTypeIDsList'];
+      this.withdrawnFunctionTypeIDsList = _data['withdrawnFunctionTypeIDsList'];
+      this.wRequestTypeID = _data['wRequestTypeID'];
+      this.wRequestTypeDesc = _data['wRequestTypeDesc'];
+      this.registrationStatus = _data['registrationStatus'];
+      this.wUserAccountTypeID = _data['wUserAccountTypeID'];
+      this.wUserAccountTypeDesc = _data['wUserAccountTypeDesc'];
+      this.roleId = _data['roleId'];
+      this.roleDesc = _data['roleDesc'];
+      this.wUserID = _data['wUserID'];
+      this.wUserLoginID = _data['wUserLoginID'];
+      this.isRecordInsert = _data['isRecordInsert'];
+      this.isSEF = _data['isSEF'];
+      this.isSessionActive = _data['isSessionActive'];
+      this.passwordChangeDate = _data['passwordChangeDate']
+        ? new Date(_data['passwordChangeDate'].toString())
+        : <any>undefined;
+      this.userPassword = _data['userPassword'];
+      if (Array.isArray(_data['lstApplicationDetail'])) {
+        this.lstApplicationDetail = [] as any;
+        for (let item of _data['lstApplicationDetail'])
+          this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
+      }
+      this.wObjectID = _data['wObjectID'];
+      this.wRoleStartDate = _data['wRoleStartDate'];
+      if (Array.isArray(_data['lstWUserRoles'])) {
+        this.lstWUserRoles = [] as any;
+        for (let item of _data['lstWUserRoles'])
+          this.lstWUserRoles!.push(WUserRoles.fromJS(item));
+      }
+      this.objectID = _data['objectID'];
     }
+  }
 
-    static fromJS(data: any): WAccessRequests {
-        data = typeof data === 'object' ? data : {};
-        let result = new WAccessRequests();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WAccessRequests {
+    data = typeof data === 'object' ? data : {};
+    let result = new WAccessRequests();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wAccessRequestID"] = this.wAccessRequestID;
-        data["firmQFCNo"] = this.firmQFCNo;
-        data["firmName"] = this.firmName;
-        data["firmTypeID"] = this.firmTypeID;
-        data["firmTypeDesc"] = this.firmTypeDesc;
-        data["contactID"] = this.contactID;
-        data["individualName"] = this.individualName;
-        data["aiNumber"] = this.aiNumber;
-        data["individualJobTitle"] = this.individualJobTitle;
-        data["individualDateOfBirth"] = this.individualDateOfBirth;
-        data["individualNationality"] = this.individualNationality;
-        data["individualEmailAddress"] = this.individualEmailAddress;
-        data["registrationCode"] = this.registrationCode;
-        data["registrationPassword"] = this.registrationPassword;
-        data["registrationDate"] = this.registrationDate;
-        data["isRegistered"] = this.isRegistered;
-        data["createdBy"] = this.createdBy;
-        data["createdDate"] = this.createdDate;
-        data["accountLocked"] = this.accountLocked;
-        data["isAccountExpired"] = this.isAccountExpired;
-        data["isLoggedIn"] = this.isLoggedIn;
-        data["isActiveUser"] = this.isActiveUser;
-        data["isAccountExists"] = this.isAccountExists;
-        data["isValidReqeust"] = this.isValidReqeust;
-        data["wFunctionTypeIDsList"] = this.wFunctionTypeIDsList;
-        data["withdrawnFunctionTypeIDsList"] = this.withdrawnFunctionTypeIDsList;
-        data["wRequestTypeID"] = this.wRequestTypeID;
-        data["wRequestTypeDesc"] = this.wRequestTypeDesc;
-        data["registrationStatus"] = this.registrationStatus;
-        data["wUserAccountTypeID"] = this.wUserAccountTypeID;
-        data["wUserAccountTypeDesc"] = this.wUserAccountTypeDesc;
-        data["roleId"] = this.roleId;
-        data["roleDesc"] = this.roleDesc;
-        data["wUserID"] = this.wUserID;
-        data["wUserLoginID"] = this.wUserLoginID;
-        data["isRecordInsert"] = this.isRecordInsert;
-        data["isSEF"] = this.isSEF;
-        data["isSessionActive"] = this.isSessionActive;
-        data["passwordChangeDate"] = this.passwordChangeDate ? this.passwordChangeDate.toISOString() : <any>undefined;
-        data["userPassword"] = this.userPassword;
-        if (Array.isArray(this.lstApplicationDetail)) {
-            data["lstApplicationDetail"] = [];
-            for (let item of this.lstApplicationDetail)
-                data["lstApplicationDetail"].push(item.toJSON());
-        }
-        data["wObjectID"] = this.wObjectID;
-        data["wRoleStartDate"] = this.wRoleStartDate;
-        if (Array.isArray(this.lstWUserRoles)) {
-            data["lstWUserRoles"] = [];
-            for (let item of this.lstWUserRoles)
-                data["lstWUserRoles"].push(item.toJSON());
-        }
-        data["objectID"] = this.objectID;
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wAccessRequestID'] = this.wAccessRequestID;
+    data['firmQFCNo'] = this.firmQFCNo;
+    data['firmName'] = this.firmName;
+    data['firmTypeID'] = this.firmTypeID;
+    data['firmTypeDesc'] = this.firmTypeDesc;
+    data['contactID'] = this.contactID;
+    data['individualName'] = this.individualName;
+    data['aiNumber'] = this.aiNumber;
+    data['individualJobTitle'] = this.individualJobTitle;
+    data['individualDateOfBirth'] = this.individualDateOfBirth;
+    data['individualNationality'] = this.individualNationality;
+    data['individualEmailAddress'] = this.individualEmailAddress;
+    data['registrationCode'] = this.registrationCode;
+    data['registrationPassword'] = this.registrationPassword;
+    data['registrationDate'] = this.registrationDate;
+    data['isRegistered'] = this.isRegistered;
+    data['createdBy'] = this.createdBy;
+    data['createdDate'] = this.createdDate;
+    data['accountLocked'] = this.accountLocked;
+    data['isAccountExpired'] = this.isAccountExpired;
+    data['isLoggedIn'] = this.isLoggedIn;
+    data['isActiveUser'] = this.isActiveUser;
+    data['isAccountExists'] = this.isAccountExists;
+    data['isValidReqeust'] = this.isValidReqeust;
+    data['wFunctionTypeIDsList'] = this.wFunctionTypeIDsList;
+    data['withdrawnFunctionTypeIDsList'] = this.withdrawnFunctionTypeIDsList;
+    data['wRequestTypeID'] = this.wRequestTypeID;
+    data['wRequestTypeDesc'] = this.wRequestTypeDesc;
+    data['registrationStatus'] = this.registrationStatus;
+    data['wUserAccountTypeID'] = this.wUserAccountTypeID;
+    data['wUserAccountTypeDesc'] = this.wUserAccountTypeDesc;
+    data['roleId'] = this.roleId;
+    data['roleDesc'] = this.roleDesc;
+    data['wUserID'] = this.wUserID;
+    data['wUserLoginID'] = this.wUserLoginID;
+    data['isRecordInsert'] = this.isRecordInsert;
+    data['isSEF'] = this.isSEF;
+    data['isSessionActive'] = this.isSessionActive;
+    data['passwordChangeDate'] = this.passwordChangeDate
+      ? this.passwordChangeDate.toISOString()
+      : <any>undefined;
+    data['userPassword'] = this.userPassword;
+    if (Array.isArray(this.lstApplicationDetail)) {
+      data['lstApplicationDetail'] = [];
+      for (let item of this.lstApplicationDetail)
+        data['lstApplicationDetail'].push(item.toJSON());
     }
+    data['wObjectID'] = this.wObjectID;
+    data['wRoleStartDate'] = this.wRoleStartDate;
+    if (Array.isArray(this.lstWUserRoles)) {
+      data['lstWUserRoles'] = [];
+      for (let item of this.lstWUserRoles)
+        data['lstWUserRoles'].push(item.toJSON());
+    }
+    data['objectID'] = this.objectID;
+    return data;
+  }
 }
 
 export interface IWAccessRequests {
-    wAccessRequestID?: number | undefined;
-    firmQFCNo?: string | undefined;
-    firmName?: string | undefined;
-    firmTypeID?: number;
-    firmTypeDesc?: string | undefined;
-    contactID?: number;
-    individualName?: string | undefined;
-    aiNumber?: string | undefined;
-    individualJobTitle?: string | undefined;
-    individualDateOfBirth?: string | undefined;
-    individualNationality?: string | undefined;
-    individualEmailAddress?: string | undefined;
-    registrationCode?: string | undefined;
-    registrationPassword?: string | undefined;
-    registrationDate?: string | undefined;
-    isRegistered?: boolean;
-    createdBy?: number;
-    createdDate?: string | undefined;
-    accountLocked?: boolean;
-    isAccountExpired?: boolean;
-    isLoggedIn?: boolean;
-    isActiveUser?: boolean;
-    isAccountExists?: boolean;
-    isValidReqeust?: boolean | undefined;
-    wFunctionTypeIDsList?: string | undefined;
-    withdrawnFunctionTypeIDsList?: string | undefined;
-    wRequestTypeID?: number;
-    wRequestTypeDesc?: string | undefined;
-    registrationStatus?: string | undefined;
-    wUserAccountTypeID?: number;
-    wUserAccountTypeDesc?: string | undefined;
-    roleId?: number | undefined;
-    roleDesc?: string | undefined;
-    wUserID?: number | undefined;
-    wUserLoginID?: number | undefined;
-    isRecordInsert?: boolean;
-    isSEF?: boolean;
-    isSessionActive?: boolean;
-    passwordChangeDate?: Date | undefined;
-    userPassword?: string | undefined;
-    lstApplicationDetail?: ApplicationDetail[] | undefined;
-    wObjectID?: number | undefined;
-    wRoleStartDate?: string | undefined;
-    lstWUserRoles?: WUserRoles[] | undefined;
-    objectID?: number | undefined;
+  wAccessRequestID?: number | undefined;
+  firmQFCNo?: string | undefined;
+  firmName?: string | undefined;
+  firmTypeID?: number;
+  firmTypeDesc?: string | undefined;
+  contactID?: number;
+  individualName?: string | undefined;
+  aiNumber?: string | undefined;
+  individualJobTitle?: string | undefined;
+  individualDateOfBirth?: string | undefined;
+  individualNationality?: string | undefined;
+  individualEmailAddress?: string | undefined;
+  registrationCode?: string | undefined;
+  registrationPassword?: string | undefined;
+  registrationDate?: string | undefined;
+  isRegistered?: boolean;
+  createdBy?: number;
+  createdDate?: string | undefined;
+  accountLocked?: boolean;
+  isAccountExpired?: boolean;
+  isLoggedIn?: boolean;
+  isActiveUser?: boolean;
+  isAccountExists?: boolean;
+  isValidReqeust?: boolean | undefined;
+  wFunctionTypeIDsList?: string | undefined;
+  withdrawnFunctionTypeIDsList?: string | undefined;
+  wRequestTypeID?: number;
+  wRequestTypeDesc?: string | undefined;
+  registrationStatus?: string | undefined;
+  wUserAccountTypeID?: number;
+  wUserAccountTypeDesc?: string | undefined;
+  roleId?: number | undefined;
+  roleDesc?: string | undefined;
+  wUserID?: number | undefined;
+  wUserLoginID?: number | undefined;
+  isRecordInsert?: boolean;
+  isSEF?: boolean;
+  isSessionActive?: boolean;
+  passwordChangeDate?: Date | undefined;
+  userPassword?: string | undefined;
+  lstApplicationDetail?: ApplicationDetail[] | undefined;
+  wObjectID?: number | undefined;
+  wRoleStartDate?: string | undefined;
+  lstWUserRoles?: WUserRoles[] | undefined;
+  objectID?: number | undefined;
 }
 
-export class WAccessRequestsListBaseResponse implements IWAccessRequestsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WAccessRequests[] | undefined;
+export class WAccessRequestsListBaseResponse
+  implements IWAccessRequestsListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WAccessRequests[] | undefined;
 
-    constructor(data?: IWAccessRequestsListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWAccessRequestsListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(WAccessRequests.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(WAccessRequests.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): WAccessRequestsListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new WAccessRequestsListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WAccessRequestsListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new WAccessRequestsListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWAccessRequestsListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WAccessRequests[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WAccessRequests[] | undefined;
 }
 
 export class WApplicationDetailDto implements IWApplicationDetailDto {
-    applicationID?: number | undefined;
-    formTypeID?: number | undefined;
-    formTypeDesc?: string | undefined;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applStatusTypeID?: number | undefined;
-    applStatusTypeDesc?: string | undefined;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    userId?: number | undefined;
-    createdDate?: string | undefined;
-    userModified?: number | undefined;
-    modifiedDate?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    supervisingFlag?: boolean | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number | undefined;
-    proposedRelocationDateMonth?: number | undefined;
-    proposedRelocationDateYear?: number | undefined;
+  applicationID?: number | undefined;
+  formTypeID?: number | undefined;
+  formTypeDesc?: string | undefined;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applStatusTypeID?: number | undefined;
+  applStatusTypeDesc?: string | undefined;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  userId?: number | undefined;
+  createdDate?: string | undefined;
+  userModified?: number | undefined;
+  modifiedDate?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  supervisingFlag?: boolean | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number | undefined;
+  proposedRelocationDateMonth?: number | undefined;
+  proposedRelocationDateYear?: number | undefined;
 
-    constructor(data?: IWApplicationDetailDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWApplicationDetailDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.applicationID = _data["applicationID"];
-            this.formTypeID = _data["formTypeID"];
-            this.formTypeDesc = _data["formTypeDesc"];
-            this.qfcNumber = _data["qfcNumber"];
-            this.aiNumber = _data["aiNumber"];
-            this.applStatusTypeID = _data["applStatusTypeID"];
-            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
-            this.arrangementTypeID = _data["arrangementTypeID"];
-            this.arrangementTypeDesc = _data["arrangementTypeDesc"];
-            this.arrangementTypeOtherDesc = _data["arrangementTypeOtherDesc"];
-            this.competenciesAndExp = _data["competenciesAndExp"];
-            this.cfExcercisedDesc = _data["cfExcercisedDesc"];
-            this.currentJobTitle = _data["currentJobTitle"];
-            this.proposedJobTitle = _data["proposedJobTitle"];
-            this.jobDesc = _data["jobDesc"];
-            this.pastPositionFlag = _data["pastPositionFlag"];
-            this.pastPositionDesc = _data["pastPositionDesc"];
-            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
-            this.fandPChangeDesc = _data["fandPChangeDesc"];
-            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
-            this.altArrangementDesc = _data["altArrangementDesc"];
-            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
-            this.residencyNAFlag = _data["residencyNAFlag"];
-            this.aliasesNAFlag = _data["aliasesNAFlag"];
-            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
-            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
-            this.reglsNAFlag = _data["reglsNAFlag"];
-            this.userId = _data["userId"];
-            this.createdDate = _data["createdDate"];
-            this.userModified = _data["userModified"];
-            this.modifiedDate = _data["modifiedDate"];
-            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
-            this.supervisingFlag = _data["supervisingFlag"];
-            this.isOrdinarilyResidentFlag = _data["isOrdinarilyResidentFlag"];
-            this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
-            this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
-            this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.applicationID = _data['applicationID'];
+      this.formTypeID = _data['formTypeID'];
+      this.formTypeDesc = _data['formTypeDesc'];
+      this.qfcNumber = _data['qfcNumber'];
+      this.aiNumber = _data['aiNumber'];
+      this.applStatusTypeID = _data['applStatusTypeID'];
+      this.applStatusTypeDesc = _data['applStatusTypeDesc'];
+      this.arrangementTypeID = _data['arrangementTypeID'];
+      this.arrangementTypeDesc = _data['arrangementTypeDesc'];
+      this.arrangementTypeOtherDesc = _data['arrangementTypeOtherDesc'];
+      this.competenciesAndExp = _data['competenciesAndExp'];
+      this.cfExcercisedDesc = _data['cfExcercisedDesc'];
+      this.currentJobTitle = _data['currentJobTitle'];
+      this.proposedJobTitle = _data['proposedJobTitle'];
+      this.jobDesc = _data['jobDesc'];
+      this.pastPositionFlag = _data['pastPositionFlag'];
+      this.pastPositionDesc = _data['pastPositionDesc'];
+      this.fandPAddnlInfo = _data['fandPAddnlInfo'];
+      this.fandPChangeDesc = _data['fandPChangeDesc'];
+      this.withdrawlReasonDesc = _data['withdrawlReasonDesc'];
+      this.altArrangementDesc = _data['altArrangementDesc'];
+      this.wcfAddnlInfo = _data['wcfAddnlInfo'];
+      this.residencyNAFlag = _data['residencyNAFlag'];
+      this.aliasesNAFlag = _data['aliasesNAFlag'];
+      this.careerHistoryNAFlag = _data['careerHistoryNAFlag'];
+      this.careerHistoryNAReason = _data['careerHistoryNAReason'];
+      this.reglsNAFlag = _data['reglsNAFlag'];
+      this.userId = _data['userId'];
+      this.createdDate = _data['createdDate'];
+      this.userModified = _data['userModified'];
+      this.modifiedDate = _data['modifiedDate'];
+      this.reasonForDelayInFiling = _data['reasonForDelayInFiling'];
+      this.supervisingFlag = _data['supervisingFlag'];
+      this.isOrdinarilyResidentFlag = _data['isOrdinarilyResidentFlag'];
+      this.proposedRelocationDateDay = _data['proposedRelocationDateDay'];
+      this.proposedRelocationDateMonth = _data['proposedRelocationDateMonth'];
+      this.proposedRelocationDateYear = _data['proposedRelocationDateYear'];
     }
+  }
 
-    static fromJS(data: any): WApplicationDetailDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new WApplicationDetailDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WApplicationDetailDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new WApplicationDetailDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["applicationID"] = this.applicationID;
-        data["formTypeID"] = this.formTypeID;
-        data["formTypeDesc"] = this.formTypeDesc;
-        data["qfcNumber"] = this.qfcNumber;
-        data["aiNumber"] = this.aiNumber;
-        data["applStatusTypeID"] = this.applStatusTypeID;
-        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
-        data["arrangementTypeID"] = this.arrangementTypeID;
-        data["arrangementTypeDesc"] = this.arrangementTypeDesc;
-        data["arrangementTypeOtherDesc"] = this.arrangementTypeOtherDesc;
-        data["competenciesAndExp"] = this.competenciesAndExp;
-        data["cfExcercisedDesc"] = this.cfExcercisedDesc;
-        data["currentJobTitle"] = this.currentJobTitle;
-        data["proposedJobTitle"] = this.proposedJobTitle;
-        data["jobDesc"] = this.jobDesc;
-        data["pastPositionFlag"] = this.pastPositionFlag;
-        data["pastPositionDesc"] = this.pastPositionDesc;
-        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
-        data["fandPChangeDesc"] = this.fandPChangeDesc;
-        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
-        data["altArrangementDesc"] = this.altArrangementDesc;
-        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
-        data["residencyNAFlag"] = this.residencyNAFlag;
-        data["aliasesNAFlag"] = this.aliasesNAFlag;
-        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
-        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
-        data["reglsNAFlag"] = this.reglsNAFlag;
-        data["userId"] = this.userId;
-        data["createdDate"] = this.createdDate;
-        data["userModified"] = this.userModified;
-        data["modifiedDate"] = this.modifiedDate;
-        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
-        data["supervisingFlag"] = this.supervisingFlag;
-        data["isOrdinarilyResidentFlag"] = this.isOrdinarilyResidentFlag;
-        data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
-        data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
-        data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['applicationID'] = this.applicationID;
+    data['formTypeID'] = this.formTypeID;
+    data['formTypeDesc'] = this.formTypeDesc;
+    data['qfcNumber'] = this.qfcNumber;
+    data['aiNumber'] = this.aiNumber;
+    data['applStatusTypeID'] = this.applStatusTypeID;
+    data['applStatusTypeDesc'] = this.applStatusTypeDesc;
+    data['arrangementTypeID'] = this.arrangementTypeID;
+    data['arrangementTypeDesc'] = this.arrangementTypeDesc;
+    data['arrangementTypeOtherDesc'] = this.arrangementTypeOtherDesc;
+    data['competenciesAndExp'] = this.competenciesAndExp;
+    data['cfExcercisedDesc'] = this.cfExcercisedDesc;
+    data['currentJobTitle'] = this.currentJobTitle;
+    data['proposedJobTitle'] = this.proposedJobTitle;
+    data['jobDesc'] = this.jobDesc;
+    data['pastPositionFlag'] = this.pastPositionFlag;
+    data['pastPositionDesc'] = this.pastPositionDesc;
+    data['fandPAddnlInfo'] = this.fandPAddnlInfo;
+    data['fandPChangeDesc'] = this.fandPChangeDesc;
+    data['withdrawlReasonDesc'] = this.withdrawlReasonDesc;
+    data['altArrangementDesc'] = this.altArrangementDesc;
+    data['wcfAddnlInfo'] = this.wcfAddnlInfo;
+    data['residencyNAFlag'] = this.residencyNAFlag;
+    data['aliasesNAFlag'] = this.aliasesNAFlag;
+    data['careerHistoryNAFlag'] = this.careerHistoryNAFlag;
+    data['careerHistoryNAReason'] = this.careerHistoryNAReason;
+    data['reglsNAFlag'] = this.reglsNAFlag;
+    data['userId'] = this.userId;
+    data['createdDate'] = this.createdDate;
+    data['userModified'] = this.userModified;
+    data['modifiedDate'] = this.modifiedDate;
+    data['reasonForDelayInFiling'] = this.reasonForDelayInFiling;
+    data['supervisingFlag'] = this.supervisingFlag;
+    data['isOrdinarilyResidentFlag'] = this.isOrdinarilyResidentFlag;
+    data['proposedRelocationDateDay'] = this.proposedRelocationDateDay;
+    data['proposedRelocationDateMonth'] = this.proposedRelocationDateMonth;
+    data['proposedRelocationDateYear'] = this.proposedRelocationDateYear;
+    return data;
+  }
 }
 
 export interface IWApplicationDetailDto {
-    applicationID?: number | undefined;
-    formTypeID?: number | undefined;
-    formTypeDesc?: string | undefined;
-    qfcNumber?: string | undefined;
-    aiNumber?: string | undefined;
-    applStatusTypeID?: number | undefined;
-    applStatusTypeDesc?: string | undefined;
-    arrangementTypeID?: number | undefined;
-    arrangementTypeDesc?: string | undefined;
-    arrangementTypeOtherDesc?: string | undefined;
-    competenciesAndExp?: string | undefined;
-    cfExcercisedDesc?: string | undefined;
-    currentJobTitle?: string | undefined;
-    proposedJobTitle?: string | undefined;
-    jobDesc?: string | undefined;
-    pastPositionFlag?: boolean | undefined;
-    pastPositionDesc?: string | undefined;
-    fandPAddnlInfo?: string | undefined;
-    fandPChangeDesc?: string | undefined;
-    withdrawlReasonDesc?: string | undefined;
-    altArrangementDesc?: string | undefined;
-    wcfAddnlInfo?: string | undefined;
-    residencyNAFlag?: boolean | undefined;
-    aliasesNAFlag?: boolean | undefined;
-    careerHistoryNAFlag?: boolean | undefined;
-    careerHistoryNAReason?: string | undefined;
-    reglsNAFlag?: boolean | undefined;
-    userId?: number | undefined;
-    createdDate?: string | undefined;
-    userModified?: number | undefined;
-    modifiedDate?: string | undefined;
-    reasonForDelayInFiling?: string | undefined;
-    supervisingFlag?: boolean | undefined;
-    isOrdinarilyResidentFlag?: boolean | undefined;
-    proposedRelocationDateDay?: number | undefined;
-    proposedRelocationDateMonth?: number | undefined;
-    proposedRelocationDateYear?: number | undefined;
+  applicationID?: number | undefined;
+  formTypeID?: number | undefined;
+  formTypeDesc?: string | undefined;
+  qfcNumber?: string | undefined;
+  aiNumber?: string | undefined;
+  applStatusTypeID?: number | undefined;
+  applStatusTypeDesc?: string | undefined;
+  arrangementTypeID?: number | undefined;
+  arrangementTypeDesc?: string | undefined;
+  arrangementTypeOtherDesc?: string | undefined;
+  competenciesAndExp?: string | undefined;
+  cfExcercisedDesc?: string | undefined;
+  currentJobTitle?: string | undefined;
+  proposedJobTitle?: string | undefined;
+  jobDesc?: string | undefined;
+  pastPositionFlag?: boolean | undefined;
+  pastPositionDesc?: string | undefined;
+  fandPAddnlInfo?: string | undefined;
+  fandPChangeDesc?: string | undefined;
+  withdrawlReasonDesc?: string | undefined;
+  altArrangementDesc?: string | undefined;
+  wcfAddnlInfo?: string | undefined;
+  residencyNAFlag?: boolean | undefined;
+  aliasesNAFlag?: boolean | undefined;
+  careerHistoryNAFlag?: boolean | undefined;
+  careerHistoryNAReason?: string | undefined;
+  reglsNAFlag?: boolean | undefined;
+  userId?: number | undefined;
+  createdDate?: string | undefined;
+  userModified?: number | undefined;
+  modifiedDate?: string | undefined;
+  reasonForDelayInFiling?: string | undefined;
+  supervisingFlag?: boolean | undefined;
+  isOrdinarilyResidentFlag?: boolean | undefined;
+  proposedRelocationDateDay?: number | undefined;
+  proposedRelocationDateMonth?: number | undefined;
+  proposedRelocationDateYear?: number | undefined;
 }
 
-export class WApplicationDetailDtoListBaseResponse implements IWApplicationDetailDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WApplicationDetailDto[] | undefined;
+export class WApplicationDetailDtoListBaseResponse
+  implements IWApplicationDetailDtoListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WApplicationDetailDto[] | undefined;
 
-    constructor(data?: IWApplicationDetailDtoListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWApplicationDetailDtoListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(WApplicationDetailDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(WApplicationDetailDto.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): WApplicationDetailDtoListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new WApplicationDetailDtoListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WApplicationDetailDtoListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new WApplicationDetailDtoListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWApplicationDetailDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WApplicationDetailDto[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WApplicationDetailDto[] | undefined;
 }
 
 export class WNotice implements IWNotice {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
 
-    constructor(data?: IWNotice) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNotice) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wNoticeTypeID = _data["wNoticeTypeID"];
-            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
-            this.wNoticeName = _data["wNoticeName"];
-            this.wReferenceNumber = _data["wReferenceNumber"];
-            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
-            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
-            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
-            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
-            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
-            this.wSubject = _data["wSubject"];
-            this.wReferences = _data["wReferences"];
-            this.wLinkToNotice = _data["wLinkToNotice"];
-            this.wNotificationSentDate = _data["wNotificationSentDate"];
-            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
-            this.wResponseRequired = _data["wResponseRequired"];
-            this.wNoticeEmail = _data["wNoticeEmail"];
-            this.wPublishOnESS = _data["wPublishOnESS"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.wResponseDueDate = _data["wResponseDueDate"];
-            this.wRespondentTypeID = _data["wRespondentTypeID"];
-            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
-            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
-            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
-            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeID = _data['wNoticeID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wSourceNoticeID = _data['wSourceNoticeID'];
+      this.wNoticeTypeID = _data['wNoticeTypeID'];
+      this.wNoticeTypeDesc = _data['wNoticeTypeDesc'];
+      this.wNoticeName = _data['wNoticeName'];
+      this.wReferenceNumber = _data['wReferenceNumber'];
+      this.wcmsReferenceNumber = _data['wcmsReferenceNumber'];
+      this.wIssuersReferenceNumber = _data['wIssuersReferenceNumber'];
+      this.wNoticeIssuerID = _data['wNoticeIssuerID'];
+      this.wOtherNoticeIssuer = _data['wOtherNoticeIssuer'];
+      this.wNoticeIssuedDate = _data['wNoticeIssuedDate'];
+      this.wSubject = _data['wSubject'];
+      this.wReferences = _data['wReferences'];
+      this.wLinkToNotice = _data['wLinkToNotice'];
+      this.wNotificationSentDate = _data['wNotificationSentDate'];
+      this.wEmailNotificationContent = _data['wEmailNotificationContent'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.wNoticeIssuerShortName = _data['wNoticeIssuerShortName'];
+      this.wResponseRequired = _data['wResponseRequired'];
+      this.wNoticeEmail = _data['wNoticeEmail'];
+      this.wPublishOnESS = _data['wPublishOnESS'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.wNotes = _data['wNotes'];
+      this.wResponseDueDate = _data['wResponseDueDate'];
+      this.wRespondentTypeID = _data['wRespondentTypeID'];
+      this.wRespondentsControlledFunctionTypeIDs =
+        _data['wRespondentsControlledFunctionTypeIDs'];
+      this.wRespondentsDNFBPFunctionTypeIDs =
+        _data['wRespondentsDNFBPFunctionTypeIDs'];
+      this.wNoticeSignOffText = _data['wNoticeSignOffText'];
+      this.objNoticeQuestionnaire = _data['objNoticeQuestionnaire']
+        ? WNoticeQuestionnaire.fromJS(_data['objNoticeQuestionnaire'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): WNotice {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNotice();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNotice {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNotice();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wNoticeTypeID"] = this.wNoticeTypeID;
-        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
-        data["wNoticeName"] = this.wNoticeName;
-        data["wReferenceNumber"] = this.wReferenceNumber;
-        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
-        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
-        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
-        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
-        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
-        data["wSubject"] = this.wSubject;
-        data["wReferences"] = this.wReferences;
-        data["wLinkToNotice"] = this.wLinkToNotice;
-        data["wNotificationSentDate"] = this.wNotificationSentDate;
-        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
-        data["wResponseRequired"] = this.wResponseRequired;
-        data["wNoticeEmail"] = this.wNoticeEmail;
-        data["wPublishOnESS"] = this.wPublishOnESS;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["wResponseDueDate"] = this.wResponseDueDate;
-        data["wRespondentTypeID"] = this.wRespondentTypeID;
-        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
-        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
-        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
-        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeID'] = this.wNoticeID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wSourceNoticeID'] = this.wSourceNoticeID;
+    data['wNoticeTypeID'] = this.wNoticeTypeID;
+    data['wNoticeTypeDesc'] = this.wNoticeTypeDesc;
+    data['wNoticeName'] = this.wNoticeName;
+    data['wReferenceNumber'] = this.wReferenceNumber;
+    data['wcmsReferenceNumber'] = this.wcmsReferenceNumber;
+    data['wIssuersReferenceNumber'] = this.wIssuersReferenceNumber;
+    data['wNoticeIssuerID'] = this.wNoticeIssuerID;
+    data['wOtherNoticeIssuer'] = this.wOtherNoticeIssuer;
+    data['wNoticeIssuedDate'] = this.wNoticeIssuedDate;
+    data['wSubject'] = this.wSubject;
+    data['wReferences'] = this.wReferences;
+    data['wLinkToNotice'] = this.wLinkToNotice;
+    data['wNotificationSentDate'] = this.wNotificationSentDate;
+    data['wEmailNotificationContent'] = this.wEmailNotificationContent;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['wNoticeIssuerShortName'] = this.wNoticeIssuerShortName;
+    data['wResponseRequired'] = this.wResponseRequired;
+    data['wNoticeEmail'] = this.wNoticeEmail;
+    data['wPublishOnESS'] = this.wPublishOnESS;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['wNotes'] = this.wNotes;
+    data['wResponseDueDate'] = this.wResponseDueDate;
+    data['wRespondentTypeID'] = this.wRespondentTypeID;
+    data['wRespondentsControlledFunctionTypeIDs'] =
+      this.wRespondentsControlledFunctionTypeIDs;
+    data['wRespondentsDNFBPFunctionTypeIDs'] =
+      this.wRespondentsDNFBPFunctionTypeIDs;
+    data['wNoticeSignOffText'] = this.wNoticeSignOffText;
+    data['objNoticeQuestionnaire'] = this.objNoticeQuestionnaire
+      ? this.objNoticeQuestionnaire.toJSON()
+      : <any>undefined;
+    return data;
+  }
 }
 
 export interface IWNotice {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
 }
 
 export class WNoticeBaseResponse implements IWNoticeBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNotice;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNotice;
 
-    constructor(data?: IWNoticeBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? WNotice.fromJS(_data["response"]) : <any>undefined;
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      this.response = _data['response']
+        ? WNotice.fromJS(_data['response'])
+        : <any>undefined;
     }
+  }
 
-    static fromJS(data: any): WNoticeBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    data['response'] = this.response ? this.response.toJSON() : <any>undefined;
+    return data;
+  }
 }
 
 export interface IWNoticeBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNotice;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNotice;
 }
 
 export class WNoticeList implements IWNoticeList {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    noticeType?: string | undefined;
-    noticeTemplate?: string | undefined;
-    noticeNumber?: string | undefined;
-    noticeDate?: string | undefined;
-    issuer?: string | undefined;
-    responseRequired?: string | undefined;
-    published?: string | undefined;
-    responseDueDate?: string | undefined;
-    responseProvidedDate?: string | undefined;
-    responseSignedBy?: string | undefined;
-    resoponseType?: string | undefined;
-    wsosStatusTypeID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  noticeType?: string | undefined;
+  noticeTemplate?: string | undefined;
+  noticeNumber?: string | undefined;
+  noticeDate?: string | undefined;
+  issuer?: string | undefined;
+  responseRequired?: string | undefined;
+  published?: string | undefined;
+  responseDueDate?: string | undefined;
+  responseProvidedDate?: string | undefined;
+  responseSignedBy?: string | undefined;
+  resoponseType?: string | undefined;
+  wsosStatusTypeID?: number | undefined;
 
-    constructor(data?: IWNoticeList) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeList) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wNoticeTypeID = _data["wNoticeTypeID"];
-            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
-            this.wNoticeName = _data["wNoticeName"];
-            this.wReferenceNumber = _data["wReferenceNumber"];
-            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
-            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
-            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
-            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
-            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
-            this.wSubject = _data["wSubject"];
-            this.wReferences = _data["wReferences"];
-            this.wLinkToNotice = _data["wLinkToNotice"];
-            this.wNotificationSentDate = _data["wNotificationSentDate"];
-            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
-            this.wResponseRequired = _data["wResponseRequired"];
-            this.wNoticeEmail = _data["wNoticeEmail"];
-            this.wPublishOnESS = _data["wPublishOnESS"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.wResponseDueDate = _data["wResponseDueDate"];
-            this.wRespondentTypeID = _data["wRespondentTypeID"];
-            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
-            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
-            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
-            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
-            this.noticeType = _data["noticeType"];
-            this.noticeTemplate = _data["noticeTemplate"];
-            this.noticeNumber = _data["noticeNumber"];
-            this.noticeDate = _data["noticeDate"];
-            this.issuer = _data["issuer"];
-            this.responseRequired = _data["responseRequired"];
-            this.published = _data["published"];
-            this.responseDueDate = _data["responseDueDate"];
-            this.responseProvidedDate = _data["responseProvidedDate"];
-            this.responseSignedBy = _data["responseSignedBy"];
-            this.resoponseType = _data["resoponseType"];
-            this.wsosStatusTypeID = _data["wsosStatusTypeID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeID = _data['wNoticeID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wSourceNoticeID = _data['wSourceNoticeID'];
+      this.wNoticeTypeID = _data['wNoticeTypeID'];
+      this.wNoticeTypeDesc = _data['wNoticeTypeDesc'];
+      this.wNoticeName = _data['wNoticeName'];
+      this.wReferenceNumber = _data['wReferenceNumber'];
+      this.wcmsReferenceNumber = _data['wcmsReferenceNumber'];
+      this.wIssuersReferenceNumber = _data['wIssuersReferenceNumber'];
+      this.wNoticeIssuerID = _data['wNoticeIssuerID'];
+      this.wOtherNoticeIssuer = _data['wOtherNoticeIssuer'];
+      this.wNoticeIssuedDate = _data['wNoticeIssuedDate'];
+      this.wSubject = _data['wSubject'];
+      this.wReferences = _data['wReferences'];
+      this.wLinkToNotice = _data['wLinkToNotice'];
+      this.wNotificationSentDate = _data['wNotificationSentDate'];
+      this.wEmailNotificationContent = _data['wEmailNotificationContent'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.wNoticeIssuerShortName = _data['wNoticeIssuerShortName'];
+      this.wResponseRequired = _data['wResponseRequired'];
+      this.wNoticeEmail = _data['wNoticeEmail'];
+      this.wPublishOnESS = _data['wPublishOnESS'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.wNotes = _data['wNotes'];
+      this.wResponseDueDate = _data['wResponseDueDate'];
+      this.wRespondentTypeID = _data['wRespondentTypeID'];
+      this.wRespondentsControlledFunctionTypeIDs =
+        _data['wRespondentsControlledFunctionTypeIDs'];
+      this.wRespondentsDNFBPFunctionTypeIDs =
+        _data['wRespondentsDNFBPFunctionTypeIDs'];
+      this.wNoticeSignOffText = _data['wNoticeSignOffText'];
+      this.objNoticeQuestionnaire = _data['objNoticeQuestionnaire']
+        ? WNoticeQuestionnaire.fromJS(_data['objNoticeQuestionnaire'])
+        : <any>undefined;
+      this.noticeType = _data['noticeType'];
+      this.noticeTemplate = _data['noticeTemplate'];
+      this.noticeNumber = _data['noticeNumber'];
+      this.noticeDate = _data['noticeDate'];
+      this.issuer = _data['issuer'];
+      this.responseRequired = _data['responseRequired'];
+      this.published = _data['published'];
+      this.responseDueDate = _data['responseDueDate'];
+      this.responseProvidedDate = _data['responseProvidedDate'];
+      this.responseSignedBy = _data['responseSignedBy'];
+      this.resoponseType = _data['resoponseType'];
+      this.wsosStatusTypeID = _data['wsosStatusTypeID'];
     }
+  }
 
-    static fromJS(data: any): WNoticeList {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeList();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeList {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeList();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wNoticeTypeID"] = this.wNoticeTypeID;
-        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
-        data["wNoticeName"] = this.wNoticeName;
-        data["wReferenceNumber"] = this.wReferenceNumber;
-        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
-        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
-        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
-        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
-        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
-        data["wSubject"] = this.wSubject;
-        data["wReferences"] = this.wReferences;
-        data["wLinkToNotice"] = this.wLinkToNotice;
-        data["wNotificationSentDate"] = this.wNotificationSentDate;
-        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
-        data["wResponseRequired"] = this.wResponseRequired;
-        data["wNoticeEmail"] = this.wNoticeEmail;
-        data["wPublishOnESS"] = this.wPublishOnESS;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["wResponseDueDate"] = this.wResponseDueDate;
-        data["wRespondentTypeID"] = this.wRespondentTypeID;
-        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
-        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
-        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
-        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
-        data["noticeType"] = this.noticeType;
-        data["noticeTemplate"] = this.noticeTemplate;
-        data["noticeNumber"] = this.noticeNumber;
-        data["noticeDate"] = this.noticeDate;
-        data["issuer"] = this.issuer;
-        data["responseRequired"] = this.responseRequired;
-        data["published"] = this.published;
-        data["responseDueDate"] = this.responseDueDate;
-        data["responseProvidedDate"] = this.responseProvidedDate;
-        data["responseSignedBy"] = this.responseSignedBy;
-        data["resoponseType"] = this.resoponseType;
-        data["wsosStatusTypeID"] = this.wsosStatusTypeID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeID'] = this.wNoticeID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wSourceNoticeID'] = this.wSourceNoticeID;
+    data['wNoticeTypeID'] = this.wNoticeTypeID;
+    data['wNoticeTypeDesc'] = this.wNoticeTypeDesc;
+    data['wNoticeName'] = this.wNoticeName;
+    data['wReferenceNumber'] = this.wReferenceNumber;
+    data['wcmsReferenceNumber'] = this.wcmsReferenceNumber;
+    data['wIssuersReferenceNumber'] = this.wIssuersReferenceNumber;
+    data['wNoticeIssuerID'] = this.wNoticeIssuerID;
+    data['wOtherNoticeIssuer'] = this.wOtherNoticeIssuer;
+    data['wNoticeIssuedDate'] = this.wNoticeIssuedDate;
+    data['wSubject'] = this.wSubject;
+    data['wReferences'] = this.wReferences;
+    data['wLinkToNotice'] = this.wLinkToNotice;
+    data['wNotificationSentDate'] = this.wNotificationSentDate;
+    data['wEmailNotificationContent'] = this.wEmailNotificationContent;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['wNoticeIssuerShortName'] = this.wNoticeIssuerShortName;
+    data['wResponseRequired'] = this.wResponseRequired;
+    data['wNoticeEmail'] = this.wNoticeEmail;
+    data['wPublishOnESS'] = this.wPublishOnESS;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['wNotes'] = this.wNotes;
+    data['wResponseDueDate'] = this.wResponseDueDate;
+    data['wRespondentTypeID'] = this.wRespondentTypeID;
+    data['wRespondentsControlledFunctionTypeIDs'] =
+      this.wRespondentsControlledFunctionTypeIDs;
+    data['wRespondentsDNFBPFunctionTypeIDs'] =
+      this.wRespondentsDNFBPFunctionTypeIDs;
+    data['wNoticeSignOffText'] = this.wNoticeSignOffText;
+    data['objNoticeQuestionnaire'] = this.objNoticeQuestionnaire
+      ? this.objNoticeQuestionnaire.toJSON()
+      : <any>undefined;
+    data['noticeType'] = this.noticeType;
+    data['noticeTemplate'] = this.noticeTemplate;
+    data['noticeNumber'] = this.noticeNumber;
+    data['noticeDate'] = this.noticeDate;
+    data['issuer'] = this.issuer;
+    data['responseRequired'] = this.responseRequired;
+    data['published'] = this.published;
+    data['responseDueDate'] = this.responseDueDate;
+    data['responseProvidedDate'] = this.responseProvidedDate;
+    data['responseSignedBy'] = this.responseSignedBy;
+    data['resoponseType'] = this.resoponseType;
+    data['wsosStatusTypeID'] = this.wsosStatusTypeID;
+    return data;
+  }
 }
 
 export interface IWNoticeList {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    noticeType?: string | undefined;
-    noticeTemplate?: string | undefined;
-    noticeNumber?: string | undefined;
-    noticeDate?: string | undefined;
-    issuer?: string | undefined;
-    responseRequired?: string | undefined;
-    published?: string | undefined;
-    responseDueDate?: string | undefined;
-    responseProvidedDate?: string | undefined;
-    responseSignedBy?: string | undefined;
-    resoponseType?: string | undefined;
-    wsosStatusTypeID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  noticeType?: string | undefined;
+  noticeTemplate?: string | undefined;
+  noticeNumber?: string | undefined;
+  noticeDate?: string | undefined;
+  issuer?: string | undefined;
+  responseRequired?: string | undefined;
+  published?: string | undefined;
+  responseDueDate?: string | undefined;
+  responseProvidedDate?: string | undefined;
+  responseSignedBy?: string | undefined;
+  resoponseType?: string | undefined;
+  wsosStatusTypeID?: number | undefined;
 }
 
-export class WNoticeListListBaseResponse implements IWNoticeListListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNoticeList[] | undefined;
+export class WNoticeListListBaseResponse
+  implements IWNoticeListListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNoticeList[] | undefined;
 
-    constructor(data?: IWNoticeListListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeListListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(WNoticeList.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(WNoticeList.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeListListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeListListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeListListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeListListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWNoticeListListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNoticeList[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNoticeList[] | undefined;
 }
 
 export class WNoticeQuestionnaire implements IWNoticeQuestionnaire {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
 
-    constructor(data?: IWNoticeQuestionnaire) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeQuestionnaire) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wNoticeTypeID = _data["wNoticeTypeID"];
-            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
-            this.wNoticeName = _data["wNoticeName"];
-            this.wReferenceNumber = _data["wReferenceNumber"];
-            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
-            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
-            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
-            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
-            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
-            this.wSubject = _data["wSubject"];
-            this.wReferences = _data["wReferences"];
-            this.wLinkToNotice = _data["wLinkToNotice"];
-            this.wNotificationSentDate = _data["wNotificationSentDate"];
-            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
-            this.wResponseRequired = _data["wResponseRequired"];
-            this.wNoticeEmail = _data["wNoticeEmail"];
-            this.wPublishOnESS = _data["wPublishOnESS"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
-            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
-            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
-            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
-            this.wResponseDueDate = _data["wResponseDueDate"];
-            this.wRespondentTypeID = _data["wRespondentTypeID"];
-            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
-            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
-            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
-                this.lstNoticeQuestionnaireItems = [] as any;
-                for (let item of _data["lstNoticeQuestionnaireItems"])
-                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeID = _data['wNoticeID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wSourceNoticeID = _data['wSourceNoticeID'];
+      this.wNoticeTypeID = _data['wNoticeTypeID'];
+      this.wNoticeTypeDesc = _data['wNoticeTypeDesc'];
+      this.wNoticeName = _data['wNoticeName'];
+      this.wReferenceNumber = _data['wReferenceNumber'];
+      this.wcmsReferenceNumber = _data['wcmsReferenceNumber'];
+      this.wIssuersReferenceNumber = _data['wIssuersReferenceNumber'];
+      this.wNoticeIssuerID = _data['wNoticeIssuerID'];
+      this.wOtherNoticeIssuer = _data['wOtherNoticeIssuer'];
+      this.wNoticeIssuedDate = _data['wNoticeIssuedDate'];
+      this.wSubject = _data['wSubject'];
+      this.wReferences = _data['wReferences'];
+      this.wLinkToNotice = _data['wLinkToNotice'];
+      this.wNotificationSentDate = _data['wNotificationSentDate'];
+      this.wEmailNotificationContent = _data['wEmailNotificationContent'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.wNoticeIssuerShortName = _data['wNoticeIssuerShortName'];
+      this.wResponseRequired = _data['wResponseRequired'];
+      this.wNoticeEmail = _data['wNoticeEmail'];
+      this.wPublishOnESS = _data['wPublishOnESS'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.wNotes = _data['wNotes'];
+      this.wNoticeSignOffText = _data['wNoticeSignOffText'];
+      this.objNoticeQuestionnaire = _data['objNoticeQuestionnaire']
+        ? WNoticeQuestionnaire.fromJS(_data['objNoticeQuestionnaire'])
+        : <any>undefined;
+      this.wNoticeQuestionnaireID = _data['wNoticeQuestionnaireID'];
+      this.wSourceNoticeQuestionnaireID = _data['wSourceNoticeQuestionnaireID'];
+      this.wResponseDueDate = _data['wResponseDueDate'];
+      this.wRespondentTypeID = _data['wRespondentTypeID'];
+      this.wRespondentsControlledFunctionTypeIDs =
+        _data['wRespondentsControlledFunctionTypeIDs'];
+      this.wRespondentsDNFBPFunctionTypeIDs =
+        _data['wRespondentsDNFBPFunctionTypeIDs'];
+      if (Array.isArray(_data['lstNoticeQuestionnaireItems'])) {
+        this.lstNoticeQuestionnaireItems = [] as any;
+        for (let item of _data['lstNoticeQuestionnaireItems'])
+          this.lstNoticeQuestionnaireItems!.push(
+            WNoticeQuestionnaireItems.fromJS(item)
+          );
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeQuestionnaire {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeQuestionnaire();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeQuestionnaire {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeQuestionnaire();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wNoticeTypeID"] = this.wNoticeTypeID;
-        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
-        data["wNoticeName"] = this.wNoticeName;
-        data["wReferenceNumber"] = this.wReferenceNumber;
-        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
-        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
-        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
-        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
-        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
-        data["wSubject"] = this.wSubject;
-        data["wReferences"] = this.wReferences;
-        data["wLinkToNotice"] = this.wLinkToNotice;
-        data["wNotificationSentDate"] = this.wNotificationSentDate;
-        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
-        data["wResponseRequired"] = this.wResponseRequired;
-        data["wNoticeEmail"] = this.wNoticeEmail;
-        data["wPublishOnESS"] = this.wPublishOnESS;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
-        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
-        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
-        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
-        data["wResponseDueDate"] = this.wResponseDueDate;
-        data["wRespondentTypeID"] = this.wRespondentTypeID;
-        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
-        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
-        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
-            data["lstNoticeQuestionnaireItems"] = [];
-            for (let item of this.lstNoticeQuestionnaireItems)
-                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeID'] = this.wNoticeID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wSourceNoticeID'] = this.wSourceNoticeID;
+    data['wNoticeTypeID'] = this.wNoticeTypeID;
+    data['wNoticeTypeDesc'] = this.wNoticeTypeDesc;
+    data['wNoticeName'] = this.wNoticeName;
+    data['wReferenceNumber'] = this.wReferenceNumber;
+    data['wcmsReferenceNumber'] = this.wcmsReferenceNumber;
+    data['wIssuersReferenceNumber'] = this.wIssuersReferenceNumber;
+    data['wNoticeIssuerID'] = this.wNoticeIssuerID;
+    data['wOtherNoticeIssuer'] = this.wOtherNoticeIssuer;
+    data['wNoticeIssuedDate'] = this.wNoticeIssuedDate;
+    data['wSubject'] = this.wSubject;
+    data['wReferences'] = this.wReferences;
+    data['wLinkToNotice'] = this.wLinkToNotice;
+    data['wNotificationSentDate'] = this.wNotificationSentDate;
+    data['wEmailNotificationContent'] = this.wEmailNotificationContent;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['wNoticeIssuerShortName'] = this.wNoticeIssuerShortName;
+    data['wResponseRequired'] = this.wResponseRequired;
+    data['wNoticeEmail'] = this.wNoticeEmail;
+    data['wPublishOnESS'] = this.wPublishOnESS;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['wNotes'] = this.wNotes;
+    data['wNoticeSignOffText'] = this.wNoticeSignOffText;
+    data['objNoticeQuestionnaire'] = this.objNoticeQuestionnaire
+      ? this.objNoticeQuestionnaire.toJSON()
+      : <any>undefined;
+    data['wNoticeQuestionnaireID'] = this.wNoticeQuestionnaireID;
+    data['wSourceNoticeQuestionnaireID'] = this.wSourceNoticeQuestionnaireID;
+    data['wResponseDueDate'] = this.wResponseDueDate;
+    data['wRespondentTypeID'] = this.wRespondentTypeID;
+    data['wRespondentsControlledFunctionTypeIDs'] =
+      this.wRespondentsControlledFunctionTypeIDs;
+    data['wRespondentsDNFBPFunctionTypeIDs'] =
+      this.wRespondentsDNFBPFunctionTypeIDs;
+    if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+      data['lstNoticeQuestionnaireItems'] = [];
+      for (let item of this.lstNoticeQuestionnaireItems)
+        data['lstNoticeQuestionnaireItems'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWNoticeQuestionnaire {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
 }
 
-export class WNoticeQuestionnaireItemDto implements IWNoticeQuestionnaireItemDto {
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wNoticeResponseItemID?: number | undefined;
-    wFirmNoticeID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wSourceNoticeQuestionnaireItemID?: number | undefined;
-    wNoticeID?: number | undefined;
-    wNoticeQuestionnaireID?: number | undefined;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseAnswer?: string | undefined;
-    errorMessage?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wListNameID?: number | undefined;
-    wExplanationRequired?: number | undefined;
-    wQuestionDisplayOrder?: number | undefined;
-    wCreatedBy?: number | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    wResponseMandatory?: boolean | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteriaDto[] | undefined;
+export class WNoticeQuestionnaireItemDto
+  implements IWNoticeQuestionnaireItemDto
+{
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wNoticeResponseItemID?: number | undefined;
+  wFirmNoticeID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wSourceNoticeQuestionnaireItemID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wNoticeQuestionnaireID?: number | undefined;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseAnswer?: string | undefined;
+  errorMessage?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wListNameID?: number | undefined;
+  wExplanationRequired?: number | undefined;
+  wQuestionDisplayOrder?: number | undefined;
+  wCreatedBy?: number | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  wResponseMandatory?: boolean | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteriaDto[] | undefined;
 
-    constructor(data?: IWNoticeQuestionnaireItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeQuestionnaireItemDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
-            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wExplanation = _data["wExplanation"];
-            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
-            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
-            this.wNoticeID = _data["wNoticeID"];
-            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
-            this.wNoticeQuestionNumber = _data["wNoticeQuestionNumber"];
-            this.wNoticeQuestion = _data["wNoticeQuestion"];
-            this.wResponseAnswer = _data["wResponseAnswer"];
-            this.errorMessage = _data["errorMessage"];
-            this.wResponseTypeID = _data["wResponseTypeID"];
-            this.wListNameID = _data["wListNameID"];
-            this.wExplanationRequired = _data["wExplanationRequired"];
-            this.wQuestionDisplayOrder = _data["wQuestionDisplayOrder"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.evaluationCriteriaMet = _data["evaluationCriteriaMet"];
-            this.wResponseMandatory = _data["wResponseMandatory"];
-            this.responseProvided = _data["responseProvided"];
-            this.explanationProvided = _data["explanationProvided"];
-            if (Array.isArray(_data["lstResponseCriteria"])) {
-                this.lstResponseCriteria = [] as any;
-                for (let item of _data["lstResponseCriteria"])
-                    this.lstResponseCriteria!.push(WNoticeResponseEvaluationCriteriaDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeQuestionnaireItemID = _data['wNoticeQuestionnaireItemID'];
+      this.wNoticeResponseItemID = _data['wNoticeResponseItemID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wExplanation = _data['wExplanation'];
+      this.wExplanationReqdCriteriaMet = _data['wExplanationReqdCriteriaMet'];
+      this.wSourceNoticeQuestionnaireItemID =
+        _data['wSourceNoticeQuestionnaireItemID'];
+      this.wNoticeID = _data['wNoticeID'];
+      this.wNoticeQuestionnaireID = _data['wNoticeQuestionnaireID'];
+      this.wNoticeQuestionNumber = _data['wNoticeQuestionNumber'];
+      this.wNoticeQuestion = _data['wNoticeQuestion'];
+      this.wResponseAnswer = _data['wResponseAnswer'];
+      this.errorMessage = _data['errorMessage'];
+      this.wResponseTypeID = _data['wResponseTypeID'];
+      this.wListNameID = _data['wListNameID'];
+      this.wExplanationRequired = _data['wExplanationRequired'];
+      this.wQuestionDisplayOrder = _data['wQuestionDisplayOrder'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.evaluationCriteriaMet = _data['evaluationCriteriaMet'];
+      this.wResponseMandatory = _data['wResponseMandatory'];
+      this.responseProvided = _data['responseProvided'];
+      this.explanationProvided = _data['explanationProvided'];
+      if (Array.isArray(_data['lstResponseCriteria'])) {
+        this.lstResponseCriteria = [] as any;
+        for (let item of _data['lstResponseCriteria'])
+          this.lstResponseCriteria!.push(
+            WNoticeResponseEvaluationCriteriaDto.fromJS(item)
+          );
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeQuestionnaireItemDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeQuestionnaireItemDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeQuestionnaireItemDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeQuestionnaireItemDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
-        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wExplanation"] = this.wExplanation;
-        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
-        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
-        data["wNoticeID"] = this.wNoticeID;
-        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
-        data["wNoticeQuestionNumber"] = this.wNoticeQuestionNumber;
-        data["wNoticeQuestion"] = this.wNoticeQuestion;
-        data["wResponseAnswer"] = this.wResponseAnswer;
-        data["errorMessage"] = this.errorMessage;
-        data["wResponseTypeID"] = this.wResponseTypeID;
-        data["wListNameID"] = this.wListNameID;
-        data["wExplanationRequired"] = this.wExplanationRequired;
-        data["wQuestionDisplayOrder"] = this.wQuestionDisplayOrder;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["evaluationCriteriaMet"] = this.evaluationCriteriaMet;
-        data["wResponseMandatory"] = this.wResponseMandatory;
-        data["responseProvided"] = this.responseProvided;
-        data["explanationProvided"] = this.explanationProvided;
-        if (Array.isArray(this.lstResponseCriteria)) {
-            data["lstResponseCriteria"] = [];
-            for (let item of this.lstResponseCriteria)
-                data["lstResponseCriteria"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeQuestionnaireItemID'] = this.wNoticeQuestionnaireItemID;
+    data['wNoticeResponseItemID'] = this.wNoticeResponseItemID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wExplanation'] = this.wExplanation;
+    data['wExplanationReqdCriteriaMet'] = this.wExplanationReqdCriteriaMet;
+    data['wSourceNoticeQuestionnaireItemID'] =
+      this.wSourceNoticeQuestionnaireItemID;
+    data['wNoticeID'] = this.wNoticeID;
+    data['wNoticeQuestionnaireID'] = this.wNoticeQuestionnaireID;
+    data['wNoticeQuestionNumber'] = this.wNoticeQuestionNumber;
+    data['wNoticeQuestion'] = this.wNoticeQuestion;
+    data['wResponseAnswer'] = this.wResponseAnswer;
+    data['errorMessage'] = this.errorMessage;
+    data['wResponseTypeID'] = this.wResponseTypeID;
+    data['wListNameID'] = this.wListNameID;
+    data['wExplanationRequired'] = this.wExplanationRequired;
+    data['wQuestionDisplayOrder'] = this.wQuestionDisplayOrder;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['evaluationCriteriaMet'] = this.evaluationCriteriaMet;
+    data['wResponseMandatory'] = this.wResponseMandatory;
+    data['responseProvided'] = this.responseProvided;
+    data['explanationProvided'] = this.explanationProvided;
+    if (Array.isArray(this.lstResponseCriteria)) {
+      data['lstResponseCriteria'] = [];
+      for (let item of this.lstResponseCriteria)
+        data['lstResponseCriteria'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWNoticeQuestionnaireItemDto {
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wNoticeResponseItemID?: number | undefined;
-    wFirmNoticeID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wSourceNoticeQuestionnaireItemID?: number | undefined;
-    wNoticeID?: number | undefined;
-    wNoticeQuestionnaireID?: number | undefined;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseAnswer?: string | undefined;
-    errorMessage?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wListNameID?: number | undefined;
-    wExplanationRequired?: number | undefined;
-    wQuestionDisplayOrder?: number | undefined;
-    wCreatedBy?: number | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    wResponseMandatory?: boolean | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteriaDto[] | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wNoticeResponseItemID?: number | undefined;
+  wFirmNoticeID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wSourceNoticeQuestionnaireItemID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wNoticeQuestionnaireID?: number | undefined;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseAnswer?: string | undefined;
+  errorMessage?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wListNameID?: number | undefined;
+  wExplanationRequired?: number | undefined;
+  wQuestionDisplayOrder?: number | undefined;
+  wCreatedBy?: number | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  wResponseMandatory?: boolean | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteriaDto[] | undefined;
 }
 
-export class WNoticeQuestionnaireItemDtoListBaseResponse implements IWNoticeQuestionnaireItemDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNoticeQuestionnaireItemDto[] | undefined;
+export class WNoticeQuestionnaireItemDtoListBaseResponse
+  implements IWNoticeQuestionnaireItemDtoListBaseResponse
+{
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNoticeQuestionnaireItemDto[] | undefined;
 
-    constructor(data?: IWNoticeQuestionnaireItemDtoListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeQuestionnaireItemDtoListBaseResponse) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(WNoticeQuestionnaireItemDto.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.isSuccess = _data['isSuccess'];
+      this.errorMessage = _data['errorMessage'];
+      this.statusCode = _data['statusCode'];
+      if (Array.isArray(_data['response'])) {
+        this.response = [] as any;
+        for (let item of _data['response'])
+          this.response!.push(WNoticeQuestionnaireItemDto.fromJS(item));
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeQuestionnaireItemDtoListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeQuestionnaireItemDtoListBaseResponse();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeQuestionnaireItemDtoListBaseResponse {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeQuestionnaireItemDtoListBaseResponse();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['isSuccess'] = this.isSuccess;
+    data['errorMessage'] = this.errorMessage;
+    data['statusCode'] = this.statusCode;
+    if (Array.isArray(this.response)) {
+      data['response'] = [];
+      for (let item of this.response) data['response'].push(item.toJSON());
     }
+    return data;
+  }
 }
 
 export interface IWNoticeQuestionnaireItemDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: WNoticeQuestionnaireItemDto[] | undefined;
+  isSuccess?: boolean;
+  errorMessage?: string | undefined;
+  statusCode?: number;
+  response?: WNoticeQuestionnaireItemDto[] | undefined;
 }
 
 export class WNoticeQuestionnaireItems implements IWNoticeQuestionnaireItems {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wResponseTypeDesc?: string | undefined;
-    wListNameID?: number | undefined;
-    wListNameDesc?: string | undefined;
-    wExplanationRequired?: number | undefined;
-    wEvaluationRequirementTypeDesc?: string | undefined;
-    wQuestionDisplayOrder?: number;
-    wNoticeResponseItemID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wResponseAnswer?: string | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    errorMessage?: string | undefined;
-    wResponseMandatory?: boolean;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wSourceNoticeQuestionnaireItemID?: number;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wResponseTypeDesc?: string | undefined;
+  wListNameID?: number | undefined;
+  wListNameDesc?: string | undefined;
+  wExplanationRequired?: number | undefined;
+  wEvaluationRequirementTypeDesc?: string | undefined;
+  wQuestionDisplayOrder?: number;
+  wNoticeResponseItemID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wResponseAnswer?: string | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  errorMessage?: string | undefined;
+  wResponseMandatory?: boolean;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
 
-    constructor(data?: IWNoticeQuestionnaireItems) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeQuestionnaireItems) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wNoticeTypeID = _data["wNoticeTypeID"];
-            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
-            this.wNoticeName = _data["wNoticeName"];
-            this.wReferenceNumber = _data["wReferenceNumber"];
-            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
-            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
-            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
-            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
-            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
-            this.wSubject = _data["wSubject"];
-            this.wReferences = _data["wReferences"];
-            this.wLinkToNotice = _data["wLinkToNotice"];
-            this.wNotificationSentDate = _data["wNotificationSentDate"];
-            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
-            this.wResponseRequired = _data["wResponseRequired"];
-            this.wNoticeEmail = _data["wNoticeEmail"];
-            this.wPublishOnESS = _data["wPublishOnESS"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
-            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
-            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
-            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
-            this.wResponseDueDate = _data["wResponseDueDate"];
-            this.wRespondentTypeID = _data["wRespondentTypeID"];
-            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
-            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
-            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
-                this.lstNoticeQuestionnaireItems = [] as any;
-                for (let item of _data["lstNoticeQuestionnaireItems"])
-                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
-            }
-            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
-            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
-            this.wNoticeQuestionNumber = _data["wNoticeQuestionNumber"];
-            this.wNoticeQuestion = _data["wNoticeQuestion"];
-            this.wResponseTypeID = _data["wResponseTypeID"];
-            this.wResponseTypeDesc = _data["wResponseTypeDesc"];
-            this.wListNameID = _data["wListNameID"];
-            this.wListNameDesc = _data["wListNameDesc"];
-            this.wExplanationRequired = _data["wExplanationRequired"];
-            this.wEvaluationRequirementTypeDesc = _data["wEvaluationRequirementTypeDesc"];
-            this.wQuestionDisplayOrder = _data["wQuestionDisplayOrder"];
-            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
-            this.wExplanation = _data["wExplanation"];
-            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
-            this.wResponseAnswer = _data["wResponseAnswer"];
-            this.responseProvided = _data["responseProvided"];
-            this.explanationProvided = _data["explanationProvided"];
-            this.evaluationCriteriaMet = _data["evaluationCriteriaMet"];
-            this.errorMessage = _data["errorMessage"];
-            this.wResponseMandatory = _data["wResponseMandatory"];
-            if (Array.isArray(_data["lstResponseCriteria"])) {
-                this.lstResponseCriteria = [] as any;
-                for (let item of _data["lstResponseCriteria"])
-                    this.lstResponseCriteria!.push(WNoticeResponseEvaluationCriteria.fromJS(item));
-            }
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeID = _data['wNoticeID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wSourceNoticeID = _data['wSourceNoticeID'];
+      this.wNoticeTypeID = _data['wNoticeTypeID'];
+      this.wNoticeTypeDesc = _data['wNoticeTypeDesc'];
+      this.wNoticeName = _data['wNoticeName'];
+      this.wReferenceNumber = _data['wReferenceNumber'];
+      this.wcmsReferenceNumber = _data['wcmsReferenceNumber'];
+      this.wIssuersReferenceNumber = _data['wIssuersReferenceNumber'];
+      this.wNoticeIssuerID = _data['wNoticeIssuerID'];
+      this.wOtherNoticeIssuer = _data['wOtherNoticeIssuer'];
+      this.wNoticeIssuedDate = _data['wNoticeIssuedDate'];
+      this.wSubject = _data['wSubject'];
+      this.wReferences = _data['wReferences'];
+      this.wLinkToNotice = _data['wLinkToNotice'];
+      this.wNotificationSentDate = _data['wNotificationSentDate'];
+      this.wEmailNotificationContent = _data['wEmailNotificationContent'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.wNoticeIssuerShortName = _data['wNoticeIssuerShortName'];
+      this.wResponseRequired = _data['wResponseRequired'];
+      this.wNoticeEmail = _data['wNoticeEmail'];
+      this.wPublishOnESS = _data['wPublishOnESS'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.wNotes = _data['wNotes'];
+      this.wNoticeSignOffText = _data['wNoticeSignOffText'];
+      this.objNoticeQuestionnaire = _data['objNoticeQuestionnaire']
+        ? WNoticeQuestionnaire.fromJS(_data['objNoticeQuestionnaire'])
+        : <any>undefined;
+      this.wNoticeQuestionnaireID = _data['wNoticeQuestionnaireID'];
+      this.wSourceNoticeQuestionnaireID = _data['wSourceNoticeQuestionnaireID'];
+      this.wResponseDueDate = _data['wResponseDueDate'];
+      this.wRespondentTypeID = _data['wRespondentTypeID'];
+      this.wRespondentsControlledFunctionTypeIDs =
+        _data['wRespondentsControlledFunctionTypeIDs'];
+      this.wRespondentsDNFBPFunctionTypeIDs =
+        _data['wRespondentsDNFBPFunctionTypeIDs'];
+      if (Array.isArray(_data['lstNoticeQuestionnaireItems'])) {
+        this.lstNoticeQuestionnaireItems = [] as any;
+        for (let item of _data['lstNoticeQuestionnaireItems'])
+          this.lstNoticeQuestionnaireItems!.push(
+            WNoticeQuestionnaireItems.fromJS(item)
+          );
+      }
+      this.wNoticeQuestionnaireItemID = _data['wNoticeQuestionnaireItemID'];
+      this.wSourceNoticeQuestionnaireItemID =
+        _data['wSourceNoticeQuestionnaireItemID'];
+      this.wNoticeQuestionNumber = _data['wNoticeQuestionNumber'];
+      this.wNoticeQuestion = _data['wNoticeQuestion'];
+      this.wResponseTypeID = _data['wResponseTypeID'];
+      this.wResponseTypeDesc = _data['wResponseTypeDesc'];
+      this.wListNameID = _data['wListNameID'];
+      this.wListNameDesc = _data['wListNameDesc'];
+      this.wExplanationRequired = _data['wExplanationRequired'];
+      this.wEvaluationRequirementTypeDesc =
+        _data['wEvaluationRequirementTypeDesc'];
+      this.wQuestionDisplayOrder = _data['wQuestionDisplayOrder'];
+      this.wNoticeResponseItemID = _data['wNoticeResponseItemID'];
+      this.wExplanation = _data['wExplanation'];
+      this.wExplanationReqdCriteriaMet = _data['wExplanationReqdCriteriaMet'];
+      this.wResponseAnswer = _data['wResponseAnswer'];
+      this.responseProvided = _data['responseProvided'];
+      this.explanationProvided = _data['explanationProvided'];
+      this.evaluationCriteriaMet = _data['evaluationCriteriaMet'];
+      this.errorMessage = _data['errorMessage'];
+      this.wResponseMandatory = _data['wResponseMandatory'];
+      if (Array.isArray(_data['lstResponseCriteria'])) {
+        this.lstResponseCriteria = [] as any;
+        for (let item of _data['lstResponseCriteria'])
+          this.lstResponseCriteria!.push(
+            WNoticeResponseEvaluationCriteria.fromJS(item)
+          );
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeQuestionnaireItems {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeQuestionnaireItems();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeQuestionnaireItems {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeQuestionnaireItems();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wNoticeTypeID"] = this.wNoticeTypeID;
-        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
-        data["wNoticeName"] = this.wNoticeName;
-        data["wReferenceNumber"] = this.wReferenceNumber;
-        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
-        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
-        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
-        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
-        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
-        data["wSubject"] = this.wSubject;
-        data["wReferences"] = this.wReferences;
-        data["wLinkToNotice"] = this.wLinkToNotice;
-        data["wNotificationSentDate"] = this.wNotificationSentDate;
-        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
-        data["wResponseRequired"] = this.wResponseRequired;
-        data["wNoticeEmail"] = this.wNoticeEmail;
-        data["wPublishOnESS"] = this.wPublishOnESS;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
-        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
-        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
-        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
-        data["wResponseDueDate"] = this.wResponseDueDate;
-        data["wRespondentTypeID"] = this.wRespondentTypeID;
-        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
-        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
-        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
-            data["lstNoticeQuestionnaireItems"] = [];
-            for (let item of this.lstNoticeQuestionnaireItems)
-                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
-        }
-        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
-        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
-        data["wNoticeQuestionNumber"] = this.wNoticeQuestionNumber;
-        data["wNoticeQuestion"] = this.wNoticeQuestion;
-        data["wResponseTypeID"] = this.wResponseTypeID;
-        data["wResponseTypeDesc"] = this.wResponseTypeDesc;
-        data["wListNameID"] = this.wListNameID;
-        data["wListNameDesc"] = this.wListNameDesc;
-        data["wExplanationRequired"] = this.wExplanationRequired;
-        data["wEvaluationRequirementTypeDesc"] = this.wEvaluationRequirementTypeDesc;
-        data["wQuestionDisplayOrder"] = this.wQuestionDisplayOrder;
-        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
-        data["wExplanation"] = this.wExplanation;
-        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
-        data["wResponseAnswer"] = this.wResponseAnswer;
-        data["responseProvided"] = this.responseProvided;
-        data["explanationProvided"] = this.explanationProvided;
-        data["evaluationCriteriaMet"] = this.evaluationCriteriaMet;
-        data["errorMessage"] = this.errorMessage;
-        data["wResponseMandatory"] = this.wResponseMandatory;
-        if (Array.isArray(this.lstResponseCriteria)) {
-            data["lstResponseCriteria"] = [];
-            for (let item of this.lstResponseCriteria)
-                data["lstResponseCriteria"].push(item.toJSON());
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeID'] = this.wNoticeID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wSourceNoticeID'] = this.wSourceNoticeID;
+    data['wNoticeTypeID'] = this.wNoticeTypeID;
+    data['wNoticeTypeDesc'] = this.wNoticeTypeDesc;
+    data['wNoticeName'] = this.wNoticeName;
+    data['wReferenceNumber'] = this.wReferenceNumber;
+    data['wcmsReferenceNumber'] = this.wcmsReferenceNumber;
+    data['wIssuersReferenceNumber'] = this.wIssuersReferenceNumber;
+    data['wNoticeIssuerID'] = this.wNoticeIssuerID;
+    data['wOtherNoticeIssuer'] = this.wOtherNoticeIssuer;
+    data['wNoticeIssuedDate'] = this.wNoticeIssuedDate;
+    data['wSubject'] = this.wSubject;
+    data['wReferences'] = this.wReferences;
+    data['wLinkToNotice'] = this.wLinkToNotice;
+    data['wNotificationSentDate'] = this.wNotificationSentDate;
+    data['wEmailNotificationContent'] = this.wEmailNotificationContent;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['wNoticeIssuerShortName'] = this.wNoticeIssuerShortName;
+    data['wResponseRequired'] = this.wResponseRequired;
+    data['wNoticeEmail'] = this.wNoticeEmail;
+    data['wPublishOnESS'] = this.wPublishOnESS;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['wNotes'] = this.wNotes;
+    data['wNoticeSignOffText'] = this.wNoticeSignOffText;
+    data['objNoticeQuestionnaire'] = this.objNoticeQuestionnaire
+      ? this.objNoticeQuestionnaire.toJSON()
+      : <any>undefined;
+    data['wNoticeQuestionnaireID'] = this.wNoticeQuestionnaireID;
+    data['wSourceNoticeQuestionnaireID'] = this.wSourceNoticeQuestionnaireID;
+    data['wResponseDueDate'] = this.wResponseDueDate;
+    data['wRespondentTypeID'] = this.wRespondentTypeID;
+    data['wRespondentsControlledFunctionTypeIDs'] =
+      this.wRespondentsControlledFunctionTypeIDs;
+    data['wRespondentsDNFBPFunctionTypeIDs'] =
+      this.wRespondentsDNFBPFunctionTypeIDs;
+    if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+      data['lstNoticeQuestionnaireItems'] = [];
+      for (let item of this.lstNoticeQuestionnaireItems)
+        data['lstNoticeQuestionnaireItems'].push(item.toJSON());
     }
+    data['wNoticeQuestionnaireItemID'] = this.wNoticeQuestionnaireItemID;
+    data['wSourceNoticeQuestionnaireItemID'] =
+      this.wSourceNoticeQuestionnaireItemID;
+    data['wNoticeQuestionNumber'] = this.wNoticeQuestionNumber;
+    data['wNoticeQuestion'] = this.wNoticeQuestion;
+    data['wResponseTypeID'] = this.wResponseTypeID;
+    data['wResponseTypeDesc'] = this.wResponseTypeDesc;
+    data['wListNameID'] = this.wListNameID;
+    data['wListNameDesc'] = this.wListNameDesc;
+    data['wExplanationRequired'] = this.wExplanationRequired;
+    data['wEvaluationRequirementTypeDesc'] =
+      this.wEvaluationRequirementTypeDesc;
+    data['wQuestionDisplayOrder'] = this.wQuestionDisplayOrder;
+    data['wNoticeResponseItemID'] = this.wNoticeResponseItemID;
+    data['wExplanation'] = this.wExplanation;
+    data['wExplanationReqdCriteriaMet'] = this.wExplanationReqdCriteriaMet;
+    data['wResponseAnswer'] = this.wResponseAnswer;
+    data['responseProvided'] = this.responseProvided;
+    data['explanationProvided'] = this.explanationProvided;
+    data['evaluationCriteriaMet'] = this.evaluationCriteriaMet;
+    data['errorMessage'] = this.errorMessage;
+    data['wResponseMandatory'] = this.wResponseMandatory;
+    if (Array.isArray(this.lstResponseCriteria)) {
+      data['lstResponseCriteria'] = [];
+      for (let item of this.lstResponseCriteria)
+        data['lstResponseCriteria'].push(item.toJSON());
+    }
+    return data;
+  }
 }
 
 export interface IWNoticeQuestionnaireItems {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wResponseTypeDesc?: string | undefined;
-    wListNameID?: number | undefined;
-    wListNameDesc?: string | undefined;
-    wExplanationRequired?: number | undefined;
-    wEvaluationRequirementTypeDesc?: string | undefined;
-    wQuestionDisplayOrder?: number;
-    wNoticeResponseItemID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wResponseAnswer?: string | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    errorMessage?: string | undefined;
-    wResponseMandatory?: boolean;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wSourceNoticeQuestionnaireItemID?: number;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wResponseTypeDesc?: string | undefined;
+  wListNameID?: number | undefined;
+  wListNameDesc?: string | undefined;
+  wExplanationRequired?: number | undefined;
+  wEvaluationRequirementTypeDesc?: string | undefined;
+  wQuestionDisplayOrder?: number;
+  wNoticeResponseItemID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wResponseAnswer?: string | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  errorMessage?: string | undefined;
+  wResponseMandatory?: boolean;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
 }
 
-export class WNoticeResponseEvaluationCriteria implements IWNoticeResponseEvaluationCriteria {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wResponseTypeDesc?: string | undefined;
-    wListNameID?: number | undefined;
-    wListNameDesc?: string | undefined;
-    wExplanationRequired?: number | undefined;
-    wEvaluationRequirementTypeDesc?: string | undefined;
-    wQuestionDisplayOrder?: number;
-    wNoticeResponseItemID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wResponseAnswer?: string | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    errorMessage?: string | undefined;
-    wResponseMandatory?: boolean;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
-    wSourceResponseEvaluationCriteriaID?: number;
-    wResponseEvaluationCriteriaID?: number | undefined;
-    wEvaluationReasonTypeID?: number;
-    wNoticeResponseValueID?: number | undefined;
-    wResponseOperatorTypeID?: number | undefined;
-    wEvaluationOperatorTypeDesc?: string | undefined;
-    wResponse?: string | undefined;
-    wResponseTo?: string | undefined;
-    wListValueID?: number | undefined;
-    listValueDesc?: string | undefined;
-    dcMultiSelectValues?: { [key: string]: string; } | undefined;
+export class WNoticeResponseEvaluationCriteria
+  implements IWNoticeResponseEvaluationCriteria
+{
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wSourceNoticeQuestionnaireItemID?: number;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wResponseTypeDesc?: string | undefined;
+  wListNameID?: number | undefined;
+  wListNameDesc?: string | undefined;
+  wExplanationRequired?: number | undefined;
+  wEvaluationRequirementTypeDesc?: string | undefined;
+  wQuestionDisplayOrder?: number;
+  wNoticeResponseItemID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wResponseAnswer?: string | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  errorMessage?: string | undefined;
+  wResponseMandatory?: boolean;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+  wSourceResponseEvaluationCriteriaID?: number;
+  wResponseEvaluationCriteriaID?: number | undefined;
+  wEvaluationReasonTypeID?: number;
+  wNoticeResponseValueID?: number | undefined;
+  wResponseOperatorTypeID?: number | undefined;
+  wEvaluationOperatorTypeDesc?: string | undefined;
+  wResponse?: string | undefined;
+  wResponseTo?: string | undefined;
+  wListValueID?: number | undefined;
+  listValueDesc?: string | undefined;
+  dcMultiSelectValues?: { [key: string]: string } | undefined;
 
-    constructor(data?: IWNoticeResponseEvaluationCriteria) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeResponseEvaluationCriteria) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wNoticeTypeID = _data["wNoticeTypeID"];
-            this.wNoticeTypeDesc = _data["wNoticeTypeDesc"];
-            this.wNoticeName = _data["wNoticeName"];
-            this.wReferenceNumber = _data["wReferenceNumber"];
-            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
-            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
-            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
-            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
-            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
-            this.wSubject = _data["wSubject"];
-            this.wReferences = _data["wReferences"];
-            this.wLinkToNotice = _data["wLinkToNotice"];
-            this.wNotificationSentDate = _data["wNotificationSentDate"];
-            this.wEmailNotificationContent = _data["wEmailNotificationContent"];
-            this.wCreatedBy = _data["wCreatedBy"];
-            this.wNoticeIssuerShortName = _data["wNoticeIssuerShortName"];
-            this.wResponseRequired = _data["wResponseRequired"];
-            this.wNoticeEmail = _data["wNoticeEmail"];
-            this.wPublishOnESS = _data["wPublishOnESS"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.wNoticeSignOffText = _data["wNoticeSignOffText"];
-            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaire.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
-            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
-            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
-            this.wResponseDueDate = _data["wResponseDueDate"];
-            this.wRespondentTypeID = _data["wRespondentTypeID"];
-            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
-            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
-            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
-                this.lstNoticeQuestionnaireItems = [] as any;
-                for (let item of _data["lstNoticeQuestionnaireItems"])
-                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItems.fromJS(item));
-            }
-            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
-            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
-            this.wNoticeQuestionNumber = _data["wNoticeQuestionNumber"];
-            this.wNoticeQuestion = _data["wNoticeQuestion"];
-            this.wResponseTypeID = _data["wResponseTypeID"];
-            this.wResponseTypeDesc = _data["wResponseTypeDesc"];
-            this.wListNameID = _data["wListNameID"];
-            this.wListNameDesc = _data["wListNameDesc"];
-            this.wExplanationRequired = _data["wExplanationRequired"];
-            this.wEvaluationRequirementTypeDesc = _data["wEvaluationRequirementTypeDesc"];
-            this.wQuestionDisplayOrder = _data["wQuestionDisplayOrder"];
-            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
-            this.wExplanation = _data["wExplanation"];
-            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
-            this.wResponseAnswer = _data["wResponseAnswer"];
-            this.responseProvided = _data["responseProvided"];
-            this.explanationProvided = _data["explanationProvided"];
-            this.evaluationCriteriaMet = _data["evaluationCriteriaMet"];
-            this.errorMessage = _data["errorMessage"];
-            this.wResponseMandatory = _data["wResponseMandatory"];
-            if (Array.isArray(_data["lstResponseCriteria"])) {
-                this.lstResponseCriteria = [] as any;
-                for (let item of _data["lstResponseCriteria"])
-                    this.lstResponseCriteria!.push(WNoticeResponseEvaluationCriteria.fromJS(item));
-            }
-            this.wSourceResponseEvaluationCriteriaID = _data["wSourceResponseEvaluationCriteriaID"];
-            this.wResponseEvaluationCriteriaID = _data["wResponseEvaluationCriteriaID"];
-            this.wEvaluationReasonTypeID = _data["wEvaluationReasonTypeID"];
-            this.wNoticeResponseValueID = _data["wNoticeResponseValueID"];
-            this.wResponseOperatorTypeID = _data["wResponseOperatorTypeID"];
-            this.wEvaluationOperatorTypeDesc = _data["wEvaluationOperatorTypeDesc"];
-            this.wResponse = _data["wResponse"];
-            this.wResponseTo = _data["wResponseTo"];
-            this.wListValueID = _data["wListValueID"];
-            this.listValueDesc = _data["listValueDesc"];
-            if (_data["dcMultiSelectValues"]) {
-                this.dcMultiSelectValues = {} as any;
-                for (let key in _data["dcMultiSelectValues"]) {
-                    if (_data["dcMultiSelectValues"].hasOwnProperty(key))
-                        (<any>this.dcMultiSelectValues)![key] = _data["dcMultiSelectValues"][key];
-                }
-            }
+  init(_data?: any) {
+    if (_data) {
+      this.wNoticeID = _data['wNoticeID'];
+      this.wFirmNoticeID = _data['wFirmNoticeID'];
+      this.wSourceNoticeID = _data['wSourceNoticeID'];
+      this.wNoticeTypeID = _data['wNoticeTypeID'];
+      this.wNoticeTypeDesc = _data['wNoticeTypeDesc'];
+      this.wNoticeName = _data['wNoticeName'];
+      this.wReferenceNumber = _data['wReferenceNumber'];
+      this.wcmsReferenceNumber = _data['wcmsReferenceNumber'];
+      this.wIssuersReferenceNumber = _data['wIssuersReferenceNumber'];
+      this.wNoticeIssuerID = _data['wNoticeIssuerID'];
+      this.wOtherNoticeIssuer = _data['wOtherNoticeIssuer'];
+      this.wNoticeIssuedDate = _data['wNoticeIssuedDate'];
+      this.wSubject = _data['wSubject'];
+      this.wReferences = _data['wReferences'];
+      this.wLinkToNotice = _data['wLinkToNotice'];
+      this.wNotificationSentDate = _data['wNotificationSentDate'];
+      this.wEmailNotificationContent = _data['wEmailNotificationContent'];
+      this.wCreatedBy = _data['wCreatedBy'];
+      this.wNoticeIssuerShortName = _data['wNoticeIssuerShortName'];
+      this.wResponseRequired = _data['wResponseRequired'];
+      this.wNoticeEmail = _data['wNoticeEmail'];
+      this.wPublishOnESS = _data['wPublishOnESS'];
+      this.wObjectSOStatusID = _data['wObjectSOStatusID'];
+      this.wNotes = _data['wNotes'];
+      this.wNoticeSignOffText = _data['wNoticeSignOffText'];
+      this.objNoticeQuestionnaire = _data['objNoticeQuestionnaire']
+        ? WNoticeQuestionnaire.fromJS(_data['objNoticeQuestionnaire'])
+        : <any>undefined;
+      this.wNoticeQuestionnaireID = _data['wNoticeQuestionnaireID'];
+      this.wSourceNoticeQuestionnaireID = _data['wSourceNoticeQuestionnaireID'];
+      this.wResponseDueDate = _data['wResponseDueDate'];
+      this.wRespondentTypeID = _data['wRespondentTypeID'];
+      this.wRespondentsControlledFunctionTypeIDs =
+        _data['wRespondentsControlledFunctionTypeIDs'];
+      this.wRespondentsDNFBPFunctionTypeIDs =
+        _data['wRespondentsDNFBPFunctionTypeIDs'];
+      if (Array.isArray(_data['lstNoticeQuestionnaireItems'])) {
+        this.lstNoticeQuestionnaireItems = [] as any;
+        for (let item of _data['lstNoticeQuestionnaireItems'])
+          this.lstNoticeQuestionnaireItems!.push(
+            WNoticeQuestionnaireItems.fromJS(item)
+          );
+      }
+      this.wNoticeQuestionnaireItemID = _data['wNoticeQuestionnaireItemID'];
+      this.wSourceNoticeQuestionnaireItemID =
+        _data['wSourceNoticeQuestionnaireItemID'];
+      this.wNoticeQuestionNumber = _data['wNoticeQuestionNumber'];
+      this.wNoticeQuestion = _data['wNoticeQuestion'];
+      this.wResponseTypeID = _data['wResponseTypeID'];
+      this.wResponseTypeDesc = _data['wResponseTypeDesc'];
+      this.wListNameID = _data['wListNameID'];
+      this.wListNameDesc = _data['wListNameDesc'];
+      this.wExplanationRequired = _data['wExplanationRequired'];
+      this.wEvaluationRequirementTypeDesc =
+        _data['wEvaluationRequirementTypeDesc'];
+      this.wQuestionDisplayOrder = _data['wQuestionDisplayOrder'];
+      this.wNoticeResponseItemID = _data['wNoticeResponseItemID'];
+      this.wExplanation = _data['wExplanation'];
+      this.wExplanationReqdCriteriaMet = _data['wExplanationReqdCriteriaMet'];
+      this.wResponseAnswer = _data['wResponseAnswer'];
+      this.responseProvided = _data['responseProvided'];
+      this.explanationProvided = _data['explanationProvided'];
+      this.evaluationCriteriaMet = _data['evaluationCriteriaMet'];
+      this.errorMessage = _data['errorMessage'];
+      this.wResponseMandatory = _data['wResponseMandatory'];
+      if (Array.isArray(_data['lstResponseCriteria'])) {
+        this.lstResponseCriteria = [] as any;
+        for (let item of _data['lstResponseCriteria'])
+          this.lstResponseCriteria!.push(
+            WNoticeResponseEvaluationCriteria.fromJS(item)
+          );
+      }
+      this.wSourceResponseEvaluationCriteriaID =
+        _data['wSourceResponseEvaluationCriteriaID'];
+      this.wResponseEvaluationCriteriaID =
+        _data['wResponseEvaluationCriteriaID'];
+      this.wEvaluationReasonTypeID = _data['wEvaluationReasonTypeID'];
+      this.wNoticeResponseValueID = _data['wNoticeResponseValueID'];
+      this.wResponseOperatorTypeID = _data['wResponseOperatorTypeID'];
+      this.wEvaluationOperatorTypeDesc = _data['wEvaluationOperatorTypeDesc'];
+      this.wResponse = _data['wResponse'];
+      this.wResponseTo = _data['wResponseTo'];
+      this.wListValueID = _data['wListValueID'];
+      this.listValueDesc = _data['listValueDesc'];
+      if (_data['dcMultiSelectValues']) {
+        this.dcMultiSelectValues = {} as any;
+        for (let key in _data['dcMultiSelectValues']) {
+          if (_data['dcMultiSelectValues'].hasOwnProperty(key))
+            (<any>this.dcMultiSelectValues)![key] =
+              _data['dcMultiSelectValues'][key];
         }
+      }
     }
+  }
 
-    static fromJS(data: any): WNoticeResponseEvaluationCriteria {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeResponseEvaluationCriteria();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeResponseEvaluationCriteria {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeResponseEvaluationCriteria();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wNoticeTypeID"] = this.wNoticeTypeID;
-        data["wNoticeTypeDesc"] = this.wNoticeTypeDesc;
-        data["wNoticeName"] = this.wNoticeName;
-        data["wReferenceNumber"] = this.wReferenceNumber;
-        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
-        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
-        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
-        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
-        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
-        data["wSubject"] = this.wSubject;
-        data["wReferences"] = this.wReferences;
-        data["wLinkToNotice"] = this.wLinkToNotice;
-        data["wNotificationSentDate"] = this.wNotificationSentDate;
-        data["wEmailNotificationContent"] = this.wEmailNotificationContent;
-        data["wCreatedBy"] = this.wCreatedBy;
-        data["wNoticeIssuerShortName"] = this.wNoticeIssuerShortName;
-        data["wResponseRequired"] = this.wResponseRequired;
-        data["wNoticeEmail"] = this.wNoticeEmail;
-        data["wPublishOnESS"] = this.wPublishOnESS;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["wNoticeSignOffText"] = this.wNoticeSignOffText;
-        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
-        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
-        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
-        data["wResponseDueDate"] = this.wResponseDueDate;
-        data["wRespondentTypeID"] = this.wRespondentTypeID;
-        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
-        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
-        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
-            data["lstNoticeQuestionnaireItems"] = [];
-            for (let item of this.lstNoticeQuestionnaireItems)
-                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
-        }
-        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
-        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
-        data["wNoticeQuestionNumber"] = this.wNoticeQuestionNumber;
-        data["wNoticeQuestion"] = this.wNoticeQuestion;
-        data["wResponseTypeID"] = this.wResponseTypeID;
-        data["wResponseTypeDesc"] = this.wResponseTypeDesc;
-        data["wListNameID"] = this.wListNameID;
-        data["wListNameDesc"] = this.wListNameDesc;
-        data["wExplanationRequired"] = this.wExplanationRequired;
-        data["wEvaluationRequirementTypeDesc"] = this.wEvaluationRequirementTypeDesc;
-        data["wQuestionDisplayOrder"] = this.wQuestionDisplayOrder;
-        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
-        data["wExplanation"] = this.wExplanation;
-        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
-        data["wResponseAnswer"] = this.wResponseAnswer;
-        data["responseProvided"] = this.responseProvided;
-        data["explanationProvided"] = this.explanationProvided;
-        data["evaluationCriteriaMet"] = this.evaluationCriteriaMet;
-        data["errorMessage"] = this.errorMessage;
-        data["wResponseMandatory"] = this.wResponseMandatory;
-        if (Array.isArray(this.lstResponseCriteria)) {
-            data["lstResponseCriteria"] = [];
-            for (let item of this.lstResponseCriteria)
-                data["lstResponseCriteria"].push(item.toJSON());
-        }
-        data["wSourceResponseEvaluationCriteriaID"] = this.wSourceResponseEvaluationCriteriaID;
-        data["wResponseEvaluationCriteriaID"] = this.wResponseEvaluationCriteriaID;
-        data["wEvaluationReasonTypeID"] = this.wEvaluationReasonTypeID;
-        data["wNoticeResponseValueID"] = this.wNoticeResponseValueID;
-        data["wResponseOperatorTypeID"] = this.wResponseOperatorTypeID;
-        data["wEvaluationOperatorTypeDesc"] = this.wEvaluationOperatorTypeDesc;
-        data["wResponse"] = this.wResponse;
-        data["wResponseTo"] = this.wResponseTo;
-        data["wListValueID"] = this.wListValueID;
-        data["listValueDesc"] = this.listValueDesc;
-        if (this.dcMultiSelectValues) {
-            data["dcMultiSelectValues"] = {};
-            for (let key in this.dcMultiSelectValues) {
-                if (this.dcMultiSelectValues.hasOwnProperty(key))
-                    (<any>data["dcMultiSelectValues"])[key] = (<any>this.dcMultiSelectValues)[key];
-            }
-        }
-        return data;
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wNoticeID'] = this.wNoticeID;
+    data['wFirmNoticeID'] = this.wFirmNoticeID;
+    data['wSourceNoticeID'] = this.wSourceNoticeID;
+    data['wNoticeTypeID'] = this.wNoticeTypeID;
+    data['wNoticeTypeDesc'] = this.wNoticeTypeDesc;
+    data['wNoticeName'] = this.wNoticeName;
+    data['wReferenceNumber'] = this.wReferenceNumber;
+    data['wcmsReferenceNumber'] = this.wcmsReferenceNumber;
+    data['wIssuersReferenceNumber'] = this.wIssuersReferenceNumber;
+    data['wNoticeIssuerID'] = this.wNoticeIssuerID;
+    data['wOtherNoticeIssuer'] = this.wOtherNoticeIssuer;
+    data['wNoticeIssuedDate'] = this.wNoticeIssuedDate;
+    data['wSubject'] = this.wSubject;
+    data['wReferences'] = this.wReferences;
+    data['wLinkToNotice'] = this.wLinkToNotice;
+    data['wNotificationSentDate'] = this.wNotificationSentDate;
+    data['wEmailNotificationContent'] = this.wEmailNotificationContent;
+    data['wCreatedBy'] = this.wCreatedBy;
+    data['wNoticeIssuerShortName'] = this.wNoticeIssuerShortName;
+    data['wResponseRequired'] = this.wResponseRequired;
+    data['wNoticeEmail'] = this.wNoticeEmail;
+    data['wPublishOnESS'] = this.wPublishOnESS;
+    data['wObjectSOStatusID'] = this.wObjectSOStatusID;
+    data['wNotes'] = this.wNotes;
+    data['wNoticeSignOffText'] = this.wNoticeSignOffText;
+    data['objNoticeQuestionnaire'] = this.objNoticeQuestionnaire
+      ? this.objNoticeQuestionnaire.toJSON()
+      : <any>undefined;
+    data['wNoticeQuestionnaireID'] = this.wNoticeQuestionnaireID;
+    data['wSourceNoticeQuestionnaireID'] = this.wSourceNoticeQuestionnaireID;
+    data['wResponseDueDate'] = this.wResponseDueDate;
+    data['wRespondentTypeID'] = this.wRespondentTypeID;
+    data['wRespondentsControlledFunctionTypeIDs'] =
+      this.wRespondentsControlledFunctionTypeIDs;
+    data['wRespondentsDNFBPFunctionTypeIDs'] =
+      this.wRespondentsDNFBPFunctionTypeIDs;
+    if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+      data['lstNoticeQuestionnaireItems'] = [];
+      for (let item of this.lstNoticeQuestionnaireItems)
+        data['lstNoticeQuestionnaireItems'].push(item.toJSON());
     }
+    data['wNoticeQuestionnaireItemID'] = this.wNoticeQuestionnaireItemID;
+    data['wSourceNoticeQuestionnaireItemID'] =
+      this.wSourceNoticeQuestionnaireItemID;
+    data['wNoticeQuestionNumber'] = this.wNoticeQuestionNumber;
+    data['wNoticeQuestion'] = this.wNoticeQuestion;
+    data['wResponseTypeID'] = this.wResponseTypeID;
+    data['wResponseTypeDesc'] = this.wResponseTypeDesc;
+    data['wListNameID'] = this.wListNameID;
+    data['wListNameDesc'] = this.wListNameDesc;
+    data['wExplanationRequired'] = this.wExplanationRequired;
+    data['wEvaluationRequirementTypeDesc'] =
+      this.wEvaluationRequirementTypeDesc;
+    data['wQuestionDisplayOrder'] = this.wQuestionDisplayOrder;
+    data['wNoticeResponseItemID'] = this.wNoticeResponseItemID;
+    data['wExplanation'] = this.wExplanation;
+    data['wExplanationReqdCriteriaMet'] = this.wExplanationReqdCriteriaMet;
+    data['wResponseAnswer'] = this.wResponseAnswer;
+    data['responseProvided'] = this.responseProvided;
+    data['explanationProvided'] = this.explanationProvided;
+    data['evaluationCriteriaMet'] = this.evaluationCriteriaMet;
+    data['errorMessage'] = this.errorMessage;
+    data['wResponseMandatory'] = this.wResponseMandatory;
+    if (Array.isArray(this.lstResponseCriteria)) {
+      data['lstResponseCriteria'] = [];
+      for (let item of this.lstResponseCriteria)
+        data['lstResponseCriteria'].push(item.toJSON());
+    }
+    data['wSourceResponseEvaluationCriteriaID'] =
+      this.wSourceResponseEvaluationCriteriaID;
+    data['wResponseEvaluationCriteriaID'] = this.wResponseEvaluationCriteriaID;
+    data['wEvaluationReasonTypeID'] = this.wEvaluationReasonTypeID;
+    data['wNoticeResponseValueID'] = this.wNoticeResponseValueID;
+    data['wResponseOperatorTypeID'] = this.wResponseOperatorTypeID;
+    data['wEvaluationOperatorTypeDesc'] = this.wEvaluationOperatorTypeDesc;
+    data['wResponse'] = this.wResponse;
+    data['wResponseTo'] = this.wResponseTo;
+    data['wListValueID'] = this.wListValueID;
+    data['listValueDesc'] = this.listValueDesc;
+    if (this.dcMultiSelectValues) {
+      data['dcMultiSelectValues'] = {};
+      for (let key in this.dcMultiSelectValues) {
+        if (this.dcMultiSelectValues.hasOwnProperty(key))
+          (<any>data['dcMultiSelectValues'])[key] = (<any>(
+            this.dcMultiSelectValues
+          ))[key];
+      }
+    }
+    return data;
+  }
 }
 
 export interface IWNoticeResponseEvaluationCriteria {
-    wNoticeID?: number | undefined;
-    wFirmNoticeID?: number;
-    wSourceNoticeID?: number;
-    wNoticeTypeID?: number;
-    wNoticeTypeDesc?: string | undefined;
-    wNoticeName?: string | undefined;
-    wReferenceNumber?: string | undefined;
-    wcmsReferenceNumber?: string | undefined;
-    wIssuersReferenceNumber?: string | undefined;
-    wNoticeIssuerID?: number | undefined;
-    wOtherNoticeIssuer?: string | undefined;
-    wNoticeIssuedDate?: string | undefined;
-    wSubject?: string | undefined;
-    wReferences?: string | undefined;
-    wLinkToNotice?: string | undefined;
-    wNotificationSentDate?: string | undefined;
-    wEmailNotificationContent?: string | undefined;
-    wCreatedBy?: number;
-    wNoticeIssuerShortName?: string | undefined;
-    wResponseRequired?: boolean;
-    wNoticeEmail?: string | undefined;
-    wPublishOnESS?: boolean;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    wNoticeSignOffText?: string | undefined;
-    objNoticeQuestionnaire?: WNoticeQuestionnaire;
-    wNoticeQuestionnaireID?: number | undefined;
-    wSourceNoticeQuestionnaireID?: number;
-    wResponseDueDate?: string | undefined;
-    wRespondentTypeID?: number | undefined;
-    wRespondentsControlledFunctionTypeIDs?: string | undefined;
-    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
-    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wNoticeQuestionNumber?: string | undefined;
-    wNoticeQuestion?: string | undefined;
-    wResponseTypeID?: number | undefined;
-    wResponseTypeDesc?: string | undefined;
-    wListNameID?: number | undefined;
-    wListNameDesc?: string | undefined;
-    wExplanationRequired?: number | undefined;
-    wEvaluationRequirementTypeDesc?: string | undefined;
-    wQuestionDisplayOrder?: number;
-    wNoticeResponseItemID?: number | undefined;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean | undefined;
-    wResponseAnswer?: string | undefined;
-    responseProvided?: boolean | undefined;
-    explanationProvided?: boolean | undefined;
-    evaluationCriteriaMet?: number | undefined;
-    errorMessage?: string | undefined;
-    wResponseMandatory?: boolean;
-    lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
-    wSourceResponseEvaluationCriteriaID?: number;
-    wResponseEvaluationCriteriaID?: number | undefined;
-    wEvaluationReasonTypeID?: number;
-    wNoticeResponseValueID?: number | undefined;
-    wResponseOperatorTypeID?: number | undefined;
-    wEvaluationOperatorTypeDesc?: string | undefined;
-    wResponse?: string | undefined;
-    wResponseTo?: string | undefined;
-    wListValueID?: number | undefined;
-    listValueDesc?: string | undefined;
-    dcMultiSelectValues?: { [key: string]: string; } | undefined;
+  wNoticeID?: number | undefined;
+  wFirmNoticeID?: number;
+  wSourceNoticeID?: number;
+  wNoticeTypeID?: number;
+  wNoticeTypeDesc?: string | undefined;
+  wNoticeName?: string | undefined;
+  wReferenceNumber?: string | undefined;
+  wcmsReferenceNumber?: string | undefined;
+  wIssuersReferenceNumber?: string | undefined;
+  wNoticeIssuerID?: number | undefined;
+  wOtherNoticeIssuer?: string | undefined;
+  wNoticeIssuedDate?: string | undefined;
+  wSubject?: string | undefined;
+  wReferences?: string | undefined;
+  wLinkToNotice?: string | undefined;
+  wNotificationSentDate?: string | undefined;
+  wEmailNotificationContent?: string | undefined;
+  wCreatedBy?: number;
+  wNoticeIssuerShortName?: string | undefined;
+  wResponseRequired?: boolean;
+  wNoticeEmail?: string | undefined;
+  wPublishOnESS?: boolean;
+  wObjectSOStatusID?: number | undefined;
+  wNotes?: string | undefined;
+  wNoticeSignOffText?: string | undefined;
+  objNoticeQuestionnaire?: WNoticeQuestionnaire;
+  wNoticeQuestionnaireID?: number | undefined;
+  wSourceNoticeQuestionnaireID?: number;
+  wResponseDueDate?: string | undefined;
+  wRespondentTypeID?: number | undefined;
+  wRespondentsControlledFunctionTypeIDs?: string | undefined;
+  wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+  lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wSourceNoticeQuestionnaireItemID?: number;
+  wNoticeQuestionNumber?: string | undefined;
+  wNoticeQuestion?: string | undefined;
+  wResponseTypeID?: number | undefined;
+  wResponseTypeDesc?: string | undefined;
+  wListNameID?: number | undefined;
+  wListNameDesc?: string | undefined;
+  wExplanationRequired?: number | undefined;
+  wEvaluationRequirementTypeDesc?: string | undefined;
+  wQuestionDisplayOrder?: number;
+  wNoticeResponseItemID?: number | undefined;
+  wExplanation?: string | undefined;
+  wExplanationReqdCriteriaMet?: boolean | undefined;
+  wResponseAnswer?: string | undefined;
+  responseProvided?: boolean | undefined;
+  explanationProvided?: boolean | undefined;
+  evaluationCriteriaMet?: number | undefined;
+  errorMessage?: string | undefined;
+  wResponseMandatory?: boolean;
+  lstResponseCriteria?: WNoticeResponseEvaluationCriteria[] | undefined;
+  wSourceResponseEvaluationCriteriaID?: number;
+  wResponseEvaluationCriteriaID?: number | undefined;
+  wEvaluationReasonTypeID?: number;
+  wNoticeResponseValueID?: number | undefined;
+  wResponseOperatorTypeID?: number | undefined;
+  wEvaluationOperatorTypeDesc?: string | undefined;
+  wResponse?: string | undefined;
+  wResponseTo?: string | undefined;
+  wListValueID?: number | undefined;
+  listValueDesc?: string | undefined;
+  dcMultiSelectValues?: { [key: string]: string } | undefined;
 }
 
-export class WNoticeResponseEvaluationCriteriaDto implements IWNoticeResponseEvaluationCriteriaDto {
-    wResponseEvaluationCriteriaID?: number | undefined;
-    wSourceResponseEvaluationCriteriaID?: number | undefined;
-    wNoticeID?: number | undefined;
-    wNoticeResponseValueID?: number | undefined;
-    wNoticeResponseItemID?: number | undefined;
-    wNoticeQuestionnaireID?: number | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wEvaluationReasonTypeID?: number | undefined;
-    wResponseOperatorTypeID?: number | undefined;
-    wResponse?: string | undefined;
-    wResponseTo?: string | undefined;
-    wListValueID?: number | undefined;
-    wCreatedBy?: number | undefined;
+export class WNoticeResponseEvaluationCriteriaDto
+  implements IWNoticeResponseEvaluationCriteriaDto
+{
+  wResponseEvaluationCriteriaID?: number | undefined;
+  wSourceResponseEvaluationCriteriaID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wNoticeResponseValueID?: number | undefined;
+  wNoticeResponseItemID?: number | undefined;
+  wNoticeQuestionnaireID?: number | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wEvaluationReasonTypeID?: number | undefined;
+  wResponseOperatorTypeID?: number | undefined;
+  wResponse?: string | undefined;
+  wResponseTo?: string | undefined;
+  wListValueID?: number | undefined;
+  wCreatedBy?: number | undefined;
 
-    constructor(data?: IWNoticeResponseEvaluationCriteriaDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWNoticeResponseEvaluationCriteriaDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wResponseEvaluationCriteriaID = _data["wResponseEvaluationCriteriaID"];
-            this.wSourceResponseEvaluationCriteriaID = _data["wSourceResponseEvaluationCriteriaID"];
-            this.wNoticeID = _data["wNoticeID"];
-            this.wNoticeResponseValueID = _data["wNoticeResponseValueID"];
-            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
-            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
-            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
-            this.wEvaluationReasonTypeID = _data["wEvaluationReasonTypeID"];
-            this.wResponseOperatorTypeID = _data["wResponseOperatorTypeID"];
-            this.wResponse = _data["wResponse"];
-            this.wResponseTo = _data["wResponseTo"];
-            this.wListValueID = _data["wListValueID"];
-            this.wCreatedBy = _data["wCreatedBy"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wResponseEvaluationCriteriaID =
+        _data['wResponseEvaluationCriteriaID'];
+      this.wSourceResponseEvaluationCriteriaID =
+        _data['wSourceResponseEvaluationCriteriaID'];
+      this.wNoticeID = _data['wNoticeID'];
+      this.wNoticeResponseValueID = _data['wNoticeResponseValueID'];
+      this.wNoticeResponseItemID = _data['wNoticeResponseItemID'];
+      this.wNoticeQuestionnaireID = _data['wNoticeQuestionnaireID'];
+      this.wNoticeQuestionnaireItemID = _data['wNoticeQuestionnaireItemID'];
+      this.wEvaluationReasonTypeID = _data['wEvaluationReasonTypeID'];
+      this.wResponseOperatorTypeID = _data['wResponseOperatorTypeID'];
+      this.wResponse = _data['wResponse'];
+      this.wResponseTo = _data['wResponseTo'];
+      this.wListValueID = _data['wListValueID'];
+      this.wCreatedBy = _data['wCreatedBy'];
     }
+  }
 
-    static fromJS(data: any): WNoticeResponseEvaluationCriteriaDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new WNoticeResponseEvaluationCriteriaDto();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WNoticeResponseEvaluationCriteriaDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new WNoticeResponseEvaluationCriteriaDto();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wResponseEvaluationCriteriaID"] = this.wResponseEvaluationCriteriaID;
-        data["wSourceResponseEvaluationCriteriaID"] = this.wSourceResponseEvaluationCriteriaID;
-        data["wNoticeID"] = this.wNoticeID;
-        data["wNoticeResponseValueID"] = this.wNoticeResponseValueID;
-        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
-        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
-        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
-        data["wEvaluationReasonTypeID"] = this.wEvaluationReasonTypeID;
-        data["wResponseOperatorTypeID"] = this.wResponseOperatorTypeID;
-        data["wResponse"] = this.wResponse;
-        data["wResponseTo"] = this.wResponseTo;
-        data["wListValueID"] = this.wListValueID;
-        data["wCreatedBy"] = this.wCreatedBy;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wResponseEvaluationCriteriaID'] = this.wResponseEvaluationCriteriaID;
+    data['wSourceResponseEvaluationCriteriaID'] =
+      this.wSourceResponseEvaluationCriteriaID;
+    data['wNoticeID'] = this.wNoticeID;
+    data['wNoticeResponseValueID'] = this.wNoticeResponseValueID;
+    data['wNoticeResponseItemID'] = this.wNoticeResponseItemID;
+    data['wNoticeQuestionnaireID'] = this.wNoticeQuestionnaireID;
+    data['wNoticeQuestionnaireItemID'] = this.wNoticeQuestionnaireItemID;
+    data['wEvaluationReasonTypeID'] = this.wEvaluationReasonTypeID;
+    data['wResponseOperatorTypeID'] = this.wResponseOperatorTypeID;
+    data['wResponse'] = this.wResponse;
+    data['wResponseTo'] = this.wResponseTo;
+    data['wListValueID'] = this.wListValueID;
+    data['wCreatedBy'] = this.wCreatedBy;
+    return data;
+  }
 }
 
 export interface IWNoticeResponseEvaluationCriteriaDto {
-    wResponseEvaluationCriteriaID?: number | undefined;
-    wSourceResponseEvaluationCriteriaID?: number | undefined;
-    wNoticeID?: number | undefined;
-    wNoticeResponseValueID?: number | undefined;
-    wNoticeResponseItemID?: number | undefined;
-    wNoticeQuestionnaireID?: number | undefined;
-    wNoticeQuestionnaireItemID?: number | undefined;
-    wEvaluationReasonTypeID?: number | undefined;
-    wResponseOperatorTypeID?: number | undefined;
-    wResponse?: string | undefined;
-    wResponseTo?: string | undefined;
-    wListValueID?: number | undefined;
-    wCreatedBy?: number | undefined;
+  wResponseEvaluationCriteriaID?: number | undefined;
+  wSourceResponseEvaluationCriteriaID?: number | undefined;
+  wNoticeID?: number | undefined;
+  wNoticeResponseValueID?: number | undefined;
+  wNoticeResponseItemID?: number | undefined;
+  wNoticeQuestionnaireID?: number | undefined;
+  wNoticeQuestionnaireItemID?: number | undefined;
+  wEvaluationReasonTypeID?: number | undefined;
+  wResponseOperatorTypeID?: number | undefined;
+  wResponse?: string | undefined;
+  wResponseTo?: string | undefined;
+  wListValueID?: number | undefined;
+  wCreatedBy?: number | undefined;
 }
 
 export class WUserRoles implements IWUserRoles {
-    wUserRoleID?: number;
-    wFunctionTypeID?: number;
-    waccessRequestID?: number;
-    wRoleID?: number;
-    wRoleStartDate?: string | undefined;
-    roleValid?: number;
-    wUserID?: number;
-    createdBy?: number;
-    wObjectID?: number | undefined;
+  wUserRoleID?: number;
+  wFunctionTypeID?: number;
+  waccessRequestID?: number;
+  wRoleID?: number;
+  wRoleStartDate?: string | undefined;
+  roleValid?: number;
+  wUserID?: number;
+  createdBy?: number;
+  wObjectID?: number | undefined;
 
-    constructor(data?: IWUserRoles) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+  constructor(data?: IWUserRoles) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
     }
+  }
 
-    init(_data?: any) {
-        if (_data) {
-            this.wUserRoleID = _data["wUserRoleID"];
-            this.wFunctionTypeID = _data["wFunctionTypeID"];
-            this.waccessRequestID = _data["waccessRequestID"];
-            this.wRoleID = _data["wRoleID"];
-            this.wRoleStartDate = _data["wRoleStartDate"];
-            this.roleValid = _data["roleValid"];
-            this.wUserID = _data["wUserID"];
-            this.createdBy = _data["createdBy"];
-            this.wObjectID = _data["wObjectID"];
-        }
+  init(_data?: any) {
+    if (_data) {
+      this.wUserRoleID = _data['wUserRoleID'];
+      this.wFunctionTypeID = _data['wFunctionTypeID'];
+      this.waccessRequestID = _data['waccessRequestID'];
+      this.wRoleID = _data['wRoleID'];
+      this.wRoleStartDate = _data['wRoleStartDate'];
+      this.roleValid = _data['roleValid'];
+      this.wUserID = _data['wUserID'];
+      this.createdBy = _data['createdBy'];
+      this.wObjectID = _data['wObjectID'];
     }
+  }
 
-    static fromJS(data: any): WUserRoles {
-        data = typeof data === 'object' ? data : {};
-        let result = new WUserRoles();
-        result.init(data);
-        return result;
-    }
+  static fromJS(data: any): WUserRoles {
+    data = typeof data === 'object' ? data : {};
+    let result = new WUserRoles();
+    result.init(data);
+    return result;
+  }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wUserRoleID"] = this.wUserRoleID;
-        data["wFunctionTypeID"] = this.wFunctionTypeID;
-        data["waccessRequestID"] = this.waccessRequestID;
-        data["wRoleID"] = this.wRoleID;
-        data["wRoleStartDate"] = this.wRoleStartDate;
-        data["roleValid"] = this.roleValid;
-        data["wUserID"] = this.wUserID;
-        data["createdBy"] = this.createdBy;
-        data["wObjectID"] = this.wObjectID;
-        return data;
-    }
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data['wUserRoleID'] = this.wUserRoleID;
+    data['wFunctionTypeID'] = this.wFunctionTypeID;
+    data['waccessRequestID'] = this.waccessRequestID;
+    data['wRoleID'] = this.wRoleID;
+    data['wRoleStartDate'] = this.wRoleStartDate;
+    data['roleValid'] = this.roleValid;
+    data['wUserID'] = this.wUserID;
+    data['createdBy'] = this.createdBy;
+    data['wObjectID'] = this.wObjectID;
+    return data;
+  }
 }
 
 export interface IWUserRoles {
-    wUserRoleID?: number;
-    wFunctionTypeID?: number;
-    waccessRequestID?: number;
-    wRoleID?: number;
-    wRoleStartDate?: string | undefined;
-    roleValid?: number;
-    wUserID?: number;
-    createdBy?: number;
-    wObjectID?: number | undefined;
+  wUserRoleID?: number;
+  wFunctionTypeID?: number;
+  waccessRequestID?: number;
+  wRoleID?: number;
+  wRoleStartDate?: string | undefined;
+  roleValid?: number;
+  wUserID?: number;
+  createdBy?: number;
+  wObjectID?: number | undefined;
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+  override message: string;
+  status: number;
+  response: string;
+  headers: { [key: string]: any };
+  result: any;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
+  constructor(
+    message: string,
+    status: number,
+    response: string,
+    headers: { [key: string]: any },
+    result: any
+  ) {
+    super();
 
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+    this.message = message;
+    this.status = status;
+    this.response = response;
+    this.headers = headers;
+    this.result = result;
+  }
 
-    protected isApiException = true;
+  protected isApiException = true;
 
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+  static isApiException(obj: any): obj is ApiException {
+    return obj.isApiException === true;
+  }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): Observable<any> {
-    if (result !== null && result !== undefined)
-        return _observableThrow(result);
-    else
-        return _observableThrow(new ApiException(message, status, response, headers, null));
+function throwException(
+  message: string,
+  status: number,
+  response: string,
+  headers: { [key: string]: any },
+  result?: any
+): Observable<any> {
+  if (result !== null && result !== undefined) return _observableThrow(result);
+  else
+    return _observableThrow(
+      new ApiException(message, status, response, headers, null)
+    );
 }
 
 function blobToText(blob: any): Observable<string> {
-    return new Observable<string>((observer: any) => {
-        if (!blob) {
-            observer.next("");
-            observer.complete();
-        } else {
-            let reader = new FileReader();
-            reader.onload = event => {
-                observer.next((event.target as any).result);
-                observer.complete();
-            };
-            reader.readAsText(blob);
-        }
-    });
+  return new Observable<string>((observer: any) => {
+    if (!blob) {
+      observer.next('');
+      observer.complete();
+    } else {
+      let reader = new FileReader();
+      reader.onload = (event) => {
+        observer.next((event.target as any).result);
+        observer.complete();
+      };
+      reader.readAsText(blob);
+    }
+  });
 }

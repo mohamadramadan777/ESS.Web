@@ -43,21 +43,20 @@ export const paginationPageSizeSelector = [10, 25, 50];
 
 
 export const TableColDef = [
-  { headerName: 'Application', field: 'formType', sortable: true, filter: true },
+  { headerName: 'Application', field: 'description', sortable: true, filter: true },
   {
-    headerName: 'Submitted Date',
-    field: 'submittedDate',
-    sortable: true,
-    filter: true,
-    maxWidth: 300,
-  },
-  {
-    headerName: 'Status',
-    field: 'applicationStatus',
-    sortable: true,
-    filter: true,
-    maxWidth: 300,
-  },
+    headerName: 'Attachments',
+    field: 'attachments',
+    // cellRenderer: (params) => {
+    //   if (params.value && params.value.length > 0) {
+    //     return params.value.map(file => `<a href="${file.url}" target="_blank">${file.name}</a>`).join('<br>');
+    //   }
+    //   return 'No Attachments';
+    // },
+    sortable: false,
+    filter: false,
+    maxWidth: 300
+  }
 ];
 
 
@@ -65,5 +64,7 @@ export const TableColDef = [
 export const defaultColDef = 
   {flex: 1,
   minWidth: 150,
-  resizable: true,}
+  resizable: true,
+  wrapText: true,  // Allows text to wrap
+  autoHeight: true }
 
