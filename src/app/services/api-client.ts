@@ -889,6 +889,72 @@ export class Client {
     }
 
     /**
+     * @param doctypeId (optional) 
+     * @param firmTypeDesc (optional) 
+     * @param objectId (optional) 
+     * @return OK
+     */
+    getDocSignatories(doctypeId: number | undefined, firmTypeDesc: string | undefined, objectId: number | undefined): Observable<DocSignatoriesBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-doc-signatories?";
+        if (doctypeId === null)
+            throw new Error("The parameter 'doctypeId' cannot be null.");
+        else if (doctypeId !== undefined)
+            url_ += "doctypeId=" + encodeURIComponent("" + doctypeId) + "&";
+        if (firmTypeDesc === null)
+            throw new Error("The parameter 'firmTypeDesc' cannot be null.");
+        else if (firmTypeDesc !== undefined)
+            url_ += "firmTypeDesc=" + encodeURIComponent("" + firmTypeDesc) + "&";
+        if (objectId === null)
+            throw new Error("The parameter 'objectId' cannot be null.");
+        else if (objectId !== undefined)
+            url_ += "objectId=" + encodeURIComponent("" + objectId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocSignatoriesBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocSignatoriesBaseResponse>;
+        }));
+    }
+
+    protected processGetDocSignatories(response: HttpResponseBase): Observable<DocSignatoriesBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DocSignatoriesBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<DocSignatoriesBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -2300,6 +2366,108 @@ export class Client {
     /**
      * @return OK
      */
+    getCompletedApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-completed-applications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCompletedApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCompletedApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetCompletedApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPendingApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-pending-applications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
     getPendingItems(): Observable<PendingItemsDtoListBaseResponse> {
         let url_ = this.baseUrl + "/api/GenSubmission/get-pending-items";
         url_ = url_.replace(/[?&]$/, "");
@@ -2405,6 +2573,62 @@ export class Client {
     }
 
     /**
+     * @param docCategoryTypeId (optional) 
+     * @return OK
+     */
+    getXbrlDocTypes(docCategoryTypeId: number | undefined): Observable<Int32ListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-xbrl-doc-types?";
+        if (docCategoryTypeId === null)
+            throw new Error("The parameter 'docCategoryTypeId' cannot be null.");
+        else if (docCategoryTypeId !== undefined)
+            url_ += "docCategoryTypeId=" + encodeURIComponent("" + docCategoryTypeId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetXbrlDocTypes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetXbrlDocTypes(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
+        }));
+    }
+
+    protected processGetXbrlDocTypes(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32ListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32ListBaseResponse>(null as any);
+    }
+
+    /**
      * @param tableName (optional) 
      * @return OK
      */
@@ -2468,7 +2692,7 @@ export class Client {
      * @param isEditable (optional) 
      * @return OK
      */
-    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<ConfigMessageListBaseResponse> {
+    getConfigMessage(wConfigMessageID: number | undefined, configKey: string | undefined, configDesc: string | undefined, configValue: string | undefined, isEditable: boolean | undefined): Observable<StringBaseResponse> {
         let url_ = this.baseUrl + "/api/MasterData/get-config-message?";
         if (wConfigMessageID === null)
             throw new Error("The parameter 'wConfigMessageID' cannot be null.");
@@ -2507,14 +2731,14 @@ export class Client {
                 try {
                     return this.processGetConfigMessage(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ConfigMessageListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ConfigMessageListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
         }));
     }
 
-    protected processGetConfigMessage(response: HttpResponseBase): Observable<ConfigMessageListBaseResponse> {
+    protected processGetConfigMessage(response: HttpResponseBase): Observable<StringBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2525,7 +2749,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ConfigMessageListBaseResponse.fromJS(resultData200);
+            result200 = StringBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2533,7 +2757,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ConfigMessageListBaseResponse>(null as any);
+        return _observableOf<StringBaseResponse>(null as any);
     }
 
     /**
@@ -4502,114 +4726,6 @@ export interface IByteArrayBaseResponse {
     response?: string | undefined;
 }
 
-export class ConfigMessage implements IConfigMessage {
-    wConfigMessageID?: number;
-    configKey?: string | undefined;
-    configDesc?: string | undefined;
-    configValue?: string | undefined;
-    isEditable?: boolean;
-
-    constructor(data?: IConfigMessage) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.wConfigMessageID = _data["wConfigMessageID"];
-            this.configKey = _data["configKey"];
-            this.configDesc = _data["configDesc"];
-            this.configValue = _data["configValue"];
-            this.isEditable = _data["isEditable"];
-        }
-    }
-
-    static fromJS(data: any): ConfigMessage {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConfigMessage();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wConfigMessageID"] = this.wConfigMessageID;
-        data["configKey"] = this.configKey;
-        data["configDesc"] = this.configDesc;
-        data["configValue"] = this.configValue;
-        data["isEditable"] = this.isEditable;
-        return data;
-    }
-}
-
-export interface IConfigMessage {
-    wConfigMessageID?: number;
-    configKey?: string | undefined;
-    configDesc?: string | undefined;
-    configValue?: string | undefined;
-    isEditable?: boolean;
-}
-
-export class ConfigMessageListBaseResponse implements IConfigMessageListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ConfigMessage[] | undefined;
-
-    constructor(data?: IConfigMessageListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ConfigMessage.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ConfigMessageListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConfigMessageListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IConfigMessageListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ConfigMessage[] | undefined;
-}
-
 export class ContactUs implements IContactUs {
     wUserFeedbackID?: number | undefined;
     wUserID?: number | undefined;
@@ -5304,6 +5420,154 @@ export interface IControlledFunctionDto {
     pageFlag?: string | undefined;
     actionTypeDesc?: string | undefined;
     appRecieveDate?: Date | undefined;
+}
+
+export class DocSignatories implements IDocSignatories {
+    docSignatoryID?: number;
+    docTypeID?: number | undefined;
+    rptFreqTypeID?: number | undefined;
+    numOfSigs?: number | undefined;
+    firstSig?: string | undefined;
+    secondSig?: string | undefined;
+    thirdSig?: string | undefined;
+    fourthSig?: string | undefined;
+    validFlag?: boolean;
+    userID?: number;
+    docSignText?: string | undefined;
+    docAccessRoles?: string | undefined;
+    wLinkToFormDesc?: string | undefined;
+    wIndFromTypeID?: number | undefined;
+    freqTypeDesc?: string | undefined;
+    objectID?: number | undefined;
+    firmTypeID?: number | undefined;
+
+    constructor(data?: IDocSignatories) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.docSignatoryID = _data["docSignatoryID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptFreqTypeID = _data["rptFreqTypeID"];
+            this.numOfSigs = _data["numOfSigs"];
+            this.firstSig = _data["firstSig"];
+            this.secondSig = _data["secondSig"];
+            this.thirdSig = _data["thirdSig"];
+            this.fourthSig = _data["fourthSig"];
+            this.validFlag = _data["validFlag"];
+            this.userID = _data["userID"];
+            this.docSignText = _data["docSignText"];
+            this.docAccessRoles = _data["docAccessRoles"];
+            this.wLinkToFormDesc = _data["wLinkToFormDesc"];
+            this.wIndFromTypeID = _data["wIndFromTypeID"];
+            this.freqTypeDesc = _data["freqTypeDesc"];
+            this.objectID = _data["objectID"];
+            this.firmTypeID = _data["firmTypeID"];
+        }
+    }
+
+    static fromJS(data: any): DocSignatories {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocSignatories();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["docSignatoryID"] = this.docSignatoryID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptFreqTypeID"] = this.rptFreqTypeID;
+        data["numOfSigs"] = this.numOfSigs;
+        data["firstSig"] = this.firstSig;
+        data["secondSig"] = this.secondSig;
+        data["thirdSig"] = this.thirdSig;
+        data["fourthSig"] = this.fourthSig;
+        data["validFlag"] = this.validFlag;
+        data["userID"] = this.userID;
+        data["docSignText"] = this.docSignText;
+        data["docAccessRoles"] = this.docAccessRoles;
+        data["wLinkToFormDesc"] = this.wLinkToFormDesc;
+        data["wIndFromTypeID"] = this.wIndFromTypeID;
+        data["freqTypeDesc"] = this.freqTypeDesc;
+        data["objectID"] = this.objectID;
+        data["firmTypeID"] = this.firmTypeID;
+        return data;
+    }
+}
+
+export interface IDocSignatories {
+    docSignatoryID?: number;
+    docTypeID?: number | undefined;
+    rptFreqTypeID?: number | undefined;
+    numOfSigs?: number | undefined;
+    firstSig?: string | undefined;
+    secondSig?: string | undefined;
+    thirdSig?: string | undefined;
+    fourthSig?: string | undefined;
+    validFlag?: boolean;
+    userID?: number;
+    docSignText?: string | undefined;
+    docAccessRoles?: string | undefined;
+    wLinkToFormDesc?: string | undefined;
+    wIndFromTypeID?: number | undefined;
+    freqTypeDesc?: string | undefined;
+    objectID?: number | undefined;
+    firmTypeID?: number | undefined;
+}
+
+export class DocSignatoriesBaseResponse implements IDocSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories;
+
+    constructor(data?: IDocSignatoriesBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? DocSignatories.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DocSignatoriesBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocSignatoriesBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IDocSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories;
 }
 
 export class FirmContactDetails implements IFirmContactDetails {
@@ -7596,6 +7860,54 @@ export interface IResidencies {
     createdDate?: string | undefined;
     modifiedDate?: string | undefined;
     modifiedBy?: number;
+}
+
+export class StringBaseResponse implements IStringBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
+
+    constructor(data?: IStringBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"];
+        }
+    }
+
+    static fromJS(data: any): StringBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new StringBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response;
+        return data;
+    }
+}
+
+export interface IStringBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
 }
 
 export class StringObjectDictionaryListBaseResponse implements IStringObjectDictionaryListBaseResponse {

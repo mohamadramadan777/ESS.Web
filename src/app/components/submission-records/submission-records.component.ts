@@ -2,7 +2,7 @@ import { ColDef } from 'ag-grid-community';
 import { Component, OnInit } from '@angular/core';
 import * as config from './submission-record-config';
 import { ICurrentUser, ISignatoryStatus } from './submission-record-config'; 
-import { Client, ConfigMessage } from '../../services/api-client'; // ✅ Ensure correct import for ConfigMessage
+import { Client } from '../../services/api-client'; // ✅ Ensure correct import for ConfigMessage
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { jwtDecode } from 'jwt-decode';
@@ -211,7 +211,7 @@ export class SubmissionRecordsComponent implements OnInit {
       ).pipe(
       map((response) => {
         if (response.isSuccess && response.response && response.response.length > 0) {
-          let msg = response.response[0].configValue ?? '';
+          let msg = "";//response.response[0].configValue ?? '';
           msg = msg.replace('{INDIVIDUAL_NAME}', item.individualName || 'Unknown');
           msg = msg.replace('{CREATED_DATE}', item.createdDate || 'Unknown Date');
           msg = msg.replace('{SUBMITTED_DATE}', item.submittedDate || 'Unknown Date');

@@ -1,0 +1,66 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+      <h1 mat-dialog-title class="dialog-title">
+        <span class="label">{{ data.Form }}</span>
+      </h1>
+      <button mat-icon-button class="close-button" (click)="onClose()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <mat-tab-group class="custom-tab-group">
+        <!-- Applicant Details Tab -->
+        <!-- Attachments Tab -->
+        <mat-tab label="Attachments">
+          <div class="tab-content">
+            <app-file-uploader
+              [ShowHeaderPanel]="true"
+              [ShowHeaderFormName]="false"
+              [ObjectID]="123"
+              [ObjectInstanceID]="456"
+              [ObjectInstanceRevNum]="1"
+              [DocTypeID]="789"
+              [FormTypeID]="101112"
+              [ShowPrimaryDoc]="true"
+              (fileUploaded)="onFileUploaded($event)"
+            ></app-file-uploader>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Notes">
+            <div class="tab-content">
+              <div *ngIf="ReadOnly" class="notes-container">
+                <p>{{ data.wNotes }}</p>
+                <p *ngIf="data.wNotes == '' || !data.wNotes">No notes added.</p>
+              </div>
+              <textarea *ngIf="!ReadOnly" [(ngModel)]="data.wNotes" (ngModelChange)="onNotesChange()"></textarea>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Signature">
+            <div class="tab-content">
+              <p><strong>Name of Individual:</strong></p>
+              <p><strong>Date Signed:</strong></p>
+            </div>
+          </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div class="modal-footer" *ngIf="!ReadOnly">
+      <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(3)">
+        <mat-icon>attach_file</mat-icon>
+        <span class="animated-text">Attachments</span>
+      </button>
+      <button mat-icon-button class="animated-icon-button-small" (click)="onSave()">
+        <mat-icon>save</mat-icon>
+        <span class="animated-text">Save</span>
+      </button>
+      <button mat-icon-button class="animated-icon-button" (click)="onSaveAndClose()">
+        <mat-icon>folder_check</mat-icon>
+        <span class="animated-text">Save & Close</span>
+      </button>
+      <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+        <mat-icon>send</mat-icon> {{SubmitLabel}}
+      </button>
+    </div>
+  </div>
+  
