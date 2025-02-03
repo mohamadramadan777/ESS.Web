@@ -12,7 +12,7 @@ export class HeaderComponent {
   AppConstants = AppConstants;
   name = localStorage.getItem(this.AppConstants.Session.SESSION_INDIVIDUAL_NAME);
   email = localStorage.getItem(this.AppConstants.Session.SESSION_EMAIL_ID);
-  firmName = 'Abu Dhabi Islamic Bank - Qatar Financial Center (000143)'; // Replace with the actual firm name
+  firmName = localStorage.getItem(this.AppConstants.Session.SESSION_FIRM_NAME) + " (" + localStorage.getItem(this.AppConstants.Session.SESSION_QFC_NO) + ")";
   menuOpen = false;
 
   constructor(private router: Router, private authenticationService: AuthService) {}
