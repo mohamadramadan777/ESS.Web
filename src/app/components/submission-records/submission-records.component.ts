@@ -5,6 +5,7 @@ import { ICurrentUser, ISignatoryStatus } from './submission-record-config';
 import { Client } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
+import mockData from "../../../data/get_completed_applications.json"
 
 import {
   TextFilterModule,
@@ -12,6 +13,7 @@ import {
   NumberEditorModule,
   ValidationModule,
   TextEditorModule,
+  RowAutoHeightModule ,
   PaginationModule,
   NumberFilterModule,
   RowSelectionModule,
@@ -30,7 +32,7 @@ export class SubmissionRecordsComponent implements OnInit {
     ValidationModule,
     TextEditorModule,
     PaginationModule,
-    NumberFilterModule,
+    NumberFilterModule,RowAutoHeightModule ,
     RowSelectionModule,
   ];
   public paginationPageSize = config.paginationPageSize;
@@ -58,25 +60,34 @@ export class SubmissionRecordsComponent implements OnInit {
   }
 
   fetchSubmittedApplications(){
-    this.client.getCompletedApplications().subscribe(response => {
+    const response = mockData; 
+    // this.client.getCompletedApplications().subscribe(response => {
       if (response && response.response) {
+        
         this.Submitted = response.response.map(app => ({
           description: app.description,
-          // attachments: this.getAttachments()
+          attachments: app.lstAttachments.map(att => ({
+            name: att.fileName,
+            url: att.fileURI
+          }))
         }));
       }
-    });
+    // });
   }
 
   fetchPendingApplications(){
-    this.client.getPendingItems().subscribe(response => {
+    const response = mockData; 
+    // this.client.getPendingItems().subscribe(response => {
       if (response && response.response) {
-        this.Submitted = response.response.map(app => ({
+        this.Pending = response.response.map(app => ({
           description: app.description,
-          // attachments: this.getAttachments()
+          attachments: app.lstAttachments.map(att => ({
+            name: att.fileName,
+            url: att.fileURI
+          }))
         }));
       }
-    });
+    // });
   }
 
   getRowHeight(params: any): number {
@@ -84,10 +95,6 @@ export class SubmissionRecordsComponent implements OnInit {
       return 30 + params.data.attachments.length * 20; // Adjust row height dynamically
     }
     return 30; // Default row height
-  }
-
-  getAttachments() {
-    //code to get the attachments
   }
 
   onRowClicked(event: any): void {
