@@ -1,16 +1,13 @@
 import { ColDef } from 'ag-grid-community';
 import { Component, OnInit } from '@angular/core';
 import * as config from './submission-record-config';
-import { ICurrentUser, ISignatoryStatus } from './submission-record-config';
 import { Client } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
-import mockData from "../../../data/get_completed_applications.json"
 
 import {
   TextFilterModule,
   ClientSideRowModelModule,
-  NumberEditorModule,
   ValidationModule,
   TextEditorModule,
   RowAutoHeightModule ,
@@ -42,7 +39,6 @@ export class SubmissionRecordsComponent implements OnInit {
   public Pending: any[] = [];
   public Submitted: any[] = [];
   public defaultColDef = config.defaultColDef;
-  private ICurrentUser: ICurrentUser | null = null;
   public theme = config.theme;
 
   
@@ -50,8 +46,6 @@ export class SubmissionRecordsComponent implements OnInit {
 
   constructor(
     private client: Client,
-    private loadingService: LoadingService,
-    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -60,34 +54,34 @@ export class SubmissionRecordsComponent implements OnInit {
   }
 
   fetchSubmittedApplications(){
-    const response = mockData; 
-    // this.client.getCompletedApplications().subscribe(response => {
+    // const response = mockData; 
+    this.client.getCompletedApplications().subscribe(response => {
       if (response && response.response) {
         
         this.Submitted = response.response.map(app => ({
           description: app.description,
-          attachments: app.lstAttachments.map(att => ({
+          attachments: app.lstAttachments!.map(att => ({
             name: att.fileName,
             url: att.fileURI
           }))
         }));
       }
-    // });
+    });
   }
 
   fetchPendingApplications(){
-    const response = mockData; 
-    // this.client.getPendingItems().subscribe(response => {
+    // const response = mockData; 
+    this.client.getPendingItems().subscribe(response => {
       if (response && response.response) {
         this.Pending = response.response.map(app => ({
           description: app.description,
-          attachments: app.lstAttachments.map(att => ({
+          attachments: app.lstAttachments!.map(att => ({
             name: att.fileName,
             url: att.fileURI
           }))
         }));
       }
-    // });
+    });
   }
 
   getRowHeight(params: any): number {
