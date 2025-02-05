@@ -12,7 +12,6 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-
 import { API_BASE_URL } from './tokens';
 
 @Injectable()
@@ -6963,6 +6962,7 @@ export class PendingItemsDto implements IPendingItemsDto {
     docTypeID?: number | undefined;
     objectID?: number | undefined;
     docTypeDesc?: string | undefined;
+    lstAttachments?: AttachmentDto[] | undefined;
 
     constructor(data?: IPendingItemsDto) {
         if (data) {
@@ -6995,6 +6995,11 @@ export class PendingItemsDto implements IPendingItemsDto {
             this.docTypeID = _data["docTypeID"];
             this.objectID = _data["objectID"];
             this.docTypeDesc = _data["docTypeDesc"];
+            if (Array.isArray(_data["lstAttachments"])) {
+                this.lstAttachments = [] as any;
+                for (let item of _data["lstAttachments"])
+                    this.lstAttachments!.push(AttachmentDto.fromJS(item));
+            }
         }
     }
 
@@ -7027,6 +7032,11 @@ export class PendingItemsDto implements IPendingItemsDto {
         data["docTypeID"] = this.docTypeID;
         data["objectID"] = this.objectID;
         data["docTypeDesc"] = this.docTypeDesc;
+        if (Array.isArray(this.lstAttachments)) {
+            data["lstAttachments"] = [];
+            for (let item of this.lstAttachments)
+                data["lstAttachments"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -7052,6 +7062,7 @@ export interface IPendingItemsDto {
     docTypeID?: number | undefined;
     objectID?: number | undefined;
     docTypeDesc?: string | undefined;
+    lstAttachments?: AttachmentDto[] | undefined;
 }
 
 export class PendingItemsDtoListBaseResponse implements IPendingItemsDtoListBaseResponse {
