@@ -58,6 +58,7 @@ import { WithdrawalComponent } from './components/submission-records/forms/withd
 import { ApprovalComponent } from './components/submission-records/forms/approval/approval.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { GensubComponent } from './components/submission-records/forms/gensub/gensub.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     FileUploaderComponent,
     WithdrawalComponent,
     ApprovalComponent,
+    GensubComponent,
   ],
   imports: [
     BrowserModule,

@@ -888,40 +888,50 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param doctypeId (optional) 
+     * @param firmTypeDesc (optional) 
+     * @param objectId (optional) 
      * @return OK
      */
-    insertUpdateFeedbackDetails(body: ContactUs | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/insert-update-feedback-details";
+    getDocSignatories(doctypeId: number | undefined, firmTypeDesc: string | undefined, objectId: number | undefined): Observable<DocSignatoriesBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-doc-signatories?";
+        if (doctypeId === null)
+            throw new Error("The parameter 'doctypeId' cannot be null.");
+        else if (doctypeId !== undefined)
+            url_ += "doctypeId=" + encodeURIComponent("" + doctypeId) + "&";
+        if (firmTypeDesc === null)
+            throw new Error("The parameter 'firmTypeDesc' cannot be null.");
+        else if (firmTypeDesc !== undefined)
+            url_ += "firmTypeDesc=" + encodeURIComponent("" + firmTypeDesc) + "&";
+        if (objectId === null)
+            throw new Error("The parameter 'objectId' cannot be null.");
+        else if (objectId !== undefined)
+            url_ += "objectId=" + encodeURIComponent("" + objectId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateFeedbackDetails(response_);
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocSignatories(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInsertUpdateFeedbackDetails(response_ as any);
+                    return this.processGetDocSignatories(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                    return _observableThrow(e) as any as Observable<DocSignatoriesBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+                return _observableThrow(response_) as any as Observable<DocSignatoriesBaseResponse>;
         }));
     }
 
-    protected processInsertUpdateFeedbackDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
+    protected processGetDocSignatories(response: HttpResponseBase): Observable<DocSignatoriesBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -932,7 +942,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
+            result200 = DocSignatoriesBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -940,131 +950,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<Int32BaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    saveEmailDetails(body: EmailRequisites | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/AccessRequest/save-email-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSaveEmailDetails(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSaveEmailDetails(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processSaveEmailDetails(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<void>(null as any);
-    }
-
-    /**
-     * @param qfcNumber (optional) 
-     * @param formName (optional) 
-     * @param docTypeID (optional) 
-     * @param applicationID (optional) 
-     * @param userID (optional) 
-     * @return OK
-     */
-    submitAiApplicationEmail(qfcNumber: string | undefined, formName: string | undefined, docTypeID: number | undefined, applicationID: number | undefined, userID: number | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/AccessRequest/submit-ai-application-email?";
-        if (qfcNumber === null)
-            throw new Error("The parameter 'qfcNumber' cannot be null.");
-        else if (qfcNumber !== undefined)
-            url_ += "qfcNumber=" + encodeURIComponent("" + qfcNumber) + "&";
-        if (formName === null)
-            throw new Error("The parameter 'formName' cannot be null.");
-        else if (formName !== undefined)
-            url_ += "formName=" + encodeURIComponent("" + formName) + "&";
-        if (docTypeID === null)
-            throw new Error("The parameter 'docTypeID' cannot be null.");
-        else if (docTypeID !== undefined)
-            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
-        if (applicationID === null)
-            throw new Error("The parameter 'applicationID' cannot be null.");
-        else if (applicationID !== undefined)
-            url_ += "applicationID=" + encodeURIComponent("" + applicationID) + "&";
-        if (userID === null)
-            throw new Error("The parameter 'userID' cannot be null.");
-        else if (userID !== undefined)
-            url_ += "userID=" + encodeURIComponent("" + userID) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSubmitAiApplicationEmail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processSubmitAiApplicationEmail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processSubmitAiApplicationEmail(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<void>(null as any);
+        return _observableOf<DocSignatoriesBaseResponse>(null as any);
     }
 
     /**
@@ -2683,6 +2569,62 @@ export class Client {
             }));
         }
         return _observableOf<ApplicationDetailDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docCategoryTypeId (optional) 
+     * @return OK
+     */
+    getXbrlDocTypes(docCategoryTypeId: number | undefined): Observable<Int32ListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-xbrl-doc-types?";
+        if (docCategoryTypeId === null)
+            throw new Error("The parameter 'docCategoryTypeId' cannot be null.");
+        else if (docCategoryTypeId !== undefined)
+            url_ += "docCategoryTypeId=" + encodeURIComponent("" + docCategoryTypeId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetXbrlDocTypes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetXbrlDocTypes(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32ListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32ListBaseResponse>;
+        }));
+    }
+
+    protected processGetXbrlDocTypes(response: HttpResponseBase): Observable<Int32ListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32ListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32ListBaseResponse>(null as any);
     }
 
     /**
@@ -5479,23 +5421,26 @@ export interface IControlledFunctionDto {
     appRecieveDate?: Date | undefined;
 }
 
-export class EmailRequisites implements IEmailRequisites {
-    fromEmail?: string | undefined;
-    toEmailCC?: string | undefined;
-    toEmailBCC?: string | undefined;
-    fromUserName?: string | undefined;
-    toEmail?: string | undefined;
-    toUserName?: string | undefined;
-    subject?: string | undefined;
-    body?: string | undefined;
-    objectID?: number;
-    objectInstanceID?: number | undefined;
-    objectInstanceRevNo?: number | undefined;
-    emailURL?: string | undefined;
-    emailCount?: number;
-    notifiedBy?: number | undefined;
+export class DocSignatories implements IDocSignatories {
+    docSignatoryID?: number;
+    docTypeID?: number | undefined;
+    rptFreqTypeID?: number | undefined;
+    numOfSigs?: number | undefined;
+    firstSig?: string | undefined;
+    secondSig?: string | undefined;
+    thirdSig?: string | undefined;
+    fourthSig?: string | undefined;
+    validFlag?: boolean;
+    userID?: number;
+    docSignText?: string | undefined;
+    docAccessRoles?: string | undefined;
+    wLinkToFormDesc?: string | undefined;
+    wIndFromTypeID?: number | undefined;
+    freqTypeDesc?: string | undefined;
+    objectID?: number | undefined;
+    firmTypeID?: number | undefined;
 
-    constructor(data?: IEmailRequisites) {
+    constructor(data?: IDocSignatories) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -5506,65 +5451,122 @@ export class EmailRequisites implements IEmailRequisites {
 
     init(_data?: any) {
         if (_data) {
-            this.fromEmail = _data["fromEmail"];
-            this.toEmailCC = _data["toEmailCC"];
-            this.toEmailBCC = _data["toEmailBCC"];
-            this.fromUserName = _data["fromUserName"];
-            this.toEmail = _data["toEmail"];
-            this.toUserName = _data["toUserName"];
-            this.subject = _data["subject"];
-            this.body = _data["body"];
+            this.docSignatoryID = _data["docSignatoryID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptFreqTypeID = _data["rptFreqTypeID"];
+            this.numOfSigs = _data["numOfSigs"];
+            this.firstSig = _data["firstSig"];
+            this.secondSig = _data["secondSig"];
+            this.thirdSig = _data["thirdSig"];
+            this.fourthSig = _data["fourthSig"];
+            this.validFlag = _data["validFlag"];
+            this.userID = _data["userID"];
+            this.docSignText = _data["docSignText"];
+            this.docAccessRoles = _data["docAccessRoles"];
+            this.wLinkToFormDesc = _data["wLinkToFormDesc"];
+            this.wIndFromTypeID = _data["wIndFromTypeID"];
+            this.freqTypeDesc = _data["freqTypeDesc"];
             this.objectID = _data["objectID"];
-            this.objectInstanceID = _data["objectInstanceID"];
-            this.objectInstanceRevNo = _data["objectInstanceRevNo"];
-            this.emailURL = _data["emailURL"];
-            this.emailCount = _data["emailCount"];
-            this.notifiedBy = _data["notifiedBy"];
+            this.firmTypeID = _data["firmTypeID"];
         }
     }
 
-    static fromJS(data: any): EmailRequisites {
+    static fromJS(data: any): DocSignatories {
         data = typeof data === 'object' ? data : {};
-        let result = new EmailRequisites();
+        let result = new DocSignatories();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["fromEmail"] = this.fromEmail;
-        data["toEmailCC"] = this.toEmailCC;
-        data["toEmailBCC"] = this.toEmailBCC;
-        data["fromUserName"] = this.fromUserName;
-        data["toEmail"] = this.toEmail;
-        data["toUserName"] = this.toUserName;
-        data["subject"] = this.subject;
-        data["body"] = this.body;
+        data["docSignatoryID"] = this.docSignatoryID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptFreqTypeID"] = this.rptFreqTypeID;
+        data["numOfSigs"] = this.numOfSigs;
+        data["firstSig"] = this.firstSig;
+        data["secondSig"] = this.secondSig;
+        data["thirdSig"] = this.thirdSig;
+        data["fourthSig"] = this.fourthSig;
+        data["validFlag"] = this.validFlag;
+        data["userID"] = this.userID;
+        data["docSignText"] = this.docSignText;
+        data["docAccessRoles"] = this.docAccessRoles;
+        data["wLinkToFormDesc"] = this.wLinkToFormDesc;
+        data["wIndFromTypeID"] = this.wIndFromTypeID;
+        data["freqTypeDesc"] = this.freqTypeDesc;
         data["objectID"] = this.objectID;
-        data["objectInstanceID"] = this.objectInstanceID;
-        data["objectInstanceRevNo"] = this.objectInstanceRevNo;
-        data["emailURL"] = this.emailURL;
-        data["emailCount"] = this.emailCount;
-        data["notifiedBy"] = this.notifiedBy;
+        data["firmTypeID"] = this.firmTypeID;
         return data;
     }
 }
 
-export interface IEmailRequisites {
-    fromEmail?: string | undefined;
-    toEmailCC?: string | undefined;
-    toEmailBCC?: string | undefined;
-    fromUserName?: string | undefined;
-    toEmail?: string | undefined;
-    toUserName?: string | undefined;
-    subject?: string | undefined;
-    body?: string | undefined;
-    objectID?: number;
-    objectInstanceID?: number | undefined;
-    objectInstanceRevNo?: number | undefined;
-    emailURL?: string | undefined;
-    emailCount?: number;
-    notifiedBy?: number | undefined;
+export interface IDocSignatories {
+    docSignatoryID?: number;
+    docTypeID?: number | undefined;
+    rptFreqTypeID?: number | undefined;
+    numOfSigs?: number | undefined;
+    firstSig?: string | undefined;
+    secondSig?: string | undefined;
+    thirdSig?: string | undefined;
+    fourthSig?: string | undefined;
+    validFlag?: boolean;
+    userID?: number;
+    docSignText?: string | undefined;
+    docAccessRoles?: string | undefined;
+    wLinkToFormDesc?: string | undefined;
+    wIndFromTypeID?: number | undefined;
+    freqTypeDesc?: string | undefined;
+    objectID?: number | undefined;
+    firmTypeID?: number | undefined;
+}
+
+export class DocSignatoriesBaseResponse implements IDocSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories;
+
+    constructor(data?: IDocSignatoriesBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? DocSignatories.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): DocSignatoriesBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocSignatoriesBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IDocSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories;
 }
 
 export class FirmContactDetails implements IFirmContactDetails {

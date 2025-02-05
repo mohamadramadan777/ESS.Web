@@ -20,6 +20,7 @@ import Swal from 'sweetalert2';
 import { min } from 'rxjs';
 import { WithdrawalComponent } from '../submission-records/forms/withdrawal/withdrawal.component';
 import { ApprovalComponent } from '../submission-records/forms/approval/approval.component';
+import { GensubComponent } from '../submission-records/forms/gensub/gensub.component';
 
 @Component({
   selector: 'app-home',
@@ -206,7 +207,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   onCellClicked(event: any) {
     const { colDef, event: mouseEvent, data } = event;
     if (colDef.field === 'linkToDownload') {
-      const target = mouseEvent.target as HTMLElement;
       // Determine the message based on the isRegistered field
       const message = data.link;
       // Display confirmation dialog
@@ -242,8 +242,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         });
       }
-      else{ //GenSub Here
-        const dialogRef = this.dialog.open(ApprovalComponent, {
+      else if(data.WIndFromTypeID != 0 && data.WIndFromTypeID != undefined){ //GenSub Here
+        const dialogRef = this.dialog.open(GensubComponent, {
           width: '80%',
           height: '85%',
           data: {
@@ -252,6 +252,19 @@ export class HomeComponent implements OnInit, OnDestroy {
             DocTypeId: data.DocTypeId,
           },
         });
+      }
+      else{
+        // Determine the message based on the isRegistered field
+      const message = data.link;
+      // Display confirmation dialog
+      Swal.fire({
+        html: message,
+        confirmButtonColor: '#a51e36',
+        confirmButtonText: 'Close',
+      }).then((result) => {
+        if (result.isConfirmed) {
+        }
+      });
       }
     }
   }
@@ -274,8 +287,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     tooltipField: '',
   };
 
-  paginationPageSize = 6;
-  paginationPageSizeSelector = [6, 15, 30];
+  paginationPageSize = 8;
+  paginationPageSizeSelector = [8];
 
   theme = themeAlpine.withParams(
     {
@@ -523,11 +536,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectDefaultTable(): void {
     if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded) {
       const indexToSelect = this.requiredSignoff.length > 0 ? 0 : (this.generealCommunications.length > 0 ? 1 : 2);
-      this.selectTable(indexToSelect + 1);
+      setTimeout(() => {
+      this.selectTable(indexToSelect > 0 ? indexToSelect - 1 : indexToSelect + 1);
       setTimeout(() => {
         this.selectTable(indexToSelect);
         this.loadingService.hide();
       }, 100);
+    }, 100);
     }
   }
 }
