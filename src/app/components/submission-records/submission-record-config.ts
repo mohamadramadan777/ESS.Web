@@ -53,6 +53,7 @@ export const TableColDef: ColDef<ISubmissionRecord>[] = [
     autoHeight: true,
     sortable: true,
     filter: true,
+    cellStyle:{display:'flex' , alignitems:'center'},
   },
   {
     headerName: 'Attachments',
