@@ -15,13 +15,14 @@
           <div class="tab-content">
             <app-file-uploader
               [ShowHeaderPanel]="true"
-              [ShowHeaderFormName]="false"
+              [ShowHeaderFormName]="true"
               [ObjectID]="123"
               [ObjectInstanceID]="456"
               [ObjectInstanceRevNum]="1"
-              [DocTypeID]="789"
+              [DocTypeID]="this.data.DocTypeId"
               [FormTypeID]="101112"
               [ShowPrimaryDoc]="true"
+              [DocSignText]="this.DocSignText"
               (fileUploaded)="onFileUploaded($event)"
             ></app-file-uploader>
           </div>

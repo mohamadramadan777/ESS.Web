@@ -1,26 +1,68 @@
-<div class="file-uploader-container">
-    <div class="header-panel" *ngIf="ShowHeaderPanel">
-      <h3 *ngIf="ShowHeaderFormName">{{ ShowHeaderFormName }}</h3>
+<div class="file-uploader-wrapper">
+  <!-- Single File Uploader -->
+  <div class="file-uploader-container single-file-uploader" *ngIf="ShowHeaderPanel">
+    <div class="header-panel">
+      <h4 [innerHTML]="DocSignText"></h4>
     </div>
-  
-    <div
+    <div *ngIf="!ReadOnly"
       class="drop-zone"
-      [class.drag-over]="isDragOver"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
+      [class.drag-over]="isDragOverSingle"
+      (dragover)="onDragOver($event, 'single')"
+      (dragleave)="onDragLeave($event, 'single')"
+      (drop)="onDrop($event, 'single')"
     >
-      <p>Drag and drop files here or</p>
-      <button mat-raised-button color="primary" (click)="fileInput.click()">Browse</button>
+      <p>Drag and drop a file here or</p>
+      <button mat-raised-button color="primary" (click)="singleFileInput.click()">Browse</button>
       <input
-        #fileInput
+        #singleFileInput
         type="file"
-        multiple
-        (change)="onFilesSelected($event)"
+        (change)="onFilesSelected($event, 'single')"
         style="display: none"
       />
     </div>
-  
+    <div class="uploaded-files" *ngIf="primaryFile">
+      <h4>Uploaded Primary File</h4>
+      <div class="file-card">
+        <mat-icon class="file-icon">insert_drive_file</mat-icon>
+        <p class="file-name">{{ primaryFile.name }}</p>
+        <div class="card-actions">
+          <button mat-icon-button class="download-btn" (click)="onDownload(primaryFile)">
+            <mat-icon>download</mat-icon>
+          </button>
+          <button mat-icon-button class="remove-btn" (click)="removePrimaryFile()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- Multiple File Uploader -->
+  <div class="file-uploader-container multiple-file-uploader">
+    <div *ngIf="ShowHeaderPanel" class="header-panel">
+      <h4>If you wish to provide additional information via an
+        attachment or include any additional documentation, please do so in this section:</h4>
+    </div>
+    <div 
+      *ngIf="!ReadOnly"
+      class="drop-zone"
+      [class.drag-over]="isDragOverMultiple"
+      (dragover)="onDragOver($event, 'multiple')"
+      (dragleave)="onDragLeave($event, 'multiple')"
+      (drop)="onDrop($event, 'multiple')"
+    >
+      <p>Drag and drop files here or</p>
+      <button mat-raised-button color="primary" (click)="multipleFileInput.click()">Browse</button>
+      <input
+        #multipleFileInput
+        type="file"
+        multiple
+        (change)="onFilesSelected($event, 'multiple')"
+        style="display: none"
+      />
+    </div>
     <div class="uploaded-files">
       <h4>Uploaded Files</h4>
       <div class="file-card" *ngFor="let file of uploadedFiles; let i = index">
@@ -30,11 +72,11 @@
           <button mat-icon-button class="download-btn" (click)="onDownload(file)">
             <mat-icon>download</mat-icon>
           </button>
-          <button mat-icon-button class="remove-btn" (click)="confirmFileRemoval(i)">
+          <button *ngIf="!ReadOnly" mat-icon-button class="remove-btn" (click)="confirmFileRemoval(i)">
             <mat-icon>close</mat-icon>
           </button>
         </div>
       </div>
     </div>
   </div>
-  
+</div>

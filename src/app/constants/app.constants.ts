@@ -20,6 +20,7 @@ export const AppConstants = {
       AINumber: 'AI Number',
       XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID : "8", // BY IRIS Report Schedule (By Chandrashekhar)
       XBRL_REPORTSCHEDULE_CATEGORYTYPE_ID : "10", // BY IRIS Report Schedule (By Chandrashekhar)
+      XBRLDocType: "xbrlDocType"
       // Add more keywords as needed
     },
     Session:{

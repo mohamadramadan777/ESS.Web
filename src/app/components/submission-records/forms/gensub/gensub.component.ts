@@ -32,6 +32,7 @@ export class GensubComponent {
   isSignOffRequired: boolean = false
   GENSUBDOCSIGNATORIES = "docSignatories";
   SubmitLabel = "Submit";
+  DocSignText = "";
 
   constructor(
     private client: Client,
@@ -79,21 +80,23 @@ export class GensubComponent {
 
   signOffRequired(): void {
     const objDocSignatoriesJson = sessionStorage.getItem(this.GENSUBDOCSIGNATORIES); // Check session storage
-    if(objDocSignatoriesJson){
-      const objDocSignatories = JSON.parse(objDocSignatoriesJson) as DocSignatories;
-      if(objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0){
-        this.isSignOffRequired = false;
-        this.SubmitLabel = "Submit";
-      }
-      else{
-        this.isSignOffRequired = true;
-      }
+    if(objDocSignatoriesJson && false){
+      // const objDocSignatories = JSON.parse(objDocSignatoriesJson) as DocSignatories;
+      // this.DocSignText = objDocSignatories.docSignText ?? "";
+      // if(objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0){
+      //   this.isSignOffRequired = false;
+      //   this.SubmitLabel = "Submit";
+      // }
+      // else{
+      //   this.isSignOffRequired = true;
+      // }
     }
     else{
       this.client.getDocSignatories(this.data.DocTypeId,"",Number(WObjects.GeneralSubmission)).subscribe({
        next: (response) => {
          if (response && response.isSuccess && response.response) {
            const objDocSignatories = response.response;
+           this.DocSignText = objDocSignatories.docSignText ?? "";
            sessionStorage.setItem(this.GENSUBDOCSIGNATORIES, JSON.stringify(objDocSignatories)); // Store in sessionStorage
            if(objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0){
              this.isSignOffRequired = false;

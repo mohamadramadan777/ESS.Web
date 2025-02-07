@@ -62,6 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
     this.loadingService.show();
+    this.getXbrlDoctypes();
     this.displayESSAnncouncement();
     this.getPendingForLoggedInUser();
     this.getGeneralCommunication();
@@ -74,6 +75,26 @@ export class HomeComponent implements OnInit, OnDestroy {
     //this.stopAutoSwitch();
   }
 
+  getXbrlDoctypes(): void{
+    const xbrlDocTypes = sessionStorage.getItem(AppConstants.Keywords.XBRLDocType); // Check session storage
+    if(!xbrlDocTypes){
+      this.client.getXbrlDocTypes(Number(AppConstants.Keywords.XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID)).subscribe({
+        next: (response) => {
+          if (response && response.isSuccess && response.response) {
+          sessionStorage.setItem(AppConstants.Keywords.XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID, JSON.stringify(response.response)); // Store in sessionStorage
+          } else {
+            this.toastr.error('Failed to load XbrlDocTypes.', 'Error');
+            console.error('Failed to load XbrlDocTypes:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.toastr.error('Error occurred while fetching XbrlDocTypes.', 'Error');
+          console.error('Error occurred while fetching XbrlDocTypes:', error);
+        },
+      });
+    }
+  }
+  
   // Notice Message
   showNoticeMessage: boolean = true;
   ESSAnnoucement: string = "";

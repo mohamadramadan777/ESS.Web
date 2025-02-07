@@ -1,101 +1,127 @@
-.file-uploader-container {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-
-    .header-panel {
+.file-uploader-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  
+    .separator {
+        width: 2px;
+        background-color: #ccc;
+        height: auto; /* Set auto to allow it to stretch based on parent content */
+        align-self: stretch; /* Ensures it takes the full height of the parent flex container */
+        margin: 0 10px; /* Space between the two sections */
+      }
+      
+  
+    .file-uploader-container {
+      flex: 1;
+      text-align: center;
+  
+      .header-panel {
         background-color: #f1f1f1;
         padding: 10px;
         border-radius: 5px;
         margin-bottom: 15px;
-    }
-
-    .drop-zone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 110px; /* Set an explicit height to make all headers uniform */
+  
+        h4 {
+          margin: 0;
+          font-size: 1.2rem;
+          font-size: small;
+          line-height: 14px;
+          text-align: left;
+        }
+      }
+  
+      .drop-zone {
         border: 2px dashed #a51e36;
         border-radius: 5px;
         padding: 20px;
         background-color: #fafafa;
         cursor: pointer;
         transition: background-color 0.3s;
-
+  
         &.drag-over {
-            background-color: #f7e4e9;
+          background-color: #f7e4e9;
         }
-
+  
         p {
-            margin: 0 0 10px;
-            font-size: 1rem;
-            color: #555555;
+          margin: 0 0 10px;
+          font-size: 1rem;
+          color: #555555;
         }
-
+  
         button {
-            font-size: 0.9rem;
-            background-color: #a51e36 !important;
+          font-size: 0.9rem;
+          background-color: #a51e36 !important;
         }
-    }
-
-    .uploaded-files {
+      }
+  
+      .uploaded-files {
         margin-top: 20px;
-
+  
         h4 {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+          margin-bottom: 10px;
+          font-size: 1.2rem;
         }
-
+  
         .file-card {
-            display: inline-block;
-            position: relative;
-            width: 120px;
-            height: 140px;
-            margin: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
-
-            &:hover {
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .file-icon {
-                height: 50px;
-                width: 50px;
-                font-size: 50px;
+          display: inline-block;
+          position: relative;
+          width: 120px;
+          height: 140px;
+          margin: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          background-color: #f9f9f9;
+          text-align: center;
+          padding: 10px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: box-shadow 0.3s ease;
+  
+          &:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          }
+  
+          .file-icon {
+            height: 50px;
+            width: 50px;
+            font-size: 50px;
+            color: #a51e36;
+            margin-bottom: 5px;
+          }
+  
+          .file-name {
+            font-size: 0.8rem;
+            word-wrap: break-word;
+          }
+  
+          .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+  
+            .download-btn {
+              color: #555555;
+  
+              &:hover {
                 color: #a51e36;
-                margin-bottom: 5px;
+              }
             }
-
-            .file-name {
-                font-size: 0.8rem;
-                word-wrap: break-word;
+  
+            .remove-btn {
+              color: #a51e36;
+              font-size: 12px;
+  
+              &:hover {
+                color: #861624;
+              }
             }
-
-            .card-actions {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 10px;
-
-                .download-btn {
-                    color: #555555;
-
-                    &:hover {
-                        color: #a51e36;
-                    }
-                }
-
-                .remove-btn {
-                    color: #a51e36;
-                    font-size: 12px;
-
-                    &:hover {
-                        color: #861624;
-                    }
-                }
-            }
+          }
         }
+      }
     }
-}
+  }
+  
