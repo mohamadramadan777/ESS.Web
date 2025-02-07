@@ -12,8 +12,8 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-
 import { API_BASE_URL } from './tokens';
+
 
 @Injectable()
 export class Client {
@@ -3749,6 +3749,687 @@ export class Client {
         }
         return _observableOf<Int32BaseResponse>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getReportSchItemDetails(body: ReportSchDetailsDto | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportSchItemDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportSchItemDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetReportSchItemDetails(response: HttpResponseBase): Observable<ReportSchDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param strQfcNumber (optional) 
+     * @return OK
+     */
+    getSubmissionDetailsForHomePage(strQfcNumber: string | undefined): Observable<ReportSchDetailsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-submission-details-for-home-page?";
+        if (strQfcNumber === null)
+            throw new Error("The parameter 'strQfcNumber' cannot be null.");
+        else if (strQfcNumber !== undefined)
+            url_ += "strQfcNumber=" + encodeURIComponent("" + strQfcNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSubmissionDetailsForHomePage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSubmissionDetailsForHomePage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetSubmissionDetailsForHomePage(response: HttpResponseBase): Observable<ReportSchDetailsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getFileUploadByUserDet(body: AttachmentDto | undefined): Observable<AttachmentDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-file-upload-by-user-det";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFileUploadByUserDet(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFileUploadByUserDet(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetFileUploadByUserDet(response: HttpResponseBase): Observable<AttachmentDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param qfcNum (optional) 
+     * @param firmTypeID (optional) 
+     * @return OK
+     */
+    getSefUsserDetails(qfcNum: string | undefined, firmTypeID: number | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-sef-usser-details?";
+        if (qfcNum === null)
+            throw new Error("The parameter 'qfcNum' cannot be null.");
+        else if (qfcNum !== undefined)
+            url_ += "qfcNum=" + encodeURIComponent("" + qfcNum) + "&";
+        if (firmTypeID === null)
+            throw new Error("The parameter 'firmTypeID' cannot be null.");
+        else if (firmTypeID !== undefined)
+            url_ += "firmTypeID=" + encodeURIComponent("" + firmTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSefUsserDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSefUsserDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetSefUsserDetails(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjTaskID (optional) 
+     * @param wObjectID (optional) 
+     * @param wObjInstanceID (optional) 
+     * @param wObjTaskSyncStatusTypeID (optional) 
+     * @param wObjectEventTypeID (optional) 
+     * @param dateCreated (optional) 
+     * @param userCreated (optional) 
+     * @param isFileStreamReq (optional) 
+     * @param isXBRL (optional) 
+     * @return OK
+     */
+    getReportSchDetails(wObjTaskID: number | undefined, wObjectID: number | undefined, wObjInstanceID: number | undefined, wObjTaskSyncStatusTypeID: number | undefined, wObjectEventTypeID: number | undefined, dateCreated: Date | undefined, userCreated: number | undefined, isFileStreamReq: boolean | undefined, isXBRL: boolean | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-details?";
+        if (wObjTaskID === null)
+            throw new Error("The parameter 'wObjTaskID' cannot be null.");
+        else if (wObjTaskID !== undefined)
+            url_ += "WObjTaskID=" + encodeURIComponent("" + wObjTaskID) + "&";
+        if (wObjectID === null)
+            throw new Error("The parameter 'wObjectID' cannot be null.");
+        else if (wObjectID !== undefined)
+            url_ += "WObjectID=" + encodeURIComponent("" + wObjectID) + "&";
+        if (wObjInstanceID === null)
+            throw new Error("The parameter 'wObjInstanceID' cannot be null.");
+        else if (wObjInstanceID !== undefined)
+            url_ += "WObjInstanceID=" + encodeURIComponent("" + wObjInstanceID) + "&";
+        if (wObjTaskSyncStatusTypeID === null)
+            throw new Error("The parameter 'wObjTaskSyncStatusTypeID' cannot be null.");
+        else if (wObjTaskSyncStatusTypeID !== undefined)
+            url_ += "WObjTaskSyncStatusTypeID=" + encodeURIComponent("" + wObjTaskSyncStatusTypeID) + "&";
+        if (wObjectEventTypeID === null)
+            throw new Error("The parameter 'wObjectEventTypeID' cannot be null.");
+        else if (wObjectEventTypeID !== undefined)
+            url_ += "WObjectEventTypeID=" + encodeURIComponent("" + wObjectEventTypeID) + "&";
+        if (dateCreated === null)
+            throw new Error("The parameter 'dateCreated' cannot be null.");
+        else if (dateCreated !== undefined)
+            url_ += "DateCreated=" + encodeURIComponent(dateCreated ? "" + dateCreated.toISOString() : "") + "&";
+        if (userCreated === null)
+            throw new Error("The parameter 'userCreated' cannot be null.");
+        else if (userCreated !== undefined)
+            url_ += "UserCreated=" + encodeURIComponent("" + userCreated) + "&";
+        if (isFileStreamReq === null)
+            throw new Error("The parameter 'isFileStreamReq' cannot be null.");
+        else if (isFileStreamReq !== undefined)
+            url_ += "isFileStreamReq=" + encodeURIComponent("" + isFileStreamReq) + "&";
+        if (isXBRL === null)
+            throw new Error("The parameter 'isXBRL' cannot be null.");
+        else if (isXBRL !== undefined)
+            url_ += "isXBRL=" + encodeURIComponent("" + isXBRL) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportSchDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportSchDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetReportSchDetails(response: HttpResponseBase): Observable<ReportSchDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param fileName (optional) 
+     * @param attachmentFilePath (optional) 
+     * @param isFileStreamReq (optional) 
+     * @param isXBRL (optional) 
+     * @return OK
+     */
+    getReportSchFileDetails(fileName: string | undefined, attachmentFilePath: string | undefined, isFileStreamReq: boolean | undefined, isXBRL: boolean | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-file-details?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (attachmentFilePath === null)
+            throw new Error("The parameter 'attachmentFilePath' cannot be null.");
+        else if (attachmentFilePath !== undefined)
+            url_ += "attachmentFilePath=" + encodeURIComponent("" + attachmentFilePath) + "&";
+        if (isFileStreamReq === null)
+            throw new Error("The parameter 'isFileStreamReq' cannot be null.");
+        else if (isFileStreamReq !== undefined)
+            url_ += "isFileStreamReq=" + encodeURIComponent("" + isFileStreamReq) + "&";
+        if (isXBRL === null)
+            throw new Error("The parameter 'isXBRL' cannot be null.");
+        else if (isXBRL !== undefined)
+            url_ += "isXBRL=" + encodeURIComponent("" + isXBRL) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportSchFileDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportSchFileDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetReportSchFileDetails(response: HttpResponseBase): Observable<ReportSchDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getReportSchDetailsSimple(body: ObjTasksDto | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-details-simple";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportSchDetailsSimple(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportSchDetailsSimple(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetReportSchDetailsSimple(response: HttpResponseBase): Observable<ReportSchDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjectID (optional) 
+     * @param wObjInstanceID (optional) 
+     * @return OK
+     */
+    getReportSchSignOffDetails(wObjectID: number | undefined, wObjInstanceID: number | undefined): Observable<ObjectSoTaskStatusDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-sign-off-details?";
+        if (wObjectID === null)
+            throw new Error("The parameter 'wObjectID' cannot be null.");
+        else if (wObjectID !== undefined)
+            url_ += "wObjectID=" + encodeURIComponent("" + wObjectID) + "&";
+        if (wObjInstanceID === null)
+            throw new Error("The parameter 'wObjInstanceID' cannot be null.");
+        else if (wObjInstanceID !== undefined)
+            url_ += "wObjInstanceID=" + encodeURIComponent("" + wObjInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReportSchSignOffDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReportSchSignOffDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectSoTaskStatusDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectSoTaskStatusDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetReportSchSignOffDetails(response: HttpResponseBase): Observable<ObjectSoTaskStatusDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectSoTaskStatusDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectSoTaskStatusDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param attachmentID (optional) 
+     * @return OK
+     */
+    updateItemAttachment(attachmentID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/update-item-attachment?";
+        if (attachmentID === null)
+            throw new Error("The parameter 'attachmentID' cannot be null.");
+        else if (attachmentID !== undefined)
+            url_ += "attachmentID=" + encodeURIComponent("" + attachmentID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateItemAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateItemAttachment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateItemAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateObjectAttachmentStatus(body: WobjectAttachmentStatusDto | undefined): Observable<WobjectAttachmentStatusDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-attachment-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateObjectAttachmentStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateObjectAttachmentStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WobjectAttachmentStatusDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WobjectAttachmentStatusDtoBaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateObjectAttachmentStatus(response: HttpResponseBase): Observable<WobjectAttachmentStatusDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WobjectAttachmentStatusDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WobjectAttachmentStatusDtoBaseResponse>(null as any);
+    }
+}
+
+export class AccessRequest implements IAccessRequest {
+    lstUserRoles?: string[] | undefined;
+    lstDocAccessRoles?: string[] | undefined;
+
+    constructor(data?: IAccessRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["lstUserRoles"])) {
+                this.lstUserRoles = [] as any;
+                for (let item of _data["lstUserRoles"])
+                    this.lstUserRoles!.push(item);
+            }
+            if (Array.isArray(_data["lstDocAccessRoles"])) {
+                this.lstDocAccessRoles = [] as any;
+                for (let item of _data["lstDocAccessRoles"])
+                    this.lstDocAccessRoles!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AccessRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccessRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.lstUserRoles)) {
+            data["lstUserRoles"] = [];
+            for (let item of this.lstUserRoles)
+                data["lstUserRoles"].push(item);
+        }
+        if (Array.isArray(this.lstDocAccessRoles)) {
+            data["lstDocAccessRoles"] = [];
+            for (let item of this.lstDocAccessRoles)
+                data["lstDocAccessRoles"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IAccessRequest {
+    lstUserRoles?: string[] | undefined;
+    lstDocAccessRoles?: string[] | undefined;
 }
 
 export class AccessRequest implements IAccessRequest {
@@ -7823,6 +8504,66 @@ export interface IObjTasks {
     userCreated?: number | undefined;
 }
 
+export class ObjTasksDto implements IObjTasksDto {
+    wObjTaskID?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjInstanceID?: number | undefined;
+    wObjTaskSyncStatusTypeID?: number | undefined;
+    wObjectEventTypeID?: number | undefined;
+    dateCreated?: Date | undefined;
+    userCreated?: number | undefined;
+
+    constructor(data?: IObjTasksDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjTaskID = _data["wObjTaskID"];
+            this.wObjectID = _data["wObjectID"];
+            this.wObjInstanceID = _data["wObjInstanceID"];
+            this.wObjTaskSyncStatusTypeID = _data["wObjTaskSyncStatusTypeID"];
+            this.wObjectEventTypeID = _data["wObjectEventTypeID"];
+            this.dateCreated = _data["dateCreated"] ? new Date(_data["dateCreated"].toString()) : <any>undefined;
+            this.userCreated = _data["userCreated"];
+        }
+    }
+
+    static fromJS(data: any): ObjTasksDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjTasksDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjTaskID"] = this.wObjTaskID;
+        data["wObjectID"] = this.wObjectID;
+        data["wObjInstanceID"] = this.wObjInstanceID;
+        data["wObjTaskSyncStatusTypeID"] = this.wObjTaskSyncStatusTypeID;
+        data["wObjectEventTypeID"] = this.wObjectEventTypeID;
+        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
+        data["userCreated"] = this.userCreated;
+        return data;
+    }
+}
+
+export interface IObjTasksDto {
+    wObjTaskID?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjInstanceID?: number | undefined;
+    wObjTaskSyncStatusTypeID?: number | undefined;
+    wObjectEventTypeID?: number | undefined;
+    dateCreated?: Date | undefined;
+    userCreated?: number | undefined;
+}
+
 export class ObjectSOStatusDto implements IObjectSOStatusDto {
     objectID?: number | undefined;
     objectInstanceID?: number | undefined;
@@ -8069,6 +8810,110 @@ export interface IObjectSOTaskStatusListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: ObjectSOTaskStatus[] | undefined;
+}
+
+export class ObjectSoTaskStatusDto implements IObjectSoTaskStatusDto {
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    soTaskSeqNo?: number | undefined;
+    soTaskCompletionDate?: string | undefined;
+
+    constructor(data?: IObjectSoTaskStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.individualName = _data["individualName"];
+            this.emailAdd = _data["emailAdd"];
+            this.soTaskSeqNo = _data["soTaskSeqNo"];
+            this.soTaskCompletionDate = _data["soTaskCompletionDate"];
+        }
+    }
+
+    static fromJS(data: any): ObjectSoTaskStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSoTaskStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["individualName"] = this.individualName;
+        data["emailAdd"] = this.emailAdd;
+        data["soTaskSeqNo"] = this.soTaskSeqNo;
+        data["soTaskCompletionDate"] = this.soTaskCompletionDate;
+        return data;
+    }
+}
+
+export interface IObjectSoTaskStatusDto {
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    soTaskSeqNo?: number | undefined;
+    soTaskCompletionDate?: string | undefined;
+}
+
+export class ObjectSoTaskStatusDtoListBaseResponse implements IObjectSoTaskStatusDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSoTaskStatusDto[] | undefined;
+
+    constructor(data?: IObjectSoTaskStatusDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjectSoTaskStatusDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectSoTaskStatusDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSoTaskStatusDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjectSoTaskStatusDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSoTaskStatusDto[] | undefined;
 }
 
 export class PendingItemsDto implements IPendingItemsDto {
@@ -8613,6 +9458,290 @@ export interface IReportSchDetails {
     submissionBeforeRptPeriodEnd?: boolean;
     resubmissionDueDate?: string | undefined;
     isAMLDocType?: boolean;
+}
+
+export class ReportSchDetailsDto implements IReportSchDetailsDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    userID?: number | undefined;
+    firmsRptSchID?: number | undefined;
+    rptSchAttachmentStatusId?: number | undefined;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    rptSchAttachmentStatusDesc?: string | undefined;
+    rptSubmissionTypeID?: number | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptSubmissionType?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    rptSchID?: number | undefined;
+    rptSchItemID?: number | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    fileName?: string | undefined;
+    attachmentFileURI?: string | undefined;
+    objectSOStatusID?: number | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    submittedOn?: string | undefined;
+    soStatusTypeDesc?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    soStatusTypeID?: number | undefined;
+    submittedBy?: number | undefined;
+    rptNextStatus?: string | undefined;
+    attachmentStatusTypeID?: number | undefined;
+    objectID?: number | undefined;
+    fileAttachedUserEmail?: string | undefined;
+    rptAttachmentStatusDate?: string | undefined;
+    fileStream?: string | undefined;
+
+    constructor(data?: IReportSchDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNum = _data["qfcNum"];
+            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
+            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.soCompletionDate = _data["soCompletionDate"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.docTypeID = _data["docTypeID"];
+            this.userID = _data["userID"];
+            this.firmsRptSchID = _data["firmsRptSchID"];
+            this.rptSchAttachmentStatusId = _data["rptSchAttachmentStatusId"];
+            this.rptName = _data["rptName"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.fileUploadedOnDate = _data["fileUploadedOnDate"];
+            this.rptSchAttachmentStatusDesc = _data["rptSchAttachmentStatusDesc"];
+            this.rptSubmissionTypeID = _data["rptSubmissionTypeID"];
+            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
+            this.rptSubmissionType = _data["rptSubmissionType"];
+            this.rptPeriodToDate = _data["rptPeriodToDate"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.rptSchID = _data["rptSchID"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.rptSchItemAttachmentID = _data["rptSchItemAttachmentID"];
+            this.fileName = _data["fileName"];
+            this.attachmentFileURI = _data["attachmentFileURI"];
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.fileUploadedByName = _data["fileUploadedByName"];
+            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
+            this.submittedOn = _data["submittedOn"];
+            this.soStatusTypeDesc = _data["soStatusTypeDesc"];
+            this.attachmentFilePath = _data["attachmentFilePath"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.submittedBy = _data["submittedBy"];
+            this.rptNextStatus = _data["rptNextStatus"];
+            this.attachmentStatusTypeID = _data["attachmentStatusTypeID"];
+            this.objectID = _data["objectID"];
+            this.fileAttachedUserEmail = _data["fileAttachedUserEmail"];
+            this.rptAttachmentStatusDate = _data["rptAttachmentStatusDate"];
+            this.fileStream = _data["fileStream"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNum"] = this.qfcNum;
+        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
+        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["soCompletionDate"] = this.soCompletionDate;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["docTypeID"] = this.docTypeID;
+        data["userID"] = this.userID;
+        data["firmsRptSchID"] = this.firmsRptSchID;
+        data["rptSchAttachmentStatusId"] = this.rptSchAttachmentStatusId;
+        data["rptName"] = this.rptName;
+        data["rptDueDate"] = this.rptDueDate;
+        data["fileUploadedOnDate"] = this.fileUploadedOnDate;
+        data["rptSchAttachmentStatusDesc"] = this.rptSchAttachmentStatusDesc;
+        data["rptSubmissionTypeID"] = this.rptSubmissionTypeID;
+        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
+        data["rptSubmissionType"] = this.rptSubmissionType;
+        data["rptPeriodToDate"] = this.rptPeriodToDate;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["rptSchID"] = this.rptSchID;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["rptSchItemAttachmentID"] = this.rptSchItemAttachmentID;
+        data["fileName"] = this.fileName;
+        data["attachmentFileURI"] = this.attachmentFileURI;
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["fileUploadedByName"] = this.fileUploadedByName;
+        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
+        data["submittedOn"] = this.submittedOn;
+        data["soStatusTypeDesc"] = this.soStatusTypeDesc;
+        data["attachmentFilePath"] = this.attachmentFilePath;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["submittedBy"] = this.submittedBy;
+        data["rptNextStatus"] = this.rptNextStatus;
+        data["attachmentStatusTypeID"] = this.attachmentStatusTypeID;
+        data["objectID"] = this.objectID;
+        data["fileAttachedUserEmail"] = this.fileAttachedUserEmail;
+        data["rptAttachmentStatusDate"] = this.rptAttachmentStatusDate;
+        data["fileStream"] = this.fileStream;
+        return data;
+    }
+}
+
+export interface IReportSchDetailsDto {
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    rptPeriodTypeDesc?: string | undefined;
+    docTypeID?: number | undefined;
+    userID?: number | undefined;
+    firmsRptSchID?: number | undefined;
+    rptSchAttachmentStatusId?: number | undefined;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    fileUploadedOnDate?: string | undefined;
+    rptSchAttachmentStatusDesc?: string | undefined;
+    rptSubmissionTypeID?: number | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptSubmissionType?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    rptSchID?: number | undefined;
+    rptSchItemID?: number | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    fileName?: string | undefined;
+    attachmentFileURI?: string | undefined;
+    objectSOStatusID?: number | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    submittedOn?: string | undefined;
+    soStatusTypeDesc?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    soStatusTypeID?: number | undefined;
+    submittedBy?: number | undefined;
+    rptNextStatus?: string | undefined;
+    attachmentStatusTypeID?: number | undefined;
+    objectID?: number | undefined;
+    fileAttachedUserEmail?: string | undefined;
+    rptAttachmentStatusDate?: string | undefined;
+    fileStream?: string | undefined;
+}
+
+export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetailsDto;
+
+    constructor(data?: IReportSchDetailsDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ReportSchDetailsDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ReportSchDetailsDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDetailsDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IReportSchDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetailsDto;
+}
+
+export class ReportSchDetailsDtoListBaseResponse implements IReportSchDetailsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetailsDto[] | undefined;
+
+    constructor(data?: IReportSchDetailsDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ReportSchDetailsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSchDetailsDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchDetailsDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSchDetailsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchDetailsDto[] | undefined;
 }
 
 export class ReportSchDetailsListBaseResponse implements IReportSchDetailsListBaseResponse {
@@ -11831,8 +12960,100 @@ export interface IWUserRoles {
     wObjectID?: number | undefined;
 }
 
+export class WobjectAttachmentStatusDto implements IWobjectAttachmentStatusDto {
+    wObjectAttachmentID?: number | undefined;
+    wObjAttachmentStatusTypeID?: number | undefined;
+    createdBy?: number | undefined;
+
+    constructor(data?: IWobjectAttachmentStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjectAttachmentID = _data["wObjectAttachmentID"];
+            this.wObjAttachmentStatusTypeID = _data["wObjAttachmentStatusTypeID"];
+            this.createdBy = _data["createdBy"];
+        }
+    }
+
+    static fromJS(data: any): WobjectAttachmentStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WobjectAttachmentStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjectAttachmentID"] = this.wObjectAttachmentID;
+        data["wObjAttachmentStatusTypeID"] = this.wObjAttachmentStatusTypeID;
+        data["createdBy"] = this.createdBy;
+        return data;
+    }
+}
+
+export interface IWobjectAttachmentStatusDto {
+    wObjectAttachmentID?: number | undefined;
+    wObjAttachmentStatusTypeID?: number | undefined;
+    createdBy?: number | undefined;
+}
+
+export class WobjectAttachmentStatusDtoBaseResponse implements IWobjectAttachmentStatusDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WobjectAttachmentStatusDto;
+
+    constructor(data?: IWobjectAttachmentStatusDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WobjectAttachmentStatusDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WobjectAttachmentStatusDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WobjectAttachmentStatusDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWobjectAttachmentStatusDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WobjectAttachmentStatusDto;
+}
+
 export class ApiException extends Error {
-    override message: string;
+   override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };
