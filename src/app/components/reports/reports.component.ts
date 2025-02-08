@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Client, ReportSchDetailsDtoListBaseResponse } from '../../services/api-client';
-
+import {
+  Client,
+  ReportSchDetailsDtoListBaseResponse,
+} from '../../services/api-client';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
+  styleUrls: ['./reports.component.scss'],
 })
 export class ReportsComponent implements OnInit {
   schedules: any[] = [];
@@ -42,16 +44,17 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
-      .subscribe(
-        (response: ReportSchDetailsDtoListBaseResponse) => {
-          if (response && response.response) {
-            this.reports = Array.isArray(response.response) ? response.response : [response.response];
-            this.extractFinancialYears(); // Populate dropdown after extracting years
-          }
-        },
-        (error) => console.error('Error fetching reports:', error)
-      );
+    this.Client.getSubmissionDetailsForHomePage(this.qfcNum).subscribe(
+      (response: ReportSchDetailsDtoListBaseResponse) => {
+        if (response && response.response) {
+          this.reports = Array.isArray(response.response)
+            ? response.response
+            : [response.response];
+          this.extractFinancialYears();
+        }
+      },
+      (error) => console.error('Error fetching reports:', error)
+    );
   }
 
   /**
@@ -59,18 +62,18 @@ export class ReportsComponent implements OnInit {
    */
   extractFinancialYears(): void {
     const uniqueYears = new Set();
-    this.reports.forEach(report => {
+    this.reports.forEach((report) => {
       if (report.rptSchFinYearFromDate && report.rptSchFinYearToDate) {
-        const yearRange = `${report.rptSchFinYearFromDate} to ${report.rptSchFinYearToDate}`;
+        const yearRange = `${report.rptSchFinYearFromDate} to ${report.rptSchFinYearFromDate}`;
         uniqueYears.add(yearRange);
       }
     });
-    
-    this.schedules = Array.from(uniqueYears).map(year => ({
+
+    this.schedules = Array.from(uniqueYears).map((year) => ({
       text: year,
-      value: year
+      value: year,
     }));
-    
+
     if (this.schedules.length > 0) {
       this.selectedSchedule = this.schedules[0];
       this.onScheduleChange();
@@ -82,43 +85,79 @@ export class ReportsComponent implements OnInit {
    */
   onScheduleChange(): void {
     if (!this.selectedSchedule) return;
-    
+
     const [fromDate, toDate] = this.selectedSchedule.value.split(' to ');
+
     this.filterReportsByYear(fromDate, toDate);
   }
 
   /**
-   * Filter reports based on the selected financial year.
+   * Filter reports based on the selected financial year and submission status.
    */
   filterReportsByYear(fromDate: string, toDate: string): void {
     const from = new Date(fromDate);
     const to = new Date(toDate);
-  
-    this.reportsToBeSubmitted = this.reports.filter(report => {
-      const periodFrom = new Date(report.rptPeriodFromDate);
-      const periodTo = new Date(report.rptPeriodToDate);
-      const submissionDate = new Date(report.submittedOn); // Ensure filtering includes submission date
-  
+
+    this.reportsToBeSubmitted = this.reports.filter((report) => {
+      const manuallyReceived = report.manuallyReceived === true;
+      const allowResubmit = report.allowReSubmit === false;
+      const isSubmitted = report.soStatusTypeID; // Adjust based on actual pending ID
+
       return (
-        periodFrom >= from &&
-        periodTo <= to &&
-        submissionDate <= to && // Ensure submission date is within the financial year
-        report.isReportDue
+        new Date(report.rptSchFinYearFromDate) <= to &&
+        new Date(report.rptSchFinYearToDate) >= from &&
+        !(manuallyReceived && allowResubmit) && // Equivalent of ASP.NET logic
+        !isSubmitted // Not submitted
       );
     });
-  
-    this.reportsSubmitted = this.reports.filter(report => {
-      const periodFrom = new Date(report.rptPeriodFromDate);
-      const periodTo = new Date(report.rptPeriodToDate);
-      const submissionDate = new Date(report.submittedOn);
-  
-      return (
-        periodFrom >= from &&
-        periodTo <= to &&
-        submissionDate <= to && // Ensure submission date is within the selected financial year
-        !report.isReportDue
-      );
-    });
+
+    this.reportsSubmitted = this.reports
+      .filter((report) => {
+        //const manuallyReceived = report.manuallyReceived === true;
+        //const allowResubmit = report.allowReSubmit === false; these need to be checked they are always null
+        const isSubmitted = report.soStatusTypeID === 2; // Adjust based on actual submitted ID
+        return (
+          new Date(report.rptSchFinYearFromDate) <= to &&
+          new Date(report.rptSchFinYearToDate) >= from &&
+          isSubmitted // Matches submission logic
+        );
+      })
+      .map((report) => {
+        // ✅ Add signedByMessage dynamically
+        const signedByMessage =
+          report.fileUploadedByName && report.rptAttachmentStatusDate
+            ? `Report signed by ${report.fileUploadedByName} on ${report.rptAttachmentStatusDate}`
+            : '';
+
+        return {
+          ...report,
+          signedByMessage,
+          showHistory: !!report.fileName, // Show history if a file is attached
+          showExcel:
+            report.attachmentStatusTypeID === 1 ||
+            report.attachmentStatusTypeID === 2,
+          showWarnings: report.attachmentStatusTypeID === 3,
+          showErrors: report.attachmentStatusTypeID === 4,
+          historyLink: report.fileName
+            ? `https://history.example.com/${report.rptSchItemID}`
+            : '',
+          excelLink:
+            report.attachmentStatusTypeID === 1 ||
+            report.attachmentStatusTypeID === 2
+              ? `https://excel.example.com/${report.rptSchItemID}`
+              : '',
+          warningsLink:
+            report.attachmentStatusTypeID === 3
+              ? `https://warnings.example.com/${report.rptSchItemID}`
+              : '',
+          errorsLink:
+            report.attachmentStatusTypeID === 4
+              ? `https://errors.example.com/${report.rptSchItemID}`
+              : '',
+        }; // Example logic for errors
+      });
   }
-  
+  attachFile() {}
+  submitReport() {}
+  signOff() {}
 }

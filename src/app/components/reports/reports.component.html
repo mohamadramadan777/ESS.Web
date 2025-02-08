@@ -9,50 +9,49 @@
       <option *ngFor="let schedule of schedules" [ngValue]="schedule">
         {{ schedule.text }}
       </option>
-   </select>
-   
+    </select>
   </div>
 
-  <mat-tab-group class="custom-tab-group" [backgroundColor]="">
+  <mat-tab-group class="custom-tab-group">
     <!-- Reports to be Submitted -->
     <mat-tab label="Reports to be Submitted">
       <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-          <p class="due-date">
-            <strong>Due Date:</strong> {{ report.rptDueDate }}
-          </p>
+          <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
         </div>
         <table>
           <tr>
             <td style="width: 90%">
-              <p>
-                <span class="label">Submission Type:</span>
-                {{ report.rptSubmissionType }}
-              </p>
+              <p><span class="label">Submission Type:</span> {{ report.rptSubmissionType }}</p>
+              
               <p *ngIf="report.fileName">
                 <span class="label">Attached File:</span>
-                <a [href]="report.attachmentFileURI">{{ report.fileName }}</a>
+                <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
               </p>
-              <p *ngIf="!report.fileName" class="warning">
-                No file attached yet.
-              </p>
-              <p>
-                <span class="label">Report to be Signed by:</span>
-                {{ report.soStatusTypeDesc }}
-              </p>
+              <p *ngIf="!report.fileName" class="warning">No file attached yet.</p>
+
+              <p><span class="label">Report to be Signed by:</span> {{ report.soStatusTypeDesc }}</p>
             </td>
             <td style="width: 10%; text-align: right">
               <div class="button-group">
-                <button mat-raised-button class="attach-button">
+                <button mat-raised-button class="attach-button" (click)="attachFile()">
                   Attach File
                 </button>
-                <button
-                  mat-raised-button
-                  class="signoff-button"
-                  [disabled]="!report.fileName"
-                  (click)="(report)"
-                >
+
+                <button 
+                  mat-raised-button 
+                  class="submit-button" 
+                  *ngIf="report.fileName" 
+                  (click)="submitReport()">
+                  Submit
+                </button>
+
+                <button 
+                  mat-raised-button 
+                  class="signoff-button" 
+                  [disabled]="!report.fileName" 
+                  (click)="signOff()">
                   Sign off
                 </button>
               </div>
@@ -67,21 +66,32 @@
       <div *ngFor="let report of reportsSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-          <p class="due-date">
-            <strong>Submission Date:</strong> {{ report.submittedOn }}
-          </p>
+          <p class="due-date"><strong>Submission Date:</strong> {{ report.submittedOn }}</p>
         </div>
-        <p>
-          <span class="label">Attached File:</span>
-          <a [href]="report.attachmentFileURI">{{ report.fileName }}</a>
-        </p>
-        <p>
-          <span class="label">Signed by:</span> {{ report.soStatusTypeDesc }}
-        </p>
-        <p>
-          <span class="label">Links:</span>
-          <a href="#" class="history-link">History</a>
-        </p>
+
+        <p><span class="label">Attached File:</span> <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a></p>
+        <p><span class="label">Signed by:</span> {{ report.signedByMessage }}</p>
+
+       <!-- Conditional Links -->
+    <p *ngIf="report.showHistory">
+      <span class="label">Links:</span>
+      <a [href]="report.historyLink" target="_blank" class="history-link">History</a>
+    </p>
+
+    <p *ngIf="report.showExcel">
+      <span class="label">Links:</span>
+      <a [href]="report.excelLink" target="_blank" class="excel-link">View in Excel</a>
+    </p>
+
+    <p *ngIf="report.showWarnings">
+      <span class="label">Links:</span>
+      <a [href]="report.warningsLink" target="_blank" class="warnings-link">Warnings</a>
+    </p>
+
+    <p *ngIf="report.showErrors">
+      <span class="label">Links:</span>
+      <a [href]="report.errorsLink" target="_blank" class="errors-link">Errors</a>
+    </p>
       </div>
     </mat-tab>
   </mat-tab-group>
