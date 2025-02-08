@@ -20,7 +20,17 @@ export const AppConstants = {
       AINumber: 'AI Number',
       XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID : "8", // BY IRIS Report Schedule (By Chandrashekhar)
       XBRL_REPORTSCHEDULE_CATEGORYTYPE_ID : "10", // BY IRIS Report Schedule (By Chandrashekhar)
-      XBRLDocType: "xbrlDocType"
+      XBRLDocType: "xbrlDocType",
+      DATE_TIME_STAMP_FORMAT: "dd/MM/yyyy HH:mm:ss",
+      BLANKSPACE: " ",
+      CHAR_UNDERSCORE: "_",
+      SLASH_FORWORD: "/",
+      CHAR_COLON: ":",
+      NOSPACE: "",
+      SINGLE_QUOTE: "'",
+      COMMA: ",",
+      CHAR_COMMA: ",",
+      EMAIL_FORM_TYPE_DESC: "##FormTypeDesc##"
       // Add more keywords as needed
     },
     Session:{

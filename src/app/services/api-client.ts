@@ -14,7 +14,6 @@ import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
 
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -731,57 +730,6 @@ export class Client {
     }
 
     /**
-     * @return OK
-     */
-    getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-item-for-logged-in-user";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPendingItemForLoggedInUser(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetPendingItemForLoggedInUser(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<UserPendingItemsListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<UserPendingItemsListBaseResponse>;
-        }));
-    }
-
-    protected processGetPendingItemForLoggedInUser(response: HttpResponseBase): Observable<UserPendingItemsListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<UserPendingItemsListBaseResponse>(null as any);
-    }
-
-    /**
      * @param firmType (optional) 
      * @return OK
      */
@@ -886,6 +834,854 @@ export class Client {
             }));
         }
         return _observableOf<ReportSchDetailsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getIndividualListForFirm(): Observable<WAccessRequestsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-individual-list-for-firm";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndividualListForFirm(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndividualListForFirm(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
+        }));
+    }
+
+    protected processGetIndividualListForFirm(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param senEmailOnUpdate (optional) 
+     * @param objectID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    saveWaccessRequestDetails(senEmailOnUpdate: boolean | undefined, objectID: number | undefined, body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/save-waccess-request-details?";
+        if (senEmailOnUpdate === null)
+            throw new Error("The parameter 'senEmailOnUpdate' cannot be null.");
+        else if (senEmailOnUpdate !== undefined)
+            url_ += "senEmailOnUpdate=" + encodeURIComponent("" + senEmailOnUpdate) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSaveWaccessRequestDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSaveWaccessRequestDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processSaveWaccessRequestDetails(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectID (optional) 
+     * @param objectInstanceID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    sendEmailToWebsiteUser(objectID: number | undefined, objectInstanceID: number | undefined, body: WAccessRequests | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/send-email-to-website-user?";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendEmailToWebsiteUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendEmailToWebsiteUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processSendEmailToWebsiteUser(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param wRoleIds (optional) 
+     * @return OK
+     */
+    deactivateWuser(wRoleIds: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/deactivate-wuser?";
+        if (wRoleIds === null)
+            throw new Error("The parameter 'wRoleIds' cannot be null.");
+        else if (wRoleIds !== undefined)
+            url_ += "wRoleIds=" + encodeURIComponent("" + wRoleIds) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeactivateWuser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeactivateWuser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeactivateWuser(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    deleteIndividualDetailsPOST(): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/delete-individual-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteIndividualDetailsPOST(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteIndividualDetailsPOST(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteIndividualDetailsPOST(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    deleteIndividualDetailsGET(): Observable<StringStringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/delete-individual-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteIndividualDetailsGET(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteIndividualDetailsGET(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processDeleteIndividualDetailsGET(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    checkAccountExists(body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckAccountExists(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckAccountExists(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processCheckAccountExists(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateUserRoles(body: WAccessRequests | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-user-roles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUserRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUserRoles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateUserRoles(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    deactivateUserRoles(body: WAccessRequests | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/deactivate-user-roles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeactivateUserRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeactivateUserRoles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeactivateUserRoles(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param contactID (optional) 
+     * @param contactAssnID (optional) 
+     * @param isESSAccessRequest (optional) 
+     * @return OK
+     */
+    updateContactIsEssAccess(contactID: number | undefined, contactAssnID: number | undefined, isESSAccessRequest: boolean | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-contact-is-ess-access?";
+        if (contactID === null)
+            throw new Error("The parameter 'contactID' cannot be null.");
+        else if (contactID !== undefined)
+            url_ += "contactID=" + encodeURIComponent("" + contactID) + "&";
+        if (contactAssnID === null)
+            throw new Error("The parameter 'contactAssnID' cannot be null.");
+        else if (contactAssnID !== undefined)
+            url_ += "contactAssnID=" + encodeURIComponent("" + contactAssnID) + "&";
+        if (isESSAccessRequest === null)
+            throw new Error("The parameter 'isESSAccessRequest' cannot be null.");
+        else if (isESSAccessRequest !== undefined)
+            url_ += "isESSAccessRequest=" + encodeURIComponent("" + isESSAccessRequest) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateContactIsEssAccess(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateContactIsEssAccess(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateContactIsEssAccess(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    checkUserActive(): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-user-active";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckUserActive(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckUserActive(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckUserActive(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUserRoleDetail(body: WAccessRequests | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/insert-user-role-detail";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUserRoleDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUserRoleDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processInsertUserRoleDetail(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    activateUserRoles(body: WAccessRequests | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-roles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivateUserRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivateUserRoles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processActivateUserRoles(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    checkAccountExistsById(body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists-by-id";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckAccountExistsById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckAccountExistsById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processCheckAccountExistsById(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param contactID (optional) 
+     * @param contactAssnID (optional) 
+     * @param isESSAccessRequest (optional) 
+     * @return OK
+     */
+    getXmlDocument(contactID: number | undefined, contactAssnID: number | undefined, isESSAccessRequest: boolean | undefined): Observable<XmlDocumentBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-xml-document?";
+        if (contactID === null)
+            throw new Error("The parameter 'contactID' cannot be null.");
+        else if (contactID !== undefined)
+            url_ += "contactID=" + encodeURIComponent("" + contactID) + "&";
+        if (contactAssnID === null)
+            throw new Error("The parameter 'contactAssnID' cannot be null.");
+        else if (contactAssnID !== undefined)
+            url_ += "contactAssnID=" + encodeURIComponent("" + contactAssnID) + "&";
+        if (isESSAccessRequest === null)
+            throw new Error("The parameter 'isESSAccessRequest' cannot be null.");
+        else if (isESSAccessRequest !== undefined)
+            url_ += "isESSAccessRequest=" + encodeURIComponent("" + isESSAccessRequest) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetXmlDocument(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetXmlDocument(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<XmlDocumentBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<XmlDocumentBaseResponse>;
+        }));
+    }
+
+    protected processGetXmlDocument(response: HttpResponseBase): Observable<XmlDocumentBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = XmlDocumentBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<XmlDocumentBaseResponse>(null as any);
     }
 
     /**
@@ -1378,6 +2174,1521 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
+    checkWappAccessRequestDetails(body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-wapp-access-request-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckWappAccessRequestDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckWappAccessRequestDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processCheckWappAccessRequestDetails(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    checkWuserDetails(body: WUsers | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-wuser-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckWuserDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckWuserDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processCheckWuserDetails(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wUserLoginID (optional) 
+     * @param sessionEndTimeFlag (optional) 
+     * @param sessionTimeOutFlag (optional) 
+     * @return OK
+     */
+    updateUserLoginDetails(wUserLoginID: number | undefined, sessionEndTimeFlag: boolean | undefined, sessionTimeOutFlag: boolean | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-user-login-details?";
+        if (wUserLoginID === null)
+            throw new Error("The parameter 'wUserLoginID' cannot be null.");
+        else if (wUserLoginID !== undefined)
+            url_ += "wUserLoginID=" + encodeURIComponent("" + wUserLoginID) + "&";
+        if (sessionEndTimeFlag === null)
+            throw new Error("The parameter 'sessionEndTimeFlag' cannot be null.");
+        else if (sessionEndTimeFlag !== undefined)
+            url_ += "sessionEndTimeFlag=" + encodeURIComponent("" + sessionEndTimeFlag) + "&";
+        if (sessionTimeOutFlag === null)
+            throw new Error("The parameter 'sessionTimeOutFlag' cannot be null.");
+        else if (sessionTimeOutFlag !== undefined)
+            url_ += "sessionTimeOutFlag=" + encodeURIComponent("" + sessionTimeOutFlag) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUserLoginDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUserLoginDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateUserLoginDetails(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param wAccessRequestID (optional) 
+     * @return OK
+     */
+    getWaccessRequestDetails(wAccessRequestID: number | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-waccess-request-details?";
+        if (wAccessRequestID === null)
+            throw new Error("The parameter 'wAccessRequestID' cannot be null.");
+        else if (wAccessRequestID !== undefined)
+            url_ += "wAccessRequestID=" + encodeURIComponent("" + wAccessRequestID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWaccessRequestDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWaccessRequestDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processGetWaccessRequestDetails(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    checkUserAnswerForResetPassword(body: UserQuestionAnswers | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-user-answer-for-reset-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckUserAnswerForResetPassword(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckUserAnswerForResetPassword(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckUserAnswerForResetPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    resetsPassword(body: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/resets-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processResetsPassword(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processResetsPassword(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processResetsPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wAccessRequestID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    checkOldPassword(wAccessRequestID: number | undefined, body: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-old-password?";
+        if (wAccessRequestID === null)
+            throw new Error("The parameter 'wAccessRequestID' cannot be null.");
+        else if (wAccessRequestID !== undefined)
+            url_ += "wAccessRequestID=" + encodeURIComponent("" + wAccessRequestID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckOldPassword(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckOldPassword(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckOldPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param roleId (optional) 
+     * @return OK
+     */
+    getUserDetailByRole(roleId: number | undefined): Observable<WUsersDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-detail-by-role?";
+        if (roleId === null)
+            throw new Error("The parameter 'roleId' cannot be null.");
+        else if (roleId !== undefined)
+            url_ += "roleId=" + encodeURIComponent("" + roleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserDetailByRole(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserDetailByRole(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WUsersDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WUsersDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetUserDetailByRole(response: HttpResponseBase): Observable<WUsersDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WUsersDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WUsersDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param roleId (optional) 
+     * @return OK
+     */
+    activateUserByRole(roleId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-by-role?";
+        if (roleId === null)
+            throw new Error("The parameter 'roleId' cannot be null.");
+        else if (roleId !== undefined)
+            url_ += "roleId=" + encodeURIComponent("" + roleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivateUserByRole(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivateUserByRole(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processActivateUserByRole(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wUserLoginID (optional) 
+     * @return OK
+     */
+    isSessionTerminated(wUserLoginID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/is-session-terminated?";
+        if (wUserLoginID === null)
+            throw new Error("The parameter 'wUserLoginID' cannot be null.");
+        else if (wUserLoginID !== undefined)
+            url_ += "wUserLoginID=" + encodeURIComponent("" + wUserLoginID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsSessionTerminated(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsSessionTerminated(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processIsSessionTerminated(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param sessionID (optional) 
+     * @return OK
+     */
+    isSessionActive(sessionID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/is-session-active?";
+        if (sessionID === null)
+            throw new Error("The parameter 'sessionID' cannot be null.");
+        else if (sessionID !== undefined)
+            url_ += "sessionID=" + encodeURIComponent("" + sessionID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsSessionActive(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsSessionActive(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processIsSessionActive(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    isUserRegistered(body: WUsers | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/is-user-registered";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsUserRegistered(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsUserRegistered(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processIsUserRegistered(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param emailAddress (optional) 
+     * @param iPaddress (optional) 
+     * @param requestToken (optional) 
+     * @return OK
+     */
+    insertResetPasswordAudit(emailAddress: string | undefined, iPaddress: string | undefined, requestToken: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/insert-reset-password-audit?";
+        if (emailAddress === null)
+            throw new Error("The parameter 'emailAddress' cannot be null.");
+        else if (emailAddress !== undefined)
+            url_ += "emailAddress=" + encodeURIComponent("" + emailAddress) + "&";
+        if (iPaddress === null)
+            throw new Error("The parameter 'iPaddress' cannot be null.");
+        else if (iPaddress !== undefined)
+            url_ += "IPaddress=" + encodeURIComponent("" + iPaddress) + "&";
+        if (requestToken === null)
+            throw new Error("The parameter 'requestToken' cannot be null.");
+        else if (requestToken !== undefined)
+            url_ += "requestToken=" + encodeURIComponent("" + requestToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertResetPasswordAudit(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertResetPasswordAudit(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processInsertResetPasswordAudit(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param emailAddress (optional) 
+     * @param requestToken (optional) 
+     * @return OK
+     */
+    checkResetPasswordToken(emailAddress: string | undefined, requestToken: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-reset-password-token?";
+        if (emailAddress === null)
+            throw new Error("The parameter 'emailAddress' cannot be null.");
+        else if (emailAddress !== undefined)
+            url_ += "emailAddress=" + encodeURIComponent("" + emailAddress) + "&";
+        if (requestToken === null)
+            throw new Error("The parameter 'requestToken' cannot be null.");
+        else if (requestToken !== undefined)
+            url_ += "requestToken=" + encodeURIComponent("" + requestToken) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckResetPasswordToken(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckResetPasswordToken(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckResetPasswordToken(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getUsersNotLoggedInToSystem(): Observable<WUserLoginsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-users-not-logged-in-to-system";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUsersNotLoggedInToSystem(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUsersNotLoggedInToSystem(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WUserLoginsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WUserLoginsListBaseResponse>;
+        }));
+    }
+
+    protected processGetUsersNotLoggedInToSystem(response: HttpResponseBase): Observable<WUserLoginsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WUserLoginsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WUserLoginsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getEmailAddress(): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-email-address";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEmailAddress(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEmailAddress(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetEmailAddress(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPendingItemForLoggedInUser(): Observable<UserPendingItemsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-item-for-logged-in-User";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingItemForLoggedInUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingItemForLoggedInUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserPendingItemsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserPendingItemsListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingItemForLoggedInUser(response: HttpResponseBase): Observable<UserPendingItemsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserPendingItemsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserPendingItemsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    initiateSignOffTask(body: SignOffDetails | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/initiate-sign-off-task";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInitiateSignOffTask(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInitiateSignOffTask(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processInitiateSignOffTask(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param userName (optional) 
+     * @param password (optional) 
+     * @return OK
+     */
+    validateSignOffLogin(userName: string | undefined, password: string | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/validate-sign-off-login?";
+        if (userName === null)
+            throw new Error("The parameter 'userName' cannot be null.");
+        else if (userName !== undefined)
+            url_ += "userName=" + encodeURIComponent("" + userName) + "&";
+        if (password === null)
+            throw new Error("The parameter 'password' cannot be null.");
+        else if (password !== undefined)
+            url_ += "password=" + encodeURIComponent("" + password) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processValidateSignOffLogin(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processValidateSignOffLogin(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processValidateSignOffLogin(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateSignOffTask(body: SignOffDetails | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-sign-off-task";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateSignOffTask(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateSignOffTask(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateSignOffTask(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectSOStatusID (optional) 
+     * @return OK
+     */
+    finishSignOffTask(objectSOStatusID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/finish-sign-off-task?";
+        if (objectSOStatusID === null)
+            throw new Error("The parameter 'objectSOStatusID' cannot be null.");
+        else if (objectSOStatusID !== undefined)
+            url_ += "objectSOStatusID=" + encodeURIComponent("" + objectSOStatusID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processFinishSignOffTask(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processFinishSignOffTask(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processFinishSignOffTask(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateObjectSoTaskStatus(body: ObjectSOTaskStatusDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/insert-update-object-so-task-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateObjectSoTaskStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateObjectSoTaskStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateObjectSoTaskStatus(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    invalidateObjSoTaskstatus(body: ObjectSOTaskStatusDto | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/invalidate-obj-so-taskstatus";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInvalidateObjSoTaskstatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInvalidateObjSoTaskstatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processInvalidateObjSoTaskstatus(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getEssFirms(): Observable<FirmDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-ess-firms";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEssFirms(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEssFirms(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FirmDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FirmDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetEssFirms(response: HttpResponseBase): Observable<FirmDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FirmDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FirmDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateWfirmStatus(body: FirmDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AdminRequest/update-wfirm-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateWfirmStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateWfirmStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateWfirmStatus(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getAdminUserList(body: WAdminAccessRequestsDto | undefined): Observable<WUsersDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-admin-user-list";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAdminUserList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAdminUserList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WUsersDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WUsersDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetAdminUserList(response: HttpResponseBase): Observable<WUsersDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WUsersDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WUsersDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationId (optional) 
+     * @return OK
+     */
+    deleteApplication(applicationId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AiApplication/delete-application?";
+        if (applicationId === null)
+            throw new Error("The parameter 'applicationId' cannot be null.");
+        else if (applicationId !== undefined)
+            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteApplication(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteApplication(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
     insertUpdateApplicationData(body: ApplicationDataDto | undefined): Observable<Int32BaseResponse> {
         let url_ = this.baseUrl + "/api/AIApplications/insert-update-application-data";
         url_ = url_.replace(/[?&]$/, "");
@@ -1616,6 +3927,240 @@ export class Client {
             }));
         }
         return _observableOf<IndividualDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationID (optional) 
+     * @return OK
+     */
+    getIndividualDetails(applicationID: number | undefined): Observable<IndividualDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-individual-details?";
+        if (applicationID === null)
+            throw new Error("The parameter 'applicationID' cannot be null.");
+        else if (applicationID !== undefined)
+            url_ += "ApplicationID=" + encodeURIComponent("" + applicationID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndividualDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndividualDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<IndividualDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<IndividualDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetIndividualDetails(response: HttpResponseBase): Observable<IndividualDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = IndividualDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<IndividualDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param allAIs (optional) 
+     * @param applicationId (optional) 
+     * @param qfcNumebr (optional) 
+     * @return OK
+     */
+    getOpenAis(allAIs: string | undefined, applicationId: number | undefined, qfcNumebr: number | undefined): Observable<IndividualDetailsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-open-ais?";
+        if (allAIs === null)
+            throw new Error("The parameter 'allAIs' cannot be null.");
+        else if (allAIs !== undefined)
+            url_ += "allAIs=" + encodeURIComponent("" + allAIs) + "&";
+        if (applicationId === null)
+            throw new Error("The parameter 'applicationId' cannot be null.");
+        else if (applicationId !== undefined)
+            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
+        if (qfcNumebr === null)
+            throw new Error("The parameter 'qfcNumebr' cannot be null.");
+        else if (qfcNumebr !== undefined)
+            url_ += "qfcNumebr=" + encodeURIComponent("" + qfcNumebr) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetOpenAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetOpenAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<IndividualDetailsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<IndividualDetailsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetOpenAis(response: HttpResponseBase): Observable<IndividualDetailsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = IndividualDetailsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<IndividualDetailsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationID (optional) 
+     * @return OK
+     */
+    getControlledFunctions(applicationID: number | undefined): Observable<ControlledFunctionDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-controlled-functions?";
+        if (applicationID === null)
+            throw new Error("The parameter 'applicationID' cannot be null.");
+        else if (applicationID !== undefined)
+            url_ += "ApplicationID=" + encodeURIComponent("" + applicationID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetControlledFunctions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetControlledFunctions(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ControlledFunctionDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ControlledFunctionDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetControlledFunctions(response: HttpResponseBase): Observable<ControlledFunctionDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ControlledFunctionDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ControlledFunctionDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationID (optional) 
+     * @return OK
+     */
+    getFunctionActivity(applicationID: number | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/get-function-activity?";
+        if (applicationID === null)
+            throw new Error("The parameter 'applicationID' cannot be null.");
+        else if (applicationID !== undefined)
+            url_ += "ApplicationID=" + encodeURIComponent("" + applicationID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFunctionActivity(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFunctionActivity(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetFunctionActivity(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
     }
 
     /**
@@ -2438,31 +4983,34 @@ export class Client {
     }
 
     /**
-     * @param fileLocation (optional) 
+     * @param file (optional) 
+     * @param fileLoction (optional) 
      * @param pFileName (optional) 
-     * @param body (optional) 
      * @return OK
      */
-    uploadToFolder(fileLocation: string | undefined, pFileName: string | undefined, body: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder?";
-        if (fileLocation === null)
-            throw new Error("The parameter 'fileLocation' cannot be null.");
-        else if (fileLocation !== undefined)
-            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
-        if (pFileName === null)
-            throw new Error("The parameter 'pFileName' cannot be null.");
-        else if (pFileName !== undefined)
-            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+    uploadToFolder(file: FileParameter | undefined, fileLoction: string | undefined, pFileName: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+        if (fileLoction === null || fileLoction === undefined)
+            throw new Error("The parameter 'fileLoction' cannot be null.");
+        else
+            content_.append("FileLoction", fileLoction.toString());
+        if (pFileName === null || pFileName === undefined)
+            throw new Error("The parameter 'pFileName' cannot be null.");
+        else
+            content_.append("pFileName", pFileName.toString());
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -2508,7 +5056,7 @@ export class Client {
      * @param fileLocation (optional) 
      * @return OK
      */
-    downloadFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<ByteArrayBaseResponse> {
+    downloadFile(pFileName: string | undefined, fileLocation: string | undefined): Observable<void> {
         let url_ = this.baseUrl + "/api/Attachments/download-file?";
         if (pFileName === null)
             throw new Error("The parameter 'pFileName' cannot be null.");
@@ -2517,14 +5065,13 @@ export class Client {
         if (fileLocation === null)
             throw new Error("The parameter 'fileLocation' cannot be null.");
         else if (fileLocation !== undefined)
-            url_ += "FileLocation=" + encodeURIComponent("" + fileLocation) + "&";
+            url_ += "fileLocation=" + encodeURIComponent("" + fileLocation) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Accept": "text/plain"
             })
         };
 
@@ -2535,14 +5082,14 @@ export class Client {
                 try {
                     return this.processDownloadFile(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ByteArrayBaseResponse>;
+                    return _observableThrow(e) as any as Observable<void>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ByteArrayBaseResponse>;
+                return _observableThrow(response_) as any as Observable<void>;
         }));
     }
 
-    protected processDownloadFile(response: HttpResponseBase): Observable<ByteArrayBaseResponse> {
+    protected processDownloadFile(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2551,17 +5098,14 @@ export class Client {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ByteArrayBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
+            return _observableOf<void>(null as any);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ByteArrayBaseResponse>(null as any);
+        return _observableOf<void>(null as any);
     }
 
     /**
@@ -2674,6 +5218,310 @@ export class Client {
             }));
         }
         return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectID (optional) 
+     * @param objectInstanceID (optional) 
+     * @param docTypeID (optional) 
+     * @return OK
+     */
+    getFileLocation(objectID: number | undefined, objectInstanceID: number | undefined, docTypeID: number | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-file-location?";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFileLocation(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFileLocation(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetFileLocation(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param formTypeID (optional) 
+     * @param docTypeID (optional) 
+     * @param docType (optional) 
+     * @param primaryDocStatusTypeID (optional) 
+     * @param pFilePath (optional) 
+     * @param pFileName (optional) 
+     * @param pFileURI (optional) 
+     * @param objectInstanceID (optional) 
+     * @param objectID (optional) 
+     * @param primaryDocWObjAttachementID (optional) 
+     * @param objectInstanceRevNum (optional) 
+     * @return OK
+     */
+    savePrimaryDocument(formTypeID: number | undefined, docTypeID: number | undefined, docType: boolean | undefined, primaryDocStatusTypeID: number | undefined, pFilePath: string | undefined, pFileName: string | undefined, pFileURI: string | undefined, objectInstanceID: number | undefined, objectID: number | undefined, primaryDocWObjAttachementID: number | undefined, objectInstanceRevNum: number | undefined): Observable<SavePrimaryDocumentResponseBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/save-primary-document?";
+        if (formTypeID === null)
+            throw new Error("The parameter 'formTypeID' cannot be null.");
+        else if (formTypeID !== undefined)
+            url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (docType === null)
+            throw new Error("The parameter 'docType' cannot be null.");
+        else if (docType !== undefined)
+            url_ += "DocType=" + encodeURIComponent("" + docType) + "&";
+        if (primaryDocStatusTypeID === null)
+            throw new Error("The parameter 'primaryDocStatusTypeID' cannot be null.");
+        else if (primaryDocStatusTypeID !== undefined)
+            url_ += "primaryDocStatusTypeID=" + encodeURIComponent("" + primaryDocStatusTypeID) + "&";
+        if (pFilePath === null)
+            throw new Error("The parameter 'pFilePath' cannot be null.");
+        else if (pFilePath !== undefined)
+            url_ += "pFilePath=" + encodeURIComponent("" + pFilePath) + "&";
+        if (pFileName === null)
+            throw new Error("The parameter 'pFileName' cannot be null.");
+        else if (pFileName !== undefined)
+            url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+        if (pFileURI === null)
+            throw new Error("The parameter 'pFileURI' cannot be null.");
+        else if (pFileURI !== undefined)
+            url_ += "pFileURI=" + encodeURIComponent("" + pFileURI) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (primaryDocWObjAttachementID === null)
+            throw new Error("The parameter 'primaryDocWObjAttachementID' cannot be null.");
+        else if (primaryDocWObjAttachementID !== undefined)
+            url_ += "primaryDocWObjAttachementID=" + encodeURIComponent("" + primaryDocWObjAttachementID) + "&";
+        if (objectInstanceRevNum === null)
+            throw new Error("The parameter 'objectInstanceRevNum' cannot be null.");
+        else if (objectInstanceRevNum !== undefined)
+            url_ += "objectInstanceRevNum=" + encodeURIComponent("" + objectInstanceRevNum) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSavePrimaryDocument(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSavePrimaryDocument(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
+        }));
+    }
+
+    protected processSavePrimaryDocument(response: HttpResponseBase): Observable<SavePrimaryDocumentResponseBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SavePrimaryDocumentResponseBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SavePrimaryDocumentResponseBaseResponse>(null as any);
+    }
+
+    /**
+     * @param formType (optional) 
+     * @param objectId (optional) 
+     * @return OK
+     */
+    getDocSubTypes(formType: number | undefined, objectId: string | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-doc-sub-types?";
+        if (formType === null)
+            throw new Error("The parameter 'formType' cannot be null.");
+        else if (formType !== undefined)
+            url_ += "formType=" + encodeURIComponent("" + formType) + "&";
+        if (objectId === null)
+            throw new Error("The parameter 'objectId' cannot be null.");
+        else if (objectId !== undefined)
+            url_ += "ObjectId=" + encodeURIComponent("" + objectId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocSubTypes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocSubTypes(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetDocSubTypes(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjAttachementID (optional) 
+     * @param fileName (optional) 
+     * @param filePath (optional) 
+     * @param docType (optional) 
+     * @return OK
+     */
+    deleteAttachment(wObjAttachementID: number | undefined, fileName: string | undefined, filePath: string | undefined, docType: boolean | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/delete-attachment?";
+        if (wObjAttachementID === null)
+            throw new Error("The parameter 'wObjAttachementID' cannot be null.");
+        else if (wObjAttachementID !== undefined)
+            url_ += "wObjAttachementID=" + encodeURIComponent("" + wObjAttachementID) + "&";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (filePath === null)
+            throw new Error("The parameter 'filePath' cannot be null.");
+        else if (filePath !== undefined)
+            url_ += "filePath=" + encodeURIComponent("" + filePath) + "&";
+        if (docType === null)
+            throw new Error("The parameter 'docType' cannot be null.");
+        else if (docType !== undefined)
+            url_ += "docType=" + encodeURIComponent("" + docType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteAttachment(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -3169,8 +6017,8 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    getIndividualList2(body: GeneralSubmissionDto | undefined): Observable<GeneralSubmissionDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/GenSubmission/get-individual-list";
+    saveGenSubDetails(body: GeneralSubmissionDto | undefined): Observable<GeneralSubmissionDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/save-gen-sub-details";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -3186,11 +6034,11 @@ export class Client {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetIndividualList2(response_);
+            return this.processSaveGenSubDetails(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetIndividualList2(response_ as any);
+                    return this.processSaveGenSubDetails(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<GeneralSubmissionDtoBaseResponse>;
                 }
@@ -3199,7 +6047,7 @@ export class Client {
         }));
     }
 
-    protected processGetIndividualList2(response: HttpResponseBase): Observable<GeneralSubmissionDtoBaseResponse> {
+    protected processSaveGenSubDetails(response: HttpResponseBase): Observable<GeneralSubmissionDtoBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3219,6 +6067,338 @@ export class Client {
             }));
         }
         return _observableOf<GeneralSubmissionDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getIndividualDetailByRoleId(): Observable<IndividualDetailDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-individual-detail-by-role-id";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetIndividualDetailByRoleId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetIndividualDetailByRoleId(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<IndividualDetailDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<IndividualDetailDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetIndividualDetailByRoleId(response: HttpResponseBase): Observable<IndividualDetailDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = IndividualDetailDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<IndividualDetailDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param updateWobjectStatus (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    updateApplStatus(updateWobjectStatus: boolean | undefined, body: ApplicationDetailDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/GenSubmission/update-appl-status?";
+        if (updateWobjectStatus === null)
+            throw new Error("The parameter 'updateWobjectStatus' cannot be null.");
+        else if (updateWobjectStatus !== undefined)
+            url_ += "updateWobjectStatus=" + encodeURIComponent("" + updateWobjectStatus) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateApplStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateApplStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateApplStatus(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPendingItemsGenSub(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-pending-items-gen-sub";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingItemsGenSub(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingItemsGenSub(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingItemsGenSub(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getSubmittedNocApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-noc-applications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSubmittedNocApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSubmittedNocApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetSubmittedNocApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param qFCNum (optional) 
+     * @param userID (optional) 
+     * @return OK
+     */
+    getSubmittedGenSubApplications(qFCNum: string | undefined, userID: number | undefined): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-gen-sub-applications?";
+        if (qFCNum === null)
+            throw new Error("The parameter 'qFCNum' cannot be null.");
+        else if (qFCNum !== undefined)
+            url_ += "QFCNum=" + encodeURIComponent("" + qFCNum) + "&";
+        if (userID === null)
+            throw new Error("The parameter 'userID' cannot be null.");
+        else if (userID !== undefined)
+            url_ += "userID=" + encodeURIComponent("" + userID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSubmittedGenSubApplications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSubmittedGenSubApplications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetSubmittedGenSubApplications(response: HttpResponseBase): Observable<PendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wIndFormTypeID (optional) 
+     * @param wDocTypeID (optional) 
+     * @return OK
+     */
+    getFormTypeidOrDoctypeid(wIndFormTypeID: number | undefined, wDocTypeID: number | undefined): Observable<WIndFormTypeBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-form-typeid-or-doctypeid?";
+        if (wIndFormTypeID === null)
+            throw new Error("The parameter 'wIndFormTypeID' cannot be null.");
+        else if (wIndFormTypeID !== undefined)
+            url_ += "wIndFormTypeID=" + encodeURIComponent("" + wIndFormTypeID) + "&";
+        if (wDocTypeID === null)
+            throw new Error("The parameter 'wDocTypeID' cannot be null.");
+        else if (wDocTypeID !== undefined)
+            url_ += "wDocTypeID=" + encodeURIComponent("" + wDocTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFormTypeidOrDoctypeid(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFormTypeidOrDoctypeid(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WIndFormTypeBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WIndFormTypeBaseResponse>;
+        }));
+    }
+
+    protected processGetFormTypeidOrDoctypeid(response: HttpResponseBase): Observable<WIndFormTypeBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WIndFormTypeBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WIndFormTypeBaseResponse>(null as any);
     }
 
     /**
@@ -3351,6 +6531,569 @@ export class Client {
             }));
         }
         return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getWroleFunctionAssn(): Observable<WUserRolesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-wrole-function-assn";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetWroleFunctionAssn(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetWroleFunctionAssn(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WUserRolesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WUserRolesListBaseResponse>;
+        }));
+    }
+
+    protected processGetWroleFunctionAssn(response: HttpResponseBase): Observable<WUserRolesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WUserRolesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WUserRolesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    createRegistrationEmailBody(objectID: number | undefined, body: WAccessRequests | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/create-registration-email-body?";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateRegistrationEmailBody(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateRegistrationEmailBody(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processCreateRegistrationEmailBody(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param key (optional) 
+     * @return OK
+     */
+    getMessageProperty(key: string | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-message-property?";
+        if (key === null)
+            throw new Error("The parameter 'key' cannot be null.");
+        else if (key !== undefined)
+            url_ += "key=" + encodeURIComponent("" + key) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMessageProperty(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMessageProperty(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetMessageProperty(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    byObjectPageSection(objectId: number, pageId: number, pageSectionId: number): Observable<ObjectTextDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-object-text/by-object-page-section/{objectId}/{pageId}/{pageSectionId}";
+        if (objectId === undefined || objectId === null)
+            throw new Error("The parameter 'objectId' must be defined.");
+        url_ = url_.replace("{objectId}", encodeURIComponent("" + objectId));
+        if (pageId === undefined || pageId === null)
+            throw new Error("The parameter 'pageId' must be defined.");
+        url_ = url_.replace("{pageId}", encodeURIComponent("" + pageId));
+        if (pageSectionId === undefined || pageSectionId === null)
+            throw new Error("The parameter 'pageSectionId' must be defined.");
+        url_ = url_.replace("{pageSectionId}", encodeURIComponent("" + pageSectionId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processByObjectPageSection(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processByObjectPageSection(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectTextDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectTextDtoListBaseResponse>;
+        }));
+    }
+
+    protected processByObjectPageSection(response: HttpResponseBase): Observable<ObjectTextDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectTextDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectTextDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    byObjectPage(objectId: number, pageId: number): Observable<ObjectTextDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-object-text/by-object-page/{objectId}/{pageId}";
+        if (objectId === undefined || objectId === null)
+            throw new Error("The parameter 'objectId' must be defined.");
+        url_ = url_.replace("{objectId}", encodeURIComponent("" + objectId));
+        if (pageId === undefined || pageId === null)
+            throw new Error("The parameter 'pageId' must be defined.");
+        url_ = url_.replace("{pageId}", encodeURIComponent("" + pageId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processByObjectPage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processByObjectPage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectTextDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectTextDtoListBaseResponse>;
+        }));
+    }
+
+    protected processByObjectPage(response: HttpResponseBase): Observable<ObjectTextDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectTextDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectTextDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    byId(objTextID: number): Observable<ObjectTextDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-object-text/by-id/{objTextID}";
+        if (objTextID === undefined || objTextID === null)
+            throw new Error("The parameter 'objTextID' must be defined.");
+        url_ = url_.replace("{objTextID}", encodeURIComponent("" + objTextID));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processById(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectTextDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectTextDtoBaseResponse>;
+        }));
+    }
+
+    protected processById(response: HttpResponseBase): Observable<ObjectTextDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectTextDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectTextDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wTermID (optional) 
+     * @return OK
+     */
+    getTerms(wTermID: number | undefined): Observable<TermsBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-terms?";
+        if (wTermID === null)
+            throw new Error("The parameter 'wTermID' cannot be null.");
+        else if (wTermID !== undefined)
+            url_ += "wTermID=" + encodeURIComponent("" + wTermID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTerms(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTerms(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<TermsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<TermsBaseResponse>;
+        }));
+    }
+
+    protected processGetTerms(response: HttpResponseBase): Observable<TermsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TermsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TermsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectTypeTable (optional) 
+     * @return OK
+     */
+    getObjectTypeTable(objectTypeTable: string | undefined): Observable<Int32StringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-object-type-table?";
+        if (objectTypeTable === null)
+            throw new Error("The parameter 'objectTypeTable' cannot be null.");
+        else if (objectTypeTable !== undefined)
+            url_ += "objectTypeTable=" + encodeURIComponent("" + objectTypeTable) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetObjectTypeTable(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetObjectTypeTable(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32StringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32StringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetObjectTypeTable(response: HttpResponseBase): Observable<Int32StringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectTypeTable (optional) 
+     * @return OK
+     */
+    getObjectTypeStable(objectTypeTable: string | undefined): Observable<StringStringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/get-object-type-stable?";
+        if (objectTypeTable === null)
+            throw new Error("The parameter 'objectTypeTable' cannot be null.");
+        else if (objectTypeTable !== undefined)
+            url_ += "objectTypeTable=" + encodeURIComponent("" + objectTypeTable) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetObjectTypeStable(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetObjectTypeStable(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetObjectTypeStable(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectTypeTable (optional) 
+     * @return OK
+     */
+    selectObjectTypeStableSvcwc(objectTypeTable: string | undefined): Observable<StringStringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/MasterData/select-object-type-stable-svcwc?";
+        if (objectTypeTable === null)
+            throw new Error("The parameter 'objectTypeTable' cannot be null.");
+        else if (objectTypeTable !== undefined)
+            url_ += "objectTypeTable=" + encodeURIComponent("" + objectTypeTable) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSelectObjectTypeStableSvcwc(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSelectObjectTypeStableSvcwc(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processSelectObjectTypeStableSvcwc(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
     }
 
     /**
@@ -4376,60 +8119,265 @@ export class Client {
     }
 }
 
-export class AccessRequest implements IAccessRequest {
-    lstUserRoles?: string[] | undefined;
-    lstDocAccessRoles?: string[] | undefined;
+@Injectable()
+export class EmailClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(data?: IAccessRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
     }
 
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["lstUserRoles"])) {
-                this.lstUserRoles = [] as any;
-                for (let item of _data["lstUserRoles"])
-                    this.lstUserRoles!.push(item);
-            }
-            if (Array.isArray(_data["lstDocAccessRoles"])) {
-                this.lstDocAccessRoles = [] as any;
-                for (let item of _data["lstDocAccessRoles"])
-                    this.lstDocAccessRoles!.push(item);
-            }
-        }
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    event(body: EmailEventRequest | undefined): Observable<ReportSchEmailDetBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/email_event";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processEvent(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processEvent(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchEmailDetBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchEmailDetBaseResponse>;
+        }));
     }
 
-    static fromJS(data: any): AccessRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new AccessRequest();
-        result.init(data);
-        return result;
+    protected processEvent(response: HttpResponseBase): Observable<ReportSchEmailDetBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchEmailDetBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchEmailDetBaseResponse>(null as any);
     }
 
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.lstUserRoles)) {
-            data["lstUserRoles"] = [];
-            for (let item of this.lstUserRoles)
-                data["lstUserRoles"].push(item);
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    address(body: ReportSchEmailDet | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/check_and_remove_duplicate_email_address";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAddress(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAddress(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processAddress(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
         }
-        if (Array.isArray(this.lstDocAccessRoles)) {
-            data["lstDocAccessRoles"] = [];
-            for (let item of this.lstDocAccessRoles)
-                data["lstDocAccessRoles"].push(item);
-        }
-        return data;
+        return _observableOf<void>(null as any);
     }
 }
 
-export interface IAccessRequest {
-    lstUserRoles?: string[] | undefined;
-    lstDocAccessRoles?: string[] | undefined;
+@Injectable()
+export class ReportClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    validation(body: EmailEventForReportValidationRequest | undefined): Observable<ReportSchEmailDetBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/email_event_for_report_validation";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processValidation(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processValidation(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchEmailDetBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchEmailDetBaseResponse>;
+        }));
+    }
+
+    protected processValidation(response: HttpResponseBase): Observable<ReportSchEmailDetBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchEmailDetBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchEmailDetBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class ForClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param strQFCNumber (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    home(strQFCNumber: string | undefined, body: ReportSchDetailsDto[] | undefined): Observable<ReportSchDetailsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get_report_sch_item_details_for_home?";
+        if (strQFCNumber === null)
+            throw new Error("The parameter 'strQFCNumber' cannot be null.");
+        else if (strQFCNumber !== undefined)
+            url_ += "strQFCNumber=" + encodeURIComponent("" + strQFCNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processHome(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processHome(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSchDetailsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSchDetailsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processHome(response: HttpResponseBase): Observable<ReportSchDetailsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSchDetailsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSchDetailsDtoListBaseResponse>(null as any);
+    }
 }
 
 export class AccessRequest implements IAccessRequest {
@@ -5617,7 +9565,7 @@ export interface IApplicationDetailDtoBaseResponse {
 }
 
 export class AttachmentDto implements IAttachmentDto {
-    wIndApplicationID?: number;
+    wIndApplicationID?: number | undefined;
     wObjAttachementID?: number | undefined;
     wIndAttachementID?: number | undefined;
     wObjectInstanceID?: number | undefined;
@@ -5658,10 +9606,17 @@ export class AttachmentDto implements IAttachmentDto {
     dateCreatedStr?: string | undefined;
     userModified?: number | undefined;
     dateModifiedStr?: string | undefined;
-    isChecked?: boolean;
+    isChecked?: boolean | undefined;
     userName?: string | undefined;
     attachmentStatusDate?: string | undefined;
     statusDesc?: string | undefined;
+    isMandatory?: boolean | undefined;
+    isNonSubmissionPermitted?: boolean | undefined;
+    isFileSysGenerated?: boolean | undefined;
+    isAllowMultiple?: boolean | undefined;
+    isFileDescSysGenerated?: boolean | undefined;
+    docTypeIdEffectivefromdate?: string | undefined;
+    docTypeIdEffectivetodate?: string | undefined;
 
     constructor(data?: IAttachmentDto) {
         if (data) {
@@ -5719,6 +9674,13 @@ export class AttachmentDto implements IAttachmentDto {
             this.userName = _data["userName"];
             this.attachmentStatusDate = _data["attachmentStatusDate"];
             this.statusDesc = _data["statusDesc"];
+            this.isMandatory = _data["isMandatory"];
+            this.isNonSubmissionPermitted = _data["isNonSubmissionPermitted"];
+            this.isFileSysGenerated = _data["isFileSysGenerated"];
+            this.isAllowMultiple = _data["isAllowMultiple"];
+            this.isFileDescSysGenerated = _data["isFileDescSysGenerated"];
+            this.docTypeIdEffectivefromdate = _data["docTypeIdEffectivefromdate"];
+            this.docTypeIdEffectivetodate = _data["docTypeIdEffectivetodate"];
         }
     }
 
@@ -5776,12 +9738,19 @@ export class AttachmentDto implements IAttachmentDto {
         data["userName"] = this.userName;
         data["attachmentStatusDate"] = this.attachmentStatusDate;
         data["statusDesc"] = this.statusDesc;
+        data["isMandatory"] = this.isMandatory;
+        data["isNonSubmissionPermitted"] = this.isNonSubmissionPermitted;
+        data["isFileSysGenerated"] = this.isFileSysGenerated;
+        data["isAllowMultiple"] = this.isAllowMultiple;
+        data["isFileDescSysGenerated"] = this.isFileDescSysGenerated;
+        data["docTypeIdEffectivefromdate"] = this.docTypeIdEffectivefromdate;
+        data["docTypeIdEffectivetodate"] = this.docTypeIdEffectivetodate;
         return data;
     }
 }
 
 export interface IAttachmentDto {
-    wIndApplicationID?: number;
+    wIndApplicationID?: number | undefined;
     wObjAttachementID?: number | undefined;
     wIndAttachementID?: number | undefined;
     wObjectInstanceID?: number | undefined;
@@ -5822,10 +9791,17 @@ export interface IAttachmentDto {
     dateCreatedStr?: string | undefined;
     userModified?: number | undefined;
     dateModifiedStr?: string | undefined;
-    isChecked?: boolean;
+    isChecked?: boolean | undefined;
     userName?: string | undefined;
     attachmentStatusDate?: string | undefined;
     statusDesc?: string | undefined;
+    isMandatory?: boolean | undefined;
+    isNonSubmissionPermitted?: boolean | undefined;
+    isFileSysGenerated?: boolean | undefined;
+    isAllowMultiple?: boolean | undefined;
+    isFileDescSysGenerated?: boolean | undefined;
+    docTypeIdEffectivefromdate?: string | undefined;
+    docTypeIdEffectivetodate?: string | undefined;
 }
 
 export class AttachmentDtoBaseResponse implements IAttachmentDtoBaseResponse {
@@ -6170,54 +10146,6 @@ export interface IBooleanBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: boolean;
-}
-
-export class ByteArrayBaseResponse implements IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
-
-    constructor(data?: IByteArrayBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"];
-        }
-    }
-
-    static fromJS(data: any): ByteArrayBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ByteArrayBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response;
-        return data;
-    }
-}
-
-export interface IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
 }
 
 export class CanStartSignOffDto implements ICanStartSignOffDto {
@@ -7004,6 +10932,62 @@ export interface IControlledFunctionDto {
     appRecieveDate?: Date | undefined;
 }
 
+export class ControlledFunctionDtoListBaseResponse implements IControlledFunctionDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ControlledFunctionDto[] | undefined;
+
+    constructor(data?: IControlledFunctionDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ControlledFunctionDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ControlledFunctionDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ControlledFunctionDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IControlledFunctionDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ControlledFunctionDto[] | undefined;
+}
+
 export class DocSignatories implements IDocSignatories {
     docSignatoryID?: number;
     docTypeID?: number | undefined;
@@ -7150,6 +11134,118 @@ export interface IDocSignatoriesBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: DocSignatories;
+}
+
+export class EmailEventForReportValidationRequest implements IEmailEventForReportValidationRequest {
+    objReportSchDetails?: ReportSchDetails;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
+    eventType?: number;
+    objectID?: number;
+
+    constructor(data?: IEmailEventForReportValidationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetails.fromJS(_data["objReportSchDetails"]) : <any>undefined;
+            if (Array.isArray(_data["lstObjectSOTaskStatus"])) {
+                this.lstObjectSOTaskStatus = [] as any;
+                for (let item of _data["lstObjectSOTaskStatus"])
+                    this.lstObjectSOTaskStatus!.push(ObjectSOTaskStatus.fromJS(item));
+            }
+            this.eventType = _data["eventType"];
+            this.objectID = _data["objectID"];
+        }
+    }
+
+    static fromJS(data: any): EmailEventForReportValidationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new EmailEventForReportValidationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objReportSchDetails"] = this.objReportSchDetails ? this.objReportSchDetails.toJSON() : <any>undefined;
+        if (Array.isArray(this.lstObjectSOTaskStatus)) {
+            data["lstObjectSOTaskStatus"] = [];
+            for (let item of this.lstObjectSOTaskStatus)
+                data["lstObjectSOTaskStatus"].push(item.toJSON());
+        }
+        data["eventType"] = this.eventType;
+        data["objectID"] = this.objectID;
+        return data;
+    }
+}
+
+export interface IEmailEventForReportValidationRequest {
+    objReportSchDetails?: ReportSchDetails;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
+    eventType?: number;
+    objectID?: number;
+}
+
+export class EmailEventRequest implements IEmailEventRequest {
+    objReportSchDetails?: ReportSchDetails;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
+    eventType?: number;
+    objectID?: number;
+
+    constructor(data?: IEmailEventRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetails.fromJS(_data["objReportSchDetails"]) : <any>undefined;
+            if (Array.isArray(_data["lstObjectSOTaskStatus"])) {
+                this.lstObjectSOTaskStatus = [] as any;
+                for (let item of _data["lstObjectSOTaskStatus"])
+                    this.lstObjectSOTaskStatus!.push(ObjectSOTaskStatus.fromJS(item));
+            }
+            this.eventType = _data["eventType"];
+            this.objectID = _data["objectID"];
+        }
+    }
+
+    static fromJS(data: any): EmailEventRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new EmailEventRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objReportSchDetails"] = this.objReportSchDetails ? this.objReportSchDetails.toJSON() : <any>undefined;
+        if (Array.isArray(this.lstObjectSOTaskStatus)) {
+            data["lstObjectSOTaskStatus"] = [];
+            for (let item of this.lstObjectSOTaskStatus)
+                data["lstObjectSOTaskStatus"].push(item.toJSON());
+        }
+        data["eventType"] = this.eventType;
+        data["objectID"] = this.objectID;
+        return data;
+    }
+}
+
+export interface IEmailEventRequest {
+    objReportSchDetails?: ReportSchDetails;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
+    eventType?: number;
+    objectID?: number;
 }
 
 export class EmailRequisites implements IEmailRequisites {
@@ -7438,6 +11534,122 @@ export interface IFirmContactDetails {
     amlDirectorEmailAddress?: string | undefined;
     rsgEmailAddress?: string | undefined;
     firmTypeID?: number;
+}
+
+export class FirmDto implements IFirmDto {
+    qfcNumber?: string | undefined;
+    firmName?: string | undefined;
+    isEssActive?: boolean | undefined;
+    fromDate?: string | undefined;
+    endDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    firmTypeID?: number | undefined;
+
+    constructor(data?: IFirmDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.firmName = _data["firmName"];
+            this.isEssActive = _data["isEssActive"];
+            this.fromDate = _data["fromDate"];
+            this.endDate = _data["endDate"];
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            this.firmTypeID = _data["firmTypeID"];
+        }
+    }
+
+    static fromJS(data: any): FirmDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["firmName"] = this.firmName;
+        data["isEssActive"] = this.isEssActive;
+        data["fromDate"] = this.fromDate;
+        data["endDate"] = this.endDate;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        data["firmTypeID"] = this.firmTypeID;
+        return data;
+    }
+}
+
+export interface IFirmDto {
+    qfcNumber?: string | undefined;
+    firmName?: string | undefined;
+    isEssActive?: boolean | undefined;
+    fromDate?: string | undefined;
+    endDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    firmTypeID?: number | undefined;
+}
+
+export class FirmDtoListBaseResponse implements IFirmDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmDto[] | undefined;
+
+    constructor(data?: IFirmDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(FirmDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): FirmDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IFirmDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmDto[] | undefined;
 }
 
 export class GeneralSubmissionDto implements IGeneralSubmissionDto {
@@ -7742,6 +11954,106 @@ export interface IHistoryDetailsDto {
     rptSchItemID?: number | undefined;
     docTypeID?: number | undefined;
     lstAattachments?: AttachmentDto[] | undefined;
+}
+
+export class IndividualDetailDto implements IIndividualDetailDto {
+    fullName?: string | undefined;
+    aiNumber?: string | undefined;
+    qfcNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    dateOfBirth?: string | undefined;
+
+    constructor(data?: IIndividualDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fullName = _data["fullName"];
+            this.aiNumber = _data["aiNumber"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.emailAddress = _data["emailAddress"];
+            this.dateOfBirth = _data["dateOfBirth"];
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fullName"] = this.fullName;
+        data["aiNumber"] = this.aiNumber;
+        data["qfcNumber"] = this.qfcNumber;
+        data["emailAddress"] = this.emailAddress;
+        data["dateOfBirth"] = this.dateOfBirth;
+        return data;
+    }
+}
+
+export interface IIndividualDetailDto {
+    fullName?: string | undefined;
+    aiNumber?: string | undefined;
+    qfcNumber?: string | undefined;
+    emailAddress?: string | undefined;
+    dateOfBirth?: string | undefined;
+}
+
+export class IndividualDetailDtoBaseResponse implements IIndividualDetailDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailDto;
+
+    constructor(data?: IIndividualDetailDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? IndividualDetailDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IIndividualDetailDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailDto;
 }
 
 export class IndividualDetails implements IIndividualDetails {
@@ -8186,6 +12498,62 @@ export interface IIndividualDetailsDtoBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: IndividualDetailsDto;
+}
+
+export class IndividualDetailsDtoListBaseResponse implements IIndividualDetailsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailsDto[] | undefined;
+
+    constructor(data?: IIndividualDetailsDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(IndividualDetailsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailsDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailsDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IIndividualDetailsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetailsDto[] | undefined;
 }
 
 export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
@@ -8756,6 +13124,98 @@ export interface IObjectSOTaskStatus {
     soTaskValid?: boolean | undefined;
 }
 
+export class ObjectSOTaskStatusDto implements IObjectSOTaskStatusDto {
+    objectSOStatusID?: number | undefined;
+    soTaskAssignedTo?: number | undefined;
+    soTaskSeqNo?: number | undefined;
+    userID?: number | undefined;
+    soTaskAssignedDate?: string | undefined;
+    groupSignOff?: boolean | undefined;
+    soTaskValid?: boolean | undefined;
+    objectSOTaskStatusID?: number;
+    soTaskCompletionDate?: string | undefined;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    soStatusTypeID?: number;
+    individualJobTitle?: string | undefined;
+    objectID?: any | undefined;
+    objectInstanceID?: any | undefined;
+
+    constructor(data?: IObjectSOTaskStatusDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.soTaskAssignedTo = _data["soTaskAssignedTo"];
+            this.soTaskSeqNo = _data["soTaskSeqNo"];
+            this.userID = _data["userID"];
+            this.soTaskAssignedDate = _data["soTaskAssignedDate"];
+            this.groupSignOff = _data["groupSignOff"];
+            this.soTaskValid = _data["soTaskValid"];
+            this.objectSOTaskStatusID = _data["objectSOTaskStatusID"];
+            this.soTaskCompletionDate = _data["soTaskCompletionDate"];
+            this.individualName = _data["individualName"];
+            this.emailAdd = _data["emailAdd"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.individualJobTitle = _data["individualJobTitle"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+        }
+    }
+
+    static fromJS(data: any): ObjectSOTaskStatusDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOTaskStatusDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["soTaskAssignedTo"] = this.soTaskAssignedTo;
+        data["soTaskSeqNo"] = this.soTaskSeqNo;
+        data["userID"] = this.userID;
+        data["soTaskAssignedDate"] = this.soTaskAssignedDate;
+        data["groupSignOff"] = this.groupSignOff;
+        data["soTaskValid"] = this.soTaskValid;
+        data["objectSOTaskStatusID"] = this.objectSOTaskStatusID;
+        data["soTaskCompletionDate"] = this.soTaskCompletionDate;
+        data["individualName"] = this.individualName;
+        data["emailAdd"] = this.emailAdd;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["individualJobTitle"] = this.individualJobTitle;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        return data;
+    }
+}
+
+export interface IObjectSOTaskStatusDto {
+    objectSOStatusID?: number | undefined;
+    soTaskAssignedTo?: number | undefined;
+    soTaskSeqNo?: number | undefined;
+    userID?: number | undefined;
+    soTaskAssignedDate?: string | undefined;
+    groupSignOff?: boolean | undefined;
+    soTaskValid?: boolean | undefined;
+    objectSOTaskStatusID?: number;
+    soTaskCompletionDate?: string | undefined;
+    individualName?: string | undefined;
+    emailAdd?: string | undefined;
+    soStatusTypeID?: number;
+    individualJobTitle?: string | undefined;
+    objectID?: any | undefined;
+    objectInstanceID?: any | undefined;
+}
+
 export class ObjectSOTaskStatusListBaseResponse implements IObjectSOTaskStatusListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -8914,6 +13374,170 @@ export interface IObjectSoTaskStatusDtoListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: ObjectSoTaskStatusDto[] | undefined;
+}
+
+export class ObjectTextDto implements IObjectTextDto {
+    wObjectTextID?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjectPageID?: number | undefined;
+    wPageSectionID?: number | undefined;
+    wHelpControlID?: string | undefined;
+    wObjectTextDesc?: string | undefined;
+    wPageSectionDesc?: string | undefined;
+
+    constructor(data?: IObjectTextDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjectTextID = _data["wObjectTextID"];
+            this.wObjectID = _data["wObjectID"];
+            this.wObjectPageID = _data["wObjectPageID"];
+            this.wPageSectionID = _data["wPageSectionID"];
+            this.wHelpControlID = _data["wHelpControlID"];
+            this.wObjectTextDesc = _data["wObjectTextDesc"];
+            this.wPageSectionDesc = _data["wPageSectionDesc"];
+        }
+    }
+
+    static fromJS(data: any): ObjectTextDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectTextDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjectTextID"] = this.wObjectTextID;
+        data["wObjectID"] = this.wObjectID;
+        data["wObjectPageID"] = this.wObjectPageID;
+        data["wPageSectionID"] = this.wPageSectionID;
+        data["wHelpControlID"] = this.wHelpControlID;
+        data["wObjectTextDesc"] = this.wObjectTextDesc;
+        data["wPageSectionDesc"] = this.wPageSectionDesc;
+        return data;
+    }
+}
+
+export interface IObjectTextDto {
+    wObjectTextID?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjectPageID?: number | undefined;
+    wPageSectionID?: number | undefined;
+    wHelpControlID?: string | undefined;
+    wObjectTextDesc?: string | undefined;
+    wPageSectionDesc?: string | undefined;
+}
+
+export class ObjectTextDtoBaseResponse implements IObjectTextDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectTextDto;
+
+    constructor(data?: IObjectTextDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ObjectTextDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ObjectTextDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectTextDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IObjectTextDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectTextDto;
+}
+
+export class ObjectTextDtoListBaseResponse implements IObjectTextDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectTextDto[] | undefined;
+
+    constructor(data?: IObjectTextDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjectTextDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectTextDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectTextDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjectTextDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectTextDto[] | undefined;
 }
 
 export class PendingItemsDto implements IPendingItemsDto {
@@ -9498,6 +14122,23 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     fileAttachedUserEmail?: string | undefined;
     rptAttachmentStatusDate?: string | undefined;
     fileStream?: string | undefined;
+    reviewComments?: string | undefined;
+    firmsRptSchItemID?: number | undefined;
+    manuallyReceived?: boolean | undefined;
+    allowReSubmit?: boolean | undefined;
+    isFileRecieved?: boolean | undefined;
+    lateFeeFlag?: boolean | undefined;
+    isReportDue?: boolean | undefined;
+    daysOverDue?: number | undefined;
+    isReportReminderDue?: boolean | undefined;
+    isResubmissionRequested?: boolean | undefined;
+    resubmissionRequestedDate?: string | undefined;
+    isResubmissionNotificationRequired?: boolean | undefined;
+    docReceivedDate?: string | undefined;
+    isAMLDocType?: boolean | undefined;
+    rptFormsToBeSubmited?: string | undefined;
+    submissionBeforeRptPeriodEnd?: boolean | undefined;
+    resubmissionDueDate?: string | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -9547,6 +14188,23 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
             this.fileAttachedUserEmail = _data["fileAttachedUserEmail"];
             this.rptAttachmentStatusDate = _data["rptAttachmentStatusDate"];
             this.fileStream = _data["fileStream"];
+            this.reviewComments = _data["reviewComments"];
+            this.firmsRptSchItemID = _data["firmsRptSchItemID"];
+            this.manuallyReceived = _data["manuallyReceived"];
+            this.allowReSubmit = _data["allowReSubmit"];
+            this.isFileRecieved = _data["isFileRecieved"];
+            this.lateFeeFlag = _data["lateFeeFlag"];
+            this.isReportDue = _data["isReportDue"];
+            this.daysOverDue = _data["daysOverDue"];
+            this.isReportReminderDue = _data["isReportReminderDue"];
+            this.isResubmissionRequested = _data["isResubmissionRequested"];
+            this.resubmissionRequestedDate = _data["resubmissionRequestedDate"];
+            this.isResubmissionNotificationRequired = _data["isResubmissionNotificationRequired"];
+            this.docReceivedDate = _data["docReceivedDate"];
+            this.isAMLDocType = _data["isAMLDocType"];
+            this.rptFormsToBeSubmited = _data["rptFormsToBeSubmited"];
+            this.submissionBeforeRptPeriodEnd = _data["submissionBeforeRptPeriodEnd"];
+            this.resubmissionDueDate = _data["resubmissionDueDate"];
         }
     }
 
@@ -9596,6 +14254,23 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
         data["fileAttachedUserEmail"] = this.fileAttachedUserEmail;
         data["rptAttachmentStatusDate"] = this.rptAttachmentStatusDate;
         data["fileStream"] = this.fileStream;
+        data["reviewComments"] = this.reviewComments;
+        data["firmsRptSchItemID"] = this.firmsRptSchItemID;
+        data["manuallyReceived"] = this.manuallyReceived;
+        data["allowReSubmit"] = this.allowReSubmit;
+        data["isFileRecieved"] = this.isFileRecieved;
+        data["lateFeeFlag"] = this.lateFeeFlag;
+        data["isReportDue"] = this.isReportDue;
+        data["daysOverDue"] = this.daysOverDue;
+        data["isReportReminderDue"] = this.isReportReminderDue;
+        data["isResubmissionRequested"] = this.isResubmissionRequested;
+        data["resubmissionRequestedDate"] = this.resubmissionRequestedDate;
+        data["isResubmissionNotificationRequired"] = this.isResubmissionNotificationRequired;
+        data["docReceivedDate"] = this.docReceivedDate;
+        data["isAMLDocType"] = this.isAMLDocType;
+        data["rptFormsToBeSubmited"] = this.rptFormsToBeSubmited;
+        data["submissionBeforeRptPeriodEnd"] = this.submissionBeforeRptPeriodEnd;
+        data["resubmissionDueDate"] = this.resubmissionDueDate;
         return data;
     }
 }
@@ -9638,6 +14313,23 @@ export interface IReportSchDetailsDto {
     fileAttachedUserEmail?: string | undefined;
     rptAttachmentStatusDate?: string | undefined;
     fileStream?: string | undefined;
+    reviewComments?: string | undefined;
+    firmsRptSchItemID?: number | undefined;
+    manuallyReceived?: boolean | undefined;
+    allowReSubmit?: boolean | undefined;
+    isFileRecieved?: boolean | undefined;
+    lateFeeFlag?: boolean | undefined;
+    isReportDue?: boolean | undefined;
+    daysOverDue?: number | undefined;
+    isReportReminderDue?: boolean | undefined;
+    isResubmissionRequested?: boolean | undefined;
+    resubmissionRequestedDate?: string | undefined;
+    isResubmissionNotificationRequired?: boolean | undefined;
+    docReceivedDate?: string | undefined;
+    isAMLDocType?: boolean | undefined;
+    rptFormsToBeSubmited?: string | undefined;
+    submissionBeforeRptPeriodEnd?: boolean | undefined;
+    resubmissionDueDate?: string | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
@@ -9846,6 +14538,214 @@ export interface IReportSchDto {
     rptSchFinYearFromDate?: string | undefined;
     rptSchFinYearToDate?: string | undefined;
     userID?: number | undefined;
+}
+
+export class ReportSchEmailDet implements IReportSchEmailDet {
+    objectID?: number;
+    objectInstanceID?: number;
+    fromEmail?: string | undefined;
+    toEmail?: string | undefined;
+    ccEmail?: string | undefined;
+    title?: string | undefined;
+    subject?: string | undefined;
+    body?: string | undefined;
+    footer?: string | undefined;
+    fileName?: string | undefined;
+    reportName?: string | undefined;
+    reportDueDate?: string | undefined;
+    submittedBy?: string | undefined;
+    submittedByEmail?: string | undefined;
+    submittedOnDate?: string | undefined;
+    signOffRequiredBy?: string | undefined;
+    signOffCompletedBy?: string | undefined;
+    completionSignOffCompletedBy?: string | undefined;
+    url?: string | undefined;
+    notifiedBy?: number;
+    isFileAgainAttached?: boolean;
+    fileAgainAttachedByEmail?: string | undefined;
+    applicantName?: string | undefined;
+    aiNumber?: string | undefined;
+    statusId?: string | undefined;
+    statusIdDesc?: string | undefined;
+    statusCompletionDate?: string | undefined;
+    actionRequested?: string | undefined;
+    validationStatus?: string | undefined;
+    validationCompletionDate?: string | undefined;
+    submissionSignoffCompletionDate?: string | undefined;
+    returnCompDate?: string | undefined;
+
+    constructor(data?: IReportSchEmailDet) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.fromEmail = _data["fromEmail"];
+            this.toEmail = _data["toEmail"];
+            this.ccEmail = _data["ccEmail"];
+            this.title = _data["title"];
+            this.subject = _data["subject"];
+            this.body = _data["body"];
+            this.footer = _data["footer"];
+            this.fileName = _data["fileName"];
+            this.reportName = _data["reportName"];
+            this.reportDueDate = _data["reportDueDate"];
+            this.submittedBy = _data["submittedBy"];
+            this.submittedByEmail = _data["submittedByEmail"];
+            this.submittedOnDate = _data["submittedOnDate"];
+            this.signOffRequiredBy = _data["signOffRequiredBy"];
+            this.signOffCompletedBy = _data["signOffCompletedBy"];
+            this.completionSignOffCompletedBy = _data["completionSignOffCompletedBy"];
+            this.url = _data["url"];
+            this.notifiedBy = _data["notifiedBy"];
+            this.isFileAgainAttached = _data["isFileAgainAttached"];
+            this.fileAgainAttachedByEmail = _data["fileAgainAttachedByEmail"];
+            this.applicantName = _data["applicantName"];
+            this.aiNumber = _data["aiNumber"];
+            this.statusId = _data["statusId"];
+            this.statusIdDesc = _data["statusIdDesc"];
+            this.statusCompletionDate = _data["statusCompletionDate"];
+            this.actionRequested = _data["actionRequested"];
+            this.validationStatus = _data["validationStatus"];
+            this.validationCompletionDate = _data["validationCompletionDate"];
+            this.submissionSignoffCompletionDate = _data["submissionSignoffCompletionDate"];
+            this.returnCompDate = _data["returnCompDate"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchEmailDet {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchEmailDet();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["fromEmail"] = this.fromEmail;
+        data["toEmail"] = this.toEmail;
+        data["ccEmail"] = this.ccEmail;
+        data["title"] = this.title;
+        data["subject"] = this.subject;
+        data["body"] = this.body;
+        data["footer"] = this.footer;
+        data["fileName"] = this.fileName;
+        data["reportName"] = this.reportName;
+        data["reportDueDate"] = this.reportDueDate;
+        data["submittedBy"] = this.submittedBy;
+        data["submittedByEmail"] = this.submittedByEmail;
+        data["submittedOnDate"] = this.submittedOnDate;
+        data["signOffRequiredBy"] = this.signOffRequiredBy;
+        data["signOffCompletedBy"] = this.signOffCompletedBy;
+        data["completionSignOffCompletedBy"] = this.completionSignOffCompletedBy;
+        data["url"] = this.url;
+        data["notifiedBy"] = this.notifiedBy;
+        data["isFileAgainAttached"] = this.isFileAgainAttached;
+        data["fileAgainAttachedByEmail"] = this.fileAgainAttachedByEmail;
+        data["applicantName"] = this.applicantName;
+        data["aiNumber"] = this.aiNumber;
+        data["statusId"] = this.statusId;
+        data["statusIdDesc"] = this.statusIdDesc;
+        data["statusCompletionDate"] = this.statusCompletionDate;
+        data["actionRequested"] = this.actionRequested;
+        data["validationStatus"] = this.validationStatus;
+        data["validationCompletionDate"] = this.validationCompletionDate;
+        data["submissionSignoffCompletionDate"] = this.submissionSignoffCompletionDate;
+        data["returnCompDate"] = this.returnCompDate;
+        return data;
+    }
+}
+
+export interface IReportSchEmailDet {
+    objectID?: number;
+    objectInstanceID?: number;
+    fromEmail?: string | undefined;
+    toEmail?: string | undefined;
+    ccEmail?: string | undefined;
+    title?: string | undefined;
+    subject?: string | undefined;
+    body?: string | undefined;
+    footer?: string | undefined;
+    fileName?: string | undefined;
+    reportName?: string | undefined;
+    reportDueDate?: string | undefined;
+    submittedBy?: string | undefined;
+    submittedByEmail?: string | undefined;
+    submittedOnDate?: string | undefined;
+    signOffRequiredBy?: string | undefined;
+    signOffCompletedBy?: string | undefined;
+    completionSignOffCompletedBy?: string | undefined;
+    url?: string | undefined;
+    notifiedBy?: number;
+    isFileAgainAttached?: boolean;
+    fileAgainAttachedByEmail?: string | undefined;
+    applicantName?: string | undefined;
+    aiNumber?: string | undefined;
+    statusId?: string | undefined;
+    statusIdDesc?: string | undefined;
+    statusCompletionDate?: string | undefined;
+    actionRequested?: string | undefined;
+    validationStatus?: string | undefined;
+    validationCompletionDate?: string | undefined;
+    submissionSignoffCompletionDate?: string | undefined;
+    returnCompDate?: string | undefined;
+}
+
+export class ReportSchEmailDetBaseResponse implements IReportSchEmailDetBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchEmailDet;
+
+    constructor(data?: IReportSchEmailDetBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ReportSchEmailDet.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ReportSchEmailDetBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchEmailDetBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IReportSchEmailDetBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSchEmailDet;
 }
 
 export class ReportSchItem implements IReportSchItem {
@@ -10132,6 +15032,194 @@ export interface IResidencies {
     modifiedBy?: number;
 }
 
+export class SavePrimaryDocumentResponse implements ISavePrimaryDocumentResponse {
+    wObjectInstanceID?: number;
+    wObjectInstanceRevNum?: number;
+
+    constructor(data?: ISavePrimaryDocumentResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjectInstanceID = _data["wObjectInstanceID"];
+            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
+        }
+    }
+
+    static fromJS(data: any): SavePrimaryDocumentResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SavePrimaryDocumentResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjectInstanceID"] = this.wObjectInstanceID;
+        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
+        return data;
+    }
+}
+
+export interface ISavePrimaryDocumentResponse {
+    wObjectInstanceID?: number;
+    wObjectInstanceRevNum?: number;
+}
+
+export class SavePrimaryDocumentResponseBaseResponse implements ISavePrimaryDocumentResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SavePrimaryDocumentResponse;
+
+    constructor(data?: ISavePrimaryDocumentResponseBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SavePrimaryDocumentResponse.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SavePrimaryDocumentResponseBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SavePrimaryDocumentResponseBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISavePrimaryDocumentResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SavePrimaryDocumentResponse;
+}
+
+export class SignOffDetails implements ISignOffDetails {
+    userName?: string | undefined;
+    password?: string | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectSOStatusID?: number;
+    objectSOTaskStatusID?: number;
+    sequenceNumber?: number;
+    docSignatoryID?: number;
+    soStatusTypeID?: number;
+    signOffName?: string | undefined;
+    signOffUserIds?: string | undefined;
+    signedOnDate?: string | undefined;
+    roles?: string | undefined;
+    wTermID?: number | undefined;
+    agreedOnTerms?: boolean | undefined;
+    termsAgreedDate?: string | undefined;
+    soTaskValid?: boolean | undefined;
+
+    constructor(data?: ISignOffDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.password = _data["password"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.objectSOTaskStatusID = _data["objectSOTaskStatusID"];
+            this.sequenceNumber = _data["sequenceNumber"];
+            this.docSignatoryID = _data["docSignatoryID"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.signOffName = _data["signOffName"];
+            this.signOffUserIds = _data["signOffUserIds"];
+            this.signedOnDate = _data["signedOnDate"];
+            this.roles = _data["roles"];
+            this.wTermID = _data["wTermID"];
+            this.agreedOnTerms = _data["agreedOnTerms"];
+            this.termsAgreedDate = _data["termsAgreedDate"];
+            this.soTaskValid = _data["soTaskValid"];
+        }
+    }
+
+    static fromJS(data: any): SignOffDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new SignOffDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["password"] = this.password;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["objectSOTaskStatusID"] = this.objectSOTaskStatusID;
+        data["sequenceNumber"] = this.sequenceNumber;
+        data["docSignatoryID"] = this.docSignatoryID;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["signOffName"] = this.signOffName;
+        data["signOffUserIds"] = this.signOffUserIds;
+        data["signedOnDate"] = this.signedOnDate;
+        data["roles"] = this.roles;
+        data["wTermID"] = this.wTermID;
+        data["agreedOnTerms"] = this.agreedOnTerms;
+        data["termsAgreedDate"] = this.termsAgreedDate;
+        data["soTaskValid"] = this.soTaskValid;
+        return data;
+    }
+}
+
+export interface ISignOffDetails {
+    userName?: string | undefined;
+    password?: string | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectSOStatusID?: number;
+    objectSOTaskStatusID?: number;
+    sequenceNumber?: number;
+    docSignatoryID?: number;
+    soStatusTypeID?: number;
+    signOffName?: string | undefined;
+    signOffUserIds?: string | undefined;
+    signedOnDate?: string | undefined;
+    roles?: string | undefined;
+    wTermID?: number | undefined;
+    agreedOnTerms?: boolean | undefined;
+    termsAgreedDate?: string | undefined;
+    soTaskValid?: boolean | undefined;
+}
+
 export class StringBaseResponse implements IStringBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -10350,6 +15438,102 @@ export interface IStringStringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class Terms implements ITerms {
+    wTermsID?: number;
+    wTermSubject?: string | undefined;
+    wTermTitle?: string | undefined;
+    wTermDesc?: string | undefined;
+
+    constructor(data?: ITerms) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wTermsID = _data["wTermsID"];
+            this.wTermSubject = _data["wTermSubject"];
+            this.wTermTitle = _data["wTermTitle"];
+            this.wTermDesc = _data["wTermDesc"];
+        }
+    }
+
+    static fromJS(data: any): Terms {
+        data = typeof data === 'object' ? data : {};
+        let result = new Terms();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wTermsID"] = this.wTermsID;
+        data["wTermSubject"] = this.wTermSubject;
+        data["wTermTitle"] = this.wTermTitle;
+        data["wTermDesc"] = this.wTermDesc;
+        return data;
+    }
+}
+
+export interface ITerms {
+    wTermsID?: number;
+    wTermSubject?: string | undefined;
+    wTermTitle?: string | undefined;
+    wTermDesc?: string | undefined;
+}
+
+export class TermsBaseResponse implements ITermsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: Terms;
+
+    constructor(data?: ITermsBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? Terms.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): TermsBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new TermsBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ITermsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: Terms;
 }
 
 export class UserPendingItems implements IUserPendingItems {
@@ -11120,6 +16304,54 @@ export interface IWAccessRequests {
     objectID?: number | undefined;
 }
 
+export class WAccessRequestsBaseResponse implements IWAccessRequestsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAccessRequests;
+
+    constructor(data?: IWAccessRequestsBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WAccessRequests.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WAccessRequestsBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WAccessRequestsBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWAccessRequestsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAccessRequests;
+}
+
 export class WAccessRequestsListBaseResponse implements IWAccessRequestsListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -11176,6 +16408,102 @@ export interface IWAccessRequestsListBaseResponse {
     response?: WAccessRequests[] | undefined;
 }
 
+export class WAdminAccessRequestsDto implements IWAdminAccessRequestsDto {
+    firmQFCNo?: string | undefined;
+    aiNumber?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    isRegistered?: boolean | undefined;
+    roleId?: number | undefined;
+    accountLocked?: boolean | undefined;
+    isActiveUser?: boolean | undefined;
+    isUserAccessAuthorised?: boolean | undefined;
+    firmTypeID?: number | undefined;
+    wUserID?: number;
+    wAccessRequestID?: number;
+    individualName?: string | undefined;
+    wUserLoginID?: number;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isSessionActive?: boolean;
+
+    constructor(data?: IWAdminAccessRequestsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmQFCNo = _data["firmQFCNo"];
+            this.aiNumber = _data["aiNumber"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.isRegistered = _data["isRegistered"];
+            this.roleId = _data["roleId"];
+            this.accountLocked = _data["accountLocked"];
+            this.isActiveUser = _data["isActiveUser"];
+            this.isUserAccessAuthorised = _data["isUserAccessAuthorised"];
+            this.firmTypeID = _data["firmTypeID"];
+            this.wUserID = _data["wUserID"];
+            this.wAccessRequestID = _data["wAccessRequestID"];
+            this.individualName = _data["individualName"];
+            this.wUserLoginID = _data["wUserLoginID"];
+            this.isAccountExpired = _data["isAccountExpired"];
+            this.isLoggedIn = _data["isLoggedIn"];
+            this.isSessionActive = _data["isSessionActive"];
+        }
+    }
+
+    static fromJS(data: any): WAdminAccessRequestsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WAdminAccessRequestsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmQFCNo"] = this.firmQFCNo;
+        data["aiNumber"] = this.aiNumber;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["isRegistered"] = this.isRegistered;
+        data["roleId"] = this.roleId;
+        data["accountLocked"] = this.accountLocked;
+        data["isActiveUser"] = this.isActiveUser;
+        data["isUserAccessAuthorised"] = this.isUserAccessAuthorised;
+        data["firmTypeID"] = this.firmTypeID;
+        data["wUserID"] = this.wUserID;
+        data["wAccessRequestID"] = this.wAccessRequestID;
+        data["individualName"] = this.individualName;
+        data["wUserLoginID"] = this.wUserLoginID;
+        data["isAccountExpired"] = this.isAccountExpired;
+        data["isLoggedIn"] = this.isLoggedIn;
+        data["isSessionActive"] = this.isSessionActive;
+        return data;
+    }
+}
+
+export interface IWAdminAccessRequestsDto {
+    firmQFCNo?: string | undefined;
+    aiNumber?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    isRegistered?: boolean | undefined;
+    roleId?: number | undefined;
+    accountLocked?: boolean | undefined;
+    isActiveUser?: boolean | undefined;
+    isUserAccessAuthorised?: boolean | undefined;
+    firmTypeID?: number | undefined;
+    wUserID?: number;
+    wAccessRequestID?: number;
+    individualName?: string | undefined;
+    wUserLoginID?: number;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isSessionActive?: boolean;
+}
+
 export class WApplicationDetailDto implements IWApplicationDetailDto {
     applicationID?: number | undefined;
     formTypeID?: number | undefined;
@@ -11214,6 +16542,8 @@ export class WApplicationDetailDto implements IWApplicationDetailDto {
     proposedRelocationDateDay?: number | undefined;
     proposedRelocationDateMonth?: number | undefined;
     proposedRelocationDateYear?: number | undefined;
+    applicationDate?: string | undefined;
+    appCreatedBy?: number;
 
     constructor(data?: IWApplicationDetailDto) {
         if (data) {
@@ -11263,6 +16593,8 @@ export class WApplicationDetailDto implements IWApplicationDetailDto {
             this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
             this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
             this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
+            this.applicationDate = _data["applicationDate"];
+            this.appCreatedBy = _data["appCreatedBy"];
         }
     }
 
@@ -11312,6 +16644,8 @@ export class WApplicationDetailDto implements IWApplicationDetailDto {
         data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
         data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
         data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
+        data["applicationDate"] = this.applicationDate;
+        data["appCreatedBy"] = this.appCreatedBy;
         return data;
     }
 }
@@ -11354,6 +16688,8 @@ export interface IWApplicationDetailDto {
     proposedRelocationDateDay?: number | undefined;
     proposedRelocationDateMonth?: number | undefined;
     proposedRelocationDateYear?: number | undefined;
+    applicationDate?: string | undefined;
+    appCreatedBy?: number;
 }
 
 export class WApplicationDetailDtoListBaseResponse implements IWApplicationDetailDtoListBaseResponse {
@@ -11410,6 +16746,94 @@ export interface IWApplicationDetailDtoListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: WApplicationDetailDto[] | undefined;
+}
+
+export class WIndFormType implements IWIndFormType {
+    wIndFormTypeID?: number | undefined;
+    wDocTypeID?: number | undefined;
+
+    constructor(data?: IWIndFormType) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wIndFormTypeID = _data["wIndFormTypeID"];
+            this.wDocTypeID = _data["wDocTypeID"];
+        }
+    }
+
+    static fromJS(data: any): WIndFormType {
+        data = typeof data === 'object' ? data : {};
+        let result = new WIndFormType();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wIndFormTypeID"] = this.wIndFormTypeID;
+        data["wDocTypeID"] = this.wDocTypeID;
+        return data;
+    }
+}
+
+export interface IWIndFormType {
+    wIndFormTypeID?: number | undefined;
+    wDocTypeID?: number | undefined;
+}
+
+export class WIndFormTypeBaseResponse implements IWIndFormTypeBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WIndFormType;
+
+    constructor(data?: IWIndFormTypeBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WIndFormType.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WIndFormTypeBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WIndFormTypeBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWIndFormTypeBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WIndFormType;
 }
 
 export class WNotice implements IWNotice {
@@ -12892,6 +18316,134 @@ export interface IWNoticeResponseEvaluationCriteriaDto {
     wCreatedBy?: number | undefined;
 }
 
+export class WUserLogins implements IWUserLogins {
+    qfcNum?: string | undefined;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    isRegistered?: boolean | undefined;
+    dateCreated?: string | undefined;
+    userRoleIDs?: string | undefined;
+    userRoleDesc?: string | undefined;
+    lastLogin?: string | undefined;
+    no_Of_Days_Last_Login?: number | undefined;
+
+    constructor(data?: IWUserLogins) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNum = _data["qfcNum"];
+            this.individualName = _data["individualName"];
+            this.aiNumber = _data["aiNumber"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.isRegistered = _data["isRegistered"];
+            this.dateCreated = _data["dateCreated"];
+            this.userRoleIDs = _data["userRoleIDs"];
+            this.userRoleDesc = _data["userRoleDesc"];
+            this.lastLogin = _data["lastLogin"];
+            this.no_Of_Days_Last_Login = _data["no_Of_Days_Last_Login"];
+        }
+    }
+
+    static fromJS(data: any): WUserLogins {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUserLogins();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNum"] = this.qfcNum;
+        data["individualName"] = this.individualName;
+        data["aiNumber"] = this.aiNumber;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["isRegistered"] = this.isRegistered;
+        data["dateCreated"] = this.dateCreated;
+        data["userRoleIDs"] = this.userRoleIDs;
+        data["userRoleDesc"] = this.userRoleDesc;
+        data["lastLogin"] = this.lastLogin;
+        data["no_Of_Days_Last_Login"] = this.no_Of_Days_Last_Login;
+        return data;
+    }
+}
+
+export interface IWUserLogins {
+    qfcNum?: string | undefined;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    isRegistered?: boolean | undefined;
+    dateCreated?: string | undefined;
+    userRoleIDs?: string | undefined;
+    userRoleDesc?: string | undefined;
+    lastLogin?: string | undefined;
+    no_Of_Days_Last_Login?: number | undefined;
+}
+
+export class WUserLoginsListBaseResponse implements IWUserLoginsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUserLogins[] | undefined;
+
+    constructor(data?: IWUserLoginsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WUserLogins.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WUserLoginsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUserLoginsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWUserLoginsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUserLogins[] | undefined;
+}
+
 export class WUserRoles implements IWUserRoles {
     wUserRoleID?: number;
     wFunctionTypeID?: number;
@@ -12958,6 +18510,654 @@ export interface IWUserRoles {
     wUserID?: number;
     createdBy?: number;
     wObjectID?: number | undefined;
+}
+
+export class WUserRolesListBaseResponse implements IWUserRolesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUserRoles[] | undefined;
+
+    constructor(data?: IWUserRolesListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WUserRoles.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WUserRolesListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUserRolesListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWUserRolesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUserRoles[] | undefined;
+}
+
+export class WUsers implements IWUsers {
+    wAccessRequestID?: number;
+    firmQFCNo?: string | undefined;
+    firmName?: string | undefined;
+    firmTypeID?: number;
+    firmTypeDesc?: string | undefined;
+    contactID?: number;
+    individualJobTitle?: string | undefined;
+    individualDateOfBirth?: string | undefined;
+    individualNationality?: string | undefined;
+    registrationCode?: string | undefined;
+    registrationDate?: string | undefined;
+    createdBy?: number;
+    accountLocked?: boolean;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isActiveUser?: boolean;
+    isAccountExists?: boolean;
+    isValidReqeust?: boolean | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    withdrawnFunctionTypeIDsList?: string | undefined;
+    wRequestTypeID?: number;
+    wRequestTypeDesc?: string | undefined;
+    registrationStatus?: string | undefined;
+    wUserAccountTypeID?: number;
+    wUserAccountTypeDesc?: string | undefined;
+    roleDesc?: string | undefined;
+    wUserID?: number;
+    wUserLoginID?: number | undefined;
+    isRecordInsert?: boolean;
+    isSEF?: boolean;
+    isSessionActive?: boolean;
+    passwordChangeDate?: Date | undefined;
+    userPassword?: string | undefined;
+    lstApplicationDetail?: ApplicationDetail[] | undefined;
+    wObjectID?: number | undefined;
+    wRoleStartDate?: string | undefined;
+    lstWUserRoles?: WUserRoles[] | undefined;
+    objectID?: number | undefined;
+    userLoginName?: string | undefined;
+    isActive?: boolean;
+    agreedOnTerms?: boolean;
+    termID?: number;
+    termsAgreedDate?: string | undefined;
+    createdDate?: string | undefined;
+    userModified?: number;
+    dateModified?: string | undefined;
+    wLoginQuestionTypeID?: number;
+    userQuestionAnswer?: string | undefined;
+    userIPAddress?: string | undefined;
+    individualName?: string | undefined;
+    userSessionID?: string | undefined;
+    roleId?: number | undefined;
+    roleDescription?: string | undefined;
+    isRoleValid?: boolean;
+    individualEmailAddress?: string | undefined;
+    registrationPassword?: string | undefined;
+    dateOfBirth?: string | undefined;
+    nationality?: string | undefined;
+    isRegistered?: boolean;
+    isAccountLocked?: boolean;
+    operationFlage?: string | undefined;
+    qfcNumber?: string | undefined;
+    wRoleIDs?: string | undefined;
+    wActiveUserRoles?: string | undefined;
+    wActiveUserRoleIDs?: string | undefined;
+    aiNumber?: string | undefined;
+    workPhone?: string | undefined;
+    residencePhone?: string | undefined;
+    isUserAccessAuthorised?: boolean;
+
+    constructor(data?: IWUsers) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wAccessRequestID = _data["wAccessRequestID"];
+            this.firmQFCNo = _data["firmQFCNo"];
+            this.firmName = _data["firmName"];
+            this.firmTypeID = _data["firmTypeID"];
+            this.firmTypeDesc = _data["firmTypeDesc"];
+            this.contactID = _data["contactID"];
+            this.individualJobTitle = _data["individualJobTitle"];
+            this.individualDateOfBirth = _data["individualDateOfBirth"];
+            this.individualNationality = _data["individualNationality"];
+            this.registrationCode = _data["registrationCode"];
+            this.registrationDate = _data["registrationDate"];
+            this.createdBy = _data["createdBy"];
+            this.accountLocked = _data["accountLocked"];
+            this.isAccountExpired = _data["isAccountExpired"];
+            this.isLoggedIn = _data["isLoggedIn"];
+            this.isActiveUser = _data["isActiveUser"];
+            this.isAccountExists = _data["isAccountExists"];
+            this.isValidReqeust = _data["isValidReqeust"];
+            this.wFunctionTypeIDsList = _data["wFunctionTypeIDsList"];
+            this.withdrawnFunctionTypeIDsList = _data["withdrawnFunctionTypeIDsList"];
+            this.wRequestTypeID = _data["wRequestTypeID"];
+            this.wRequestTypeDesc = _data["wRequestTypeDesc"];
+            this.registrationStatus = _data["registrationStatus"];
+            this.wUserAccountTypeID = _data["wUserAccountTypeID"];
+            this.wUserAccountTypeDesc = _data["wUserAccountTypeDesc"];
+            this.roleDesc = _data["roleDesc"];
+            this.wUserID = _data["wUserID"];
+            this.wUserLoginID = _data["wUserLoginID"];
+            this.isRecordInsert = _data["isRecordInsert"];
+            this.isSEF = _data["isSEF"];
+            this.isSessionActive = _data["isSessionActive"];
+            this.passwordChangeDate = _data["passwordChangeDate"] ? new Date(_data["passwordChangeDate"].toString()) : <any>undefined;
+            this.userPassword = _data["userPassword"];
+            if (Array.isArray(_data["lstApplicationDetail"])) {
+                this.lstApplicationDetail = [] as any;
+                for (let item of _data["lstApplicationDetail"])
+                    this.lstApplicationDetail!.push(ApplicationDetail.fromJS(item));
+            }
+            this.wObjectID = _data["wObjectID"];
+            this.wRoleStartDate = _data["wRoleStartDate"];
+            if (Array.isArray(_data["lstWUserRoles"])) {
+                this.lstWUserRoles = [] as any;
+                for (let item of _data["lstWUserRoles"])
+                    this.lstWUserRoles!.push(WUserRoles.fromJS(item));
+            }
+            this.objectID = _data["objectID"];
+            this.userLoginName = _data["userLoginName"];
+            this.isActive = _data["isActive"];
+            this.agreedOnTerms = _data["agreedOnTerms"];
+            this.termID = _data["termID"];
+            this.termsAgreedDate = _data["termsAgreedDate"];
+            this.createdDate = _data["createdDate"];
+            this.userModified = _data["userModified"];
+            this.dateModified = _data["dateModified"];
+            this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
+            this.userQuestionAnswer = _data["userQuestionAnswer"];
+            this.userIPAddress = _data["userIPAddress"];
+            this.individualName = _data["individualName"];
+            this.userSessionID = _data["userSessionID"];
+            this.roleId = _data["roleId"];
+            this.roleDescription = _data["roleDescription"];
+            this.isRoleValid = _data["isRoleValid"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.registrationPassword = _data["registrationPassword"];
+            this.dateOfBirth = _data["dateOfBirth"];
+            this.nationality = _data["nationality"];
+            this.isRegistered = _data["isRegistered"];
+            this.isAccountLocked = _data["isAccountLocked"];
+            this.operationFlage = _data["operationFlage"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.wRoleIDs = _data["wRoleIDs"];
+            this.wActiveUserRoles = _data["wActiveUserRoles"];
+            this.wActiveUserRoleIDs = _data["wActiveUserRoleIDs"];
+            this.aiNumber = _data["aiNumber"];
+            this.workPhone = _data["workPhone"];
+            this.residencePhone = _data["residencePhone"];
+            this.isUserAccessAuthorised = _data["isUserAccessAuthorised"];
+        }
+    }
+
+    static fromJS(data: any): WUsers {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUsers();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wAccessRequestID"] = this.wAccessRequestID;
+        data["firmQFCNo"] = this.firmQFCNo;
+        data["firmName"] = this.firmName;
+        data["firmTypeID"] = this.firmTypeID;
+        data["firmTypeDesc"] = this.firmTypeDesc;
+        data["contactID"] = this.contactID;
+        data["individualJobTitle"] = this.individualJobTitle;
+        data["individualDateOfBirth"] = this.individualDateOfBirth;
+        data["individualNationality"] = this.individualNationality;
+        data["registrationCode"] = this.registrationCode;
+        data["registrationDate"] = this.registrationDate;
+        data["createdBy"] = this.createdBy;
+        data["accountLocked"] = this.accountLocked;
+        data["isAccountExpired"] = this.isAccountExpired;
+        data["isLoggedIn"] = this.isLoggedIn;
+        data["isActiveUser"] = this.isActiveUser;
+        data["isAccountExists"] = this.isAccountExists;
+        data["isValidReqeust"] = this.isValidReqeust;
+        data["wFunctionTypeIDsList"] = this.wFunctionTypeIDsList;
+        data["withdrawnFunctionTypeIDsList"] = this.withdrawnFunctionTypeIDsList;
+        data["wRequestTypeID"] = this.wRequestTypeID;
+        data["wRequestTypeDesc"] = this.wRequestTypeDesc;
+        data["registrationStatus"] = this.registrationStatus;
+        data["wUserAccountTypeID"] = this.wUserAccountTypeID;
+        data["wUserAccountTypeDesc"] = this.wUserAccountTypeDesc;
+        data["roleDesc"] = this.roleDesc;
+        data["wUserID"] = this.wUserID;
+        data["wUserLoginID"] = this.wUserLoginID;
+        data["isRecordInsert"] = this.isRecordInsert;
+        data["isSEF"] = this.isSEF;
+        data["isSessionActive"] = this.isSessionActive;
+        data["passwordChangeDate"] = this.passwordChangeDate ? this.passwordChangeDate.toISOString() : <any>undefined;
+        data["userPassword"] = this.userPassword;
+        if (Array.isArray(this.lstApplicationDetail)) {
+            data["lstApplicationDetail"] = [];
+            for (let item of this.lstApplicationDetail)
+                data["lstApplicationDetail"].push(item.toJSON());
+        }
+        data["wObjectID"] = this.wObjectID;
+        data["wRoleStartDate"] = this.wRoleStartDate;
+        if (Array.isArray(this.lstWUserRoles)) {
+            data["lstWUserRoles"] = [];
+            for (let item of this.lstWUserRoles)
+                data["lstWUserRoles"].push(item.toJSON());
+        }
+        data["objectID"] = this.objectID;
+        data["userLoginName"] = this.userLoginName;
+        data["isActive"] = this.isActive;
+        data["agreedOnTerms"] = this.agreedOnTerms;
+        data["termID"] = this.termID;
+        data["termsAgreedDate"] = this.termsAgreedDate;
+        data["createdDate"] = this.createdDate;
+        data["userModified"] = this.userModified;
+        data["dateModified"] = this.dateModified;
+        data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
+        data["userQuestionAnswer"] = this.userQuestionAnswer;
+        data["userIPAddress"] = this.userIPAddress;
+        data["individualName"] = this.individualName;
+        data["userSessionID"] = this.userSessionID;
+        data["roleId"] = this.roleId;
+        data["roleDescription"] = this.roleDescription;
+        data["isRoleValid"] = this.isRoleValid;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["registrationPassword"] = this.registrationPassword;
+        data["dateOfBirth"] = this.dateOfBirth;
+        data["nationality"] = this.nationality;
+        data["isRegistered"] = this.isRegistered;
+        data["isAccountLocked"] = this.isAccountLocked;
+        data["operationFlage"] = this.operationFlage;
+        data["qfcNumber"] = this.qfcNumber;
+        data["wRoleIDs"] = this.wRoleIDs;
+        data["wActiveUserRoles"] = this.wActiveUserRoles;
+        data["wActiveUserRoleIDs"] = this.wActiveUserRoleIDs;
+        data["aiNumber"] = this.aiNumber;
+        data["workPhone"] = this.workPhone;
+        data["residencePhone"] = this.residencePhone;
+        data["isUserAccessAuthorised"] = this.isUserAccessAuthorised;
+        return data;
+    }
+}
+
+export interface IWUsers {
+    wAccessRequestID?: number;
+    firmQFCNo?: string | undefined;
+    firmName?: string | undefined;
+    firmTypeID?: number;
+    firmTypeDesc?: string | undefined;
+    contactID?: number;
+    individualJobTitle?: string | undefined;
+    individualDateOfBirth?: string | undefined;
+    individualNationality?: string | undefined;
+    registrationCode?: string | undefined;
+    registrationDate?: string | undefined;
+    createdBy?: number;
+    accountLocked?: boolean;
+    isAccountExpired?: boolean;
+    isLoggedIn?: boolean;
+    isActiveUser?: boolean;
+    isAccountExists?: boolean;
+    isValidReqeust?: boolean | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    withdrawnFunctionTypeIDsList?: string | undefined;
+    wRequestTypeID?: number;
+    wRequestTypeDesc?: string | undefined;
+    registrationStatus?: string | undefined;
+    wUserAccountTypeID?: number;
+    wUserAccountTypeDesc?: string | undefined;
+    roleDesc?: string | undefined;
+    wUserID?: number;
+    wUserLoginID?: number | undefined;
+    isRecordInsert?: boolean;
+    isSEF?: boolean;
+    isSessionActive?: boolean;
+    passwordChangeDate?: Date | undefined;
+    userPassword?: string | undefined;
+    lstApplicationDetail?: ApplicationDetail[] | undefined;
+    wObjectID?: number | undefined;
+    wRoleStartDate?: string | undefined;
+    lstWUserRoles?: WUserRoles[] | undefined;
+    objectID?: number | undefined;
+    userLoginName?: string | undefined;
+    isActive?: boolean;
+    agreedOnTerms?: boolean;
+    termID?: number;
+    termsAgreedDate?: string | undefined;
+    createdDate?: string | undefined;
+    userModified?: number;
+    dateModified?: string | undefined;
+    wLoginQuestionTypeID?: number;
+    userQuestionAnswer?: string | undefined;
+    userIPAddress?: string | undefined;
+    individualName?: string | undefined;
+    userSessionID?: string | undefined;
+    roleId?: number | undefined;
+    roleDescription?: string | undefined;
+    isRoleValid?: boolean;
+    individualEmailAddress?: string | undefined;
+    registrationPassword?: string | undefined;
+    dateOfBirth?: string | undefined;
+    nationality?: string | undefined;
+    isRegistered?: boolean;
+    isAccountLocked?: boolean;
+    operationFlage?: string | undefined;
+    qfcNumber?: string | undefined;
+    wRoleIDs?: string | undefined;
+    wActiveUserRoles?: string | undefined;
+    wActiveUserRoleIDs?: string | undefined;
+    aiNumber?: string | undefined;
+    workPhone?: string | undefined;
+    residencePhone?: string | undefined;
+    isUserAccessAuthorised?: boolean;
+}
+
+export class WUsersDto implements IWUsersDto {
+    wUserID?: number | undefined;
+    wAccessRequestID?: number | undefined;
+    isAccountLocked?: boolean | undefined;
+    agreedOnTerms?: boolean;
+    isActive?: boolean | undefined;
+    roleDescription?: string | undefined;
+    userQuestionAnswer?: string | undefined;
+    userModified?: number | undefined;
+    operationFlage?: string | undefined;
+    individualName?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    userLoginName?: string | undefined;
+    userPassword?: string | undefined;
+    userIPAddress?: string | undefined;
+    wRoleIDs?: string | undefined;
+    userSessionID?: string | undefined;
+    termID?: number | undefined;
+    createdBy?: number | undefined;
+    roleId?: number;
+    isRoleValid?: boolean;
+    firmQFCNo?: any | undefined;
+    qfcNumber?: any | undefined;
+    firmName?: string | undefined;
+    workPhone?: string | undefined;
+    residencePhone?: string | undefined;
+    createdDate?: string | undefined;
+    dateOfBirth?: string | undefined;
+    nationality?: string | undefined;
+    wActiveUserRoles?: string | undefined;
+    aiNumber?: string | undefined;
+    wActiveUserRoleIDs?: string | undefined;
+    isUserAccessAuthorised?: boolean | undefined;
+    firmTypeDesc?: string | undefined;
+
+    constructor(data?: IWUsersDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wUserID = _data["wUserID"];
+            this.wAccessRequestID = _data["wAccessRequestID"];
+            this.isAccountLocked = _data["isAccountLocked"];
+            this.agreedOnTerms = _data["agreedOnTerms"];
+            this.isActive = _data["isActive"];
+            this.roleDescription = _data["roleDescription"];
+            this.userQuestionAnswer = _data["userQuestionAnswer"];
+            this.userModified = _data["userModified"];
+            this.operationFlage = _data["operationFlage"];
+            this.individualName = _data["individualName"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.userLoginName = _data["userLoginName"];
+            this.userPassword = _data["userPassword"];
+            this.userIPAddress = _data["userIPAddress"];
+            this.wRoleIDs = _data["wRoleIDs"];
+            this.userSessionID = _data["userSessionID"];
+            this.termID = _data["termID"];
+            this.createdBy = _data["createdBy"];
+            this.roleId = _data["roleId"];
+            this.isRoleValid = _data["isRoleValid"];
+            this.firmQFCNo = _data["firmQFCNo"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.firmName = _data["firmName"];
+            this.workPhone = _data["workPhone"];
+            this.residencePhone = _data["residencePhone"];
+            this.createdDate = _data["createdDate"];
+            this.dateOfBirth = _data["dateOfBirth"];
+            this.nationality = _data["nationality"];
+            this.wActiveUserRoles = _data["wActiveUserRoles"];
+            this.aiNumber = _data["aiNumber"];
+            this.wActiveUserRoleIDs = _data["wActiveUserRoleIDs"];
+            this.isUserAccessAuthorised = _data["isUserAccessAuthorised"];
+            this.firmTypeDesc = _data["firmTypeDesc"];
+        }
+    }
+
+    static fromJS(data: any): WUsersDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUsersDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wUserID"] = this.wUserID;
+        data["wAccessRequestID"] = this.wAccessRequestID;
+        data["isAccountLocked"] = this.isAccountLocked;
+        data["agreedOnTerms"] = this.agreedOnTerms;
+        data["isActive"] = this.isActive;
+        data["roleDescription"] = this.roleDescription;
+        data["userQuestionAnswer"] = this.userQuestionAnswer;
+        data["userModified"] = this.userModified;
+        data["operationFlage"] = this.operationFlage;
+        data["individualName"] = this.individualName;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["userLoginName"] = this.userLoginName;
+        data["userPassword"] = this.userPassword;
+        data["userIPAddress"] = this.userIPAddress;
+        data["wRoleIDs"] = this.wRoleIDs;
+        data["userSessionID"] = this.userSessionID;
+        data["termID"] = this.termID;
+        data["createdBy"] = this.createdBy;
+        data["roleId"] = this.roleId;
+        data["isRoleValid"] = this.isRoleValid;
+        data["firmQFCNo"] = this.firmQFCNo;
+        data["qfcNumber"] = this.qfcNumber;
+        data["firmName"] = this.firmName;
+        data["workPhone"] = this.workPhone;
+        data["residencePhone"] = this.residencePhone;
+        data["createdDate"] = this.createdDate;
+        data["dateOfBirth"] = this.dateOfBirth;
+        data["nationality"] = this.nationality;
+        data["wActiveUserRoles"] = this.wActiveUserRoles;
+        data["aiNumber"] = this.aiNumber;
+        data["wActiveUserRoleIDs"] = this.wActiveUserRoleIDs;
+        data["isUserAccessAuthorised"] = this.isUserAccessAuthorised;
+        data["firmTypeDesc"] = this.firmTypeDesc;
+        return data;
+    }
+}
+
+export interface IWUsersDto {
+    wUserID?: number | undefined;
+    wAccessRequestID?: number | undefined;
+    isAccountLocked?: boolean | undefined;
+    agreedOnTerms?: boolean;
+    isActive?: boolean | undefined;
+    roleDescription?: string | undefined;
+    userQuestionAnswer?: string | undefined;
+    userModified?: number | undefined;
+    operationFlage?: string | undefined;
+    individualName?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    userLoginName?: string | undefined;
+    userPassword?: string | undefined;
+    userIPAddress?: string | undefined;
+    wRoleIDs?: string | undefined;
+    userSessionID?: string | undefined;
+    termID?: number | undefined;
+    createdBy?: number | undefined;
+    roleId?: number;
+    isRoleValid?: boolean;
+    firmQFCNo?: any | undefined;
+    qfcNumber?: any | undefined;
+    firmName?: string | undefined;
+    workPhone?: string | undefined;
+    residencePhone?: string | undefined;
+    createdDate?: string | undefined;
+    dateOfBirth?: string | undefined;
+    nationality?: string | undefined;
+    wActiveUserRoles?: string | undefined;
+    aiNumber?: string | undefined;
+    wActiveUserRoleIDs?: string | undefined;
+    isUserAccessAuthorised?: boolean | undefined;
+    firmTypeDesc?: string | undefined;
+}
+
+export class WUsersDtoBaseResponse implements IWUsersDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUsersDto;
+
+    constructor(data?: IWUsersDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WUsersDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WUsersDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUsersDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWUsersDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUsersDto;
+}
+
+export class WUsersDtoListBaseResponse implements IWUsersDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUsersDto[] | undefined;
+
+    constructor(data?: IWUsersDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WUsersDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WUsersDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WUsersDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWUsersDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WUsersDto[] | undefined;
 }
 
 export class WobjectAttachmentStatusDto implements IWobjectAttachmentStatusDto {
@@ -13052,8 +19252,69 @@ export interface IWobjectAttachmentStatusDtoBaseResponse {
     response?: WobjectAttachmentStatusDto;
 }
 
+export class XmlDocumentBaseResponse implements IXmlDocumentBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: any[] | undefined;
+
+    constructor(data?: IXmlDocumentBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): XmlDocumentBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new XmlDocumentBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IXmlDocumentBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: any[] | undefined;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
+}
+
 export class ApiException extends Error {
-   override message: string;
+    override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };

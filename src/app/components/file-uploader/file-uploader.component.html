@@ -4,27 +4,18 @@
     <div class="header-panel">
       <h4 [innerHTML]="DocSignText"></h4>
     </div>
-    <div *ngIf="!ReadOnly"
-      class="drop-zone"
-      [class.drag-over]="isDragOverSingle"
-      (dragover)="onDragOver($event, 'single')"
-      (dragleave)="onDragLeave($event, 'single')"
-      (drop)="onDrop($event, 'single')"
-    >
+    <h4>Primary File</h4>
+    <div *ngIf="!ReadOnly" class="drop-zone" [class.drag-over]="isDragOverSingle"
+      (dragover)="onDragOver($event, 'primary')" (dragleave)="onDragLeave($event, 'primary')"
+      (drop)="onDrop($event, 'primary')">
       <p>Drag and drop a file here or</p>
       <button mat-raised-button color="primary" (click)="singleFileInput.click()">Browse</button>
-      <input
-        #singleFileInput
-        type="file"
-        (change)="onFilesSelected($event, 'single')"
-        style="display: none"
-      />
+      <input #singleFileInput type="file" (change)="onFilesSelected($event, 'primary', 0)" style="display: none" />
     </div>
     <div class="uploaded-files" *ngIf="primaryFile">
-      <h4>Uploaded Primary File</h4>
       <div class="file-card">
         <mat-icon class="file-icon">insert_drive_file</mat-icon>
-        <p class="file-name">{{ primaryFile.name }}</p>
+        <p class="file-name">{{ primaryFile.fileName }}</p>
         <div class="card-actions">
           <button mat-icon-button class="download-btn" (click)="onDownload(primaryFile)">
             <mat-icon>download</mat-icon>
@@ -45,38 +36,29 @@
       <h4>If you wish to provide additional information via an
         attachment or include any additional documentation, please do so in this section:</h4>
     </div>
-    <div 
-      *ngIf="!ReadOnly"
-      class="drop-zone"
-      [class.drag-over]="isDragOverMultiple"
-      (dragover)="onDragOver($event, 'multiple')"
-      (dragleave)="onDragLeave($event, 'multiple')"
-      (drop)="onDrop($event, 'multiple')"
-    >
-      <p>Drag and drop files here or</p>
-      <button mat-raised-button color="primary" (click)="multipleFileInput.click()">Browse</button>
-      <input
-        #multipleFileInput
-        type="file"
-        multiple
-        (change)="onFilesSelected($event, 'multiple')"
-        style="display: none"
-      />
-    </div>
-    <div class="uploaded-files">
-      <h4>Uploaded Files</h4>
-      <div class="file-card" *ngFor="let file of uploadedFiles; let i = index">
-        <mat-icon class="file-icon">insert_drive_file</mat-icon>
-        <p class="file-name">{{ file.name }}</p>
-        <div class="card-actions">
-          <button mat-icon-button class="download-btn" (click)="onDownload(file)">
-            <mat-icon>download</mat-icon>
-          </button>
-          <button *ngIf="!ReadOnly" mat-icon-button class="remove-btn" (click)="confirmFileRemoval(i)">
-            <mat-icon>close</mat-icon>
-          </button>
+    <div *ngFor="let attachment of lstAttachmentsSvc; let i = index" class="additional-attachment">
+      <h4>{{ attachment.docSubTypeDesc }}</h4>
+      <div *ngIf="!ReadOnly" class="drop-zone" [class.drag-over]="isDragOverMultiple"
+        (dragover)="onDragOver($event, 'additional')" (dragleave)="onDragLeave($event, 'additional')"
+        (drop)="onDrop($event, 'additional')">
+        <p>Drag and drop files here or</p>
+        <button mat-raised-button color="primary" (click)="onFileBrowseClick(i,'additional')">Browse</button>
+        <input #fileInputs type="file" [multiple]="attachment.isAllowMultiple && false"
+          (change)="onFilesSelected($event, 'additional', i)" style="display: none" />
+      </div>
+      <div class="uploaded-files">
+        <div class="file-card" *ngFor="let file of uploadedFiles[attachment.docSubTypeId ?? 0]; let i = index">
+          <mat-icon class="file-icon">insert_drive_file</mat-icon>
+          <p class="file-name">{{ file.fileName }}</p>
+          <div class="card-actions">
+            <button mat-icon-button class="download-btn" (click)="onDownload(file)">
+              <mat-icon>download</mat-icon>
+            </button>
+            <button *ngIf="!ReadOnly" mat-icon-button class="remove-btn" (click)="confirmFileRemoval(attachment.docSubTypeId ?? 0 , i)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
