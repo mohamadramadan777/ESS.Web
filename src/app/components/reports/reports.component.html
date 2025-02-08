@@ -5,16 +5,12 @@
   <h2>Reports:</h2>
   <div class="schedule-dropdown">
     <label for="report-schedule">Report Schedule for:</label>
-    <select
-      id="report-schedule"
-      [(ngModel)]="selectedSchedule"
-      (change)="onScheduleChange()"
-    >
+    <select id="report-schedule" [(ngModel)]="selectedSchedule" (change)="onScheduleChange()">
       <option *ngFor="let schedule of schedules" [ngValue]="schedule">
-        {{ schedule.rptSchFinYearFromDate }} to
-        {{ schedule.rptSchFinYearToDate }}
+        {{ schedule.text }}
       </option>
-    </select>
+   </select>
+   
   </div>
 
   <mat-tab-group class="custom-tab-group" [backgroundColor]="">
