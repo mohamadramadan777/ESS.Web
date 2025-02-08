@@ -16,14 +16,16 @@
             <app-file-uploader
               [ShowHeaderPanel]="true"
               [ShowHeaderFormName]="true"
-              [ObjectID]="123"
-              [ObjectInstanceID]="456"
+              [ObjectID]="this.GenSubObjectID"
+              [ObjectInstanceID]="this.GenSubID"
               [ObjectInstanceRevNum]="1"
               [DocTypeID]="this.data.DocTypeId"
-              [FormTypeID]="101112"
+              [FormTypeID]="this.data.WIndFromTypeID"
               [ShowPrimaryDoc]="true"
               [DocSignText]="this.DocSignText"
+              [ReportFormName]="data.Form"
               (fileUploaded)="onFileUploaded($event)"
+              (ObjectInstanceIDChange)="onObjectInstanceIDChange($event)"
             ></app-file-uploader>
           </div>
         </mat-tab>
@@ -31,10 +33,10 @@
         <mat-tab label="Notes">
             <div class="tab-content">
               <div *ngIf="ReadOnly" class="notes-container">
-                <p>{{ data.wNotes }}</p>
-                <p *ngIf="data.wNotes == '' || !data.wNotes">No notes added.</p>
+                <p>{{ this.Comments }}</p>
+                <p *ngIf="this.Comments == '' || !this.Comments">No notes added.</p>
               </div>
-              <textarea *ngIf="!ReadOnly" [(ngModel)]="data.wNotes" (ngModelChange)="onNotesChange()"></textarea>
+              <textarea *ngIf="!ReadOnly" [(ngModel)]="this.Comments" (ngModelChange)="onNotesChange()"></textarea>
             </div>
           </mat-tab>
 
@@ -47,9 +49,13 @@
       </mat-tab-group>
     </div>
     <div class="modal-footer" *ngIf="!ReadOnly">
-      <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(3)">
+      <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(0)">
         <mat-icon>attach_file</mat-icon>
         <span class="animated-text">Attachments</span>
+      </button>
+      <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(2)">
+        <mat-icon>draw</mat-icon>
+        <span class="animated-text">Signatories</span>
       </button>
       <button mat-icon-button class="animated-icon-button-small" (click)="onSave()">
         <mat-icon>save</mat-icon>

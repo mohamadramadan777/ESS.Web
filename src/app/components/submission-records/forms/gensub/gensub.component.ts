@@ -1,24 +1,34 @@
-import { Component, Inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { TermSubject, WObjects } from '../../../../enums/app.enums';
+import { TermSubject, WObjects, GenSubMessage, SignOffMethodType, ObjectStatus } from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
-import { Client, AttachmentDto, ObjectSOTaskStatus, DocSignatories } from '../../../../services/api-client';
+import { Client, AttachmentDto, ObjectSOTaskStatus, DocSignatories, GeneralSubmissionDto } from '../../../../services/api-client';
 import { LoadingService } from '../../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
+import { FileUploaderComponent } from '../../../file-uploader/file-uploader.component';
+import { MessagePropertyService } from '../../../../services/message-property.service';
 
 @Component({
   selector: 'app-gensub',
   templateUrl: './gensub.component.html',
   styleUrl: './gensub.component.scss'
 })
-export class GensubComponent {
+export class GensubComponent implements AfterViewInit {
+  @ViewChild(FileUploaderComponent) fileUploader!: FileUploaderComponent;
+
+  ngAfterViewInit() {
+    // Ensure ViewChild is initialized before accessing it
+    if (this.fileUploader) {
+      console.log('File Uploader Component Loaded');
+    }
+  }
   @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
   @Input() ReadOnly: boolean = false;
   unsavedChanges: boolean = false; // Track unsaved changes
-
+  primaryFileAttached = false;
   AppConstants = AppConstants;
   XBRLDocType = "xbrlDocType";
   // Arrays for dropdown and controlled functions
@@ -33,6 +43,9 @@ export class GensubComponent {
   GENSUBDOCSIGNATORIES = "docSignatories";
   SubmitLabel = "Submit";
   DocSignText = "";
+  GenSubObjectID = WObjects.GeneralSubmission;
+  GenSubID = 0;
+  Comments = "";
 
   constructor(
     private client: Client,
@@ -40,12 +53,13 @@ export class GensubComponent {
     private toastr: ToastrService,
     public dialogRef: MatDialogRef<GensubComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private messagePropertyService: MessagePropertyService
   ) { }
 
   ngOnInit(): void {
     this.getXbrlDoctypes();
-    if(this.data.DocTypeId != 0 && this.data.DocTypeId != undefined){
+    if (this.data.DocTypeId != 0 && this.data.DocTypeId != undefined) {
       this.signOffRequired();
     }
     this.loadApplicants(); // Load applicants via API
@@ -53,34 +67,34 @@ export class GensubComponent {
 
   getXbrlDoctypes(): void {
     // TODO: Replace with API call to fetch applicants
-   this.client.getXbrlDocTypes(0).subscribe({
-    next: (response) => {
-      if (response && response.isSuccess && response.response) {
-        sessionStorage.setItem(this.XBRLDocType, JSON.stringify(response.response)); // Store in sessionStorage
-        if(response.response != undefined){
-          if(this.data.WIndFromTypeID != 0 && this.data.WIndFromTypeID != undefined)
-          this.isXbrlType = this.getDocType(response.response);
+    this.client.getXbrlDocTypes(0).subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          sessionStorage.setItem(this.XBRLDocType, JSON.stringify(response.response)); // Store in sessionStorage
+          if (response.response != undefined) {
+            if (this.data.WIndFromTypeID != 0 && this.data.WIndFromTypeID != undefined)
+              this.isXbrlType = this.getDocType(response.response);
+          }
+        } else {
+          this.toastr.error('Failed to load Xbrl Doctypes.', 'Error');
+          console.error('Failed to load Xbrl Doctypes:', response?.errorMessage);
         }
-      } else {
-        this.toastr.error('Failed to load Xbrl Doctypes.', 'Error');
-        console.error('Failed to load Xbrl Doctypes:', response?.errorMessage);
-      }
-    },
-    error: (error) => {
-      this.loadingService.hide();
-      this.toastr.error('Error occurred while fetching Xbrl Doctypes.', 'Error');
-      console.error('Error occurred while fetching Xbrl Doctypes:', error);
-    },
-  });
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching Xbrl Doctypes.', 'Error');
+        console.error('Error occurred while fetching Xbrl Doctypes:', error);
+      },
+    });
   }
 
   getDocType(lstXbrlDocTypes: number[]): boolean {
     return lstXbrlDocTypes.some(docType => docType?.toString() === this.data.DocTypeId?.toString());
-}
+  }
 
   signOffRequired(): void {
     const objDocSignatoriesJson = sessionStorage.getItem(this.GENSUBDOCSIGNATORIES); // Check session storage
-    if(objDocSignatoriesJson && false){
+    if (objDocSignatoriesJson && false) {
       // const objDocSignatories = JSON.parse(objDocSignatoriesJson) as DocSignatories;
       // this.DocSignText = objDocSignatories.docSignText ?? "";
       // if(objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0){
@@ -91,31 +105,31 @@ export class GensubComponent {
       //   this.isSignOffRequired = true;
       // }
     }
-    else{
-      this.client.getDocSignatories(this.data.DocTypeId,"",Number(WObjects.GeneralSubmission)).subscribe({
-       next: (response) => {
-         if (response && response.isSuccess && response.response) {
-           const objDocSignatories = response.response;
-           this.DocSignText = objDocSignatories.docSignText ?? "";
-           sessionStorage.setItem(this.GENSUBDOCSIGNATORIES, JSON.stringify(objDocSignatories)); // Store in sessionStorage
-           if(objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0){
-             this.isSignOffRequired = false;
-             this.SubmitLabel = "Submit";
-           }
-           else{
-             this.isSignOffRequired = true;
-           }
-         } else {
-           this.toastr.error('Failed to load Doc Signatories.', 'Error');
-           console.error('Failed to load Doc Signatories:', response?.errorMessage);
-         }
-       },
-       error: (error) => {
-         this.loadingService.hide();
-         this.toastr.error('Error occurred while fetching Doc Signatories.', 'Error');
-         console.error('Error occurred while fetching Doc Signatories:', error);
-       },
-     });
+    else {
+      this.client.getDocSignatories(this.data.DocTypeId, "", Number(WObjects.GeneralSubmission)).subscribe({
+        next: (response) => {
+          if (response && response.isSuccess && response.response) {
+            const objDocSignatories = response.response;
+            this.DocSignText = objDocSignatories.docSignText ?? "";
+            sessionStorage.setItem(this.GENSUBDOCSIGNATORIES, JSON.stringify(objDocSignatories)); // Store in sessionStorage
+            if (objDocSignatories != undefined && objDocSignatories?.numOfSigs == 0) {
+              this.isSignOffRequired = false;
+              this.SubmitLabel = "Submit";
+            }
+            else {
+              this.isSignOffRequired = true;
+            }
+          } else {
+            this.toastr.error('Failed to load Doc Signatories.', 'Error');
+            console.error('Failed to load Doc Signatories:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while fetching Doc Signatories.', 'Error');
+          console.error('Error occurred while fetching Doc Signatories:', error);
+        },
+      });
     }
   }
 
@@ -129,52 +143,57 @@ export class GensubComponent {
     ];
   }
 
-  // Fetch controlled functions and AI Number when applicant is selected
-  onApplicantChange(): void {
-    if (this.selectedApplicant) {
-      this.aiNumber = this.selectedApplicant.aiNumber;
-      this.loadControlledFunctions(this.selectedApplicant.id);
-    }
-  }
-
-  // Load controlled functions based on the selected applicant
-loadControlledFunctions(applicantId: number): void {
-  // Generate different options based on applicantId % 3
-  switch (applicantId % 3) {
-    case 0:
-      this.controlledFunctions = [
-        { name: 'Non-Executive Governance Function', approvedDate: '03/Oct/2021', isWithdrawn: false },
-      ];
-      break;
-    case 1:
-      this.controlledFunctions = [
-        { name: 'Operational Function', approvedDate: '20/Aug/2021', isWithdrawn: false },
-        { name: 'Risk Management Function', approvedDate: '12/Jan/2022', isWithdrawn: false },
-      ];
-      break;
-    case 2:
-      this.controlledFunctions = [
-        { name: 'Compliance Function', approvedDate: '05/Jun/2021', isWithdrawn: false },
-        { name: 'Internal Audit Function', approvedDate: '10/Nov/2021', isWithdrawn: false },
-        { name: 'IT Governance Function', approvedDate: '22/Mar/2022', isWithdrawn: false },
-      ];
-      break;
-    default:
-      this.controlledFunctions = []; // Default to an empty array if no match
-      break;
-  }
-}
-
-
   // Save functionality
-  onSave(): void {
-    this.toastr.success('Changes saved successfully!', 'Success');
+  onSave(withClose: boolean = false): void {
+    if (this.fileUploader.primaryFile) {
+      const objGenSub: GeneralSubmissionDto = new GeneralSubmissionDto();
+      if (this.GenSubID != 0) {
+        objGenSub.genSubmissionID = this.GenSubID;
+      }
+      objGenSub.qfcNumber = localStorage.getItem(this.AppConstants.Session.SESSION_QFC_NO) ?? "";
+      if (this.data.DocTypeId != 0 && this.data.DocTypeId != undefined) {
+        objGenSub.docTypeID = this.data.DocTypeId;
+        objGenSub.rptSOMethodTypeID = SignOffMethodType.ElectronicSigned;
+      }
+      objGenSub.comments = this.Comments;
+      objGenSub.objectStatusTypeID = ObjectStatus.Pending;
+      objGenSub.userCreated = Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID));
+      this.loadingService.show();
+      this.client.saveGenSubDetails(objGenSub).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess && response.response) {
+            this.GenSubID = response.response.genSubmissionID ?? 0;
+            this.toastr.success('Changes saved successfully!', 'Success');
+            if (withClose) {
+              this.dialogRef.close();
+            }
+          } else {
+            this.toastr.error('Failed to save general submission.', 'Error');
+            console.error('Failed to save general submission:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while saving general submission.', 'Error');
+          console.error('Error occurred while saving general submission:', error);
+        },
+      });
+    }
+    else {
+      this.messagePropertyService.getMessageProperty(GenSubMessage.PleaseAttachFormTypeDescForAdditionalDoc.toString()).subscribe((message) => {
+        Swal.fire(
+          'Warning!',
+          message.replace(AppConstants.Keywords.EMAIL_FORM_TYPE_DESC, this.data.Form),
+          'warning'
+        );
+      });
+    }
   }
 
   // Save and close functionality
   onSaveAndClose(): void {
-    this.toastr.success('Changes saved successfully!', 'Success');
-    this.dialogRef.close();
+    this.onSave(true);
   }
 
   onFileUploaded(uploadIds: number[]): void {
@@ -221,5 +240,10 @@ loadControlledFunctions(applicantId: number): void {
   }
   onNotesChange(): void {
     this.unsavedChanges = true;
+  }
+  // Update GenSubID when ObjectInstanceID changes
+  onObjectInstanceIDChange(newID: number): void {
+    this.GenSubID = newID;
+    console.log('GenSubID updated:', this.GenSubID);
   }
 }
