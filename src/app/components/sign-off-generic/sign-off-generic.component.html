@@ -1,0 +1,37 @@
+<div class="sign-off-container">
+    <!-- <div class="dialog-header">
+        <h1 mat-dialog-title class="dialog-title">
+            <span class="label">{{TermsTitle}}</span>
+        </h1>
+        <button mat-icon-button class="close-button" (click)="onCancel()">
+            <span class="material-icons">close</span>
+        </button>
+    </div> -->
+    <h4><strong>{{TermsTitle}}</strong></h4>
+    <div class="dialog-body">
+        <div class="terms-text">
+            {{ TermsText }}
+        </div>
+
+        <div class="form-group" *ngIf="this.data.ShowAcceptTermsCheckBox">
+            <input type="checkbox" id="accept-terms" />
+            <label for="accept-terms">I accept the Terms and Conditions</label>
+        </div>
+
+        <div class="form-group">
+            <label for="registered-email">Registered Email:</label>
+            <input id="registered-email" type="email" [(ngModel)]="RegisteredEmail" required />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input id="password" type="password" [(ngModel)]="Password" required />
+        </div>
+
+        <div class="actions">
+            <button mat-raised-button class="signoff-button" (click)="onSignOff()">
+                Sign off
+            </button>
+            <button mat-button color="warn" (click)="onCancel()">Cancel</button>
+        </div>
+    </div>

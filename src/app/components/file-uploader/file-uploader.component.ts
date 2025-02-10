@@ -129,7 +129,6 @@ export class FileUploaderComponent {
   }
 
   loadMessageProperties(): void {
-
     this.messagePropertyService.getMessageProperty(Attachments.fileUploadPath.toString()).subscribe((message) => {
       this.fileUploadPath = message;
     });
@@ -141,7 +140,6 @@ export class FileUploaderComponent {
     this.messagePropertyService.getMessageProperty(ReportSchedule.Special_Char_NotAllowed_InMOSS.toString()).subscribe((message) => {
       this.specialCharacters = message;
     });
-
   }
 
   getFileLocation() {
@@ -150,10 +148,12 @@ export class FileUploaderComponent {
         if (response && response.isSuccess && response.response) {
           this.fileLocation = response.response;
         } else {
+          this.loadingService.hide();
           console.error('Failed to load File Location:', response?.errorMessage);
         }
       },
       error: (error) => {
+        this.loadingService.hide();
         console.error('Error occurred while fetching File Location:', error);
       },
     });

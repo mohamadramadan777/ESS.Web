@@ -59,6 +59,7 @@ import { ApprovalComponent } from './components/submission-records/forms/approva
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { GensubComponent } from './components/submission-records/forms/gensub/gensub.component';
+import { SignOffGenericComponent } from './components/sign-off-generic/sign-off-generic.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +91,7 @@ import { GensubComponent } from './components/submission-records/forms/gensub/ge
     WithdrawalComponent,
     ApprovalComponent,
     GensubComponent,
+    SignOffGenericComponent,
   ],
   imports: [
     BrowserModule,

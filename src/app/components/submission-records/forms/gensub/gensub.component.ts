@@ -10,6 +10,7 @@ import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
 import { FileUploaderComponent } from '../../../file-uploader/file-uploader.component';
 import { MessagePropertyService } from '../../../../services/message-property.service';
+import { SignOffGenericComponent } from '../../../sign-off-generic/sign-off-generic.component';
 
 @Component({
   selector: 'app-gensub',
@@ -46,7 +47,8 @@ export class GensubComponent implements AfterViewInit {
   GenSubObjectID = WObjects.GeneralSubmission;
   GenSubID = 0;
   Comments = "";
-
+  showSignOffMessage = false;
+  SignOffMessage = "Any one of the following individual(s) can sign on this application: Myrtice Waelchi or Jacynthe Prosacco or Alvena Hackett or Gwen Smitham"
   constructor(
     private client: Client,
     private loadingService: LoadingService,
@@ -211,9 +213,76 @@ export class GensubComponent implements AfterViewInit {
 
   // Submit functionality
   onSubmit(): void {
-    console.log('Submit clicked');
+    if (this.fileUploader.primaryFile) {
+      const objGenSub: GeneralSubmissionDto = new GeneralSubmissionDto();
+      if (this.GenSubID != 0) {
+        objGenSub.genSubmissionID = this.GenSubID;
+      }
+      objGenSub.qfcNumber = localStorage.getItem(this.AppConstants.Session.SESSION_QFC_NO) ?? "";
+      if (this.data.DocTypeId != 0 && this.data.DocTypeId != undefined) {
+        objGenSub.docTypeID = this.data.DocTypeId;
+        objGenSub.rptSOMethodTypeID = SignOffMethodType.ElectronicSigned;
+      }
+      objGenSub.comments = this.Comments;
+      objGenSub.objectStatusTypeID = ObjectStatus.Pending;
+      objGenSub.userCreated = Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID));
+      this.loadingService.show();
+      this.client.saveGenSubDetails(objGenSub).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess && response.response) {
+            this.GenSubID = response.response.genSubmissionID ?? 0;
+            this.toastr.success('Changes saved successfully!', 'Success');
+            this.loadingService.show();
+            setTimeout(() => {
+              this.loadingService.hide();
+              if(Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID)) == 2101){
+                this.openSignOffDialog();
+              }
+              else{
+                this.showSignOffMessage = true;
+                this.navigateToTab(2);
+              }
+            }, 3000);
+            //TODO:         bool isValidEffectiveDate = BasePage.checkDocTypeValidity(Convert.ToInt32(hdnDocTypeID.Value), effectiveFromDate, effectiveToDate, objectID, null, rptEndDate);
+            // if (!isValidEffectiveDate)
+            //   {
+            //       BasePage basePage = new BasePage();
+            //       basePage.ShowAlertMessageBox_Ajax(BALMessageSettings.GetMessageProperty((int)ReportSchedule.INVALID_EFFECTIVE_DATE), (int)ErrorType.Error);
+                  
+            //       mpeFileUpload.Hide();
+            //       return;
+            //   }
+            if(this.XBRLDocType){
+              //TODO: Implement
+            }
+            else{
+              if(!this.signOffRequired){
+                //success= submitGenSubDetailsSignOffNotRequired();
+              }
+            }
+          } else {
+            this.toastr.error('Failed to save general submission.', 'Error');
+            console.error('Failed to save general submission:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while saving general submission.', 'Error');
+          console.error('Error occurred while saving general submission:', error);
+        },
+      });
+    }
+    else {
+      this.messagePropertyService.getMessageProperty(GenSubMessage.PleaseAttachFormTypeDescForAdditionalDoc.toString()).subscribe((message) => {
+        Swal.fire(
+          'Warning!',
+          message.replace(AppConstants.Keywords.EMAIL_FORM_TYPE_DESC, this.data.Form),
+          'warning'
+        );
+      });
+    }
   }
-
   private async checkUnsavedChanges(): Promise<void> {
     if (this.unsavedChanges) {
       const result = await Swal.fire({
@@ -246,4 +315,21 @@ export class GensubComponent implements AfterViewInit {
     this.GenSubID = newID;
     console.log('GenSubID updated:', this.GenSubID);
   }
+
+
+openSignOffDialog(): void {
+  const dialogRef = this.dialog.open(SignOffGenericComponent, {
+    width: 'auto',
+    height: 'auto',
+    data: {
+      TermID: this.wTermID, // Pass the TermID dynamically
+      ShowAcceptTermsCheckBox: false, // Pass the ShowAcceptTermsCheckBox dynamically
+    },
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    console.log('Dialog closed with result:', result);
+    // Handle any logic after dialog closes
+  });
+}
 }

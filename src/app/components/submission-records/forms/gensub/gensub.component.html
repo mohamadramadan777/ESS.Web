@@ -42,6 +42,7 @@
 
           <mat-tab label="Signature">
             <div class="tab-content">
+              <p *ngIf="this.showSignOffMessage">{{this.SignOffMessage}}</p>
               <p><strong>Name of Individual:</strong></p>
               <p><strong>Date Signed:</strong></p>
             </div>

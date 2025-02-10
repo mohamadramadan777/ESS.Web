@@ -62,8 +62,12 @@
                   <td class="label">AI Number (if Any):</td>
                   <td>
                     <mat-form-field appearance="outline" class="full-width">
-                      <input matInput placeholder="Enter AI number" [(ngModel)]="applicant.aiNumber" />
+                      <input matInput 
+                             placeholder="Enter AI number" 
+                             [(ngModel)]="applicant.aiNumber"
+                             (blur)="validateAiNumber()" />
                     </mat-form-field>
+                    <div *ngIf="aiNumberError" class="error-message">{{ aiNumberError }}</div>
                   </td>
                 </tr>
                 <tr>
@@ -108,12 +112,14 @@
             <app-file-uploader
               [ShowHeaderPanel]="true"
               [ShowHeaderFormName]="false"
-              [ObjectID]="123"
-              [ObjectInstanceID]="456"
+              [ObjectID]="this.AttObjectID"
+              [ObjectInstanceID]="this.ApplicationID"
               [ObjectInstanceRevNum]="1"
-              [DocTypeID]="789"
-              [FormTypeID]="101112"
+              [DocTypeID]="this.data.DocTypeId"
+              [FormTypeID]="this.data.WIndFromTypeID"
               [ShowPrimaryDoc]="true"
+              [DocSignText]="this.DocSignText"
+              [ReportFormName]="data.Form"
               (fileUploaded)="onFileUploaded($event)"
             ></app-file-uploader>
           </div>
