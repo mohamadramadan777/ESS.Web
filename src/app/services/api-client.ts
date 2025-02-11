@@ -12,6 +12,7 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
+
 import { API_BASE_URL } from './tokens';
 
 @Injectable()
@@ -3630,62 +3631,6 @@ export class Client {
     }
 
     /**
-     * @param applicationId (optional) 
-     * @return OK
-     */
-    deleteApplication(applicationId: number | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AiApplication/delete-application?";
-        if (applicationId === null)
-            throw new Error("The parameter 'applicationId' cannot be null.");
-        else if (applicationId !== undefined)
-            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteApplication(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteApplication(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
-        }));
-    }
-
-    protected processDeleteApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<BooleanBaseResponse>(null as any);
-    }
-
-    /**
      * @param body (optional) 
      * @return OK
      */
@@ -4161,6 +4106,62 @@ export class Client {
             }));
         }
         return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param applicationId (optional) 
+     * @return OK
+     */
+    deleteApplication(applicationId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/delete-application?";
+        if (applicationId === null)
+            throw new Error("The parameter 'applicationId' cannot be null.");
+        else if (applicationId !== undefined)
+            url_ += "applicationId=" + encodeURIComponent("" + applicationId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteApplication(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteApplication(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -5287,31 +5288,68 @@ export class Client {
     }
 
     /**
-     * @param fileLoction (optional) 
+     * @param formTypeID (optional) 
+     * @param docTypeID (optional) 
+     * @param docType (optional) 
+     * @param primaryDocStatusTypeID (optional) 
+     * @param pFilePath (optional) 
      * @param pFileName (optional) 
-     * @param file (optional) 
+     * @param pFileURI (optional) 
+     * @param objectInstanceID (optional) 
+     * @param objectID (optional) 
+     * @param primaryDocWObjAttachementID (optional) 
+     * @param objectInstanceRevNum (optional) 
      * @return OK
      */
-    uploadToFolderForm(fileLoction: string | undefined, pFileName: string | undefined, file: FileParameter | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder-form?";
-        if (fileLoction === null)
-            throw new Error("The parameter 'fileLoction' cannot be null.");
-        else if (fileLoction !== undefined)
-            url_ += "FileLoction=" + encodeURIComponent("" + fileLoction) + "&";
+    savePrimaryDocument(formTypeID: number | undefined, docTypeID: number | undefined, docType: boolean | undefined, primaryDocStatusTypeID: number | undefined, pFilePath: string | undefined, pFileName: string | undefined, pFileURI: string | undefined, objectInstanceID: number | undefined, objectID: number | undefined, primaryDocWObjAttachementID: number | undefined, objectInstanceRevNum: number | undefined): Observable<SavePrimaryDocumentResponseBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/save-primary-document?";
+        if (formTypeID === null)
+            throw new Error("The parameter 'formTypeID' cannot be null.");
+        else if (formTypeID !== undefined)
+            url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (docType === null)
+            throw new Error("The parameter 'docType' cannot be null.");
+        else if (docType !== undefined)
+            url_ += "DocType=" + encodeURIComponent("" + docType) + "&";
+        if (primaryDocStatusTypeID === null)
+            throw new Error("The parameter 'primaryDocStatusTypeID' cannot be null.");
+        else if (primaryDocStatusTypeID !== undefined)
+            url_ += "primaryDocStatusTypeID=" + encodeURIComponent("" + primaryDocStatusTypeID) + "&";
+        if (pFilePath === null)
+            throw new Error("The parameter 'pFilePath' cannot be null.");
+        else if (pFilePath !== undefined)
+            url_ += "pFilePath=" + encodeURIComponent("" + pFilePath) + "&";
         if (pFileName === null)
             throw new Error("The parameter 'pFileName' cannot be null.");
         else if (pFileName !== undefined)
             url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
+        if (pFileURI === null)
+            throw new Error("The parameter 'pFileURI' cannot be null.");
+        else if (pFileURI !== undefined)
+            url_ += "pFileURI=" + encodeURIComponent("" + pFileURI) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (primaryDocWObjAttachementID === null)
+            throw new Error("The parameter 'primaryDocWObjAttachementID' cannot be null.");
+        else if (primaryDocWObjAttachementID !== undefined)
+            url_ += "primaryDocWObjAttachementID=" + encodeURIComponent("" + primaryDocWObjAttachementID) + "&";
+        if (objectInstanceRevNum === null)
+            throw new Error("The parameter 'objectInstanceRevNum' cannot be null.");
+        else if (objectInstanceRevNum !== undefined)
+            url_ += "objectInstanceRevNum=" + encodeURIComponent("" + objectInstanceRevNum) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = new FormData();
-        if (file === null || file === undefined)
-            throw new Error("The parameter 'file' cannot be null.");
-        else
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
@@ -5320,11 +5358,143 @@ export class Client {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUploadToFolderForm(response_);
+            return this.processSavePrimaryDocument(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUploadToFolderForm(response_ as any);
+                    return this.processSavePrimaryDocument(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
+        }));
+    }
+
+    protected processSavePrimaryDocument(response: HttpResponseBase): Observable<SavePrimaryDocumentResponseBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SavePrimaryDocumentResponseBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SavePrimaryDocumentResponseBaseResponse>(null as any);
+    }
+
+    /**
+     * @param formType (optional) 
+     * @param objectId (optional) 
+     * @return OK
+     */
+    getDocSubTypes(formType: number | undefined, objectId: string | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/get-doc-sub-types?";
+        if (formType === null)
+            throw new Error("The parameter 'formType' cannot be null.");
+        else if (formType !== undefined)
+            url_ += "formType=" + encodeURIComponent("" + formType) + "&";
+        if (objectId === null)
+            throw new Error("The parameter 'objectId' cannot be null.");
+        else if (objectId !== undefined)
+            url_ += "ObjectId=" + encodeURIComponent("" + objectId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocSubTypes(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocSubTypes(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetDocSubTypes(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjAttachementID (optional) 
+     * @param fileName (optional) 
+     * @param filePath (optional) 
+     * @param docType (optional) 
+     * @return OK
+     */
+    deleteAttachment(wObjAttachementID: number | undefined, fileName: string | undefined, filePath: string | undefined, docType: boolean | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/delete-attachment?";
+        if (wObjAttachementID === null)
+            throw new Error("The parameter 'wObjAttachementID' cannot be null.");
+        else if (wObjAttachementID !== undefined)
+            url_ += "wObjAttachementID=" + encodeURIComponent("" + wObjAttachementID) + "&";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (filePath === null)
+            throw new Error("The parameter 'filePath' cannot be null.");
+        else if (filePath !== undefined)
+            url_ += "filePath=" + encodeURIComponent("" + filePath) + "&";
+        if (docType === null)
+            throw new Error("The parameter 'docType' cannot be null.");
+        else if (docType !== undefined)
+            url_ += "docType=" + encodeURIComponent("" + docType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteAttachment(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteAttachment(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
                 }
@@ -5333,7 +5503,7 @@ export class Client {
         }));
     }
 
-    protected processUploadToFolderForm(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+    protected processDeleteAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -7732,21 +7902,286 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param qFCNum (optional) 
+     * @param rptSchFinYearFromDate (optional) 
+     * @param rptSchFinYearToDate (optional) 
+     * @param sOCompletionDate (optional) 
+     * @param rptPeriodTypeDesc (optional) 
+     * @param docTypeID (optional) 
+     * @param userID (optional) 
+     * @param firmsRptSchID (optional) 
+     * @param rptSchAttachmentStatusId (optional) 
+     * @param rptName (optional) 
+     * @param rptDueDate (optional) 
+     * @param fileUploadedOnDate (optional) 
+     * @param rptSchAttachmentStatusDesc (optional) 
+     * @param rptSubmissionTypeID (optional) 
+     * @param rptPeriodFromDate (optional) 
+     * @param rptSubmissionType (optional) 
+     * @param rptPeriodToDate (optional) 
+     * @param rptFreqTypeDesc (optional) 
+     * @param rptSchID (optional) 
+     * @param rptSchItemID (optional) 
+     * @param rptSchItemAttachmentID (optional) 
+     * @param fileName (optional) 
+     * @param attachmentFileURI (optional) 
+     * @param objectSOStatusID (optional) 
+     * @param fileUploadedByName (optional) 
+     * @param fileUploadedByEmailAdd (optional) 
+     * @param submittedOn (optional) 
+     * @param sOStatusTypeDesc (optional) 
+     * @param attachmentFilePath (optional) 
+     * @param sOStatusTypeID (optional) 
+     * @param submittedBy (optional) 
+     * @param rptNextStatus (optional) 
+     * @param attachmentStatusTypeID (optional) 
+     * @param objectID (optional) 
+     * @param fileAttachedUserEmail (optional) 
+     * @param rptAttachmentStatusDate (optional) 
+     * @param fileStream (optional) 
+     * @param reviewComments (optional) 
+     * @param firmsRptSchItemID (optional) 
+     * @param manuallyReceived (optional) 
+     * @param allowReSubmit (optional) 
+     * @param isFileRecieved (optional) 
+     * @param lateFeeFlag (optional) 
+     * @param isReportDue (optional) 
+     * @param daysOverDue (optional) 
+     * @param isReportReminderDue (optional) 
+     * @param isResubmissionRequested (optional) 
+     * @param resubmissionRequestedDate (optional) 
+     * @param isResubmissionNotificationRequired (optional) 
+     * @param docReceivedDate (optional) 
+     * @param isAMLDocType (optional) 
+     * @param rptFormsToBeSubmited (optional) 
+     * @param submissionBeforeRptPeriodEnd (optional) 
+     * @param resubmissionDueDate (optional) 
      * @return OK
      */
-    getReportSchItemDetails(body: ReportSchDetailsDto | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details";
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
+        if (qFCNum === null)
+            throw new Error("The parameter 'qFCNum' cannot be null.");
+        else if (qFCNum !== undefined)
+            url_ += "QFCNum=" + encodeURIComponent("" + qFCNum) + "&";
+        if (rptSchFinYearFromDate === null)
+            throw new Error("The parameter 'rptSchFinYearFromDate' cannot be null.");
+        else if (rptSchFinYearFromDate !== undefined)
+            url_ += "RptSchFinYearFromDate=" + encodeURIComponent("" + rptSchFinYearFromDate) + "&";
+        if (rptSchFinYearToDate === null)
+            throw new Error("The parameter 'rptSchFinYearToDate' cannot be null.");
+        else if (rptSchFinYearToDate !== undefined)
+            url_ += "RptSchFinYearToDate=" + encodeURIComponent("" + rptSchFinYearToDate) + "&";
+        if (sOCompletionDate === null)
+            throw new Error("The parameter 'sOCompletionDate' cannot be null.");
+        else if (sOCompletionDate !== undefined)
+            url_ += "SOCompletionDate=" + encodeURIComponent("" + sOCompletionDate) + "&";
+        if (rptPeriodTypeDesc === null)
+            throw new Error("The parameter 'rptPeriodTypeDesc' cannot be null.");
+        else if (rptPeriodTypeDesc !== undefined)
+            url_ += "RptPeriodTypeDesc=" + encodeURIComponent("" + rptPeriodTypeDesc) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "DocTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (userID === null)
+            throw new Error("The parameter 'userID' cannot be null.");
+        else if (userID !== undefined)
+            url_ += "UserID=" + encodeURIComponent("" + userID) + "&";
+        if (firmsRptSchID === null)
+            throw new Error("The parameter 'firmsRptSchID' cannot be null.");
+        else if (firmsRptSchID !== undefined)
+            url_ += "FirmsRptSchID=" + encodeURIComponent("" + firmsRptSchID) + "&";
+        if (rptSchAttachmentStatusId === null)
+            throw new Error("The parameter 'rptSchAttachmentStatusId' cannot be null.");
+        else if (rptSchAttachmentStatusId !== undefined)
+            url_ += "RptSchAttachmentStatusId=" + encodeURIComponent("" + rptSchAttachmentStatusId) + "&";
+        if (rptName === null)
+            throw new Error("The parameter 'rptName' cannot be null.");
+        else if (rptName !== undefined)
+            url_ += "RptName=" + encodeURIComponent("" + rptName) + "&";
+        if (rptDueDate === null)
+            throw new Error("The parameter 'rptDueDate' cannot be null.");
+        else if (rptDueDate !== undefined)
+            url_ += "RptDueDate=" + encodeURIComponent("" + rptDueDate) + "&";
+        if (fileUploadedOnDate === null)
+            throw new Error("The parameter 'fileUploadedOnDate' cannot be null.");
+        else if (fileUploadedOnDate !== undefined)
+            url_ += "FileUploadedOnDate=" + encodeURIComponent("" + fileUploadedOnDate) + "&";
+        if (rptSchAttachmentStatusDesc === null)
+            throw new Error("The parameter 'rptSchAttachmentStatusDesc' cannot be null.");
+        else if (rptSchAttachmentStatusDesc !== undefined)
+            url_ += "RptSchAttachmentStatusDesc=" + encodeURIComponent("" + rptSchAttachmentStatusDesc) + "&";
+        if (rptSubmissionTypeID === null)
+            throw new Error("The parameter 'rptSubmissionTypeID' cannot be null.");
+        else if (rptSubmissionTypeID !== undefined)
+            url_ += "RptSubmissionTypeID=" + encodeURIComponent("" + rptSubmissionTypeID) + "&";
+        if (rptPeriodFromDate === null)
+            throw new Error("The parameter 'rptPeriodFromDate' cannot be null.");
+        else if (rptPeriodFromDate !== undefined)
+            url_ += "RptPeriodFromDate=" + encodeURIComponent("" + rptPeriodFromDate) + "&";
+        if (rptSubmissionType === null)
+            throw new Error("The parameter 'rptSubmissionType' cannot be null.");
+        else if (rptSubmissionType !== undefined)
+            url_ += "RptSubmissionType=" + encodeURIComponent("" + rptSubmissionType) + "&";
+        if (rptPeriodToDate === null)
+            throw new Error("The parameter 'rptPeriodToDate' cannot be null.");
+        else if (rptPeriodToDate !== undefined)
+            url_ += "RptPeriodToDate=" + encodeURIComponent("" + rptPeriodToDate) + "&";
+        if (rptFreqTypeDesc === null)
+            throw new Error("The parameter 'rptFreqTypeDesc' cannot be null.");
+        else if (rptFreqTypeDesc !== undefined)
+            url_ += "RptFreqTypeDesc=" + encodeURIComponent("" + rptFreqTypeDesc) + "&";
+        if (rptSchID === null)
+            throw new Error("The parameter 'rptSchID' cannot be null.");
+        else if (rptSchID !== undefined)
+            url_ += "RptSchID=" + encodeURIComponent("" + rptSchID) + "&";
+        if (rptSchItemID === null)
+            throw new Error("The parameter 'rptSchItemID' cannot be null.");
+        else if (rptSchItemID !== undefined)
+            url_ += "RptSchItemID=" + encodeURIComponent("" + rptSchItemID) + "&";
+        if (rptSchItemAttachmentID === null)
+            throw new Error("The parameter 'rptSchItemAttachmentID' cannot be null.");
+        else if (rptSchItemAttachmentID !== undefined)
+            url_ += "RptSchItemAttachmentID=" + encodeURIComponent("" + rptSchItemAttachmentID) + "&";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "FileName=" + encodeURIComponent("" + fileName) + "&";
+        if (attachmentFileURI === null)
+            throw new Error("The parameter 'attachmentFileURI' cannot be null.");
+        else if (attachmentFileURI !== undefined)
+            url_ += "AttachmentFileURI=" + encodeURIComponent("" + attachmentFileURI) + "&";
+        if (objectSOStatusID === null)
+            throw new Error("The parameter 'objectSOStatusID' cannot be null.");
+        else if (objectSOStatusID !== undefined)
+            url_ += "ObjectSOStatusID=" + encodeURIComponent("" + objectSOStatusID) + "&";
+        if (fileUploadedByName === null)
+            throw new Error("The parameter 'fileUploadedByName' cannot be null.");
+        else if (fileUploadedByName !== undefined)
+            url_ += "FileUploadedByName=" + encodeURIComponent("" + fileUploadedByName) + "&";
+        if (fileUploadedByEmailAdd === null)
+            throw new Error("The parameter 'fileUploadedByEmailAdd' cannot be null.");
+        else if (fileUploadedByEmailAdd !== undefined)
+            url_ += "FileUploadedByEmailAdd=" + encodeURIComponent("" + fileUploadedByEmailAdd) + "&";
+        if (submittedOn === null)
+            throw new Error("The parameter 'submittedOn' cannot be null.");
+        else if (submittedOn !== undefined)
+            url_ += "SubmittedOn=" + encodeURIComponent("" + submittedOn) + "&";
+        if (sOStatusTypeDesc === null)
+            throw new Error("The parameter 'sOStatusTypeDesc' cannot be null.");
+        else if (sOStatusTypeDesc !== undefined)
+            url_ += "SOStatusTypeDesc=" + encodeURIComponent("" + sOStatusTypeDesc) + "&";
+        if (attachmentFilePath === null)
+            throw new Error("The parameter 'attachmentFilePath' cannot be null.");
+        else if (attachmentFilePath !== undefined)
+            url_ += "AttachmentFilePath=" + encodeURIComponent("" + attachmentFilePath) + "&";
+        if (sOStatusTypeID === null)
+            throw new Error("The parameter 'sOStatusTypeID' cannot be null.");
+        else if (sOStatusTypeID !== undefined)
+            url_ += "SOStatusTypeID=" + encodeURIComponent("" + sOStatusTypeID) + "&";
+        if (submittedBy === null)
+            throw new Error("The parameter 'submittedBy' cannot be null.");
+        else if (submittedBy !== undefined)
+            url_ += "SubmittedBy=" + encodeURIComponent("" + submittedBy) + "&";
+        if (rptNextStatus === null)
+            throw new Error("The parameter 'rptNextStatus' cannot be null.");
+        else if (rptNextStatus !== undefined)
+            url_ += "RptNextStatus=" + encodeURIComponent("" + rptNextStatus) + "&";
+        if (attachmentStatusTypeID === null)
+            throw new Error("The parameter 'attachmentStatusTypeID' cannot be null.");
+        else if (attachmentStatusTypeID !== undefined)
+            url_ += "AttachmentStatusTypeID=" + encodeURIComponent("" + attachmentStatusTypeID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "ObjectID=" + encodeURIComponent("" + objectID) + "&";
+        if (fileAttachedUserEmail === null)
+            throw new Error("The parameter 'fileAttachedUserEmail' cannot be null.");
+        else if (fileAttachedUserEmail !== undefined)
+            url_ += "FileAttachedUserEmail=" + encodeURIComponent("" + fileAttachedUserEmail) + "&";
+        if (rptAttachmentStatusDate === null)
+            throw new Error("The parameter 'rptAttachmentStatusDate' cannot be null.");
+        else if (rptAttachmentStatusDate !== undefined)
+            url_ += "RptAttachmentStatusDate=" + encodeURIComponent("" + rptAttachmentStatusDate) + "&";
+        if (fileStream === null)
+            throw new Error("The parameter 'fileStream' cannot be null.");
+        else if (fileStream !== undefined)
+            url_ += "FileStream=" + encodeURIComponent("" + fileStream) + "&";
+        if (reviewComments === null)
+            throw new Error("The parameter 'reviewComments' cannot be null.");
+        else if (reviewComments !== undefined)
+            url_ += "ReviewComments=" + encodeURIComponent("" + reviewComments) + "&";
+        if (firmsRptSchItemID === null)
+            throw new Error("The parameter 'firmsRptSchItemID' cannot be null.");
+        else if (firmsRptSchItemID !== undefined)
+            url_ += "FirmsRptSchItemID=" + encodeURIComponent("" + firmsRptSchItemID) + "&";
+        if (manuallyReceived === null)
+            throw new Error("The parameter 'manuallyReceived' cannot be null.");
+        else if (manuallyReceived !== undefined)
+            url_ += "ManuallyReceived=" + encodeURIComponent("" + manuallyReceived) + "&";
+        if (allowReSubmit === null)
+            throw new Error("The parameter 'allowReSubmit' cannot be null.");
+        else if (allowReSubmit !== undefined)
+            url_ += "AllowReSubmit=" + encodeURIComponent("" + allowReSubmit) + "&";
+        if (isFileRecieved === null)
+            throw new Error("The parameter 'isFileRecieved' cannot be null.");
+        else if (isFileRecieved !== undefined)
+            url_ += "isFileRecieved=" + encodeURIComponent("" + isFileRecieved) + "&";
+        if (lateFeeFlag === null)
+            throw new Error("The parameter 'lateFeeFlag' cannot be null.");
+        else if (lateFeeFlag !== undefined)
+            url_ += "LateFeeFlag=" + encodeURIComponent("" + lateFeeFlag) + "&";
+        if (isReportDue === null)
+            throw new Error("The parameter 'isReportDue' cannot be null.");
+        else if (isReportDue !== undefined)
+            url_ += "isReportDue=" + encodeURIComponent("" + isReportDue) + "&";
+        if (daysOverDue === null)
+            throw new Error("The parameter 'daysOverDue' cannot be null.");
+        else if (daysOverDue !== undefined)
+            url_ += "DaysOverDue=" + encodeURIComponent("" + daysOverDue) + "&";
+        if (isReportReminderDue === null)
+            throw new Error("The parameter 'isReportReminderDue' cannot be null.");
+        else if (isReportReminderDue !== undefined)
+            url_ += "isReportReminderDue=" + encodeURIComponent("" + isReportReminderDue) + "&";
+        if (isResubmissionRequested === null)
+            throw new Error("The parameter 'isResubmissionRequested' cannot be null.");
+        else if (isResubmissionRequested !== undefined)
+            url_ += "isResubmissionRequested=" + encodeURIComponent("" + isResubmissionRequested) + "&";
+        if (resubmissionRequestedDate === null)
+            throw new Error("The parameter 'resubmissionRequestedDate' cannot be null.");
+        else if (resubmissionRequestedDate !== undefined)
+            url_ += "ResubmissionRequestedDate=" + encodeURIComponent("" + resubmissionRequestedDate) + "&";
+        if (isResubmissionNotificationRequired === null)
+            throw new Error("The parameter 'isResubmissionNotificationRequired' cannot be null.");
+        else if (isResubmissionNotificationRequired !== undefined)
+            url_ += "isResubmissionNotificationRequired=" + encodeURIComponent("" + isResubmissionNotificationRequired) + "&";
+        if (docReceivedDate === null)
+            throw new Error("The parameter 'docReceivedDate' cannot be null.");
+        else if (docReceivedDate !== undefined)
+            url_ += "DocReceivedDate=" + encodeURIComponent("" + docReceivedDate) + "&";
+        if (isAMLDocType === null)
+            throw new Error("The parameter 'isAMLDocType' cannot be null.");
+        else if (isAMLDocType !== undefined)
+            url_ += "IsAMLDocType=" + encodeURIComponent("" + isAMLDocType) + "&";
+        if (rptFormsToBeSubmited === null)
+            throw new Error("The parameter 'rptFormsToBeSubmited' cannot be null.");
+        else if (rptFormsToBeSubmited !== undefined)
+            url_ += "RptFormsToBeSubmited=" + encodeURIComponent("" + rptFormsToBeSubmited) + "&";
+        if (submissionBeforeRptPeriodEnd === null)
+            throw new Error("The parameter 'submissionBeforeRptPeriodEnd' cannot be null.");
+        else if (submissionBeforeRptPeriodEnd !== undefined)
+            url_ += "SubmissionBeforeRptPeriodEnd=" + encodeURIComponent("" + submissionBeforeRptPeriodEnd) + "&";
+        if (resubmissionDueDate === null)
+            throw new Error("The parameter 'resubmissionDueDate' cannot be null.");
+        else if (resubmissionDueDate !== undefined)
+            url_ += "ResubmissionDueDate=" + encodeURIComponent("" + resubmissionDueDate) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -7788,15 +8223,10 @@ export class Client {
     }
 
     /**
-     * @param strQfcNumber (optional) 
      * @return OK
      */
-    getSubmissionDetailsForHomePage(strQfcNumber: string | undefined): Observable<ReportSchDetailsDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/get-submission-details-for-home-page?";
-        if (strQfcNumber === null)
-            throw new Error("The parameter 'strQfcNumber' cannot be null.");
-        else if (strQfcNumber !== undefined)
-            url_ += "strQfcNumber=" + encodeURIComponent("" + strQfcNumber) + "&";
+    getSubmissionDetailsForHomePage(): Observable<ReportSchDetailsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get-submission-details-for-home-page";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -8876,6 +9306,57 @@ export class ReportClient {
         }
         return _observableOf<ReportSchEmailDetBaseResponse>(null as any);
     }
+
+    /**
+     * @return OK
+     */
+    evaluations(): Observable<ReportEvaluationsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportValidation/get_report_evaluations";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processEvaluations(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processEvaluations(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportEvaluationsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportEvaluationsListBaseResponse>;
+        }));
+    }
+
+    protected processEvaluations(response: HttpResponseBase): Observable<ReportEvaluationsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportEvaluationsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportEvaluationsListBaseResponse>(null as any);
+    }
 }
 
 @Injectable()
@@ -8948,6 +9429,444 @@ export class ForClient {
             }));
         }
         return _observableOf<ReportSchDetailsDtoListBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class ByClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param roleID (optional) 
+     * @param qFCNo (optional) 
+     * @return OK
+     */
+    role(roleID: number | undefined, qFCNo: string | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/get_users_by_role?";
+        if (roleID === null)
+            throw new Error("The parameter 'roleID' cannot be null.");
+        else if (roleID !== undefined)
+            url_ += "roleID=" + encodeURIComponent("" + roleID) + "&";
+        if (qFCNo === null)
+            throw new Error("The parameter 'qFCNo' cannot be null.");
+        else if (qFCNo !== undefined)
+            url_ += "QFCNo=" + encodeURIComponent("" + qFCNo) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRole(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRole(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processRole(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class ScheduleClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param filePath (optional) 
+     * @param strFrontSheet (optional) 
+     * @param strFirmName (optional) 
+     * @param strQFCNumber (optional) 
+     * @param strRptFromDate (optional) 
+     * @param strRptToDate (optional) 
+     * @return OK
+     */
+    data(filePath: string | undefined, strFrontSheet: string | undefined, strFirmName: string | undefined, strQFCNumber: string | undefined, strRptFromDate: string | undefined, strRptToDate: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/ReportValidation/validate_front_sheet_with_schedule_data?";
+        if (filePath === null)
+            throw new Error("The parameter 'filePath' cannot be null.");
+        else if (filePath !== undefined)
+            url_ += "filePath=" + encodeURIComponent("" + filePath) + "&";
+        if (strFrontSheet === null)
+            throw new Error("The parameter 'strFrontSheet' cannot be null.");
+        else if (strFrontSheet !== undefined)
+            url_ += "strFrontSheet=" + encodeURIComponent("" + strFrontSheet) + "&";
+        if (strFirmName === null)
+            throw new Error("The parameter 'strFirmName' cannot be null.");
+        else if (strFirmName !== undefined)
+            url_ += "strFirmName=" + encodeURIComponent("" + strFirmName) + "&";
+        if (strQFCNumber === null)
+            throw new Error("The parameter 'strQFCNumber' cannot be null.");
+        else if (strQFCNumber !== undefined)
+            url_ += "strQFCNumber=" + encodeURIComponent("" + strQFCNumber) + "&";
+        if (strRptFromDate === null)
+            throw new Error("The parameter 'strRptFromDate' cannot be null.");
+        else if (strRptFromDate !== undefined)
+            url_ += "strRptFromDate=" + encodeURIComponent("" + strRptFromDate) + "&";
+        if (strRptToDate === null)
+            throw new Error("The parameter 'strRptToDate' cannot be null.");
+        else if (strRptToDate !== undefined)
+            url_ += "strRptToDate=" + encodeURIComponent("" + strRptToDate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processData(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processData(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processData(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+}
+
+@Injectable()
+export class TableClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param doctypeID (optional) 
+     * @param natureofbusiness (optional) 
+     * @return OK
+     */
+    elements(doctypeID: number | undefined, natureofbusiness: number | undefined): Observable<StringObjectIDictionaryListBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportValidation/get_sheet_table_elements?";
+        if (doctypeID === null)
+            throw new Error("The parameter 'doctypeID' cannot be null.");
+        else if (doctypeID !== undefined)
+            url_ += "doctypeID=" + encodeURIComponent("" + doctypeID) + "&";
+        if (natureofbusiness === null)
+            throw new Error("The parameter 'natureofbusiness' cannot be null.");
+        else if (natureofbusiness !== undefined)
+            url_ += "natureofbusiness=" + encodeURIComponent("" + natureofbusiness) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processElements(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processElements(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringObjectIDictionaryListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringObjectIDictionaryListBaseResponse>;
+        }));
+    }
+
+    protected processElements(response: HttpResponseBase): Observable<StringObjectIDictionaryListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringObjectIDictionaryListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringObjectIDictionaryListBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class BusinessClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param listvalue (optional) 
+     * @return OK
+     */
+    id(listvalue: string | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportValidation/get_nature_of_business_id?";
+        if (listvalue === null)
+            throw new Error("The parameter 'listvalue' cannot be null.");
+        else if (listvalue !== undefined)
+            url_ += "listvalue=" + encodeURIComponent("" + listvalue) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processId(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processId(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class ValidationClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    result(body: FirmReportSchItemsDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/ReportValidation/save_validation_result";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processResult(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processResult(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processResult(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param objectID (optional) 
+     * @param objectInstanceID (optional) 
+     * @param attachmentID (optional) 
+     * @param fileName (optional) 
+     * @return OK
+     */
+    result(objectID: number | undefined, objectInstanceID: number | undefined, attachmentID: number | undefined, fileName: string | undefined): Observable<ValidationFileDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportValidation/get_validation_result?";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (attachmentID === null)
+            throw new Error("The parameter 'attachmentID' cannot be null.");
+        else if (attachmentID !== undefined)
+            url_ += "attachmentID=" + encodeURIComponent("" + attachmentID) + "&";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processResult(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processResult(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ValidationFileDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ValidationFileDtoBaseResponse>;
+        }));
+    }
+
+    protected processResult(response: HttpResponseBase): Observable<ValidationFileDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ValidationFileDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ValidationFileDtoBaseResponse>(null as any);
     }
 }
 
@@ -10717,54 +11636,6 @@ export interface IBooleanBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: boolean;
-}
-
-export class ByteArrayBaseResponse implements IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
-
-    constructor(data?: IByteArrayBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"];
-        }
-    }
-
-    static fromJS(data: any): ByteArrayBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ByteArrayBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response;
-        return data;
-    }
-}
-
-export interface IByteArrayBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: string | undefined;
 }
 
 export class Calendar implements ICalendar {
@@ -13158,6 +14029,58 @@ export interface IFirmNoticesDtoBaseResponse {
     response?: FirmNoticesDto;
 }
 
+export class FirmReportSchItemsDto implements IFirmReportSchItemsDto {
+    firmRptSchItemID?: number | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    validationResult?: number | undefined;
+    validationFileName?: string | undefined;
+    validationFileLocation?: string | undefined;
+
+    constructor(data?: IFirmReportSchItemsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmRptSchItemID = _data["firmRptSchItemID"];
+            this.rptSchItemAttachmentID = _data["rptSchItemAttachmentID"];
+            this.validationResult = _data["validationResult"];
+            this.validationFileName = _data["validationFileName"];
+            this.validationFileLocation = _data["validationFileLocation"];
+        }
+    }
+
+    static fromJS(data: any): FirmReportSchItemsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmReportSchItemsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmRptSchItemID"] = this.firmRptSchItemID;
+        data["rptSchItemAttachmentID"] = this.rptSchItemAttachmentID;
+        data["validationResult"] = this.validationResult;
+        data["validationFileName"] = this.validationFileName;
+        data["validationFileLocation"] = this.validationFileLocation;
+        return data;
+    }
+}
+
+export interface IFirmReportSchItemsDto {
+    firmRptSchItemID?: number | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    validationResult?: number | undefined;
+    validationFileName?: string | undefined;
+    validationFileLocation?: string | undefined;
+}
+
 export class GeneralSubmissionDto implements IGeneralSubmissionDto {
     genSubmissionID?: number | undefined;
     qfcNumber?: string | undefined;
@@ -13173,7 +14096,7 @@ export class GeneralSubmissionDto implements IGeneralSubmissionDto {
     soCompletionDate?: string | undefined;
     fileName?: string | undefined;
     supervisorName?: string | undefined;
-    objectID?: number;
+    objectID?: number | undefined;
 
     constructor(data?: IGeneralSubmissionDto) {
         if (data) {
@@ -13247,7 +14170,7 @@ export interface IGeneralSubmissionDto {
     soCompletionDate?: string | undefined;
     fileName?: string | undefined;
     supervisorName?: string | undefined;
-    objectID?: number;
+    objectID?: number | undefined;
 }
 
 export class GeneralSubmissionDtoBaseResponse implements IGeneralSubmissionDtoBaseResponse {
@@ -15738,6 +16661,122 @@ export interface IProcessNoticeEmailDetailsRequest {
     objNotice?: WNoticeDto;
 }
 
+export class ReportEvaluations implements IReportEvaluations {
+    sheetDesc?: string | undefined;
+    excelLocationCellRange?: string | undefined;
+    elementRowLabel?: string | undefined;
+    excelCellNameForElementRowLabel?: string | undefined;
+    excelCellNameForReportedValue?: string | undefined;
+    isValueMandatory?: boolean;
+    isMetadataTable?: boolean;
+
+    constructor(data?: IReportEvaluations) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.sheetDesc = _data["sheetDesc"];
+            this.excelLocationCellRange = _data["excelLocationCellRange"];
+            this.elementRowLabel = _data["elementRowLabel"];
+            this.excelCellNameForElementRowLabel = _data["excelCellNameForElementRowLabel"];
+            this.excelCellNameForReportedValue = _data["excelCellNameForReportedValue"];
+            this.isValueMandatory = _data["isValueMandatory"];
+            this.isMetadataTable = _data["isMetadataTable"];
+        }
+    }
+
+    static fromJS(data: any): ReportEvaluations {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportEvaluations();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["sheetDesc"] = this.sheetDesc;
+        data["excelLocationCellRange"] = this.excelLocationCellRange;
+        data["elementRowLabel"] = this.elementRowLabel;
+        data["excelCellNameForElementRowLabel"] = this.excelCellNameForElementRowLabel;
+        data["excelCellNameForReportedValue"] = this.excelCellNameForReportedValue;
+        data["isValueMandatory"] = this.isValueMandatory;
+        data["isMetadataTable"] = this.isMetadataTable;
+        return data;
+    }
+}
+
+export interface IReportEvaluations {
+    sheetDesc?: string | undefined;
+    excelLocationCellRange?: string | undefined;
+    elementRowLabel?: string | undefined;
+    excelCellNameForElementRowLabel?: string | undefined;
+    excelCellNameForReportedValue?: string | undefined;
+    isValueMandatory?: boolean;
+    isMetadataTable?: boolean;
+}
+
+export class ReportEvaluationsListBaseResponse implements IReportEvaluationsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportEvaluations[] | undefined;
+
+    constructor(data?: IReportEvaluationsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ReportEvaluations.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportEvaluationsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportEvaluationsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportEvaluationsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportEvaluations[] | undefined;
+}
+
 export class ReportSchDetails implements IReportSchDetails {
     firmsRptSchID?: number;
     firmsRptSchItemID?: number;
@@ -16862,6 +17901,62 @@ export interface IReportSignatories {
     userRole?: number;
 }
 
+export class ReportSignatoriesListBaseResponse implements IReportSignatoriesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSignatories[] | undefined;
+
+    constructor(data?: IReportSignatoriesListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSignatoriesListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatoriesListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSignatoriesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSignatories[] | undefined;
+}
+
 export class Residencies implements IResidencies {
     residenciesID?: number | undefined;
     residenciesGUID?: string | undefined;
@@ -16964,6 +18059,94 @@ export interface IResidencies {
     createdDate?: string | undefined;
     modifiedDate?: string | undefined;
     modifiedBy?: number;
+}
+
+export class SavePrimaryDocumentResponse implements ISavePrimaryDocumentResponse {
+    wObjectInstanceID?: number;
+    wObjectInstanceRevNum?: number;
+
+    constructor(data?: ISavePrimaryDocumentResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wObjectInstanceID = _data["wObjectInstanceID"];
+            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
+        }
+    }
+
+    static fromJS(data: any): SavePrimaryDocumentResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SavePrimaryDocumentResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wObjectInstanceID"] = this.wObjectInstanceID;
+        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
+        return data;
+    }
+}
+
+export interface ISavePrimaryDocumentResponse {
+    wObjectInstanceID?: number;
+    wObjectInstanceRevNum?: number;
+}
+
+export class SavePrimaryDocumentResponseBaseResponse implements ISavePrimaryDocumentResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SavePrimaryDocumentResponse;
+
+    constructor(data?: ISavePrimaryDocumentResponseBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SavePrimaryDocumentResponse.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SavePrimaryDocumentResponseBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SavePrimaryDocumentResponseBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISavePrimaryDocumentResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SavePrimaryDocumentResponse;
 }
 
 export enum SchemaSerializationMode {
@@ -17270,6 +18453,62 @@ export class StringObjectDictionaryListBaseResponse implements IStringObjectDict
 }
 
 export interface IStringObjectDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
+}
+
+export class StringObjectIDictionaryListBaseResponse implements IStringObjectIDictionaryListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: { [key: string]: any; }[] | undefined;
+
+    constructor(data?: IStringObjectIDictionaryListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): StringObjectIDictionaryListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new StringObjectIDictionaryListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IStringObjectIDictionaryListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
     statusCode?: number;
@@ -18038,6 +19277,94 @@ export interface IUserQuestionAnswersListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: UserQuestionAnswers[] | undefined;
+}
+
+export class ValidationFileDto implements IValidationFileDto {
+    fileContent?: string | undefined;
+    fileName?: string | undefined;
+
+    constructor(data?: IValidationFileDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileContent = _data["fileContent"];
+            this.fileName = _data["fileName"];
+        }
+    }
+
+    static fromJS(data: any): ValidationFileDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationFileDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileContent"] = this.fileContent;
+        data["fileName"] = this.fileName;
+        return data;
+    }
+}
+
+export interface IValidationFileDto {
+    fileContent?: string | undefined;
+    fileName?: string | undefined;
+}
+
+export class ValidationFileDtoBaseResponse implements IValidationFileDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ValidationFileDto;
+
+    constructor(data?: IValidationFileDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ValidationFileDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ValidationFileDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ValidationFileDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IValidationFileDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ValidationFileDto;
 }
 
 export class WAccessRequests implements IWAccessRequests {
