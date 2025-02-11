@@ -16941,6 +16941,9 @@ export class ReportSchDto implements IReportSchDto {
     qfcNum?: string | undefined;
     rptSchFinYearFromDate?: string | undefined;
     rptSchFinYearToDate?: string | undefined;
+    firmRptFinancialStart?: string | undefined;
+    firmRptFinancialEnd?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
     userID?: number | undefined;
 
     constructor(data?: IReportSchDto) {
@@ -16957,6 +16960,9 @@ export class ReportSchDto implements IReportSchDto {
             this.qfcNum = _data["qfcNum"];
             this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
             this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.firmRptFinancialStart = _data["firmRptFinancialStart"];
+            this.firmRptFinancialEnd = _data["firmRptFinancialEnd"];
+            this.rptSchFinYearPeriod = _data["rptSchFinYearPeriod"];
             this.userID = _data["userID"];
         }
     }
@@ -16973,6 +16979,9 @@ export class ReportSchDto implements IReportSchDto {
         data["qfcNum"] = this.qfcNum;
         data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
         data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["firmRptFinancialStart"] = this.firmRptFinancialStart;
+        data["firmRptFinancialEnd"] = this.firmRptFinancialEnd;
+        data["rptSchFinYearPeriod"] = this.rptSchFinYearPeriod;
         data["userID"] = this.userID;
         return data;
     }
@@ -16982,6 +16991,9 @@ export interface IReportSchDto {
     qfcNum?: string | undefined;
     rptSchFinYearFromDate?: string | undefined;
     rptSchFinYearToDate?: string | undefined;
+    firmRptFinancialStart?: string | undefined;
+    firmRptFinancialEnd?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
     userID?: number | undefined;
 }
 
