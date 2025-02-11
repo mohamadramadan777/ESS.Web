@@ -29,19 +29,19 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
-      .subscribe(
-        (response: ReportSchDetailsDtoListBaseResponse) => {
-          if (response && response.response) {
-            this.schedules = Array.isArray(response.response) ? response.response : [response.response];
-            if (this.schedules.length > 0) {
-              this.selectedSchedule = this.schedules[0];
-              setTimeout(() => this.onScheduleChange(), 0);
-            }
-          }
-        },
-        (error) => console.error('Error fetching schedules:', error)
-      );
+    // this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
+    //   .subscribe(
+    //     (response: ReportSchDetailsDtoListBaseResponse) => {
+    //       if (response && response.response) {
+    //         this.schedules = Array.isArray(response.response) ? response.response : [response.response];
+    //         if (this.schedules.length > 0) {
+    //           this.selectedSchedule = this.schedules[0];
+    //           setTimeout(() => this.onScheduleChange(), 0);
+    //         }
+    //       }
+    //     },
+    //     (error) => console.error('Error fetching schedules:', error)
+    //   );
   }
 
   /**
@@ -50,25 +50,25 @@ export class ReportsComponent implements OnInit {
   onScheduleChange(): void {
     if (!this.selectedSchedule) return;
   
-    this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
-      .subscribe(
-        (response) => {
-          if (response && response.response) {
-            const reports = Array.isArray(response.response) ? response.response : [response.response]; 
+    // this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
+    //   .subscribe(
+    //     (response) => {
+    //       if (response && response.response) {
+    //         const reports = Array.isArray(response.response) ? response.response : [response.response]; 
             
-            this.reportsToBeSubmitted = reports.filter((report: any) => 
-              new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
-              new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate)
-            );
+    //         this.reportsToBeSubmitted = reports.filter((report: any) => 
+    //           new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
+    //           new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate)
+    //         );
             
-            this.reportsSubmitted = reports.filter((report: any) => 
-              new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
-              new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate) &&
-              !report.isReportDue
-            );
-          }
-        },
-        (error) => console.error('Error fetching reports:', error)
-      );
+    //         this.reportsSubmitted = reports.filter((report: any) => 
+    //           new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
+    //           new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate) &&
+    //           !report.isReportDue
+    //         );
+    //       }
+    //     },
+    //     (error) => console.error('Error fetching reports:', error)
+    //   );
   }
 }
