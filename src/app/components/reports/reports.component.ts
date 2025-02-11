@@ -15,36 +15,17 @@ export class ReportsComponent implements OnInit {
   reports: any[] = [];
   reportsToBeSubmitted: any[] = [];
   reportsSubmitted: any[] = [];
-  qfcNum: string = '00173';
 
   constructor(private Client: Client) {}
 
   ngOnInit(): void {
-    // this.extractQfcNumFromToken();
     this.loadReports();
   }
-
-  /**
-   * Extracts the QFC number from the JWT token.
-   */
-  // extractQfcNumFromToken(): void {
-  //   const token = localStorage.getItem('token'); // Adjust based on where the token is stored
-  //   if (token) {
-  //     const decodedToken = this.jwtHelper.decodeToken(token);
-  //     this.qfcNum = decodedToken?.['qfcNum'] || ''; // Ensure correct property name
-  //   }
-  // }
-
   /**
    * Fetch all reports using QFC number.
    */
   loadReports(): void {
-    if (!this.qfcNum) {
-      console.error('QFC number is missing from the token');
-      return;
-    }
-
-    this.Client.getSubmissionDetailsForHomePage(this.qfcNum).subscribe(
+    this.Client.getSubmissionDetailsForHomePage().subscribe(
       (response: ReportSchDetailsDtoListBaseResponse) => {
         if (response && response.response) {
           this.reports = Array.isArray(response.response)
@@ -113,8 +94,6 @@ export class ReportsComponent implements OnInit {
 
     this.reportsSubmitted = this.reports
       .filter((report) => {
-        //const manuallyReceived = report.manuallyReceived === true;
-        //const allowResubmit = report.allowReSubmit === false; these need to be checked they are always null
         const isSubmitted = report.soStatusTypeID === 2; // Adjust based on actual submitted ID
         return (
           new Date(report.rptSchFinYearFromDate) <= to &&
@@ -123,7 +102,7 @@ export class ReportsComponent implements OnInit {
         );
       })
       .map((report) => {
-        // ✅ Add signedByMessage dynamically
+        //  Add signedByMessage dynamically
         const signedByMessage =
           report.fileUploadedByName && report.rptAttachmentStatusDate
             ? `Report signed by ${report.fileUploadedByName} on ${report.rptAttachmentStatusDate}`
@@ -154,7 +133,7 @@ export class ReportsComponent implements OnInit {
             report.attachmentStatusTypeID === 4
               ? `https://errors.example.com/${report.rptSchItemID}`
               : '',
-        }; // Example logic for errors
+        }; 
       });
   }
   attachFile() {}
