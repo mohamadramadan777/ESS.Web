@@ -5287,68 +5287,31 @@ export class Client {
     }
 
     /**
-     * @param formTypeID (optional) 
-     * @param docTypeID (optional) 
-     * @param docType (optional) 
-     * @param primaryDocStatusTypeID (optional) 
-     * @param pFilePath (optional) 
+     * @param fileLoction (optional) 
      * @param pFileName (optional) 
-     * @param pFileURI (optional) 
-     * @param objectInstanceID (optional) 
-     * @param objectID (optional) 
-     * @param primaryDocWObjAttachementID (optional) 
-     * @param objectInstanceRevNum (optional) 
+     * @param file (optional) 
      * @return OK
      */
-    savePrimaryDocument(formTypeID: number | undefined, docTypeID: number | undefined, docType: boolean | undefined, primaryDocStatusTypeID: number | undefined, pFilePath: string | undefined, pFileName: string | undefined, pFileURI: string | undefined, objectInstanceID: number | undefined, objectID: number | undefined, primaryDocWObjAttachementID: number | undefined, objectInstanceRevNum: number | undefined): Observable<SavePrimaryDocumentResponseBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/save-primary-document?";
-        if (formTypeID === null)
-            throw new Error("The parameter 'formTypeID' cannot be null.");
-        else if (formTypeID !== undefined)
-            url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
-        if (docTypeID === null)
-            throw new Error("The parameter 'docTypeID' cannot be null.");
-        else if (docTypeID !== undefined)
-            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
-        if (docType === null)
-            throw new Error("The parameter 'docType' cannot be null.");
-        else if (docType !== undefined)
-            url_ += "DocType=" + encodeURIComponent("" + docType) + "&";
-        if (primaryDocStatusTypeID === null)
-            throw new Error("The parameter 'primaryDocStatusTypeID' cannot be null.");
-        else if (primaryDocStatusTypeID !== undefined)
-            url_ += "primaryDocStatusTypeID=" + encodeURIComponent("" + primaryDocStatusTypeID) + "&";
-        if (pFilePath === null)
-            throw new Error("The parameter 'pFilePath' cannot be null.");
-        else if (pFilePath !== undefined)
-            url_ += "pFilePath=" + encodeURIComponent("" + pFilePath) + "&";
+    uploadToFolderForm(fileLoction: string | undefined, pFileName: string | undefined, file: FileParameter | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/Attachments/upload-to-folder-form?";
+        if (fileLoction === null)
+            throw new Error("The parameter 'fileLoction' cannot be null.");
+        else if (fileLoction !== undefined)
+            url_ += "FileLoction=" + encodeURIComponent("" + fileLoction) + "&";
         if (pFileName === null)
             throw new Error("The parameter 'pFileName' cannot be null.");
         else if (pFileName !== undefined)
             url_ += "pFileName=" + encodeURIComponent("" + pFileName) + "&";
-        if (pFileURI === null)
-            throw new Error("The parameter 'pFileURI' cannot be null.");
-        else if (pFileURI !== undefined)
-            url_ += "pFileURI=" + encodeURIComponent("" + pFileURI) + "&";
-        if (objectInstanceID === null)
-            throw new Error("The parameter 'objectInstanceID' cannot be null.");
-        else if (objectInstanceID !== undefined)
-            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
-        if (objectID === null)
-            throw new Error("The parameter 'objectID' cannot be null.");
-        else if (objectID !== undefined)
-            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
-        if (primaryDocWObjAttachementID === null)
-            throw new Error("The parameter 'primaryDocWObjAttachementID' cannot be null.");
-        else if (primaryDocWObjAttachementID !== undefined)
-            url_ += "primaryDocWObjAttachementID=" + encodeURIComponent("" + primaryDocWObjAttachementID) + "&";
-        if (objectInstanceRevNum === null)
-            throw new Error("The parameter 'objectInstanceRevNum' cannot be null.");
-        else if (objectInstanceRevNum !== undefined)
-            url_ += "objectInstanceRevNum=" + encodeURIComponent("" + objectInstanceRevNum) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = new FormData();
+        if (file === null || file === undefined)
+            throw new Error("The parameter 'file' cannot be null.");
+        else
+            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
@@ -5357,143 +5320,11 @@ export class Client {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSavePrimaryDocument(response_);
+            return this.processUploadToFolderForm(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processSavePrimaryDocument(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<SavePrimaryDocumentResponseBaseResponse>;
-        }));
-    }
-
-    protected processSavePrimaryDocument(response: HttpResponseBase): Observable<SavePrimaryDocumentResponseBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SavePrimaryDocumentResponseBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<SavePrimaryDocumentResponseBaseResponse>(null as any);
-    }
-
-    /**
-     * @param formType (optional) 
-     * @param objectId (optional) 
-     * @return OK
-     */
-    getDocSubTypes(formType: number | undefined, objectId: string | undefined): Observable<AttachmentDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/get-doc-sub-types?";
-        if (formType === null)
-            throw new Error("The parameter 'formType' cannot be null.");
-        else if (formType !== undefined)
-            url_ += "formType=" + encodeURIComponent("" + formType) + "&";
-        if (objectId === null)
-            throw new Error("The parameter 'objectId' cannot be null.");
-        else if (objectId !== undefined)
-            url_ += "ObjectId=" + encodeURIComponent("" + objectId) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetDocSubTypes(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetDocSubTypes(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
-        }));
-    }
-
-    protected processGetDocSubTypes(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param wObjAttachementID (optional) 
-     * @param fileName (optional) 
-     * @param filePath (optional) 
-     * @param docType (optional) 
-     * @return OK
-     */
-    deleteAttachment(wObjAttachementID: number | undefined, fileName: string | undefined, filePath: string | undefined, docType: boolean | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/Attachments/delete-attachment?";
-        if (wObjAttachementID === null)
-            throw new Error("The parameter 'wObjAttachementID' cannot be null.");
-        else if (wObjAttachementID !== undefined)
-            url_ += "wObjAttachementID=" + encodeURIComponent("" + wObjAttachementID) + "&";
-        if (fileName === null)
-            throw new Error("The parameter 'fileName' cannot be null.");
-        else if (fileName !== undefined)
-            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
-        if (filePath === null)
-            throw new Error("The parameter 'filePath' cannot be null.");
-        else if (filePath !== undefined)
-            url_ += "filePath=" + encodeURIComponent("" + filePath) + "&";
-        if (docType === null)
-            throw new Error("The parameter 'docType' cannot be null.");
-        else if (docType !== undefined)
-            url_ += "docType=" + encodeURIComponent("" + docType) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteAttachment(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteAttachment(response_ as any);
+                    return this.processUploadToFolderForm(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
                 }
@@ -5502,7 +5333,7 @@ export class Client {
         }));
     }
 
-    protected processDeleteAttachment(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+    protected processUploadToFolderForm(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -6399,6 +6230,413 @@ export class Client {
             }));
         }
         return _observableOf<WIndFormTypeBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateObjectSoStatusDetails(body: ObjectSOStatusDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/insert-update-object-so-status-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateObjectSoStatusDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param blobId (optional) 
+     * @param attachmentId (optional) 
+     * @return OK
+     */
+    updateAttachmentUrl(blobId: number | undefined, attachmentId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/update-attachment-url?";
+        if (blobId === null)
+            throw new Error("The parameter 'blobId' cannot be null.");
+        else if (blobId !== undefined)
+            url_ += "blobId=" + encodeURIComponent("" + blobId) + "&";
+        if (attachmentId === null)
+            throw new Error("The parameter 'attachmentId' cannot be null.");
+        else if (attachmentId !== undefined)
+            url_ += "attachmentId=" + encodeURIComponent("" + attachmentId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateAttachmentUrl(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateAttachmentUrl(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateAttachmentUrl(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pGenSubId (optional) 
+     * @return OK
+     */
+    getGenSubDetails(pGenSubId: number | undefined): Observable<GeneralSubmissionDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-gen-sub-details?";
+        if (pGenSubId === null)
+            throw new Error("The parameter 'pGenSubId' cannot be null.");
+        else if (pGenSubId !== undefined)
+            url_ += "pGenSubId=" + encodeURIComponent("" + pGenSubId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGenSubDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGenSubDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GeneralSubmissionDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GeneralSubmissionDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetGenSubDetails(response: HttpResponseBase): Observable<GeneralSubmissionDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GeneralSubmissionDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GeneralSubmissionDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateGenSubDetails(body: GeneralSubmissionDto | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/update-gen-sub-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateGenSubDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateGenSubDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processUpdateGenSubDetails(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pGenSubmissionId (optional) 
+     * @return OK
+     */
+    deleteGenSub(pGenSubmissionId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/delete-gen-sub?";
+        if (pGenSubmissionId === null)
+            throw new Error("The parameter 'pGenSubmissionId' cannot be null.");
+        else if (pGenSubmissionId !== undefined)
+            url_ += "pGenSubmissionId=" + encodeURIComponent("" + pGenSubmissionId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteGenSub(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteGenSub(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteGenSub(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeId (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getDocType(docTypeId: number | undefined, body: number[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-doc-type?";
+        if (docTypeId === null)
+            throw new Error("The parameter 'docTypeId' cannot be null.");
+        else if (docTypeId !== undefined)
+            url_ += "docTypeId=" + encodeURIComponent("" + docTypeId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processGetDocType(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docType (optional) 
+     * @param reportType (optional) 
+     * @return OK
+     */
+    validateReportType(docType: string | undefined, reportType: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/validate-report-type?";
+        if (docType === null)
+            throw new Error("The parameter 'docType' cannot be null.");
+        else if (docType !== undefined)
+            url_ += "DocType=" + encodeURIComponent("" + docType) + "&";
+        if (reportType === null)
+            throw new Error("The parameter 'reportType' cannot be null.");
+        else if (reportType !== undefined)
+            url_ += "reportType=" + encodeURIComponent("" + reportType) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processValidateReportType(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processValidateReportType(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processValidateReportType(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -7441,7 +7679,7 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    insertUpdateObjectSoStatusDetails(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
+    insertUpdateObjectSoStatusDetails2(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -7458,11 +7696,11 @@ export class Client {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateObjectSoStatusDetails(response_);
+            return this.processInsertUpdateObjectSoStatusDetails2(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processInsertUpdateObjectSoStatusDetails(response_ as any);
+                    return this.processInsertUpdateObjectSoStatusDetails2(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<Int32BaseResponse>;
                 }
@@ -7471,7 +7709,7 @@ export class Client {
         }));
     }
 
-    protected processInsertUpdateObjectSoStatusDetails(response: HttpResponseBase): Observable<Int32BaseResponse> {
+    protected processInsertUpdateObjectSoStatusDetails2(response: HttpResponseBase): Observable<Int32BaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -8120,6 +8358,215 @@ export class Client {
 }
 
 @Injectable()
+export class FromClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    firms(body: InsertUpdateNoticeDetailsFromFirmsRequest | undefined): Observable<WNoticeDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/insert_update_notice_details_from_firms";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processFirms(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processFirms(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WNoticeDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WNoticeDtoBaseResponse>;
+        }));
+    }
+
+    protected processFirms(response: HttpResponseBase): Observable<WNoticeDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WNoticeDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WNoticeDtoBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class NoticeClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param wNoticeID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    attachments(wNoticeID: number | undefined, body: DataSet | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/save_notice_attachments?";
+        if (wNoticeID === null)
+            throw new Error("The parameter 'wNoticeID' cannot be null.");
+        else if (wNoticeID !== undefined)
+            url_ += "wNoticeID=" + encodeURIComponent("" + wNoticeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAttachments(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAttachments(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processAttachments(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
+export class FirmClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    notice(body: InsertFirmNoticeRequest | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/insert_firm_notice";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processNotice(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processNotice(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processNotice(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+}
+
+@Injectable()
 export class EmailClient {
     private http: HttpClient;
     private baseUrl: string;
@@ -8128,6 +8575,62 @@ export class EmailClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    details(body: ProcessNoticeEmailDetailsRequest | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/process_notice_email_details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDetails(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
     }
 
     /**
@@ -8236,6 +8739,74 @@ export class EmailClient {
             }));
         }
         return _observableOf<void>(null as any);
+    }
+}
+
+@Injectable()
+export class ResponseClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    details(body: WFirmNotices | undefined): Observable<FirmNoticesDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/generate_notice_response_details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FirmNoticesDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FirmNoticesDtoBaseResponse>;
+        }));
+    }
+
+    protected processDetails(response: HttpResponseBase): Observable<FirmNoticesDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FirmNoticesDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FirmNoticesDtoBaseResponse>(null as any);
     }
 }
 
@@ -10148,6 +10719,131 @@ export interface IBooleanBaseResponse {
     response?: boolean;
 }
 
+export class ByteArrayBaseResponse implements IByteArrayBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
+
+    constructor(data?: IByteArrayBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"];
+        }
+    }
+
+    static fromJS(data: any): ByteArrayBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ByteArrayBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response;
+        return data;
+    }
+}
+
+export interface IByteArrayBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: string | undefined;
+}
+
+export class Calendar implements ICalendar {
+    readonly minSupportedDateTime?: Date;
+    readonly maxSupportedDateTime?: Date;
+    algorithmType?: CalendarAlgorithmType;
+    readonly isReadOnly?: boolean;
+    readonly eras?: number[] | undefined;
+    twoDigitYearMax?: number;
+
+    constructor(data?: ICalendar) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).minSupportedDateTime = _data["minSupportedDateTime"] ? new Date(_data["minSupportedDateTime"].toString()) : <any>undefined;
+            (<any>this).maxSupportedDateTime = _data["maxSupportedDateTime"] ? new Date(_data["maxSupportedDateTime"].toString()) : <any>undefined;
+            this.algorithmType = _data["algorithmType"];
+            (<any>this).isReadOnly = _data["isReadOnly"];
+            if (Array.isArray(_data["eras"])) {
+                (<any>this).eras = [] as any;
+                for (let item of _data["eras"])
+                    (<any>this).eras!.push(item);
+            }
+            this.twoDigitYearMax = _data["twoDigitYearMax"];
+        }
+    }
+
+    static fromJS(data: any): Calendar {
+        data = typeof data === 'object' ? data : {};
+        let result = new Calendar();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["minSupportedDateTime"] = this.minSupportedDateTime ? this.minSupportedDateTime.toISOString() : <any>undefined;
+        data["maxSupportedDateTime"] = this.maxSupportedDateTime ? this.maxSupportedDateTime.toISOString() : <any>undefined;
+        data["algorithmType"] = this.algorithmType;
+        data["isReadOnly"] = this.isReadOnly;
+        if (Array.isArray(this.eras)) {
+            data["eras"] = [];
+            for (let item of this.eras)
+                data["eras"].push(item);
+        }
+        data["twoDigitYearMax"] = this.twoDigitYearMax;
+        return data;
+    }
+}
+
+export interface ICalendar {
+    minSupportedDateTime?: Date;
+    maxSupportedDateTime?: Date;
+    algorithmType?: CalendarAlgorithmType;
+    isReadOnly?: boolean;
+    eras?: number[] | undefined;
+    twoDigitYearMax?: number;
+}
+
+export enum CalendarAlgorithmType {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+}
+
+export enum CalendarWeekRule {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+}
+
 export class CanStartSignOffDto implements ICanStartSignOffDto {
     canStartSignOff?: boolean;
     message?: string | undefined;
@@ -10234,6 +10930,50 @@ export interface ICanStartSignOffDtoBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: CanStartSignOffDto;
+}
+
+export class CompareInfo implements ICompareInfo {
+    readonly name?: string | undefined;
+    version?: SortVersion;
+    readonly lcid?: number;
+
+    constructor(data?: ICompareInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).name = _data["name"];
+            this.version = _data["version"] ? SortVersion.fromJS(_data["version"]) : <any>undefined;
+            (<any>this).lcid = _data["lcid"];
+        }
+    }
+
+    static fromJS(data: any): CompareInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CompareInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["version"] = this.version ? this.version.toJSON() : <any>undefined;
+        data["lcid"] = this.lcid;
+        return data;
+    }
+}
+
+export interface ICompareInfo {
+    name?: string | undefined;
+    version?: SortVersion;
+    lcid?: number;
 }
 
 export class ContactUs implements IContactUs {
@@ -10988,6 +11728,492 @@ export interface IControlledFunctionDtoListBaseResponse {
     response?: ControlledFunctionDto[] | undefined;
 }
 
+export class CultureInfo implements ICultureInfo {
+    parent?: CultureInfo;
+    readonly lcid?: number;
+    readonly keyboardLayoutId?: number;
+    name?: string | undefined;
+    readonly ietfLanguageTag?: string | undefined;
+    readonly displayName?: string | undefined;
+    readonly nativeName?: string | undefined;
+    readonly englishName?: string | undefined;
+    readonly twoLetterISOLanguageName?: string | undefined;
+    readonly threeLetterISOLanguageName?: string | undefined;
+    readonly threeLetterWindowsLanguageName?: string | undefined;
+    compareInfo?: CompareInfo;
+    textInfo?: TextInfo;
+    readonly isNeutralCulture?: boolean;
+    cultureTypes?: CultureTypes;
+    numberFormat?: NumberFormatInfo;
+    dateTimeFormat?: DateTimeFormatInfo;
+    calendar?: Calendar;
+    readonly optionalCalendars?: Calendar[] | undefined;
+    readonly useUserOverride?: boolean;
+    readonly isReadOnly?: boolean;
+
+    constructor(data?: ICultureInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.parent = _data["parent"] ? CultureInfo.fromJS(_data["parent"]) : <any>undefined;
+            (<any>this).lcid = _data["lcid"];
+            (<any>this).keyboardLayoutId = _data["keyboardLayoutId"];
+            this.name = _data["name"];
+            (<any>this).ietfLanguageTag = _data["ietfLanguageTag"];
+            (<any>this).displayName = _data["displayName"];
+            (<any>this).nativeName = _data["nativeName"];
+            (<any>this).englishName = _data["englishName"];
+            (<any>this).twoLetterISOLanguageName = _data["twoLetterISOLanguageName"];
+            (<any>this).threeLetterISOLanguageName = _data["threeLetterISOLanguageName"];
+            (<any>this).threeLetterWindowsLanguageName = _data["threeLetterWindowsLanguageName"];
+            this.compareInfo = _data["compareInfo"] ? CompareInfo.fromJS(_data["compareInfo"]) : <any>undefined;
+            this.textInfo = _data["textInfo"] ? TextInfo.fromJS(_data["textInfo"]) : <any>undefined;
+            (<any>this).isNeutralCulture = _data["isNeutralCulture"];
+            this.cultureTypes = _data["cultureTypes"];
+            this.numberFormat = _data["numberFormat"] ? NumberFormatInfo.fromJS(_data["numberFormat"]) : <any>undefined;
+            this.dateTimeFormat = _data["dateTimeFormat"] ? DateTimeFormatInfo.fromJS(_data["dateTimeFormat"]) : <any>undefined;
+            this.calendar = _data["calendar"] ? Calendar.fromJS(_data["calendar"]) : <any>undefined;
+            if (Array.isArray(_data["optionalCalendars"])) {
+                (<any>this).optionalCalendars = [] as any;
+                for (let item of _data["optionalCalendars"])
+                    (<any>this).optionalCalendars!.push(Calendar.fromJS(item));
+            }
+            (<any>this).useUserOverride = _data["useUserOverride"];
+            (<any>this).isReadOnly = _data["isReadOnly"];
+        }
+    }
+
+    static fromJS(data: any): CultureInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new CultureInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["parent"] = this.parent ? this.parent.toJSON() : <any>undefined;
+        data["lcid"] = this.lcid;
+        data["keyboardLayoutId"] = this.keyboardLayoutId;
+        data["name"] = this.name;
+        data["ietfLanguageTag"] = this.ietfLanguageTag;
+        data["displayName"] = this.displayName;
+        data["nativeName"] = this.nativeName;
+        data["englishName"] = this.englishName;
+        data["twoLetterISOLanguageName"] = this.twoLetterISOLanguageName;
+        data["threeLetterISOLanguageName"] = this.threeLetterISOLanguageName;
+        data["threeLetterWindowsLanguageName"] = this.threeLetterWindowsLanguageName;
+        data["compareInfo"] = this.compareInfo ? this.compareInfo.toJSON() : <any>undefined;
+        data["textInfo"] = this.textInfo ? this.textInfo.toJSON() : <any>undefined;
+        data["isNeutralCulture"] = this.isNeutralCulture;
+        data["cultureTypes"] = this.cultureTypes;
+        data["numberFormat"] = this.numberFormat ? this.numberFormat.toJSON() : <any>undefined;
+        data["dateTimeFormat"] = this.dateTimeFormat ? this.dateTimeFormat.toJSON() : <any>undefined;
+        data["calendar"] = this.calendar ? this.calendar.toJSON() : <any>undefined;
+        if (Array.isArray(this.optionalCalendars)) {
+            data["optionalCalendars"] = [];
+            for (let item of this.optionalCalendars)
+                data["optionalCalendars"].push(item.toJSON());
+        }
+        data["useUserOverride"] = this.useUserOverride;
+        data["isReadOnly"] = this.isReadOnly;
+        return data;
+    }
+}
+
+export interface ICultureInfo {
+    parent?: CultureInfo;
+    lcid?: number;
+    keyboardLayoutId?: number;
+    name?: string | undefined;
+    ietfLanguageTag?: string | undefined;
+    displayName?: string | undefined;
+    nativeName?: string | undefined;
+    englishName?: string | undefined;
+    twoLetterISOLanguageName?: string | undefined;
+    threeLetterISOLanguageName?: string | undefined;
+    threeLetterWindowsLanguageName?: string | undefined;
+    compareInfo?: CompareInfo;
+    textInfo?: TextInfo;
+    isNeutralCulture?: boolean;
+    cultureTypes?: CultureTypes;
+    numberFormat?: NumberFormatInfo;
+    dateTimeFormat?: DateTimeFormatInfo;
+    calendar?: Calendar;
+    optionalCalendars?: Calendar[] | undefined;
+    useUserOverride?: boolean;
+    isReadOnly?: boolean;
+}
+
+export enum CultureTypes {
+    _1 = 1,
+    _2 = 2,
+    _4 = 4,
+    _7 = 7,
+    _8 = 8,
+    _16 = 16,
+    _32 = 32,
+    _64 = 64,
+}
+
+export class DataSet implements IDataSet {
+    container?: IContainer;
+    readonly designMode?: boolean;
+    remotingFormat?: SerializationFormat;
+    schemaSerializationMode?: SchemaSerializationMode;
+    caseSensitive?: boolean;
+    readonly defaultViewManager?: any[] | undefined;
+    enforceConstraints?: boolean;
+    dataSetName?: string | undefined;
+    namespace?: string | undefined;
+    prefix?: string | undefined;
+    readonly extendedProperties?: { [key: string]: any; } | undefined;
+    readonly hasErrors?: boolean;
+    readonly isInitialized?: boolean;
+    locale?: CultureInfo;
+    site?: ISite;
+    readonly relations?: any[] | undefined;
+    readonly tables?: any[] | undefined;
+
+    constructor(data?: IDataSet) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.caseSensitive = false;
+            this.enforceConstraints = true;
+            this.dataSetName = "";
+            this.namespace = "";
+            this.prefix = "";
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.container = _data["container"] ? IContainer.fromJS(_data["container"]) : <any>undefined;
+            (<any>this).designMode = _data["designMode"];
+            this.remotingFormat = _data["remotingFormat"];
+            this.schemaSerializationMode = _data["schemaSerializationMode"];
+            this.caseSensitive = _data["caseSensitive"] !== undefined ? _data["caseSensitive"] : false;
+            if (Array.isArray(_data["defaultViewManager"])) {
+                (<any>this).defaultViewManager = [] as any;
+                for (let item of _data["defaultViewManager"])
+                    (<any>this).defaultViewManager!.push(item);
+            }
+            this.enforceConstraints = _data["enforceConstraints"] !== undefined ? _data["enforceConstraints"] : true;
+            this.dataSetName = _data["dataSetName"] !== undefined ? _data["dataSetName"] : "";
+            this.namespace = _data["namespace"] !== undefined ? _data["namespace"] : "";
+            this.prefix = _data["prefix"] !== undefined ? _data["prefix"] : "";
+            if (_data["extendedProperties"]) {
+                (<any>this).extendedProperties = {} as any;
+                for (let key in _data["extendedProperties"]) {
+                    if (_data["extendedProperties"].hasOwnProperty(key))
+                        (<any>(<any>this).extendedProperties)![key] = _data["extendedProperties"][key];
+                }
+            }
+            (<any>this).hasErrors = _data["hasErrors"];
+            (<any>this).isInitialized = _data["isInitialized"];
+            this.locale = _data["locale"] ? CultureInfo.fromJS(_data["locale"]) : <any>undefined;
+            this.site = _data["site"] ? ISite.fromJS(_data["site"]) : <any>undefined;
+            if (Array.isArray(_data["relations"])) {
+                (<any>this).relations = [] as any;
+                for (let item of _data["relations"])
+                    (<any>this).relations!.push(item);
+            }
+            if (Array.isArray(_data["tables"])) {
+                (<any>this).tables = [] as any;
+                for (let item of _data["tables"])
+                    (<any>this).tables!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): DataSet {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataSet();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["container"] = this.container ? this.container.toJSON() : <any>undefined;
+        data["designMode"] = this.designMode;
+        data["remotingFormat"] = this.remotingFormat;
+        data["schemaSerializationMode"] = this.schemaSerializationMode;
+        data["caseSensitive"] = this.caseSensitive;
+        if (Array.isArray(this.defaultViewManager)) {
+            data["defaultViewManager"] = [];
+            for (let item of this.defaultViewManager)
+                data["defaultViewManager"].push(item);
+        }
+        data["enforceConstraints"] = this.enforceConstraints;
+        data["dataSetName"] = this.dataSetName;
+        data["namespace"] = this.namespace;
+        data["prefix"] = this.prefix;
+        if (this.extendedProperties) {
+            data["extendedProperties"] = {};
+            for (let key in this.extendedProperties) {
+                if (this.extendedProperties.hasOwnProperty(key))
+                    (<any>data["extendedProperties"])[key] = (<any>this.extendedProperties)[key];
+            }
+        }
+        data["hasErrors"] = this.hasErrors;
+        data["isInitialized"] = this.isInitialized;
+        data["locale"] = this.locale ? this.locale.toJSON() : <any>undefined;
+        data["site"] = this.site ? this.site.toJSON() : <any>undefined;
+        if (Array.isArray(this.relations)) {
+            data["relations"] = [];
+            for (let item of this.relations)
+                data["relations"].push(item);
+        }
+        if (Array.isArray(this.tables)) {
+            data["tables"] = [];
+            for (let item of this.tables)
+                data["tables"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IDataSet {
+    container?: IContainer;
+    designMode?: boolean;
+    remotingFormat?: SerializationFormat;
+    schemaSerializationMode?: SchemaSerializationMode;
+    caseSensitive?: boolean;
+    defaultViewManager?: any[] | undefined;
+    enforceConstraints?: boolean;
+    dataSetName?: string | undefined;
+    namespace?: string | undefined;
+    prefix?: string | undefined;
+    extendedProperties?: { [key: string]: any; } | undefined;
+    hasErrors?: boolean;
+    isInitialized?: boolean;
+    locale?: CultureInfo;
+    site?: ISite;
+    relations?: any[] | undefined;
+    tables?: any[] | undefined;
+}
+
+export class DateTimeFormatInfo implements IDateTimeFormatInfo {
+    amDesignator?: string | undefined;
+    calendar?: Calendar;
+    dateSeparator?: string | undefined;
+    firstDayOfWeek?: DayOfWeek;
+    calendarWeekRule?: CalendarWeekRule;
+    fullDateTimePattern?: string | undefined;
+    longDatePattern?: string | undefined;
+    longTimePattern?: string | undefined;
+    monthDayPattern?: string | undefined;
+    pmDesignator?: string | undefined;
+    readonly rfC1123Pattern?: string | undefined;
+    shortDatePattern?: string | undefined;
+    shortTimePattern?: string | undefined;
+    readonly sortableDateTimePattern?: string | undefined;
+    timeSeparator?: string | undefined;
+    readonly universalSortableDateTimePattern?: string | undefined;
+    yearMonthPattern?: string | undefined;
+    abbreviatedDayNames?: string[] | undefined;
+    shortestDayNames?: string[] | undefined;
+    dayNames?: string[] | undefined;
+    abbreviatedMonthNames?: string[] | undefined;
+    monthNames?: string[] | undefined;
+    readonly isReadOnly?: boolean;
+    readonly nativeCalendarName?: string | undefined;
+    abbreviatedMonthGenitiveNames?: string[] | undefined;
+    monthGenitiveNames?: string[] | undefined;
+
+    constructor(data?: IDateTimeFormatInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.amDesignator = _data["amDesignator"];
+            this.calendar = _data["calendar"] ? Calendar.fromJS(_data["calendar"]) : <any>undefined;
+            this.dateSeparator = _data["dateSeparator"];
+            this.firstDayOfWeek = _data["firstDayOfWeek"];
+            this.calendarWeekRule = _data["calendarWeekRule"];
+            this.fullDateTimePattern = _data["fullDateTimePattern"];
+            this.longDatePattern = _data["longDatePattern"];
+            this.longTimePattern = _data["longTimePattern"];
+            this.monthDayPattern = _data["monthDayPattern"];
+            this.pmDesignator = _data["pmDesignator"];
+            (<any>this).rfC1123Pattern = _data["rfC1123Pattern"];
+            this.shortDatePattern = _data["shortDatePattern"];
+            this.shortTimePattern = _data["shortTimePattern"];
+            (<any>this).sortableDateTimePattern = _data["sortableDateTimePattern"];
+            this.timeSeparator = _data["timeSeparator"];
+            (<any>this).universalSortableDateTimePattern = _data["universalSortableDateTimePattern"];
+            this.yearMonthPattern = _data["yearMonthPattern"];
+            if (Array.isArray(_data["abbreviatedDayNames"])) {
+                this.abbreviatedDayNames = [] as any;
+                for (let item of _data["abbreviatedDayNames"])
+                    this.abbreviatedDayNames!.push(item);
+            }
+            if (Array.isArray(_data["shortestDayNames"])) {
+                this.shortestDayNames = [] as any;
+                for (let item of _data["shortestDayNames"])
+                    this.shortestDayNames!.push(item);
+            }
+            if (Array.isArray(_data["dayNames"])) {
+                this.dayNames = [] as any;
+                for (let item of _data["dayNames"])
+                    this.dayNames!.push(item);
+            }
+            if (Array.isArray(_data["abbreviatedMonthNames"])) {
+                this.abbreviatedMonthNames = [] as any;
+                for (let item of _data["abbreviatedMonthNames"])
+                    this.abbreviatedMonthNames!.push(item);
+            }
+            if (Array.isArray(_data["monthNames"])) {
+                this.monthNames = [] as any;
+                for (let item of _data["monthNames"])
+                    this.monthNames!.push(item);
+            }
+            (<any>this).isReadOnly = _data["isReadOnly"];
+            (<any>this).nativeCalendarName = _data["nativeCalendarName"];
+            if (Array.isArray(_data["abbreviatedMonthGenitiveNames"])) {
+                this.abbreviatedMonthGenitiveNames = [] as any;
+                for (let item of _data["abbreviatedMonthGenitiveNames"])
+                    this.abbreviatedMonthGenitiveNames!.push(item);
+            }
+            if (Array.isArray(_data["monthGenitiveNames"])) {
+                this.monthGenitiveNames = [] as any;
+                for (let item of _data["monthGenitiveNames"])
+                    this.monthGenitiveNames!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): DateTimeFormatInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new DateTimeFormatInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["amDesignator"] = this.amDesignator;
+        data["calendar"] = this.calendar ? this.calendar.toJSON() : <any>undefined;
+        data["dateSeparator"] = this.dateSeparator;
+        data["firstDayOfWeek"] = this.firstDayOfWeek;
+        data["calendarWeekRule"] = this.calendarWeekRule;
+        data["fullDateTimePattern"] = this.fullDateTimePattern;
+        data["longDatePattern"] = this.longDatePattern;
+        data["longTimePattern"] = this.longTimePattern;
+        data["monthDayPattern"] = this.monthDayPattern;
+        data["pmDesignator"] = this.pmDesignator;
+        data["rfC1123Pattern"] = this.rfC1123Pattern;
+        data["shortDatePattern"] = this.shortDatePattern;
+        data["shortTimePattern"] = this.shortTimePattern;
+        data["sortableDateTimePattern"] = this.sortableDateTimePattern;
+        data["timeSeparator"] = this.timeSeparator;
+        data["universalSortableDateTimePattern"] = this.universalSortableDateTimePattern;
+        data["yearMonthPattern"] = this.yearMonthPattern;
+        if (Array.isArray(this.abbreviatedDayNames)) {
+            data["abbreviatedDayNames"] = [];
+            for (let item of this.abbreviatedDayNames)
+                data["abbreviatedDayNames"].push(item);
+        }
+        if (Array.isArray(this.shortestDayNames)) {
+            data["shortestDayNames"] = [];
+            for (let item of this.shortestDayNames)
+                data["shortestDayNames"].push(item);
+        }
+        if (Array.isArray(this.dayNames)) {
+            data["dayNames"] = [];
+            for (let item of this.dayNames)
+                data["dayNames"].push(item);
+        }
+        if (Array.isArray(this.abbreviatedMonthNames)) {
+            data["abbreviatedMonthNames"] = [];
+            for (let item of this.abbreviatedMonthNames)
+                data["abbreviatedMonthNames"].push(item);
+        }
+        if (Array.isArray(this.monthNames)) {
+            data["monthNames"] = [];
+            for (let item of this.monthNames)
+                data["monthNames"].push(item);
+        }
+        data["isReadOnly"] = this.isReadOnly;
+        data["nativeCalendarName"] = this.nativeCalendarName;
+        if (Array.isArray(this.abbreviatedMonthGenitiveNames)) {
+            data["abbreviatedMonthGenitiveNames"] = [];
+            for (let item of this.abbreviatedMonthGenitiveNames)
+                data["abbreviatedMonthGenitiveNames"].push(item);
+        }
+        if (Array.isArray(this.monthGenitiveNames)) {
+            data["monthGenitiveNames"] = [];
+            for (let item of this.monthGenitiveNames)
+                data["monthGenitiveNames"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IDateTimeFormatInfo {
+    amDesignator?: string | undefined;
+    calendar?: Calendar;
+    dateSeparator?: string | undefined;
+    firstDayOfWeek?: DayOfWeek;
+    calendarWeekRule?: CalendarWeekRule;
+    fullDateTimePattern?: string | undefined;
+    longDatePattern?: string | undefined;
+    longTimePattern?: string | undefined;
+    monthDayPattern?: string | undefined;
+    pmDesignator?: string | undefined;
+    rfC1123Pattern?: string | undefined;
+    shortDatePattern?: string | undefined;
+    shortTimePattern?: string | undefined;
+    sortableDateTimePattern?: string | undefined;
+    timeSeparator?: string | undefined;
+    universalSortableDateTimePattern?: string | undefined;
+    yearMonthPattern?: string | undefined;
+    abbreviatedDayNames?: string[] | undefined;
+    shortestDayNames?: string[] | undefined;
+    dayNames?: string[] | undefined;
+    abbreviatedMonthNames?: string[] | undefined;
+    monthNames?: string[] | undefined;
+    isReadOnly?: boolean;
+    nativeCalendarName?: string | undefined;
+    abbreviatedMonthGenitiveNames?: string[] | undefined;
+    monthGenitiveNames?: string[] | undefined;
+}
+
+export enum DayOfWeek {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+    _4 = 4,
+    _5 = 5,
+    _6 = 6,
+}
+
+export enum DigitShapes {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+}
+
 export class DocSignatories implements IDocSignatories {
     docSignatoryID?: number;
     docTypeID?: number | undefined;
@@ -11652,6 +12878,286 @@ export interface IFirmDtoListBaseResponse {
     response?: FirmDto[] | undefined;
 }
 
+export class FirmNoticeResponseItems implements IFirmNoticeResponseItems {
+    noticeResponseItemID?: number | undefined;
+    essNoticeResponseItemID?: number;
+    noticeQuestionNumber?: string | undefined;
+    noticeQuestion?: string | undefined;
+    responseTypeID?: number | undefined;
+    questionDisplayOrder?: number;
+    noticeQuestionnaireItemID?: number;
+    responses?: string | undefined;
+    explanation?: string | undefined;
+    explanationReqdCriteriaMet?: boolean | undefined;
+    explanationRequired?: number | undefined;
+    createdBy?: number;
+    lstFirmNoticeResponseValues?: FirmNoticeResponseValues[] | undefined;
+
+    constructor(data?: IFirmNoticeResponseItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.noticeResponseItemID = _data["noticeResponseItemID"];
+            this.essNoticeResponseItemID = _data["essNoticeResponseItemID"];
+            this.noticeQuestionNumber = _data["noticeQuestionNumber"];
+            this.noticeQuestion = _data["noticeQuestion"];
+            this.responseTypeID = _data["responseTypeID"];
+            this.questionDisplayOrder = _data["questionDisplayOrder"];
+            this.noticeQuestionnaireItemID = _data["noticeQuestionnaireItemID"];
+            this.responses = _data["responses"];
+            this.explanation = _data["explanation"];
+            this.explanationReqdCriteriaMet = _data["explanationReqdCriteriaMet"];
+            this.explanationRequired = _data["explanationRequired"];
+            this.createdBy = _data["createdBy"];
+            if (Array.isArray(_data["lstFirmNoticeResponseValues"])) {
+                this.lstFirmNoticeResponseValues = [] as any;
+                for (let item of _data["lstFirmNoticeResponseValues"])
+                    this.lstFirmNoticeResponseValues!.push(FirmNoticeResponseValues.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): FirmNoticeResponseItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmNoticeResponseItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["noticeResponseItemID"] = this.noticeResponseItemID;
+        data["essNoticeResponseItemID"] = this.essNoticeResponseItemID;
+        data["noticeQuestionNumber"] = this.noticeQuestionNumber;
+        data["noticeQuestion"] = this.noticeQuestion;
+        data["responseTypeID"] = this.responseTypeID;
+        data["questionDisplayOrder"] = this.questionDisplayOrder;
+        data["noticeQuestionnaireItemID"] = this.noticeQuestionnaireItemID;
+        data["responses"] = this.responses;
+        data["explanation"] = this.explanation;
+        data["explanationReqdCriteriaMet"] = this.explanationReqdCriteriaMet;
+        data["explanationRequired"] = this.explanationRequired;
+        data["createdBy"] = this.createdBy;
+        if (Array.isArray(this.lstFirmNoticeResponseValues)) {
+            data["lstFirmNoticeResponseValues"] = [];
+            for (let item of this.lstFirmNoticeResponseValues)
+                data["lstFirmNoticeResponseValues"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IFirmNoticeResponseItems {
+    noticeResponseItemID?: number | undefined;
+    essNoticeResponseItemID?: number;
+    noticeQuestionNumber?: string | undefined;
+    noticeQuestion?: string | undefined;
+    responseTypeID?: number | undefined;
+    questionDisplayOrder?: number;
+    noticeQuestionnaireItemID?: number;
+    responses?: string | undefined;
+    explanation?: string | undefined;
+    explanationReqdCriteriaMet?: boolean | undefined;
+    explanationRequired?: number | undefined;
+    createdBy?: number;
+    lstFirmNoticeResponseValues?: FirmNoticeResponseValues[] | undefined;
+}
+
+export class FirmNoticeResponseValues implements IFirmNoticeResponseValues {
+    noticeResponseValueID?: number | undefined;
+    response?: string | undefined;
+    listValueID?: number | undefined;
+    essNoticeResponseItemID?: number;
+    createdBy?: number;
+
+    constructor(data?: IFirmNoticeResponseValues) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.noticeResponseValueID = _data["noticeResponseValueID"];
+            this.response = _data["response"];
+            this.listValueID = _data["listValueID"];
+            this.essNoticeResponseItemID = _data["essNoticeResponseItemID"];
+            this.createdBy = _data["createdBy"];
+        }
+    }
+
+    static fromJS(data: any): FirmNoticeResponseValues {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmNoticeResponseValues();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["noticeResponseValueID"] = this.noticeResponseValueID;
+        data["response"] = this.response;
+        data["listValueID"] = this.listValueID;
+        data["essNoticeResponseItemID"] = this.essNoticeResponseItemID;
+        data["createdBy"] = this.createdBy;
+        return data;
+    }
+}
+
+export interface IFirmNoticeResponseValues {
+    noticeResponseValueID?: number | undefined;
+    response?: string | undefined;
+    listValueID?: number | undefined;
+    essNoticeResponseItemID?: number;
+    createdBy?: number;
+}
+
+export class FirmNoticesDto implements IFirmNoticesDto {
+    noticeID?: number;
+    firmNoticeID?: number;
+    firmID?: number;
+    qfcNumber?: string | undefined;
+    objectSOStatusID?: number | undefined;
+    escalationReqdCriteriaMet?: boolean | undefined;
+    notes?: string | undefined;
+    responseProvidedBy?: string | undefined;
+    responseProvidedDate?: string | undefined;
+    opType?: string | undefined;
+    createdBy?: number;
+    lstFirmNoticeResponseItems?: FirmNoticeResponseItems[] | undefined;
+
+    constructor(data?: IFirmNoticesDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.noticeID = _data["noticeID"];
+            this.firmNoticeID = _data["firmNoticeID"];
+            this.firmID = _data["firmID"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.escalationReqdCriteriaMet = _data["escalationReqdCriteriaMet"];
+            this.notes = _data["notes"];
+            this.responseProvidedBy = _data["responseProvidedBy"];
+            this.responseProvidedDate = _data["responseProvidedDate"];
+            this.opType = _data["opType"];
+            this.createdBy = _data["createdBy"];
+            if (Array.isArray(_data["lstFirmNoticeResponseItems"])) {
+                this.lstFirmNoticeResponseItems = [] as any;
+                for (let item of _data["lstFirmNoticeResponseItems"])
+                    this.lstFirmNoticeResponseItems!.push(FirmNoticeResponseItems.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): FirmNoticesDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmNoticesDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["noticeID"] = this.noticeID;
+        data["firmNoticeID"] = this.firmNoticeID;
+        data["firmID"] = this.firmID;
+        data["qfcNumber"] = this.qfcNumber;
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["escalationReqdCriteriaMet"] = this.escalationReqdCriteriaMet;
+        data["notes"] = this.notes;
+        data["responseProvidedBy"] = this.responseProvidedBy;
+        data["responseProvidedDate"] = this.responseProvidedDate;
+        data["opType"] = this.opType;
+        data["createdBy"] = this.createdBy;
+        if (Array.isArray(this.lstFirmNoticeResponseItems)) {
+            data["lstFirmNoticeResponseItems"] = [];
+            for (let item of this.lstFirmNoticeResponseItems)
+                data["lstFirmNoticeResponseItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IFirmNoticesDto {
+    noticeID?: number;
+    firmNoticeID?: number;
+    firmID?: number;
+    qfcNumber?: string | undefined;
+    objectSOStatusID?: number | undefined;
+    escalationReqdCriteriaMet?: boolean | undefined;
+    notes?: string | undefined;
+    responseProvidedBy?: string | undefined;
+    responseProvidedDate?: string | undefined;
+    opType?: string | undefined;
+    createdBy?: number;
+    lstFirmNoticeResponseItems?: FirmNoticeResponseItems[] | undefined;
+}
+
+export class FirmNoticesDtoBaseResponse implements IFirmNoticesDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmNoticesDto;
+
+    constructor(data?: IFirmNoticesDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? FirmNoticesDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): FirmNoticesDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmNoticesDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IFirmNoticesDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmNoticesDto;
+}
+
 export class GeneralSubmissionDto implements IGeneralSubmissionDto {
     genSubmissionID?: number | undefined;
     qfcNumber?: string | undefined;
@@ -11954,6 +13460,134 @@ export interface IHistoryDetailsDto {
     rptSchItemID?: number | undefined;
     docTypeID?: number | undefined;
     lstAattachments?: AttachmentDto[] | undefined;
+}
+
+export class IComponent implements IIComponent {
+    site?: ISite;
+
+    constructor(data?: IIComponent) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.site = _data["site"] ? ISite.fromJS(_data["site"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): IComponent {
+        data = typeof data === 'object' ? data : {};
+        let result = new IComponent();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["site"] = this.site ? this.site.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IIComponent {
+    site?: ISite;
+}
+
+export class IContainer implements IIContainer {
+    readonly components?: any[] | undefined;
+
+    constructor(data?: IIContainer) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["components"])) {
+                (<any>this).components = [] as any;
+                for (let item of _data["components"])
+                    (<any>this).components!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): IContainer {
+        data = typeof data === 'object' ? data : {};
+        let result = new IContainer();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.components)) {
+            data["components"] = [];
+            for (let item of this.components)
+                data["components"].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IIContainer {
+    components?: any[] | undefined;
+}
+
+export class ISite implements IISite {
+    component?: IComponent;
+    container?: IContainer;
+    readonly designMode?: boolean;
+    name?: string | undefined;
+
+    constructor(data?: IISite) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.component = _data["component"] ? IComponent.fromJS(_data["component"]) : <any>undefined;
+            this.container = _data["container"] ? IContainer.fromJS(_data["container"]) : <any>undefined;
+            (<any>this).designMode = _data["designMode"];
+            this.name = _data["name"];
+        }
+    }
+
+    static fromJS(data: any): ISite {
+        data = typeof data === 'object' ? data : {};
+        let result = new ISite();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["component"] = this.component ? this.component.toJSON() : <any>undefined;
+        data["container"] = this.container ? this.container.toJSON() : <any>undefined;
+        data["designMode"] = this.designMode;
+        data["name"] = this.name;
+        return data;
+    }
+}
+
+export interface IISite {
+    component?: IComponent;
+    container?: IContainer;
+    designMode?: boolean;
+    name?: string | undefined;
 }
 
 export class IndividualDetailDto implements IIndividualDetailDto {
@@ -12556,6 +14190,46 @@ export interface IIndividualDetailsDtoListBaseResponse {
     response?: IndividualDetailsDto[] | undefined;
 }
 
+export class InsertFirmNoticeRequest implements IInsertFirmNoticeRequest {
+    dsFirmNotice?: DataSet;
+    objNotice?: WNoticeDto;
+
+    constructor(data?: IInsertFirmNoticeRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.dsFirmNotice = _data["dsFirmNotice"] ? DataSet.fromJS(_data["dsFirmNotice"]) : <any>undefined;
+            this.objNotice = _data["objNotice"] ? WNoticeDto.fromJS(_data["objNotice"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): InsertFirmNoticeRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertFirmNoticeRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dsFirmNotice"] = this.dsFirmNotice ? this.dsFirmNotice.toJSON() : <any>undefined;
+        data["objNotice"] = this.objNotice ? this.objNotice.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IInsertFirmNoticeRequest {
+    dsFirmNotice?: DataSet;
+    objNotice?: WNoticeDto;
+}
+
 export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
     objectSOStatus?: ObjectSOStatusDto;
     lstReportSignatories?: ReportSignatories[] | undefined;
@@ -12646,6 +14320,50 @@ export interface IInsertReportSchDetailsDto {
     objReportSch?: ReportSchDto;
     objReportSchItem?: ReportSchItem;
     objReportSchItemAttachment?: AttachmentDto;
+}
+
+export class InsertUpdateNoticeDetailsFromFirmsRequest implements IInsertUpdateNoticeDetailsFromFirmsRequest {
+    objNoticeData?: WNoticeDto;
+    dsNoticeDetails?: DataSet;
+    firmNoticeID?: number;
+
+    constructor(data?: IInsertUpdateNoticeDetailsFromFirmsRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objNoticeData = _data["objNoticeData"] ? WNoticeDto.fromJS(_data["objNoticeData"]) : <any>undefined;
+            this.dsNoticeDetails = _data["dsNoticeDetails"] ? DataSet.fromJS(_data["dsNoticeDetails"]) : <any>undefined;
+            this.firmNoticeID = _data["firmNoticeID"];
+        }
+    }
+
+    static fromJS(data: any): InsertUpdateNoticeDetailsFromFirmsRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new InsertUpdateNoticeDetailsFromFirmsRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objNoticeData"] = this.objNoticeData ? this.objNoticeData.toJSON() : <any>undefined;
+        data["dsNoticeDetails"] = this.dsNoticeDetails ? this.dsNoticeDetails.toJSON() : <any>undefined;
+        data["firmNoticeID"] = this.firmNoticeID;
+        return data;
+    }
+}
+
+export interface IInsertUpdateNoticeDetailsFromFirmsRequest {
+    objNoticeData?: WNoticeDto;
+    dsNoticeDetails?: DataSet;
+    firmNoticeID?: number;
 }
 
 export class Int32BaseResponse implements IInt32BaseResponse {
@@ -12810,6 +14528,182 @@ export interface IInt32StringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class NumberFormatInfo implements INumberFormatInfo {
+    currencyDecimalDigits?: number;
+    currencyDecimalSeparator?: string | undefined;
+    readonly isReadOnly?: boolean;
+    currencyGroupSizes?: number[] | undefined;
+    numberGroupSizes?: number[] | undefined;
+    percentGroupSizes?: number[] | undefined;
+    currencyGroupSeparator?: string | undefined;
+    currencySymbol?: string | undefined;
+    naNSymbol?: string | undefined;
+    currencyNegativePattern?: number;
+    numberNegativePattern?: number;
+    percentPositivePattern?: number;
+    percentNegativePattern?: number;
+    negativeInfinitySymbol?: string | undefined;
+    negativeSign?: string | undefined;
+    numberDecimalDigits?: number;
+    numberDecimalSeparator?: string | undefined;
+    numberGroupSeparator?: string | undefined;
+    currencyPositivePattern?: number;
+    positiveInfinitySymbol?: string | undefined;
+    positiveSign?: string | undefined;
+    percentDecimalDigits?: number;
+    percentDecimalSeparator?: string | undefined;
+    percentGroupSeparator?: string | undefined;
+    percentSymbol?: string | undefined;
+    perMilleSymbol?: string | undefined;
+    nativeDigits?: string[] | undefined;
+    digitSubstitution?: DigitShapes;
+
+    constructor(data?: INumberFormatInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.currencyDecimalDigits = _data["currencyDecimalDigits"];
+            this.currencyDecimalSeparator = _data["currencyDecimalSeparator"];
+            (<any>this).isReadOnly = _data["isReadOnly"];
+            if (Array.isArray(_data["currencyGroupSizes"])) {
+                this.currencyGroupSizes = [] as any;
+                for (let item of _data["currencyGroupSizes"])
+                    this.currencyGroupSizes!.push(item);
+            }
+            if (Array.isArray(_data["numberGroupSizes"])) {
+                this.numberGroupSizes = [] as any;
+                for (let item of _data["numberGroupSizes"])
+                    this.numberGroupSizes!.push(item);
+            }
+            if (Array.isArray(_data["percentGroupSizes"])) {
+                this.percentGroupSizes = [] as any;
+                for (let item of _data["percentGroupSizes"])
+                    this.percentGroupSizes!.push(item);
+            }
+            this.currencyGroupSeparator = _data["currencyGroupSeparator"];
+            this.currencySymbol = _data["currencySymbol"];
+            this.naNSymbol = _data["naNSymbol"];
+            this.currencyNegativePattern = _data["currencyNegativePattern"];
+            this.numberNegativePattern = _data["numberNegativePattern"];
+            this.percentPositivePattern = _data["percentPositivePattern"];
+            this.percentNegativePattern = _data["percentNegativePattern"];
+            this.negativeInfinitySymbol = _data["negativeInfinitySymbol"];
+            this.negativeSign = _data["negativeSign"];
+            this.numberDecimalDigits = _data["numberDecimalDigits"];
+            this.numberDecimalSeparator = _data["numberDecimalSeparator"];
+            this.numberGroupSeparator = _data["numberGroupSeparator"];
+            this.currencyPositivePattern = _data["currencyPositivePattern"];
+            this.positiveInfinitySymbol = _data["positiveInfinitySymbol"];
+            this.positiveSign = _data["positiveSign"];
+            this.percentDecimalDigits = _data["percentDecimalDigits"];
+            this.percentDecimalSeparator = _data["percentDecimalSeparator"];
+            this.percentGroupSeparator = _data["percentGroupSeparator"];
+            this.percentSymbol = _data["percentSymbol"];
+            this.perMilleSymbol = _data["perMilleSymbol"];
+            if (Array.isArray(_data["nativeDigits"])) {
+                this.nativeDigits = [] as any;
+                for (let item of _data["nativeDigits"])
+                    this.nativeDigits!.push(item);
+            }
+            this.digitSubstitution = _data["digitSubstitution"];
+        }
+    }
+
+    static fromJS(data: any): NumberFormatInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new NumberFormatInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["currencyDecimalDigits"] = this.currencyDecimalDigits;
+        data["currencyDecimalSeparator"] = this.currencyDecimalSeparator;
+        data["isReadOnly"] = this.isReadOnly;
+        if (Array.isArray(this.currencyGroupSizes)) {
+            data["currencyGroupSizes"] = [];
+            for (let item of this.currencyGroupSizes)
+                data["currencyGroupSizes"].push(item);
+        }
+        if (Array.isArray(this.numberGroupSizes)) {
+            data["numberGroupSizes"] = [];
+            for (let item of this.numberGroupSizes)
+                data["numberGroupSizes"].push(item);
+        }
+        if (Array.isArray(this.percentGroupSizes)) {
+            data["percentGroupSizes"] = [];
+            for (let item of this.percentGroupSizes)
+                data["percentGroupSizes"].push(item);
+        }
+        data["currencyGroupSeparator"] = this.currencyGroupSeparator;
+        data["currencySymbol"] = this.currencySymbol;
+        data["naNSymbol"] = this.naNSymbol;
+        data["currencyNegativePattern"] = this.currencyNegativePattern;
+        data["numberNegativePattern"] = this.numberNegativePattern;
+        data["percentPositivePattern"] = this.percentPositivePattern;
+        data["percentNegativePattern"] = this.percentNegativePattern;
+        data["negativeInfinitySymbol"] = this.negativeInfinitySymbol;
+        data["negativeSign"] = this.negativeSign;
+        data["numberDecimalDigits"] = this.numberDecimalDigits;
+        data["numberDecimalSeparator"] = this.numberDecimalSeparator;
+        data["numberGroupSeparator"] = this.numberGroupSeparator;
+        data["currencyPositivePattern"] = this.currencyPositivePattern;
+        data["positiveInfinitySymbol"] = this.positiveInfinitySymbol;
+        data["positiveSign"] = this.positiveSign;
+        data["percentDecimalDigits"] = this.percentDecimalDigits;
+        data["percentDecimalSeparator"] = this.percentDecimalSeparator;
+        data["percentGroupSeparator"] = this.percentGroupSeparator;
+        data["percentSymbol"] = this.percentSymbol;
+        data["perMilleSymbol"] = this.perMilleSymbol;
+        if (Array.isArray(this.nativeDigits)) {
+            data["nativeDigits"] = [];
+            for (let item of this.nativeDigits)
+                data["nativeDigits"].push(item);
+        }
+        data["digitSubstitution"] = this.digitSubstitution;
+        return data;
+    }
+}
+
+export interface INumberFormatInfo {
+    currencyDecimalDigits?: number;
+    currencyDecimalSeparator?: string | undefined;
+    isReadOnly?: boolean;
+    currencyGroupSizes?: number[] | undefined;
+    numberGroupSizes?: number[] | undefined;
+    percentGroupSizes?: number[] | undefined;
+    currencyGroupSeparator?: string | undefined;
+    currencySymbol?: string | undefined;
+    naNSymbol?: string | undefined;
+    currencyNegativePattern?: number;
+    numberNegativePattern?: number;
+    percentPositivePattern?: number;
+    percentNegativePattern?: number;
+    negativeInfinitySymbol?: string | undefined;
+    negativeSign?: string | undefined;
+    numberDecimalDigits?: number;
+    numberDecimalSeparator?: string | undefined;
+    numberGroupSeparator?: string | undefined;
+    currencyPositivePattern?: number;
+    positiveInfinitySymbol?: string | undefined;
+    positiveSign?: string | undefined;
+    percentDecimalDigits?: number;
+    percentDecimalSeparator?: string | undefined;
+    percentGroupSeparator?: string | undefined;
+    percentSymbol?: string | undefined;
+    perMilleSymbol?: string | undefined;
+    nativeDigits?: string[] | undefined;
+    digitSubstitution?: DigitShapes;
 }
 
 export class ObjTasks implements IObjTasks {
@@ -13802,6 +15696,46 @@ export interface IPreviousNames {
     modifiedBy?: number;
     applicationID?: number;
     previousNameDate?: string | undefined;
+}
+
+export class ProcessNoticeEmailDetailsRequest implements IProcessNoticeEmailDetailsRequest {
+    dsNoticeEmail?: DataSet;
+    objNotice?: WNoticeDto;
+
+    constructor(data?: IProcessNoticeEmailDetailsRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.dsNoticeEmail = _data["dsNoticeEmail"] ? DataSet.fromJS(_data["dsNoticeEmail"]) : <any>undefined;
+            this.objNotice = _data["objNotice"] ? WNoticeDto.fromJS(_data["objNotice"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ProcessNoticeEmailDetailsRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProcessNoticeEmailDetailsRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["dsNoticeEmail"] = this.dsNoticeEmail ? this.dsNoticeEmail.toJSON() : <any>undefined;
+        data["objNotice"] = this.objNotice ? this.objNotice.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IProcessNoticeEmailDetailsRequest {
+    dsNoticeEmail?: DataSet;
+    objNotice?: WNoticeDto;
 }
 
 export class ReportSchDetails implements IReportSchDetails {
@@ -15032,92 +16966,14 @@ export interface IResidencies {
     modifiedBy?: number;
 }
 
-export class SavePrimaryDocumentResponse implements ISavePrimaryDocumentResponse {
-    wObjectInstanceID?: number;
-    wObjectInstanceRevNum?: number;
-
-    constructor(data?: ISavePrimaryDocumentResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.wObjectInstanceID = _data["wObjectInstanceID"];
-            this.wObjectInstanceRevNum = _data["wObjectInstanceRevNum"];
-        }
-    }
-
-    static fromJS(data: any): SavePrimaryDocumentResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new SavePrimaryDocumentResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wObjectInstanceID"] = this.wObjectInstanceID;
-        data["wObjectInstanceRevNum"] = this.wObjectInstanceRevNum;
-        return data;
-    }
+export enum SchemaSerializationMode {
+    _1 = 1,
+    _2 = 2,
 }
 
-export interface ISavePrimaryDocumentResponse {
-    wObjectInstanceID?: number;
-    wObjectInstanceRevNum?: number;
-}
-
-export class SavePrimaryDocumentResponseBaseResponse implements ISavePrimaryDocumentResponseBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: SavePrimaryDocumentResponse;
-
-    constructor(data?: ISavePrimaryDocumentResponseBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            this.response = _data["response"] ? SavePrimaryDocumentResponse.fromJS(_data["response"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): SavePrimaryDocumentResponseBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new SavePrimaryDocumentResponseBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ISavePrimaryDocumentResponseBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: SavePrimaryDocumentResponse;
+export enum SerializationFormat {
+    _0 = 0,
+    _1 = 1,
 }
 
 export class SignOffDetails implements ISignOffDetails {
@@ -15218,6 +17074,46 @@ export interface ISignOffDetails {
     agreedOnTerms?: boolean | undefined;
     termsAgreedDate?: string | undefined;
     soTaskValid?: boolean | undefined;
+}
+
+export class SortVersion implements ISortVersion {
+    fullVersion?: number;
+    sortId?: string;
+
+    constructor(data?: ISortVersion) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fullVersion = _data["fullVersion"];
+            this.sortId = _data["sortId"];
+        }
+    }
+
+    static fromJS(data: any): SortVersion {
+        data = typeof data === 'object' ? data : {};
+        let result = new SortVersion();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fullVersion"] = this.fullVersion;
+        data["sortId"] = this.sortId;
+        return data;
+    }
+}
+
+export interface ISortVersion {
+    fullVersion?: number;
+    sortId?: string;
 }
 
 export class StringBaseResponse implements IStringBaseResponse {
@@ -15534,6 +17430,74 @@ export interface ITermsBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: Terms;
+}
+
+export class TextInfo implements ITextInfo {
+    readonly ansiCodePage?: number;
+    readonly oemCodePage?: number;
+    readonly macCodePage?: number;
+    readonly ebcdicCodePage?: number;
+    readonly lcid?: number;
+    readonly cultureName?: string | undefined;
+    readonly isReadOnly?: boolean;
+    listSeparator?: string | undefined;
+    readonly isRightToLeft?: boolean;
+
+    constructor(data?: ITextInfo) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).ansiCodePage = _data["ansiCodePage"];
+            (<any>this).oemCodePage = _data["oemCodePage"];
+            (<any>this).macCodePage = _data["macCodePage"];
+            (<any>this).ebcdicCodePage = _data["ebcdicCodePage"];
+            (<any>this).lcid = _data["lcid"];
+            (<any>this).cultureName = _data["cultureName"];
+            (<any>this).isReadOnly = _data["isReadOnly"];
+            this.listSeparator = _data["listSeparator"];
+            (<any>this).isRightToLeft = _data["isRightToLeft"];
+        }
+    }
+
+    static fromJS(data: any): TextInfo {
+        data = typeof data === 'object' ? data : {};
+        let result = new TextInfo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["ansiCodePage"] = this.ansiCodePage;
+        data["oemCodePage"] = this.oemCodePage;
+        data["macCodePage"] = this.macCodePage;
+        data["ebcdicCodePage"] = this.ebcdicCodePage;
+        data["lcid"] = this.lcid;
+        data["cultureName"] = this.cultureName;
+        data["isReadOnly"] = this.isReadOnly;
+        data["listSeparator"] = this.listSeparator;
+        data["isRightToLeft"] = this.isRightToLeft;
+        return data;
+    }
+}
+
+export interface ITextInfo {
+    ansiCodePage?: number;
+    oemCodePage?: number;
+    macCodePage?: number;
+    ebcdicCodePage?: number;
+    lcid?: number;
+    cultureName?: string | undefined;
+    isReadOnly?: boolean;
+    listSeparator?: string | undefined;
+    isRightToLeft?: boolean;
 }
 
 export class UserPendingItems implements IUserPendingItems {
@@ -16748,6 +18712,310 @@ export interface IWApplicationDetailDtoListBaseResponse {
     response?: WApplicationDetailDto[] | undefined;
 }
 
+export class WFirmNoticeResponseItems implements IWFirmNoticeResponseItems {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    wNoticeResponseItemID?: number;
+    wNoticeQuestionnaireItemID?: number;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+
+    constructor(data?: IWFirmNoticeResponseItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
+            this.wqfcNumber = _data["wqfcNumber"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.createdBy = _data["createdBy"];
+            if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
+                this.lstWFirmNoticeResponseItems = [] as any;
+                for (let item of _data["lstWFirmNoticeResponseItems"])
+                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
+            }
+            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
+            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
+            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
+            this.wExplanation = _data["wExplanation"];
+            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
+            if (Array.isArray(_data["lstWFirmNoticeResponseValues"])) {
+                this.lstWFirmNoticeResponseValues = [] as any;
+                for (let item of _data["lstWFirmNoticeResponseValues"])
+                    this.lstWFirmNoticeResponseValues!.push(WFirmNoticeResponseValues.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WFirmNoticeResponseItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new WFirmNoticeResponseItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
+        data["wqfcNumber"] = this.wqfcNumber;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["createdBy"] = this.createdBy;
+        if (Array.isArray(this.lstWFirmNoticeResponseItems)) {
+            data["lstWFirmNoticeResponseItems"] = [];
+            for (let item of this.lstWFirmNoticeResponseItems)
+                data["lstWFirmNoticeResponseItems"].push(item.toJSON());
+        }
+        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
+        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
+        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
+        data["wExplanation"] = this.wExplanation;
+        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
+        if (Array.isArray(this.lstWFirmNoticeResponseValues)) {
+            data["lstWFirmNoticeResponseValues"] = [];
+            for (let item of this.lstWFirmNoticeResponseValues)
+                data["lstWFirmNoticeResponseValues"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWFirmNoticeResponseItems {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    wNoticeResponseItemID?: number;
+    wNoticeQuestionnaireItemID?: number;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+}
+
+export class WFirmNoticeResponseValues implements IWFirmNoticeResponseValues {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    wNoticeResponseItemID?: number;
+    wNoticeQuestionnaireItemID?: number;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+    wNoticeResponseValueID?: number;
+    wResponse?: string | undefined;
+    wListValueID?: number | undefined;
+
+    constructor(data?: IWFirmNoticeResponseValues) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
+            this.wqfcNumber = _data["wqfcNumber"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.createdBy = _data["createdBy"];
+            if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
+                this.lstWFirmNoticeResponseItems = [] as any;
+                for (let item of _data["lstWFirmNoticeResponseItems"])
+                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
+            }
+            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
+            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
+            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
+            this.wExplanation = _data["wExplanation"];
+            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
+            if (Array.isArray(_data["lstWFirmNoticeResponseValues"])) {
+                this.lstWFirmNoticeResponseValues = [] as any;
+                for (let item of _data["lstWFirmNoticeResponseValues"])
+                    this.lstWFirmNoticeResponseValues!.push(WFirmNoticeResponseValues.fromJS(item));
+            }
+            this.wNoticeResponseValueID = _data["wNoticeResponseValueID"];
+            this.wResponse = _data["wResponse"];
+            this.wListValueID = _data["wListValueID"];
+        }
+    }
+
+    static fromJS(data: any): WFirmNoticeResponseValues {
+        data = typeof data === 'object' ? data : {};
+        let result = new WFirmNoticeResponseValues();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
+        data["wqfcNumber"] = this.wqfcNumber;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["createdBy"] = this.createdBy;
+        if (Array.isArray(this.lstWFirmNoticeResponseItems)) {
+            data["lstWFirmNoticeResponseItems"] = [];
+            for (let item of this.lstWFirmNoticeResponseItems)
+                data["lstWFirmNoticeResponseItems"].push(item.toJSON());
+        }
+        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
+        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
+        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
+        data["wExplanation"] = this.wExplanation;
+        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
+        if (Array.isArray(this.lstWFirmNoticeResponseValues)) {
+            data["lstWFirmNoticeResponseValues"] = [];
+            for (let item of this.lstWFirmNoticeResponseValues)
+                data["lstWFirmNoticeResponseValues"].push(item.toJSON());
+        }
+        data["wNoticeResponseValueID"] = this.wNoticeResponseValueID;
+        data["wResponse"] = this.wResponse;
+        data["wListValueID"] = this.wListValueID;
+        return data;
+    }
+}
+
+export interface IWFirmNoticeResponseValues {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    wNoticeResponseItemID?: number;
+    wNoticeQuestionnaireItemID?: number;
+    wSourceNoticeQuestionnaireItemID?: number;
+    wExplanation?: string | undefined;
+    wExplanationReqdCriteriaMet?: boolean;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+    wNoticeResponseValueID?: number;
+    wResponse?: string | undefined;
+    wListValueID?: number | undefined;
+}
+
+export class WFirmNotices implements IWFirmNotices {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+
+    constructor(data?: IWFirmNotices) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
+            this.wqfcNumber = _data["wqfcNumber"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.wNotes = _data["wNotes"];
+            this.createdBy = _data["createdBy"];
+            if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
+                this.lstWFirmNoticeResponseItems = [] as any;
+                for (let item of _data["lstWFirmNoticeResponseItems"])
+                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WFirmNotices {
+        data = typeof data === 'object' ? data : {};
+        let result = new WFirmNotices();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
+        data["wqfcNumber"] = this.wqfcNumber;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["wNotes"] = this.wNotes;
+        data["createdBy"] = this.createdBy;
+        if (Array.isArray(this.lstWFirmNoticeResponseItems)) {
+            data["lstWFirmNoticeResponseItems"] = [];
+            for (let item of this.lstWFirmNoticeResponseItems)
+                data["lstWFirmNoticeResponseItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWFirmNotices {
+    wNoticeID?: number;
+    wSourceNoticeID?: number;
+    wFirmNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number;
+    wqfcNumber?: string | undefined;
+    wObjectSOStatusID?: number | undefined;
+    wNotes?: string | undefined;
+    createdBy?: number;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+}
+
 export class WIndFormType implements IWIndFormType {
     wIndFormTypeID?: number | undefined;
     wDocTypeID?: number | undefined;
@@ -17034,6 +19302,162 @@ export interface IWNoticeBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: WNotice;
+}
+
+export class WNoticeDto implements IWNoticeDto {
+    wNoticeID?: number | undefined;
+    wSourceNoticeID?: number | undefined;
+    wNoticeTypeID?: number | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean | undefined;
+    wCreatedBy?: number | undefined;
+    wResponseRequired?: boolean | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaireDto;
+
+    constructor(data?: IWNoticeDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeID = _data["wNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
+            this.wNoticeTypeID = _data["wNoticeTypeID"];
+            this.wNoticeName = _data["wNoticeName"];
+            this.wReferenceNumber = _data["wReferenceNumber"];
+            this.wcmsReferenceNumber = _data["wcmsReferenceNumber"];
+            this.wIssuersReferenceNumber = _data["wIssuersReferenceNumber"];
+            this.wNoticeIssuerID = _data["wNoticeIssuerID"];
+            this.wOtherNoticeIssuer = _data["wOtherNoticeIssuer"];
+            this.wNoticeIssuedDate = _data["wNoticeIssuedDate"];
+            this.wSubject = _data["wSubject"];
+            this.wReferences = _data["wReferences"];
+            this.wLinkToNotice = _data["wLinkToNotice"];
+            this.wNotificationSentDate = _data["wNotificationSentDate"];
+            this.wNoticeEmail = _data["wNoticeEmail"];
+            this.wPublishOnESS = _data["wPublishOnESS"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            this.wResponseRequired = _data["wResponseRequired"];
+            this.objNoticeQuestionnaire = _data["objNoticeQuestionnaire"] ? WNoticeQuestionnaireDto.fromJS(_data["objNoticeQuestionnaire"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WNoticeDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeID"] = this.wNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
+        data["wNoticeTypeID"] = this.wNoticeTypeID;
+        data["wNoticeName"] = this.wNoticeName;
+        data["wReferenceNumber"] = this.wReferenceNumber;
+        data["wcmsReferenceNumber"] = this.wcmsReferenceNumber;
+        data["wIssuersReferenceNumber"] = this.wIssuersReferenceNumber;
+        data["wNoticeIssuerID"] = this.wNoticeIssuerID;
+        data["wOtherNoticeIssuer"] = this.wOtherNoticeIssuer;
+        data["wNoticeIssuedDate"] = this.wNoticeIssuedDate;
+        data["wSubject"] = this.wSubject;
+        data["wReferences"] = this.wReferences;
+        data["wLinkToNotice"] = this.wLinkToNotice;
+        data["wNotificationSentDate"] = this.wNotificationSentDate;
+        data["wNoticeEmail"] = this.wNoticeEmail;
+        data["wPublishOnESS"] = this.wPublishOnESS;
+        data["wCreatedBy"] = this.wCreatedBy;
+        data["wResponseRequired"] = this.wResponseRequired;
+        data["objNoticeQuestionnaire"] = this.objNoticeQuestionnaire ? this.objNoticeQuestionnaire.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWNoticeDto {
+    wNoticeID?: number | undefined;
+    wSourceNoticeID?: number | undefined;
+    wNoticeTypeID?: number | undefined;
+    wNoticeName?: string | undefined;
+    wReferenceNumber?: string | undefined;
+    wcmsReferenceNumber?: string | undefined;
+    wIssuersReferenceNumber?: string | undefined;
+    wNoticeIssuerID?: number | undefined;
+    wOtherNoticeIssuer?: string | undefined;
+    wNoticeIssuedDate?: string | undefined;
+    wSubject?: string | undefined;
+    wReferences?: string | undefined;
+    wLinkToNotice?: string | undefined;
+    wNotificationSentDate?: string | undefined;
+    wNoticeEmail?: string | undefined;
+    wPublishOnESS?: boolean | undefined;
+    wCreatedBy?: number | undefined;
+    wResponseRequired?: boolean | undefined;
+    objNoticeQuestionnaire?: WNoticeQuestionnaireDto;
+}
+
+export class WNoticeDtoBaseResponse implements IWNoticeDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNoticeDto;
+
+    constructor(data?: IWNoticeDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? WNoticeDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WNoticeDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWNoticeDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WNoticeDto;
 }
 
 export class WNoticeList implements IWNoticeList {
@@ -17462,6 +19886,82 @@ export interface IWNoticeQuestionnaire {
     wRespondentsControlledFunctionTypeIDs?: string | undefined;
     wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
     lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItems[] | undefined;
+}
+
+export class WNoticeQuestionnaireDto implements IWNoticeQuestionnaireDto {
+    wNoticeQuestionnaireID?: number | undefined;
+    wNoticeID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wCreatedBy?: number | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItemDto[] | undefined;
+
+    constructor(data?: IWNoticeQuestionnaireDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.wNoticeQuestionnaireID = _data["wNoticeQuestionnaireID"];
+            this.wNoticeID = _data["wNoticeID"];
+            this.wSourceNoticeQuestionnaireID = _data["wSourceNoticeQuestionnaireID"];
+            this.wResponseDueDate = _data["wResponseDueDate"];
+            this.wRespondentTypeID = _data["wRespondentTypeID"];
+            this.wRespondentsControlledFunctionTypeIDs = _data["wRespondentsControlledFunctionTypeIDs"];
+            this.wRespondentsDNFBPFunctionTypeIDs = _data["wRespondentsDNFBPFunctionTypeIDs"];
+            this.wCreatedBy = _data["wCreatedBy"];
+            if (Array.isArray(_data["lstNoticeQuestionnaireItems"])) {
+                this.lstNoticeQuestionnaireItems = [] as any;
+                for (let item of _data["lstNoticeQuestionnaireItems"])
+                    this.lstNoticeQuestionnaireItems!.push(WNoticeQuestionnaireItemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WNoticeQuestionnaireDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WNoticeQuestionnaireDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["wNoticeQuestionnaireID"] = this.wNoticeQuestionnaireID;
+        data["wNoticeID"] = this.wNoticeID;
+        data["wSourceNoticeQuestionnaireID"] = this.wSourceNoticeQuestionnaireID;
+        data["wResponseDueDate"] = this.wResponseDueDate;
+        data["wRespondentTypeID"] = this.wRespondentTypeID;
+        data["wRespondentsControlledFunctionTypeIDs"] = this.wRespondentsControlledFunctionTypeIDs;
+        data["wRespondentsDNFBPFunctionTypeIDs"] = this.wRespondentsDNFBPFunctionTypeIDs;
+        data["wCreatedBy"] = this.wCreatedBy;
+        if (Array.isArray(this.lstNoticeQuestionnaireItems)) {
+            data["lstNoticeQuestionnaireItems"] = [];
+            for (let item of this.lstNoticeQuestionnaireItems)
+                data["lstNoticeQuestionnaireItems"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWNoticeQuestionnaireDto {
+    wNoticeQuestionnaireID?: number | undefined;
+    wNoticeID?: number | undefined;
+    wSourceNoticeQuestionnaireID?: number | undefined;
+    wResponseDueDate?: string | undefined;
+    wRespondentTypeID?: number | undefined;
+    wRespondentsControlledFunctionTypeIDs?: string | undefined;
+    wRespondentsDNFBPFunctionTypeIDs?: string | undefined;
+    wCreatedBy?: number | undefined;
+    lstNoticeQuestionnaireItems?: WNoticeQuestionnaireItemDto[] | undefined;
 }
 
 export class WNoticeQuestionnaireItemDto implements IWNoticeQuestionnaireItemDto {

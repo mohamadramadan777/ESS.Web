@@ -1,67 +1,74 @@
-import { Component, OnInit,ViewEncapsulation  } from '@angular/core';
-
-interface Report {
-  reportName: string;
-  submissionType?: string;
-  attachedFile?: string;
-  dueDate?: string;
-  signedBy?: string;
-  submissionDate?: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { Client ,ReportSchDetailsDtoListBaseResponse,ReportSchDto,ReportSchItem,InsertObjectSOStatusDetailsDto,InsertReportSchDetailsDto,ReportSchDetailsDto,ReportSchDetailsDtoBaseResponse} from '../../services/api-client';
+import { jwtDecode } from "jwt-decode";
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss'],
-  encapsulation: ViewEncapsulation.Emulated, // Default
+  styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit {
-  schedules = [
-    { startDate: '01/Jan/2024', endDate: '31/Dec/2024' },
-    { startDate: '01/Jan/2023', endDate: '31/Dec/2023' },
-  ];
-  selectedSchedule = this.schedules[0];
-
-  selectedTabIndex = 0;
-
-  reportsToBeSubmitted: Report[] = [];
-  reportsSubmitted: Report[] = [];
+  schedules: any[] = [];
+  selectedSchedule: any;
+  reportsToBeSubmitted: any[] = [];
+  reportsSubmitted: any[] = [];
+  qfcNum: string = '00173';
+  constructor(private Client: Client) {}
 
   ngOnInit(): void {
-    this.loadReports();
+    this.loadSchedules();
+  
+  }
+ 
+  /**
+   * Fetch report schedules for the dropdown.
+   */
+  loadSchedules(): void {
+    if (!this.qfcNum) {
+      console.error('QFC number is missing from the token');
+      return;
+    }
+
+    this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
+      .subscribe(
+        (response: ReportSchDetailsDtoListBaseResponse) => {
+          if (response && response.response) {
+            this.schedules = Array.isArray(response.response) ? response.response : [response.response];
+            if (this.schedules.length > 0) {
+              this.selectedSchedule = this.schedules[0];
+              setTimeout(() => this.onScheduleChange(), 0);
+            }
+          }
+        },
+        (error) => console.error('Error fetching schedules:', error)
+      );
   }
 
-  loadReports(): void {
-    this.reportsToBeSubmitted = [
-      {
-        reportName: '2023 Annual MLRO Report',
-        submissionType: 'Regular',
-        attachedFile: undefined,
-        dueDate: '31/May/2024',
-        signedBy:
-          'This report requires one electronic signature from an individual approved to exercise the MLRO Function.',
-      },
-      {
-        reportName: 'March - 2024 Quarterly Lead Regulator Capital Resources Report',
-        submissionType: 'Regular',
-        dueDate: '31/May/2024',
-        signedBy:
-          'This report requires one electronic signature from the Senior Executive Function.',
-      },
-    ];
-
-    this.reportsSubmitted = [
-      {
-        reportName: '2023 Annual Form Q27 AML/CFT Return',
-        attachedFile: 'Addleshaw Goddard (GCC) LLP 2023 Q27 Return.pdf',
-        signedBy: 'Trace Quigley',
-        submissionDate: '31/Jan/2024 03:04 PM',
-      },
-    ];
-  }
-
+  /**
+   * Load reports when the schedule selection changes.
+   */
   onScheduleChange(): void {
-    console.log('Selected schedule:', this.selectedSchedule);
-    // Logic to fetch reports based on the selected schedule
+    if (!this.selectedSchedule) return;
+  
+    this.Client.getSubmissionDetailsForHomePage(this.qfcNum)
+      .subscribe(
+        (response) => {
+          if (response && response.response) {
+            const reports = Array.isArray(response.response) ? response.response : [response.response]; 
+            
+            this.reportsToBeSubmitted = reports.filter((report: any) => 
+              new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
+              new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate)
+            );
+            
+            this.reportsSubmitted = reports.filter((report: any) => 
+              new Date(report.rptPeriodFromDate) >= new Date(this.selectedSchedule.rptSchFinYearFromDate) &&
+              new Date(report.rptPeriodToDate) <= new Date(this.selectedSchedule.rptSchFinYearToDate) &&
+              !report.isReportDue
+            );
+          }
+        },
+        (error) => console.error('Error fetching reports:', error)
+      );
   }
 }

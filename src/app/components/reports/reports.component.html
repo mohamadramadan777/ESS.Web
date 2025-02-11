@@ -5,35 +5,58 @@
   <h2>Reports:</h2>
   <div class="schedule-dropdown">
     <label for="report-schedule">Report Schedule for:</label>
-    <select id="report-schedule" [(ngModel)]="selectedSchedule" (change)="onScheduleChange()">
-      <option *ngFor="let schedule of schedules" [value]="schedule">
-        {{ schedule.startDate }} to {{ schedule.endDate }}
+    <select
+      id="report-schedule"
+      [(ngModel)]="selectedSchedule"
+      (change)="onScheduleChange()"
+    >
+      <option *ngFor="let schedule of schedules" [ngValue]="schedule">
+        {{ schedule.rptSchFinYearFromDate }} to
+        {{ schedule.rptSchFinYearToDate }}
       </option>
     </select>
   </div>
+
   <mat-tab-group class="custom-tab-group" [backgroundColor]="">
     <!-- Reports to be Submitted -->
     <mat-tab label="Reports to be Submitted">
       <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
         <div class="card-header">
-          <h3>{{ report.reportName }}</h3>
-          <p class="due-date"><strong>Due Date:</strong> {{ report.dueDate }}</p>
+          <h3>{{ report.rptName }}</h3>
+          <p class="due-date">
+            <strong>Due Date:</strong> {{ report.rptDueDate }}
+          </p>
         </div>
         <table>
           <tr>
-            <td style="width: 90%;">
-              <p><span class="label">Submission Type:</span> {{ report.submissionType }}</p>
-              <p *ngIf="report.attachedFile">
-                <span class="label">Attached File:</span>
-                <a href="#">{{ report.attachedFile }}</a>
+            <td style="width: 90%">
+              <p>
+                <span class="label">Submission Type:</span>
+                {{ report.rptSubmissionType }}
               </p>
-              <p *ngIf="!report.attachedFile" class="warning">No file attached yet.</p>
-              <p><span class="label">Report to be Signed by:</span> {{ report.signedBy }}</p>
+              <p *ngIf="report.fileName">
+                <span class="label">Attached File:</span>
+                <a [href]="report.attachmentFileURI">{{ report.fileName }}</a>
+              </p>
+              <p *ngIf="!report.fileName" class="warning">
+                No file attached yet.
+              </p>
+              <p>
+                <span class="label">Report to be Signed by:</span>
+                {{ report.soStatusTypeDesc }}
+              </p>
             </td>
-            <td style="width: 10%; text-align: right;">
+            <td style="width: 10%; text-align: right">
               <div class="button-group">
-                <button mat-raised-button class="attach-button">Attach File</button>
-                <button mat-raised-button class="signoff-button" [disabled]="!report.attachedFile">
+                <button mat-raised-button class="attach-button">
+                  Attach File
+                </button>
+                <button
+                  mat-raised-button
+                  class="signoff-button"
+                  [disabled]="!report.fileName"
+                  (click)="(report)"
+                >
                   Sign off
                 </button>
               </div>
@@ -47,12 +70,22 @@
     <mat-tab label="Reports Submitted">
       <div *ngFor="let report of reportsSubmitted" class="report-card">
         <div class="card-header">
-          <h3>{{ report.reportName }}</h3>
-          <p class="due-date"><strong>Submission Date:</strong> {{ report.submissionDate }}</p>
+          <h3>{{ report.rptName }}</h3>
+          <p class="due-date">
+            <strong>Submission Date:</strong> {{ report.submittedOn }}
+          </p>
         </div>
-        <p><span class="label">Attached File:</span> <a href="#">{{ report.attachedFile }}</a></p>
-        <p><span class="label">Signed by:</span> {{ report.signedBy }}</p>
-        <p><span class="label">Links:</span> <a href="#" class="history-link">History</a></p>
+        <p>
+          <span class="label">Attached File:</span>
+          <a [href]="report.attachmentFileURI">{{ report.fileName }}</a>
+        </p>
+        <p>
+          <span class="label">Signed by:</span> {{ report.soStatusTypeDesc }}
+        </p>
+        <p>
+          <span class="label">Links:</span>
+          <a href="#" class="history-link">History</a>
+        </p>
       </div>
     </mat-tab>
   </mat-tab-group>
