@@ -12,9 +12,7 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-
 import { API_BASE_URL } from './tokens';
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -5526,57 +5524,6 @@ export class Client {
     }
 
     /**
-     * @return OK
-     */
-    getObjectTaskStatus(): Observable<StringObjectDictionaryListBaseResponse> {
-        let url_ = this.baseUrl + "/api/Firms/GetObjectTaskStatus";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetObjectTaskStatus(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetObjectTaskStatus(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringObjectDictionaryListBaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<StringObjectDictionaryListBaseResponse>;
-        }));
-    }
-
-    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<StringObjectDictionaryListBaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringObjectDictionaryListBaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<StringObjectDictionaryListBaseResponse>(null as any);
-    }
-
-    /**
      * @param body (optional) 
      * @return OK
      */
@@ -6807,6 +6754,57 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getObjectTaskStatus(): Observable<ObjTasksListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-object-task-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetObjectTaskStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetObjectTaskStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjTasksListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjTasksListBaseResponse>;
+        }));
+    }
+
+    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<ObjTasksListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjTasksListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjTasksListBaseResponse>(null as any);
     }
 
     /**
@@ -15281,6 +15279,62 @@ export interface IObjTasksDto {
     userCreated?: number | undefined;
 }
 
+export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjTasks[] | undefined;
+
+    constructor(data?: IObjTasksListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjTasks.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjTasksListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjTasksListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjTasksListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjTasks[] | undefined;
+}
+
 export class ObjectSOStatusDto implements IObjectSOStatusDto {
     objectID?: number | undefined;
     objectInstanceID?: number | undefined;
@@ -17817,62 +17871,6 @@ export interface IStringListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: string[] | undefined;
-}
-
-export class StringObjectDictionaryListBaseResponse implements IStringObjectDictionaryListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: any; }[] | undefined;
-
-    constructor(data?: IStringObjectDictionaryListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): StringObjectDictionaryListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new StringObjectDictionaryListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IStringObjectDictionaryListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: { [key: string]: any; }[] | undefined;
 }
 
 export class StringStringDictionaryBaseResponse implements IStringStringDictionaryBaseResponse {
@@ -22413,7 +22411,7 @@ export interface FileParameter {
 }
 
 export class ApiException extends Error {
-    override message: string;
+   override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };

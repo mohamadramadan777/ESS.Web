@@ -1,7 +1,9 @@
-import { Component, Inject, Input, ViewChild } from '@angular/core';
+import { Component, Inject, Input,ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WObjects, FirmsContactDetailPage } from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
+import { lastValueFrom } from 'rxjs';
+import {ApplicationDataDto,IndividualDetailsDto,ControlledFunctionDto} from '../../../../services/api-client';
 import {
   Client,
   AttachmentDto,
@@ -13,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-approval',
   templateUrl: './approval.component.html',
@@ -41,8 +44,8 @@ export class ApprovalComponent {
   };
 
   controlledFunctions = [
-    { name: 'Non-Executive Governance Function', isSelected: false },
-    { name: 'Executive Governance Function', isSelected: false },
+    { id: 1, name: 'Non-Executive Governance Function', isSelected: false },
+    { id: 2, name: 'Executive Governance Function', isSelected: false },
     { name: 'Senior Executive Function', isSelected: false },
     { name: 'Senior Management Function', isSelected: false },
     { name: 'Finance Function', isSelected: false },
@@ -59,6 +62,7 @@ export class ApprovalComponent {
   showResidentQuestion = false;
 
   constructor(
+    private router:Router,
     private client: Client,
     private loadingService: LoadingService,
     private toastr: ToastrService,
@@ -179,7 +183,7 @@ export class ApprovalComponent {
   async onSubmit() {
     const isValid = await this.validateForm();
     if (!isValid) {
-      this.toastr.error("Please fix validation errors before submitting.");
+      this.toastr.error('Please fix validation errors before submitting.');
       return;
     }
     console.log('Submit clicked');
@@ -209,7 +213,7 @@ export class ApprovalComponent {
   async getValidationMessage(key: string): Promise<string> {
     try {
       const response = await this.client.getMessageProperty(key).toPromise();
-      if(!response || !response.response){
+      if (!response || !response.response) {
         throw new Error('Error fetching message server error ');
       }
       return response.response;
@@ -220,10 +224,8 @@ export class ApprovalComponent {
   }
 
   async validateForm(): Promise<boolean> {
-
     this.validationErrors = {}; //reset the errors
     let isValid = true;
-
 
     if (!this.applicant.familyName) {
       this.validationErrors['familyName'] = await this.getValidationMessage(
@@ -231,7 +233,10 @@ export class ApprovalComponent {
       );
       isValid = false;
     }
-    if (!this.applicant.familyName && /[^a-zA-Z]/.test(this.applicant.familyName)) {
+    if (
+      !this.applicant.familyName &&
+      /[^a-zA-Z]/.test(this.applicant.familyName)
+    ) {
       this.validationErrors['familyName'] = await this.getValidationMessage(
         '139'
       );
@@ -245,30 +250,32 @@ export class ApprovalComponent {
       isValid = false;
     }
     if (!this.applicant.dob) {
-      this.validationErrors['dob'] = await this.getValidationMessage(
-        '2015'
-      );
+      this.validationErrors['dob'] = await this.getValidationMessage('2015');
       isValid = false;
     }
-    if (this.applicant.dob && new Date(this.applicant.dob)> new Date()) {
-      this.validationErrors['dob'] = await this.getValidationMessage(
-        '191'
-      );
+    if (this.applicant.dob && new Date(this.applicant.dob) > new Date()) {
+      this.validationErrors['dob'] = await this.getValidationMessage('191');
       isValid = false;
     }
 
     if (!this.applicant.placeOfBirth) {
-      this.validationErrors["placeOfBirth"] = await this.getValidationMessage("299");
+      this.validationErrors['placeOfBirth'] = await this.getValidationMessage(
+        '299'
+      );
       isValid = false;
     }
 
     if (!this.applicant.passportNumber) {
-      this.validationErrors["passportNumber"] = await this.getValidationMessage("162");
+      this.validationErrors['passportNumber'] = await this.getValidationMessage(
+        '162'
+      );
       isValid = false;
     }
 
     if (!this.applicant.jurisdiction) {
-      this.validationErrors["jurisdiction"] = await this.getValidationMessage("163");
+      this.validationErrors['jurisdiction'] = await this.getValidationMessage(
+        '163'
+      );
       isValid = false;
     }
 
@@ -281,29 +288,117 @@ export class ApprovalComponent {
     // }
 
     if (!this.isFunctionsSelected()) {
-      this.validationErrors["controlledFunctions"] = await this.getValidationMessage("263");
+      this.validationErrors['controlledFunctions'] =
+        await this.getValidationMessage('263');
       isValid = false;
     }
 
-    // if (await this.checkDuplicateApplication()) {
-    //   this.validationErrors["duplicate"] = await this.getValidationMessage("298");
-    //   isValid = false;
-    // }
+    if (await this.checkDuplicateApplication()) {
+      this.validationErrors['duplicate'] = await this.getValidationMessage(
+        '298'
+      );
+      isValid = false;
+    }
 
     return isValid;
   }
 
   isFunctionsSelected(): boolean {
-    return this.controlledFunctions.some(func => func.isSelected);
+    return this.controlledFunctions.some((func) => func.isSelected);
   }
 
-  // async checkDuplicateApplication(): Promise<boolean> {
-  //   try {
-  //     const response = await this.client.checkDuplicateApplication(this.applicant.passportNumber);
-  //     return response.duplicate;
-  //   } catch (error) {
-  //     console.error("Error checking duplicate application:", error);
-  //     return false;
-  //   }
-  // }
+  async checkDuplicateApplication(): Promise<boolean> {
+    try {
+      // Ensure values are properly set before calling the API
+      const qfcNumber = localStorage.getItem('qfc_no') || '';
+      const aiNumber = this.applicant.aiNumber || '';
+      const formTypeID = this.data.formTypeID || 0;
+      const windApplicationID = this.ApplicationID || 0;
+
+      // Get selected controlled function IDs
+      const selectedFunctionIDs: number[] = this.controlledFunctions
+        .filter((func) => func.isSelected && func.id !== undefined) // Ensure 'id' is defined
+        .map((func) => func.id as number); // Type assertion ensures 'id' is treated as number
+
+      // Call the API
+      const response = await lastValueFrom(
+        this.client.isDuplicateApplication(
+          qfcNumber,
+          aiNumber,
+          formTypeID,
+          windApplicationID,
+          selectedFunctionIDs
+        )
+      );
+      if (!response || !response.response) {
+        throw new Error('Error fetching message server error ');
+      }
+      return response.response;
+      // Assuming API returns { duplicate: boolean }
+    } catch (error) {
+      console.error('Error checking duplicate application:', error);
+      return false;
+    }
+  }
+
+
+  async saveApplicationData(): Promise<void> {
+    try {
+      const individualDetails = IndividualDetailsDto.fromJS({
+        applicationID: this.ApplicationID || undefined,
+        aiNumber: this.applicant.aiNumber || undefined,
+        formTypeID: this.data.formTypeID?.toString() || undefined,
+        familyName: this.applicant.familyName || undefined,
+        otherNames: this.applicant.otherName || undefined,
+        dateOfBirth: this.applicant.dob || undefined,
+        passportnumber: this.applicant.passportNumber || undefined,
+        placeOfBirthCity: this.applicant.placeOfBirth || undefined,
+        jurisdiction: this.applicant.jurisdiction || undefined,
+        emailAddress: this.applicant.email || undefined,
+        isOrdinarilyResidentFlag: this.applicant.isResident || undefined,
+      });
+  
+      const selectedFunctionIDs: ControlledFunctionDto[] = this.controlledFunctions
+      .filter(func => func.isSelected)
+      .map(func => ControlledFunctionDto.fromJS({ id: func.id })); // Correct instantiation
+
+    const applicationData: ApplicationDataDto = new ApplicationDataDto({
+      objIndividualDetails: individualDetails,
+      lstControledFunctionIDs: selectedFunctionIDs, // Now properly instantiated
+    });
+  
+      console.log("Submitting application data:", applicationData);
+  
+      const response = await lastValueFrom(this.client.insertUpdateApplicationData(applicationData));
+  
+      if (response && response.response) {
+        console.log("Application submitted successfully:", response);
+        this.redirectToApprovalForm(response.response);
+      } else {
+        console.error("Application submission failed", response);
+        this.toastr.error("Failed to submit application. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      this.toastr.error("An error occurred while submitting the application.");
+    }
+  }
+  
+  
+
+  redirectToApprovalForm(appID: number): void {
+    // const encryptedID = this.encryptQueryParam(appID.toString());
+    // const encryptedDocType = this.encryptQueryParam(this.data.DocTypeId);
+    // const encryptedFormType = this.encryptQueryParam(this.data.WIndFromTypeID);
+  
+    this.router.navigate(["/approval"], {
+      queryParams: {
+        appID: appID.toString(),
+        dt: this.data.DocTypeId,
+        ft: this.data.WIndFromTypeID,
+      },
+    });
+  }
+  
+  
 }
