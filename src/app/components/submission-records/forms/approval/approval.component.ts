@@ -2,7 +2,11 @@ import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WObjects, FirmsContactDetailPage } from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
-import { Client, AttachmentDto, ObjectSOTaskStatus } from '../../../../services/api-client';
+import {
+  Client,
+  AttachmentDto,
+  ObjectSOTaskStatus,
+} from '../../../../services/api-client';
 import { LoadingService } from '../../../../services/loader.service';
 import { MessagePropertyService } from '../../../../services/message-property.service';
 import { ToastrService } from 'ngx-toastr';
@@ -20,9 +24,10 @@ export class ApprovalComponent {
   unsavedChanges: boolean = false; // Track unsaved change
   AttObjectID = WObjects.IndividualApplications;
   ApplicationID = 0;
-  DocSignText = "";
-  aiNumberError: string = ""; // Error message for AI Number validation
-  AI_ERROR_MESSAGE = "";
+  DocSignText = '';
+  aiNumberError: string = ''; // Error message for AI Number validation
+  validationErrors: { [key: string]: string } = {};
+  AI_ERROR_MESSAGE = '';
   applicant = {
     familyName: '',
     otherName: '',
@@ -48,7 +53,6 @@ export class ApprovalComponent {
     { name: 'Actuarial Function', isSelected: false },
   ];
 
-
   jurisdictions = ['Jurisdiction 1', 'Jurisdiction 2', 'Jurisdiction 3'];
 
   showEmailField = false;
@@ -62,7 +66,7 @@ export class ApprovalComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialog: MatDialog,
     private messagePropertyService: MessagePropertyService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.setDocDescriptionTextForAttachments();
@@ -70,22 +74,24 @@ export class ApprovalComponent {
   }
 
   loadMessageProperties(): void {
-    this.messagePropertyService.getMessageProperty(FirmsContactDetailPage.AI_ERRORR_MSG.toString()).subscribe((message) => {
-      this.AI_ERROR_MESSAGE = message;
-    });
+    this.messagePropertyService
+      .getMessageProperty(FirmsContactDetailPage.AI_ERRORR_MSG.toString())
+      .subscribe((message) => {
+        this.AI_ERROR_MESSAGE = message;
+      });
   }
   // AI Number Validation
   validateAiNumber(): void {
     let aiNumber = this.applicant.aiNumber.trim();
-    this.aiNumberError = "";
+    this.aiNumberError = '';
 
-    if (aiNumber !== "") {
+    if (aiNumber !== '') {
       if (aiNumber.length > 8) {
         this.aiNumberError = this.AI_ERROR_MESSAGE;
         return;
       }
 
-      if (aiNumber.startsWith("AI")) {
+      if (aiNumber.startsWith('AI')) {
         aiNumber = aiNumber.substring(2).trim();
       }
 
@@ -97,7 +103,7 @@ export class ApprovalComponent {
       }
 
       // Ensure the number is 5 digits long (padded with zeros)
-      this.applicant.aiNumber = "AI " + num.toString().padStart(5, "0");
+      this.applicant.aiNumber = 'AI ' + num.toString().padStart(5, '0');
     }
   }
 
@@ -112,22 +118,37 @@ export class ApprovalComponent {
   }
 
   setDocDescriptionTextForAttachments(): void {
-    this.client.getDocSignatories(this.data.DocTypeId, "", Number(WObjects.GeneralSubmission)).subscribe({
-      next: (response) => {
-        if (response && response.isSuccess && response.response) {
-          const objDocSignatories = response.response;
-          this.DocSignText = objDocSignatories.docSignText ?? "";
-        } else {
-          this.toastr.error('Failed to load Doc Signatories.', 'Error');
-          console.error('Failed to load Doc Signatories:', response?.errorMessage);
-        }
-      },
-      error: (error) => {
-        this.loadingService.hide();
-        this.toastr.error('Error occurred while fetching Doc Signatories.', 'Error');
-        console.error('Error occurred while fetching Doc Signatories:', error);
-      },
-    });
+    this.client
+      .getDocSignatories(
+        this.data.DocTypeId,
+        '',
+        Number(WObjects.GeneralSubmission)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response && response.isSuccess && response.response) {
+            const objDocSignatories = response.response;
+            this.DocSignText = objDocSignatories.docSignText ?? '';
+          } else {
+            this.toastr.error('Failed to load Doc Signatories.', 'Error');
+            console.error(
+              'Failed to load Doc Signatories:',
+              response?.errorMessage
+            );
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error(
+            'Error occurred while fetching Doc Signatories.',
+            'Error'
+          );
+          console.error(
+            'Error occurred while fetching Doc Signatories:',
+            error
+          );
+        },
+      });
   }
 
   // Save functionality
@@ -155,7 +176,12 @@ export class ApprovalComponent {
   }
 
   // Submit functionality
-  onSubmit(): void {
+  async onSubmit() {
+    const isValid = await this.validateForm();
+    if (!isValid) {
+      this.toastr.error("Please fix validation errors before submitting.");
+      return;
+    }
     console.log('Submit clicked');
   }
 
@@ -170,7 +196,7 @@ export class ApprovalComponent {
         cancelButtonColor: '#555555',
         confirmButtonText: 'Save Changes',
         cancelButtonText: 'Discard Changes',
-      })
+      });
 
       if (result.isConfirmed) {
         this.toastr.success('Changes saved successfully!', 'Success');
@@ -180,4 +206,104 @@ export class ApprovalComponent {
       this.dialogRef.close();
     }
   }
+  async getValidationMessage(key: string): Promise<string> {
+    try {
+      const response = await this.client.getMessageProperty(key).toPromise();
+      if(!response || !response.response){
+        throw new Error('Error fetching message server error ');
+      }
+      return response.response;
+    } catch (error) {
+      console.error('Error fetching message property', error);
+      return 'validation error';
+    }
+  }
+
+  async validateForm(): Promise<boolean> {
+
+    this.validationErrors = {}; //reset the errors
+    let isValid = true;
+
+
+    if (!this.applicant.familyName) {
+      this.validationErrors['familyName'] = await this.getValidationMessage(
+        '111'
+      );
+      isValid = false;
+    }
+    if (!this.applicant.familyName && /[^a-zA-Z]/.test(this.applicant.familyName)) {
+      this.validationErrors['familyName'] = await this.getValidationMessage(
+        '139'
+      );
+      isValid = false;
+    }
+
+    if (!this.applicant.otherName) {
+      this.validationErrors['otherName'] = await this.getValidationMessage(
+        '112'
+      );
+      isValid = false;
+    }
+    if (!this.applicant.dob) {
+      this.validationErrors['dob'] = await this.getValidationMessage(
+        '2015'
+      );
+      isValid = false;
+    }
+    if (this.applicant.dob && new Date(this.applicant.dob)> new Date()) {
+      this.validationErrors['dob'] = await this.getValidationMessage(
+        '191'
+      );
+      isValid = false;
+    }
+
+    if (!this.applicant.placeOfBirth) {
+      this.validationErrors["placeOfBirth"] = await this.getValidationMessage("299");
+      isValid = false;
+    }
+
+    if (!this.applicant.passportNumber) {
+      this.validationErrors["passportNumber"] = await this.getValidationMessage("162");
+      isValid = false;
+    }
+
+    if (!this.applicant.jurisdiction) {
+      this.validationErrors["jurisdiction"] = await this.getValidationMessage("163");
+      isValid = false;
+    }
+
+    // if (this.applicant.aiNumber) {
+    //   const aiValidationResponse = await this.client.validateAiNumber(this.applicant.aiNumber);
+    //   if (!aiValidationResponse.valid) {
+    //     this.aiNumberError = await this.getValidationMessage("16019");
+    //     isValid = false;
+    //   }
+    // }
+
+    if (!this.isFunctionsSelected()) {
+      this.validationErrors["controlledFunctions"] = await this.getValidationMessage("263");
+      isValid = false;
+    }
+
+    // if (await this.checkDuplicateApplication()) {
+    //   this.validationErrors["duplicate"] = await this.getValidationMessage("298");
+    //   isValid = false;
+    // }
+
+    return isValid;
+  }
+
+  isFunctionsSelected(): boolean {
+    return this.controlledFunctions.some(func => func.isSelected);
+  }
+
+  // async checkDuplicateApplication(): Promise<boolean> {
+  //   try {
+  //     const response = await this.client.checkDuplicateApplication(this.applicant.passportNumber);
+  //     return response.duplicate;
+  //   } catch (error) {
+  //     console.error("Error checking duplicate application:", error);
+  //     return false;
+  //   }
+  // }
 }

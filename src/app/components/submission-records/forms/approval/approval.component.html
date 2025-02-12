@@ -20,6 +20,9 @@
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput placeholder="Enter family name" [(ngModel)]="applicant.familyName" />
                     </mat-form-field>
+                    <div *ngIf="validationErrors['familyName']" class="error-message">
+                      {{ validationErrors['familyName'] }}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -28,6 +31,9 @@
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput placeholder="Enter other name" [(ngModel)]="applicant.otherName" />
                     </mat-form-field>
+                    <div *ngIf="validationErrors['otherName']" class="error-message">
+                      {{ validationErrors['otherName'] }}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -42,6 +48,9 @@
                     <mat-form-field appearance="outline" class="half-width">
                       <input matInput placeholder="Place of Birth" [(ngModel)]="applicant.placeOfBirth" />
                     </mat-form-field>
+                    <div *ngIf="validationErrors['dob']" class="error-message">
+                      {{ validationErrors['dob'] }}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -56,6 +65,9 @@
                         <mat-option *ngFor="let option of jurisdictions" [value]="option">{{ option }}</mat-option>
                       </mat-select>
                     </mat-form-field>
+                    <div *ngIf="validationErrors['passportNumber']" class="error-message">
+                      {{ validationErrors['passportNumber'] }}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -81,6 +93,9 @@
                             {{ function.name }}
                           </mat-checkbox>
                         </div>
+                      </div>
+                      <div *ngIf="validationErrors['controlledFunctions']" class="error-message">
+                        {{ validationErrors['controlledFunctions'] }}
                       </div>
                   </td>
                 </tr>
