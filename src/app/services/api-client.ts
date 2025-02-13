@@ -13,6 +13,8 @@ import { Observable, throwError as _observableThrow, of as _observableOf } from 
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
+
+
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -3688,11 +3690,11 @@ export class Client {
      * @param qfcNumber (optional) 
      * @param aiNumber (optional) 
      * @param formTypeID (optional) 
+     * @param lstFunctions (optional) 
      * @param windApplicationID (optional) 
-     * @param body (optional) 
      * @return OK
      */
-    isDuplicateApplication(qfcNumber: string | undefined, aiNumber: string | undefined, formTypeID: number | undefined, windApplicationID: number | undefined, body: number[] | undefined): Observable<BooleanBaseResponse> {
+    isDuplicateApplication(qfcNumber: string | undefined, aiNumber: string | undefined, formTypeID: number | undefined, lstFunctions: number[] | undefined, windApplicationID: number | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/AIApplications/is-duplicate-application?";
         if (qfcNumber === null)
             throw new Error("The parameter 'qfcNumber' cannot be null.");
@@ -3706,20 +3708,20 @@ export class Client {
             throw new Error("The parameter 'formTypeID' cannot be null.");
         else if (formTypeID !== undefined)
             url_ += "formTypeID=" + encodeURIComponent("" + formTypeID) + "&";
+        if (lstFunctions === null)
+            throw new Error("The parameter 'lstFunctions' cannot be null.");
+        else if (lstFunctions !== undefined)
+            lstFunctions && lstFunctions.forEach(item => { url_ += "lstFunctions=" + encodeURIComponent("" + item) + "&"; });
         if (windApplicationID === null)
             throw new Error("The parameter 'windApplicationID' cannot be null.");
         else if (windApplicationID !== undefined)
             url_ += "windApplicationID=" + encodeURIComponent("" + windApplicationID) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -22411,7 +22413,7 @@ export interface FileParameter {
 }
 
 export class ApiException extends Error {
-   override message: string;
+    override message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };

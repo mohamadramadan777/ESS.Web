@@ -1,9 +1,13 @@
-import { Component, Inject, Input,ViewChild } from '@angular/core';
+import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WObjects, FirmsContactDetailPage } from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
 import { lastValueFrom } from 'rxjs';
-import {ApplicationDataDto,IndividualDetailsDto,ControlledFunctionDto} from '../../../../services/api-client';
+import {
+  ApplicationDataDto,
+  IndividualDetailsDto,
+  ControlledFunctionDto,
+} from '../../../../services/api-client';
 import {
   Client,
   AttachmentDto,
@@ -62,7 +66,7 @@ export class ApprovalComponent {
   showResidentQuestion = false;
 
   constructor(
-    private router:Router,
+    private router: Router,
     private client: Client,
     private loadingService: LoadingService,
     private toastr: ToastrService,
@@ -187,6 +191,7 @@ export class ApprovalComponent {
       return;
     }
     console.log('Submit clicked');
+    this.saveApplicationData();
   }
 
   private async checkUnsavedChanges(): Promise<void> {
@@ -292,12 +297,13 @@ export class ApprovalComponent {
         await this.getValidationMessage('263');
       isValid = false;
     }
-
-    if (await this.checkDuplicateApplication()) {
-      this.validationErrors['duplicate'] = await this.getValidationMessage(
-        '298'
-      );
-      isValid = false;
+    if (isValid === true) {
+      if (await this.checkDuplicateApplication()) {
+        this.validationErrors['duplicate'] = await this.getValidationMessage(
+          '298'
+        );
+        isValid = false;
+      }
     }
 
     return isValid;
@@ -316,9 +322,10 @@ export class ApprovalComponent {
       const windApplicationID = this.ApplicationID || 0;
 
       // Get selected controlled function IDs
-      const selectedFunctionIDs: number[] = this.controlledFunctions
+      const lstFunctions: number[] = this.controlledFunctions
         .filter((func) => func.isSelected && func.id !== undefined) // Ensure 'id' is defined
-        .map((func) => func.id as number); // Type assertion ensures 'id' is treated as number
+        .map((func) => func.id!) // Type assertion ensures 'id' is treated as number
+        .filter((id): id is number => id !== undefined); // Filter out undefined values
 
       // Call the API
       const response = await lastValueFrom(
@@ -326,21 +333,20 @@ export class ApprovalComponent {
           qfcNumber,
           aiNumber,
           formTypeID,
-          windApplicationID,
-          selectedFunctionIDs
+          lstFunctions,
+          windApplicationID
         )
       );
-      if (!response || !response.response) {
+      if (response === null || response === undefined) {
         throw new Error('Error fetching message server error ');
       }
-      return response.response;
+      return response.response ?? false;
       // Assuming API returns { duplicate: boolean }
     } catch (error) {
       console.error('Error checking duplicate application:', error);
       return false;
     }
   }
-
 
   async saveApplicationData(): Promise<void> {
     try {
@@ -357,41 +363,42 @@ export class ApprovalComponent {
         emailAddress: this.applicant.email || undefined,
         isOrdinarilyResidentFlag: this.applicant.isResident || undefined,
       });
-  
-      const selectedFunctionIDs: ControlledFunctionDto[] = this.controlledFunctions
-      .filter(func => func.isSelected)
-      .map(func => ControlledFunctionDto.fromJS({ id: func.id })); // Correct instantiation
 
-    const applicationData: ApplicationDataDto = new ApplicationDataDto({
-      objIndividualDetails: individualDetails,
-      lstControledFunctionIDs: selectedFunctionIDs, // Now properly instantiated
-    });
-  
-      console.log("Submitting application data:", applicationData);
-  
-      const response = await lastValueFrom(this.client.insertUpdateApplicationData(applicationData));
-  
+      const selectedFunctionIDs: ControlledFunctionDto[] =
+        this.controlledFunctions
+          .filter((func) => func.isSelected)
+          .map((func) => ControlledFunctionDto.fromJS({ id: func.id })); // Correct instantiation
+
+      const applicationData: ApplicationDataDto = new ApplicationDataDto({
+        objIndividualDetails: individualDetails,
+        lstControledFunctionIDs: selectedFunctionIDs, // Now properly instantiated
+      });
+
+      console.log('Submitting application data:', applicationData);
+
+      const response = await lastValueFrom(
+        this.client.insertUpdateApplicationData(applicationData)
+      );
+
       if (response && response.response) {
-        console.log("Application submitted successfully:", response);
+        console.log('Application submitted successfully:', response);
         this.redirectToApprovalForm(response.response);
       } else {
-        console.error("Application submission failed", response);
-        this.toastr.error("Failed to submit application. Please try again.");
+        console.error('Application submission failed', response);
+        this.toastr.error('Failed to submit application. Please try again.');
       }
     } catch (error) {
-      console.error("Error submitting application:", error);
-      this.toastr.error("An error occurred while submitting the application.");
+      console.error('Error submitting application:', error);
+      this.toastr.error('An error occurred while submitting the application.');
     }
   }
-  
-  
 
   redirectToApprovalForm(appID: number): void {
     // const encryptedID = this.encryptQueryParam(appID.toString());
     // const encryptedDocType = this.encryptQueryParam(this.data.DocTypeId);
     // const encryptedFormType = this.encryptQueryParam(this.data.WIndFromTypeID);
-  
-    this.router.navigate(["/approval"], {
+
+    this.router.navigate(['/approval'], {
       queryParams: {
         appID: appID.toString(),
         dt: this.data.DocTypeId,
@@ -399,6 +406,4 @@ export class ApprovalComponent {
       },
     });
   }
-  
-  
 }
