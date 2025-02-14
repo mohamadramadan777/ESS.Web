@@ -2,11 +2,16 @@ import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WObjects } from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
-import { Client, AttachmentDto, ObjectSOTaskStatus } from '../../../../services/api-client';
+import {
+  Client,
+  AttachmentDto,
+  ObjectSOTaskStatus,
+} from '../../../../services/api-client';
 import { LoadingService } from '../../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
+
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,6 +20,11 @@ import Swal from 'sweetalert2';
   styleUrls: ['./withdrawal.component.scss'],
 })
 export class WithdrawalComponent {
+  public WithdrawalObjectID: any = 0; // Default value to prevent null errors
+  public WithdrawalID: any = 0; // Default value to prevent null errors
+  public DocSignText!: string;
+  public Comments: string = '';
+
   @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
   @Input() ReadOnly: boolean = false;
   unsavedChanges: boolean = false; // Track unsaved changes
@@ -23,7 +33,11 @@ export class WithdrawalComponent {
 
   // Arrays for dropdown and controlled functions
   applicantNames: { id: number; name: string; aiNumber: string }[] = [];
-  controlledFunctions: { name: string; approvedDate: string; isWithdrawn: boolean }[] = [];
+  controlledFunctions: {
+    name: string;
+    approvedDate: string;
+    isWithdrawn: boolean;
+  }[] = [];
   selectedApplicant: any = null;
 
   // Placeholder for the selected AI Number
@@ -36,10 +50,12 @@ export class WithdrawalComponent {
     public dialogRef: MatDialogRef<WithdrawalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.loadApplicants(); // Load applicants via API
+    this.WithdrawalObjectID = this.data?.ObjectID ?? 0;
+    this.WithdrawalID = this.data?.InstanceID ?? 0;
+    this.DocSignText = this.data?.DocSignText || 'Default Signature Text';
   }
 
   // Load applicants via API
@@ -61,33 +77,56 @@ export class WithdrawalComponent {
   }
 
   // Load controlled functions based on the selected applicant
-loadControlledFunctions(applicantId: number): void {
-  // Generate different options based on applicantId % 3
-  switch (applicantId % 3) {
-    case 0:
-      this.controlledFunctions = [
-        { name: 'Non-Executive Governance Function', approvedDate: '03/Oct/2021', isWithdrawn: false },
-      ];
-      break;
-    case 1:
-      this.controlledFunctions = [
-        { name: 'Operational Function', approvedDate: '20/Aug/2021', isWithdrawn: false },
-        { name: 'Risk Management Function', approvedDate: '12/Jan/2022', isWithdrawn: false },
-      ];
-      break;
-    case 2:
-      this.controlledFunctions = [
-        { name: 'Compliance Function', approvedDate: '05/Jun/2021', isWithdrawn: false },
-        { name: 'Internal Audit Function', approvedDate: '10/Nov/2021', isWithdrawn: false },
-        { name: 'IT Governance Function', approvedDate: '22/Mar/2022', isWithdrawn: false },
-      ];
-      break;
-    default:
-      this.controlledFunctions = []; // Default to an empty array if no match
-      break;
+  loadControlledFunctions(applicantId: number): void {
+    // Generate different options based on applicantId % 3
+    switch (applicantId % 3) {
+      case 0:
+        this.controlledFunctions = [
+          {
+            name: 'Non-Executive Governance Function',
+            approvedDate: '03/Oct/2021',
+            isWithdrawn: false,
+          },
+        ];
+        break;
+      case 1:
+        this.controlledFunctions = [
+          {
+            name: 'Operational Function',
+            approvedDate: '20/Aug/2021',
+            isWithdrawn: false,
+          },
+          {
+            name: 'Risk Management Function',
+            approvedDate: '12/Jan/2022',
+            isWithdrawn: false,
+          },
+        ];
+        break;
+      case 2:
+        this.controlledFunctions = [
+          {
+            name: 'Compliance Function',
+            approvedDate: '05/Jun/2021',
+            isWithdrawn: false,
+          },
+          {
+            name: 'Internal Audit Function',
+            approvedDate: '10/Nov/2021',
+            isWithdrawn: false,
+          },
+          {
+            name: 'IT Governance Function',
+            approvedDate: '22/Mar/2022',
+            isWithdrawn: false,
+          },
+        ];
+        break;
+      default:
+        this.controlledFunctions = []; // Default to an empty array if no match
+        break;
+    }
   }
-}
-
 
   // Save functionality
   onSave(): void {
@@ -129,7 +168,7 @@ loadControlledFunctions(applicantId: number): void {
         cancelButtonColor: '#555555',
         confirmButtonText: 'Save Changes',
         cancelButtonText: 'Discard Changes',
-      })
+      });
 
       if (result.isConfirmed) {
         this.toastr.success('Changes saved successfully!', 'Success');
@@ -140,6 +179,14 @@ loadControlledFunctions(applicantId: number): void {
     }
   }
   onWithdrawChange(index: number): void {
-    this.controlledFunctions[index].isWithdrawn = !this.controlledFunctions[index].isWithdrawn;
+    this.controlledFunctions[index].isWithdrawn =
+      !this.controlledFunctions[index].isWithdrawn;
+  }
+
+  onObjectInstanceIDChange(event: any) {
+    this.WithdrawalID = event;
+  }
+  onNotesChange(): void {
+    console.log('Notes changed:', this.Comments);
   }
 }
