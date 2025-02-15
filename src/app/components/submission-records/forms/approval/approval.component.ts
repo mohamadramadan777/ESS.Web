@@ -582,7 +582,7 @@ export class ApprovalComponent {
     let appID = 0;
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
-        applicationID: this.ApplicationID || undefined,
+        applicationID: this.data.ApplicationID || undefined,
         qfcNumber: localStorage.getItem('qfc_no') || undefined,
         userID: this.data.userID || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
