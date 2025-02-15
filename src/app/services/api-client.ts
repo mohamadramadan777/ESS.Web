@@ -14,7 +14,6 @@ import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
 
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -1752,6 +1751,63 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    docSignatories(objectID: number, firmTypeID: number): Observable<DocSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/doc-signatories/{objectID}/{firmTypeID}";
+        if (objectID === undefined || objectID === null)
+            throw new Error("The parameter 'objectID' must be defined.");
+        url_ = url_.replace("{objectID}", encodeURIComponent("" + objectID));
+        if (firmTypeID === undefined || firmTypeID === null)
+            throw new Error("The parameter 'firmTypeID' must be defined.");
+        url_ = url_.replace("{firmTypeID}", encodeURIComponent("" + firmTypeID));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDocSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDocSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<DocSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<DocSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processDocSignatories(response: HttpResponseBase): Observable<DocSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = DocSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<DocSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -3472,6 +3528,433 @@ export class Client {
     }
 
     /**
+     * @param objectInstanceID (optional) 
+     * @param objectID (optional) 
+     * @return OK
+     */
+    getCompletedSignatures(objectInstanceID: number | undefined, objectID: number | undefined): Observable<ObjectSOTaskStatusDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-completed-signatures?";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCompletedSignatures(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCompletedSignatures(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectSOTaskStatusDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectSOTaskStatusDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetCompletedSignatures(response: HttpResponseBase): Observable<ObjectSOTaskStatusDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectSOTaskStatusDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectSOTaskStatusDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param instanceID (optional) 
+     * @param objectID (optional) 
+     * @return OK
+     */
+    getUserEmailBySignOffStarted(instanceID: number | undefined, objectID: number | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-email-by-sign-off-started?";
+        if (instanceID === null)
+            throw new Error("The parameter 'instanceID' cannot be null.");
+        else if (instanceID !== undefined)
+            url_ += "instanceID=" + encodeURIComponent("" + instanceID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserEmailBySignOffStarted(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserEmailBySignOffStarted(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetUserEmailBySignOffStarted(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pWObjectID (optional) 
+     * @param pWObjectInstanceID (optional) 
+     * @return OK
+     */
+    getDetailsOfInitiated(pWObjectID: number | undefined, pWObjectInstanceID: number | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-details-of-initiated?";
+        if (pWObjectID === null)
+            throw new Error("The parameter 'pWObjectID' cannot be null.");
+        else if (pWObjectID !== undefined)
+            url_ += "pWObjectID=" + encodeURIComponent("" + pWObjectID) + "&";
+        if (pWObjectInstanceID === null)
+            throw new Error("The parameter 'pWObjectInstanceID' cannot be null.");
+        else if (pWObjectInstanceID !== undefined)
+            url_ += "pWObjectInstanceID=" + encodeURIComponent("" + pWObjectInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDetailsOfInitiated(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDetailsOfInitiated(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsBaseResponse>;
+        }));
+    }
+
+    protected processGetDetailsOfInitiated(response: HttpResponseBase): Observable<WAccessRequestsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPendingReports(): Observable<ObjectSOStatusListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-pending-reports";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingReports(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingReports(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectSOStatusListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectSOStatusListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingReports(response: HttpResponseBase): Observable<ObjectSOStatusListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectSOStatusListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectSOStatusListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param aINumber (optional) 
+     * @return OK
+     */
+    getFirmUserByAiNumber(aINumber: string | undefined): Observable<ReportSignatoriesBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-firm-user-by-ai-number?";
+        if (aINumber === null)
+            throw new Error("The parameter 'aINumber' cannot be null.");
+        else if (aINumber !== undefined)
+            url_ += "AINumber=" + encodeURIComponent("" + aINumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFirmUserByAiNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFirmUserByAiNumber(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesBaseResponse>;
+        }));
+    }
+
+    protected processGetFirmUserByAiNumber(response: HttpResponseBase): Observable<ReportSignatoriesBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjectSOStatusID (optional) 
+     * @param wObjectSOTaskStatusID (optional) 
+     * @param sOTaskAssignedTo (optional) 
+     * @param wObjectID (optional) 
+     * @param wObjectinstanceID (optional) 
+     * @return OK
+     */
+    deleteWobjectSoTask(wObjectSOStatusID: number | undefined, wObjectSOTaskStatusID: number | undefined, sOTaskAssignedTo: number | undefined, wObjectID: number | undefined, wObjectinstanceID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/delete-wobject-so-task?";
+        if (wObjectSOStatusID === null)
+            throw new Error("The parameter 'wObjectSOStatusID' cannot be null.");
+        else if (wObjectSOStatusID !== undefined)
+            url_ += "WObjectSOStatusID=" + encodeURIComponent("" + wObjectSOStatusID) + "&";
+        if (wObjectSOTaskStatusID === null)
+            throw new Error("The parameter 'wObjectSOTaskStatusID' cannot be null.");
+        else if (wObjectSOTaskStatusID !== undefined)
+            url_ += "WObjectSOTaskStatusID=" + encodeURIComponent("" + wObjectSOTaskStatusID) + "&";
+        if (sOTaskAssignedTo === null)
+            throw new Error("The parameter 'sOTaskAssignedTo' cannot be null.");
+        else if (sOTaskAssignedTo !== undefined)
+            url_ += "SOTaskAssignedTo=" + encodeURIComponent("" + sOTaskAssignedTo) + "&";
+        if (wObjectID === null)
+            throw new Error("The parameter 'wObjectID' cannot be null.");
+        else if (wObjectID !== undefined)
+            url_ += "WObjectID=" + encodeURIComponent("" + wObjectID) + "&";
+        if (wObjectinstanceID === null)
+            throw new Error("The parameter 'wObjectinstanceID' cannot be null.");
+        else if (wObjectinstanceID !== undefined)
+            url_ += "WObjectinstanceID=" + encodeURIComponent("" + wObjectinstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteWobjectSoTask(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteWobjectSoTask(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteWobjectSoTask(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objectID (optional) 
+     * @param objectInstanceID (optional) 
+     * @return OK
+     */
+    cancelWf(objectID: number | undefined, objectInstanceID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/cancel-wf?";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCancelWf(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCancelWf(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCancelWf(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
      * @return OK
      */
     getEssFirms(): Observable<FirmDtoListBaseResponse> {
@@ -3760,6 +4243,67 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param aiNumber (optional) 
+     * @param dateofBirth (optional) 
+     * @return OK
+     */
+    isValidAiNumber(aiNumber: string | undefined, dateofBirth: string | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/is-valid-ai-number?";
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (dateofBirth === null)
+            throw new Error("The parameter 'dateofBirth' cannot be null.");
+        else if (dateofBirth !== undefined)
+            url_ += "dateofBirth=" + encodeURIComponent("" + dateofBirth) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsValidAiNumber(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsValidAiNumber(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processIsValidAiNumber(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
     }
 
     /**
@@ -5523,6 +6067,332 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeId (optional) 
+     * @param objectId (optional) 
+     * @return OK
+     */
+    getDocSubTypesXbrl(docTypeId: string | undefined, objectId: string | undefined): Observable<AttachmentDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-doc-sub-types-xbrl?";
+        if (docTypeId === null)
+            throw new Error("The parameter 'docTypeId' cannot be null.");
+        else if (docTypeId !== undefined)
+            url_ += "docTypeId=" + encodeURIComponent("" + docTypeId) + "&";
+        if (objectId === null)
+            throw new Error("The parameter 'objectId' cannot be null.");
+        else if (objectId !== undefined)
+            url_ += "ObjectId=" + encodeURIComponent("" + objectId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetDocSubTypesXbrl(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetDocSubTypesXbrl(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AttachmentDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AttachmentDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetDocSubTypesXbrl(response: HttpResponseBase): Observable<AttachmentDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AttachmentDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AttachmentDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param tableName (optional) 
+     * @return OK
+     */
+    getMasterData(tableName: string | undefined): Observable<StringStringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-master-data?";
+        if (tableName === null)
+            throw new Error("The parameter 'tableName' cannot be null.");
+        else if (tableName !== undefined)
+            url_ += "tableName=" + encodeURIComponent("" + tableName) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMasterData(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMasterData(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetMasterData(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getFirmDetail(): Observable<FirmDetailsDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-firm-detail";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFirmDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFirmDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FirmDetailsDtoBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FirmDetailsDtoBaseResponse>;
+        }));
+    }
+
+    protected processGetFirmDetail(response: HttpResponseBase): Observable<FirmDetailsDtoBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FirmDetailsDtoBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FirmDetailsDtoBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getFirmCaseOfficersDetail(): Observable<FirmContactDetailsBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-firm-case-officers-detail";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFirmCaseOfficersDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFirmCaseOfficersDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FirmContactDetailsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FirmContactDetailsBaseResponse>;
+        }));
+    }
+
+    protected processGetFirmCaseOfficersDetail(response: HttpResponseBase): Observable<FirmContactDetailsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FirmContactDetailsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FirmContactDetailsBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getAllFirmCaseOfficersDetail(): Observable<FirmContactDetailsBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-all-firm-case-officers-detail";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllFirmCaseOfficersDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllFirmCaseOfficersDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FirmContactDetailsBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FirmContactDetailsBaseResponse>;
+        }));
+    }
+
+    protected processGetAllFirmCaseOfficersDetail(response: HttpResponseBase): Observable<FirmContactDetailsBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FirmContactDetailsBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FirmContactDetailsBaseResponse>(null as any);
+    }
+
+    /**
+     * @param aINumber (optional) 
+     * @return OK
+     */
+    getAis(aINumber: string | undefined): Observable<ApplicationDetailListBaseResponse> {
+        let url_ = this.baseUrl + "/api/DataService/get-ais?";
+        if (aINumber === null)
+            throw new Error("The parameter 'aINumber' cannot be null.");
+        else if (aINumber !== undefined)
+            url_ += "AINumber=" + encodeURIComponent("" + aINumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ApplicationDetailListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ApplicationDetailListBaseResponse>;
+        }));
+    }
+
+    protected processGetAis(response: HttpResponseBase): Observable<ApplicationDetailListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ApplicationDetailListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ApplicationDetailListBaseResponse>(null as any);
     }
 
     /**
@@ -8785,6 +9655,1310 @@ export class Client {
         }
         return _observableOf<WobjectAttachmentStatusDtoBaseResponse>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getRptSignatoriesByRolesAis(body: DocumentDetails | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-rpt-signatories-by-roles-ais";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRptSignatoriesByRolesAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRptSignatoriesByRolesAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetRptSignatoriesByRolesAis(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getRptSignatoriesByRolesRis(body: DocumentDetails | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-rpt-signatories-by-roles-ris";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRptSignatoriesByRolesRis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRptSignatoriesByRolesRis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetRptSignatoriesByRolesRis(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param pRoleID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getSignatoriesFromFirmServiceRis(pRoleID: number | undefined, body: ContactDetails[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-signatories-from-firm-service-ris?";
+        if (pRoleID === null)
+            throw new Error("The parameter 'pRoleID' cannot be null.");
+        else if (pRoleID !== undefined)
+            url_ += "pRoleID=" + encodeURIComponent("" + pRoleID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSignatoriesFromFirmServiceRis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSignatoriesFromFirmServiceRis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetSignatoriesFromFirmServiceRis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param pRoleID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getSignatoriesFromFirmServiceAis(pRoleID: number | undefined, body: ApplicationDetail[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-signatories-from-firm-service-ais?";
+        if (pRoleID === null)
+            throw new Error("The parameter 'pRoleID' cannot be null.");
+        else if (pRoleID !== undefined)
+            url_ += "pRoleID=" + encodeURIComponent("" + pRoleID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSignatoriesFromFirmServiceAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSignatoriesFromFirmServiceAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetSignatoriesFromFirmServiceAis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param roleId (optional) 
+     * @return OK
+     */
+    getFirmUserByRoles(roleId: number | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-firm-user-by-roles?";
+        if (roleId === null)
+            throw new Error("The parameter 'roleId' cannot be null.");
+        else if (roleId !== undefined)
+            url_ += "roleId=" + encodeURIComponent("" + roleId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFirmUserByRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFirmUserByRoles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetFirmUserByRoles(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param wObjectID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    sendEmail(wObjectID: number | undefined, body: ReportSchEmailDet | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/send-email?";
+        if (wObjectID === null)
+            throw new Error("The parameter 'wObjectID' cannot be null.");
+        else if (wObjectID !== undefined)
+            url_ += "wObjectID=" + encodeURIComponent("" + wObjectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendEmail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendEmail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processSendEmail(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getEmailBody(body: ReportSchEmailDet | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-email-body";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetEmailBody(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetEmailBody(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetEmailBody(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getNocEmailBody(body: ReportSchEmailDet | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-noc-email-body";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNocEmailBody(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNocEmailBody(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetNocEmailBody(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getGenSubEmailBody(body: ReportSchEmailDet | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-gen-sub-email-body";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGenSubEmailBody(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGenSubEmailBody(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetGenSubEmailBody(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param title (optional) 
+     * @param body (optional) 
+     * @param footer (optional) 
+     * @return OK
+     */
+    getFormattedEmail(title: string | undefined, body: string | undefined, footer: string | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-formatted-email?";
+        if (title === null)
+            throw new Error("The parameter 'title' cannot be null.");
+        else if (title !== undefined)
+            url_ += "title=" + encodeURIComponent("" + title) + "&";
+        if (body === null)
+            throw new Error("The parameter 'body' cannot be null.");
+        else if (body !== undefined)
+            url_ += "body=" + encodeURIComponent("" + body) + "&";
+        if (footer === null)
+            throw new Error("The parameter 'footer' cannot be null.");
+        else if (footer !== undefined)
+            url_ += "footer=" + encodeURIComponent("" + footer) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFormattedEmail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFormattedEmail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processGetFormattedEmail(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeID (optional) 
+     * @param freqTypeDesc (optional) 
+     * @param objectID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getRptSignatoriesAis(docTypeID: number | undefined, freqTypeDesc: string | undefined, objectID: number | undefined, body: ApplicationDetail[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-rpt-signatories-ais?";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (freqTypeDesc === null)
+            throw new Error("The parameter 'freqTypeDesc' cannot be null.");
+        else if (freqTypeDesc !== undefined)
+            url_ += "freqTypeDesc=" + encodeURIComponent("" + freqTypeDesc) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRptSignatoriesAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRptSignatoriesAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetRptSignatoriesAis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeID (optional) 
+     * @param freqTypeDesc (optional) 
+     * @param objectID (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getRptSignatoriesRis(docTypeID: number | undefined, freqTypeDesc: string | undefined, objectID: number | undefined, body: ContactDetails[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-rpt-signatories-ris?";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (freqTypeDesc === null)
+            throw new Error("The parameter 'freqTypeDesc' cannot be null.");
+        else if (freqTypeDesc !== undefined)
+            url_ += "freqTypeDesc=" + encodeURIComponent("" + freqTypeDesc) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRptSignatoriesRis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRptSignatoriesRis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetRptSignatoriesRis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    byObjectTaskStatus(body: ObjectSOTaskStatus[] | undefined): Observable<SignOffDetailsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/signoff-details/by-object-task-status";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processByObjectTaskStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processByObjectTaskStatus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SignOffDetailsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SignOffDetailsListBaseResponse>;
+        }));
+    }
+
+    protected processByObjectTaskStatus(response: HttpResponseBase): Observable<SignOffDetailsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SignOffDetailsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SignOffDetailsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    byReportSignatories(body: ReportSignatories[] | undefined): Observable<SignOffDetailsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/signoff-details/by-report-signatories";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processByReportSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processByReportSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SignOffDetailsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SignOffDetailsListBaseResponse>;
+        }));
+    }
+
+    protected processByReportSignatories(response: HttpResponseBase): Observable<SignOffDetailsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SignOffDetailsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SignOffDetailsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getFormattedSignOffDetails(body: SignOffDetails[] | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-formatted-sign-off-details";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetFormattedSignOffDetails(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetFormattedSignOffDetails(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processGetFormattedSignOffDetails(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param userRoles (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    isRoleExistedInDocSignatories(userRoles: string | undefined, body: DocSignatories | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/is-role-existed-in-doc-signatories?";
+        if (userRoles === null)
+            throw new Error("The parameter 'userRoles' cannot be null.");
+        else if (userRoles !== undefined)
+            url_ += "userRoles=" + encodeURIComponent("" + userRoles) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processIsRoleExistedInDocSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processIsRoleExistedInDocSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processIsRoleExistedInDocSignatories(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    checkReqSigPresent(body: ReportSignatories[] | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/check-req-sig-present";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckReqSigPresent(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckReqSigPresent(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCheckReqSigPresent(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    fourLists(body: ReportSignatoryGroups | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/is-sign-off-successfull/four-lists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processFourLists(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processFourLists(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processFourLists(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    threeLists(body: ReportSignatoryGroupsWithThreeLists | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/is-sign-off-successfull/three-lists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processThreeLists(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processThreeLists(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processThreeLists(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    twoLists(body: ReportSignatoryGroupsWithTwoLists | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/is-sign-off-successfull/two-lists";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processTwoLists(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processTwoLists(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processTwoLists(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeID (optional) 
+     * @param freqTypeDesc (optional) 
+     * @param objectID (optional) 
+     * @param csvFunctionTypeIDs (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getNoticeSignatoriesAis(docTypeID: number | undefined, freqTypeDesc: string | undefined, objectID: number | undefined, csvFunctionTypeIDs: string | undefined, body: ApplicationDetail[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-notice-signatories-ais?";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (freqTypeDesc === null)
+            throw new Error("The parameter 'freqTypeDesc' cannot be null.");
+        else if (freqTypeDesc !== undefined)
+            url_ += "freqTypeDesc=" + encodeURIComponent("" + freqTypeDesc) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (csvFunctionTypeIDs === null)
+            throw new Error("The parameter 'csvFunctionTypeIDs' cannot be null.");
+        else if (csvFunctionTypeIDs !== undefined)
+            url_ += "csvFunctionTypeIDs=" + encodeURIComponent("" + csvFunctionTypeIDs) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNoticeSignatoriesAis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNoticeSignatoriesAis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetNoticeSignatoriesAis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param docTypeID (optional) 
+     * @param freqTypeDesc (optional) 
+     * @param objectID (optional) 
+     * @param csvDNFBPfunctions (optional) 
+     * @param body (optional) 
+     * @return OK
+     */
+    getNoticeSignatoriesRis(docTypeID: number | undefined, freqTypeDesc: string | undefined, objectID: number | undefined, csvDNFBPfunctions: string | undefined, body: ContactDetails[] | undefined): Observable<ReportSignatoriesListBaseResponse> {
+        let url_ = this.baseUrl + "/api/SignOffManager/get-notice-signatories-ris?";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (freqTypeDesc === null)
+            throw new Error("The parameter 'freqTypeDesc' cannot be null.");
+        else if (freqTypeDesc !== undefined)
+            url_ += "freqTypeDesc=" + encodeURIComponent("" + freqTypeDesc) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (csvDNFBPfunctions === null)
+            throw new Error("The parameter 'csvDNFBPfunctions' cannot be null.");
+        else if (csvDNFBPfunctions !== undefined)
+            url_ += "csvDNFBPfunctions=" + encodeURIComponent("" + csvDNFBPfunctions) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNoticeSignatoriesRis(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNoticeSignatoriesRis(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ReportSignatoriesListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ReportSignatoriesListBaseResponse>;
+        }));
+    }
+
+    protected processGetNoticeSignatoriesRis(response: HttpResponseBase): Observable<ReportSignatoriesListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReportSignatoriesListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
+    }
 }
 
 @Injectable()
@@ -9454,6 +11628,3990 @@ export class ByClient {
     }
 }
 
+export class AIAliases implements IAIAliases {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiAliaseID?: number | undefined;
+    aiAliasesID?: string | undefined;
+    aiAliaseName?: string | undefined;
+    previousNameDate?: Date;
+    previousFromDay?: number;
+    previousFromMonth?: number;
+    previousFromYear?: number;
+    previousNameReason?: string | undefined;
+    modifiedBy?: number;
+
+    constructor(data?: IAIAliases) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.aiAliaseID = _data["aiAliaseID"];
+            this.aiAliasesID = _data["aiAliasesID"];
+            this.aiAliaseName = _data["aiAliaseName"];
+            this.previousNameDate = _data["previousNameDate"] ? new Date(_data["previousNameDate"].toString()) : <any>undefined;
+            this.previousFromDay = _data["previousFromDay"];
+            this.previousFromMonth = _data["previousFromMonth"];
+            this.previousFromYear = _data["previousFromYear"];
+            this.previousNameReason = _data["previousNameReason"];
+            this.modifiedBy = _data["modifiedBy"];
+        }
+    }
+
+    static fromJS(data: any): AIAliases {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIAliases();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["aiAliaseID"] = this.aiAliaseID;
+        data["aiAliasesID"] = this.aiAliasesID;
+        data["aiAliaseName"] = this.aiAliaseName;
+        data["previousNameDate"] = this.previousNameDate ? this.previousNameDate.toISOString() : <any>undefined;
+        data["previousFromDay"] = this.previousFromDay;
+        data["previousFromMonth"] = this.previousFromMonth;
+        data["previousFromYear"] = this.previousFromYear;
+        data["previousNameReason"] = this.previousNameReason;
+        data["modifiedBy"] = this.modifiedBy;
+        return data;
+    }
+}
+
+export interface IAIAliases {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiAliaseID?: number | undefined;
+    aiAliasesID?: string | undefined;
+    aiAliaseName?: string | undefined;
+    previousNameDate?: Date;
+    previousFromDay?: number;
+    previousFromMonth?: number;
+    previousFromYear?: number;
+    previousNameReason?: string | undefined;
+    modifiedBy?: number;
+}
+
+export class AIAssessment implements IAIAssessment {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiAssessmentID?: number | undefined;
+    aiAssesObjectWFStatusID?: number | undefined;
+    createdById?: number;
+    createdByName?: string | undefined;
+    updatedById?: number;
+    updatedByName?: string | undefined;
+    generalCheckNotes?: string | undefined;
+    gapsEmpHistoryNote?: string | undefined;
+    discrepCheckNotes?: string | undefined;
+    fandPIssuedFlag?: boolean | undefined;
+    fandPIssueNote?: string | undefined;
+    finSoundnessFlag?: boolean | undefined;
+    finSoundnessNote?: string | undefined;
+    hirCheckFlag?: boolean | undefined;
+    hirCheckNote?: string | undefined;
+    cfIssuedFlag?: boolean | undefined;
+    cfIssueNote?: string | undefined;
+    residencyRequiredFlag?: boolean | undefined;
+    addDocSuportRequiredFlag?: boolean | undefined;
+    residencyNote?: string | undefined;
+    waiverApplicableFlag?: boolean | undefined;
+    waiverNoticeNumber?: string | undefined;
+    waiverExpirationDate?: string | undefined;
+    waiverStatusId?: number | undefined;
+    waiverStatus?: string | undefined;
+    wmcIssue?: string | undefined;
+    waiverNote?: string | undefined;
+    worldCheckFinding?: string | undefined;
+    findingCheckRanDate?: string | undefined;
+    prevRARegRejCheckNotes?: string | undefined;
+    regOverseasRegulators?: string | undefined;
+    aiAssessmentRevNum?: number | undefined;
+    docComments?: string | undefined;
+    regCheckComments?: string | undefined;
+    waiverID?: number | undefined;
+    waiverRevNumber?: number | undefined;
+    objectWFStatusTypeID?: number | undefined;
+    aiRecommndationID?: number | undefined;
+    aiRecomendationRevId?: number | undefined;
+    applFeeCheckNote?: string | undefined;
+    discrepancyCheckedFlag?: boolean | undefined;
+    discrepancyIdentifiedFlag?: boolean | undefined;
+    fandPCheckedFlag?: boolean | undefined;
+    regIssueIdentifiedFlag?: boolean | undefined;
+    pageFlage?: string | undefined;
+    summaryOfChanges?: string | undefined;
+    rsgAssessment?: string | undefined;
+    otherRegistration?: string | undefined;
+    rsgConclusionID?: number | undefined;
+    supervisorRecommendationID?: number | undefined;
+    directorRecommendationID?: number | undefined;
+    regulatorDate?: string | undefined;
+    rsgConclusionDesc?: string | undefined;
+    supervisorComments?: string | undefined;
+    supervisorRecommendationDesc?: string | undefined;
+    directorRecommendationDesc?: string | undefined;
+    amlSupervisorComments?: string | undefined;
+    amlSupervisorRecommendationDesc?: string | undefined;
+    amlDirectorRecommendationDesc?: string | undefined;
+    amlSupervisorRecommendationID?: number | undefined;
+    amlDirectorRecommendationID?: number | undefined;
+    panelEnable?: string | undefined;
+    lastModifiedDate?: string | undefined;
+
+    constructor(data?: IAIAssessment) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.aiAssessmentID = _data["aiAssessmentID"];
+            this.aiAssesObjectWFStatusID = _data["aiAssesObjectWFStatusID"];
+            this.createdById = _data["createdById"];
+            this.createdByName = _data["createdByName"];
+            this.updatedById = _data["updatedById"];
+            this.updatedByName = _data["updatedByName"];
+            this.generalCheckNotes = _data["generalCheckNotes"];
+            this.gapsEmpHistoryNote = _data["gapsEmpHistoryNote"];
+            this.discrepCheckNotes = _data["discrepCheckNotes"];
+            this.fandPIssuedFlag = _data["fandPIssuedFlag"];
+            this.fandPIssueNote = _data["fandPIssueNote"];
+            this.finSoundnessFlag = _data["finSoundnessFlag"];
+            this.finSoundnessNote = _data["finSoundnessNote"];
+            this.hirCheckFlag = _data["hirCheckFlag"];
+            this.hirCheckNote = _data["hirCheckNote"];
+            this.cfIssuedFlag = _data["cfIssuedFlag"];
+            this.cfIssueNote = _data["cfIssueNote"];
+            this.residencyRequiredFlag = _data["residencyRequiredFlag"];
+            this.addDocSuportRequiredFlag = _data["addDocSuportRequiredFlag"];
+            this.residencyNote = _data["residencyNote"];
+            this.waiverApplicableFlag = _data["waiverApplicableFlag"];
+            this.waiverNoticeNumber = _data["waiverNoticeNumber"];
+            this.waiverExpirationDate = _data["waiverExpirationDate"];
+            this.waiverStatusId = _data["waiverStatusId"];
+            this.waiverStatus = _data["waiverStatus"];
+            this.wmcIssue = _data["wmcIssue"];
+            this.waiverNote = _data["waiverNote"];
+            this.worldCheckFinding = _data["worldCheckFinding"];
+            this.findingCheckRanDate = _data["findingCheckRanDate"];
+            this.prevRARegRejCheckNotes = _data["prevRARegRejCheckNotes"];
+            this.regOverseasRegulators = _data["regOverseasRegulators"];
+            this.aiAssessmentRevNum = _data["aiAssessmentRevNum"];
+            this.docComments = _data["docComments"];
+            this.regCheckComments = _data["regCheckComments"];
+            this.waiverID = _data["waiverID"];
+            this.waiverRevNumber = _data["waiverRevNumber"];
+            this.objectWFStatusTypeID = _data["objectWFStatusTypeID"];
+            this.aiRecommndationID = _data["aiRecommndationID"];
+            this.aiRecomendationRevId = _data["aiRecomendationRevId"];
+            this.applFeeCheckNote = _data["applFeeCheckNote"];
+            this.discrepancyCheckedFlag = _data["discrepancyCheckedFlag"];
+            this.discrepancyIdentifiedFlag = _data["discrepancyIdentifiedFlag"];
+            this.fandPCheckedFlag = _data["fandPCheckedFlag"];
+            this.regIssueIdentifiedFlag = _data["regIssueIdentifiedFlag"];
+            this.pageFlage = _data["pageFlage"];
+            this.summaryOfChanges = _data["summaryOfChanges"];
+            this.rsgAssessment = _data["rsgAssessment"];
+            this.otherRegistration = _data["otherRegistration"];
+            this.rsgConclusionID = _data["rsgConclusionID"];
+            this.supervisorRecommendationID = _data["supervisorRecommendationID"];
+            this.directorRecommendationID = _data["directorRecommendationID"];
+            this.regulatorDate = _data["regulatorDate"];
+            this.rsgConclusionDesc = _data["rsgConclusionDesc"];
+            this.supervisorComments = _data["supervisorComments"];
+            this.supervisorRecommendationDesc = _data["supervisorRecommendationDesc"];
+            this.directorRecommendationDesc = _data["directorRecommendationDesc"];
+            this.amlSupervisorComments = _data["amlSupervisorComments"];
+            this.amlSupervisorRecommendationDesc = _data["amlSupervisorRecommendationDesc"];
+            this.amlDirectorRecommendationDesc = _data["amlDirectorRecommendationDesc"];
+            this.amlSupervisorRecommendationID = _data["amlSupervisorRecommendationID"];
+            this.amlDirectorRecommendationID = _data["amlDirectorRecommendationID"];
+            this.panelEnable = _data["panelEnable"];
+            this.lastModifiedDate = _data["lastModifiedDate"];
+        }
+    }
+
+    static fromJS(data: any): AIAssessment {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIAssessment();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["aiAssessmentID"] = this.aiAssessmentID;
+        data["aiAssesObjectWFStatusID"] = this.aiAssesObjectWFStatusID;
+        data["createdById"] = this.createdById;
+        data["createdByName"] = this.createdByName;
+        data["updatedById"] = this.updatedById;
+        data["updatedByName"] = this.updatedByName;
+        data["generalCheckNotes"] = this.generalCheckNotes;
+        data["gapsEmpHistoryNote"] = this.gapsEmpHistoryNote;
+        data["discrepCheckNotes"] = this.discrepCheckNotes;
+        data["fandPIssuedFlag"] = this.fandPIssuedFlag;
+        data["fandPIssueNote"] = this.fandPIssueNote;
+        data["finSoundnessFlag"] = this.finSoundnessFlag;
+        data["finSoundnessNote"] = this.finSoundnessNote;
+        data["hirCheckFlag"] = this.hirCheckFlag;
+        data["hirCheckNote"] = this.hirCheckNote;
+        data["cfIssuedFlag"] = this.cfIssuedFlag;
+        data["cfIssueNote"] = this.cfIssueNote;
+        data["residencyRequiredFlag"] = this.residencyRequiredFlag;
+        data["addDocSuportRequiredFlag"] = this.addDocSuportRequiredFlag;
+        data["residencyNote"] = this.residencyNote;
+        data["waiverApplicableFlag"] = this.waiverApplicableFlag;
+        data["waiverNoticeNumber"] = this.waiverNoticeNumber;
+        data["waiverExpirationDate"] = this.waiverExpirationDate;
+        data["waiverStatusId"] = this.waiverStatusId;
+        data["waiverStatus"] = this.waiverStatus;
+        data["wmcIssue"] = this.wmcIssue;
+        data["waiverNote"] = this.waiverNote;
+        data["worldCheckFinding"] = this.worldCheckFinding;
+        data["findingCheckRanDate"] = this.findingCheckRanDate;
+        data["prevRARegRejCheckNotes"] = this.prevRARegRejCheckNotes;
+        data["regOverseasRegulators"] = this.regOverseasRegulators;
+        data["aiAssessmentRevNum"] = this.aiAssessmentRevNum;
+        data["docComments"] = this.docComments;
+        data["regCheckComments"] = this.regCheckComments;
+        data["waiverID"] = this.waiverID;
+        data["waiverRevNumber"] = this.waiverRevNumber;
+        data["objectWFStatusTypeID"] = this.objectWFStatusTypeID;
+        data["aiRecommndationID"] = this.aiRecommndationID;
+        data["aiRecomendationRevId"] = this.aiRecomendationRevId;
+        data["applFeeCheckNote"] = this.applFeeCheckNote;
+        data["discrepancyCheckedFlag"] = this.discrepancyCheckedFlag;
+        data["discrepancyIdentifiedFlag"] = this.discrepancyIdentifiedFlag;
+        data["fandPCheckedFlag"] = this.fandPCheckedFlag;
+        data["regIssueIdentifiedFlag"] = this.regIssueIdentifiedFlag;
+        data["pageFlage"] = this.pageFlage;
+        data["summaryOfChanges"] = this.summaryOfChanges;
+        data["rsgAssessment"] = this.rsgAssessment;
+        data["otherRegistration"] = this.otherRegistration;
+        data["rsgConclusionID"] = this.rsgConclusionID;
+        data["supervisorRecommendationID"] = this.supervisorRecommendationID;
+        data["directorRecommendationID"] = this.directorRecommendationID;
+        data["regulatorDate"] = this.regulatorDate;
+        data["rsgConclusionDesc"] = this.rsgConclusionDesc;
+        data["supervisorComments"] = this.supervisorComments;
+        data["supervisorRecommendationDesc"] = this.supervisorRecommendationDesc;
+        data["directorRecommendationDesc"] = this.directorRecommendationDesc;
+        data["amlSupervisorComments"] = this.amlSupervisorComments;
+        data["amlSupervisorRecommendationDesc"] = this.amlSupervisorRecommendationDesc;
+        data["amlDirectorRecommendationDesc"] = this.amlDirectorRecommendationDesc;
+        data["amlSupervisorRecommendationID"] = this.amlSupervisorRecommendationID;
+        data["amlDirectorRecommendationID"] = this.amlDirectorRecommendationID;
+        data["panelEnable"] = this.panelEnable;
+        data["lastModifiedDate"] = this.lastModifiedDate;
+        return data;
+    }
+}
+
+export interface IAIAssessment {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiAssessmentID?: number | undefined;
+    aiAssesObjectWFStatusID?: number | undefined;
+    createdById?: number;
+    createdByName?: string | undefined;
+    updatedById?: number;
+    updatedByName?: string | undefined;
+    generalCheckNotes?: string | undefined;
+    gapsEmpHistoryNote?: string | undefined;
+    discrepCheckNotes?: string | undefined;
+    fandPIssuedFlag?: boolean | undefined;
+    fandPIssueNote?: string | undefined;
+    finSoundnessFlag?: boolean | undefined;
+    finSoundnessNote?: string | undefined;
+    hirCheckFlag?: boolean | undefined;
+    hirCheckNote?: string | undefined;
+    cfIssuedFlag?: boolean | undefined;
+    cfIssueNote?: string | undefined;
+    residencyRequiredFlag?: boolean | undefined;
+    addDocSuportRequiredFlag?: boolean | undefined;
+    residencyNote?: string | undefined;
+    waiverApplicableFlag?: boolean | undefined;
+    waiverNoticeNumber?: string | undefined;
+    waiverExpirationDate?: string | undefined;
+    waiverStatusId?: number | undefined;
+    waiverStatus?: string | undefined;
+    wmcIssue?: string | undefined;
+    waiverNote?: string | undefined;
+    worldCheckFinding?: string | undefined;
+    findingCheckRanDate?: string | undefined;
+    prevRARegRejCheckNotes?: string | undefined;
+    regOverseasRegulators?: string | undefined;
+    aiAssessmentRevNum?: number | undefined;
+    docComments?: string | undefined;
+    regCheckComments?: string | undefined;
+    waiverID?: number | undefined;
+    waiverRevNumber?: number | undefined;
+    objectWFStatusTypeID?: number | undefined;
+    aiRecommndationID?: number | undefined;
+    aiRecomendationRevId?: number | undefined;
+    applFeeCheckNote?: string | undefined;
+    discrepancyCheckedFlag?: boolean | undefined;
+    discrepancyIdentifiedFlag?: boolean | undefined;
+    fandPCheckedFlag?: boolean | undefined;
+    regIssueIdentifiedFlag?: boolean | undefined;
+    pageFlage?: string | undefined;
+    summaryOfChanges?: string | undefined;
+    rsgAssessment?: string | undefined;
+    otherRegistration?: string | undefined;
+    rsgConclusionID?: number | undefined;
+    supervisorRecommendationID?: number | undefined;
+    directorRecommendationID?: number | undefined;
+    regulatorDate?: string | undefined;
+    rsgConclusionDesc?: string | undefined;
+    supervisorComments?: string | undefined;
+    supervisorRecommendationDesc?: string | undefined;
+    directorRecommendationDesc?: string | undefined;
+    amlSupervisorComments?: string | undefined;
+    amlSupervisorRecommendationDesc?: string | undefined;
+    amlDirectorRecommendationDesc?: string | undefined;
+    amlSupervisorRecommendationID?: number | undefined;
+    amlDirectorRecommendationID?: number | undefined;
+    panelEnable?: string | undefined;
+    lastModifiedDate?: string | undefined;
+}
+
+export class AIObjectStatus implements IAIObjectStatus {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    objectStatusID?: number | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectInstanceRevNum?: number;
+    objectStatusTypeID?: number;
+    objectStatusTypeDesc?: string | undefined;
+    objectStatusTypeRptDesc?: string | undefined;
+    statusSourceObjectID?: number;
+    statusSourceObjectInstanceID?: number;
+    statusSourceObjectInstanceRevNum?: number;
+    statusSetBy?: number;
+    statusSetByName?: string | undefined;
+    statusSetDate?: string | undefined;
+    activeFlag?: boolean;
+    statusComments?: string | undefined;
+
+    constructor(data?: IAIObjectStatus) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.objectStatusID = _data["objectStatusID"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.objectInstanceRevNum = _data["objectInstanceRevNum"];
+            this.objectStatusTypeID = _data["objectStatusTypeID"];
+            this.objectStatusTypeDesc = _data["objectStatusTypeDesc"];
+            this.objectStatusTypeRptDesc = _data["objectStatusTypeRptDesc"];
+            this.statusSourceObjectID = _data["statusSourceObjectID"];
+            this.statusSourceObjectInstanceID = _data["statusSourceObjectInstanceID"];
+            this.statusSourceObjectInstanceRevNum = _data["statusSourceObjectInstanceRevNum"];
+            this.statusSetBy = _data["statusSetBy"];
+            this.statusSetByName = _data["statusSetByName"];
+            this.statusSetDate = _data["statusSetDate"];
+            this.activeFlag = _data["activeFlag"];
+            this.statusComments = _data["statusComments"];
+        }
+    }
+
+    static fromJS(data: any): AIObjectStatus {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIObjectStatus();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["objectStatusID"] = this.objectStatusID;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["objectInstanceRevNum"] = this.objectInstanceRevNum;
+        data["objectStatusTypeID"] = this.objectStatusTypeID;
+        data["objectStatusTypeDesc"] = this.objectStatusTypeDesc;
+        data["objectStatusTypeRptDesc"] = this.objectStatusTypeRptDesc;
+        data["statusSourceObjectID"] = this.statusSourceObjectID;
+        data["statusSourceObjectInstanceID"] = this.statusSourceObjectInstanceID;
+        data["statusSourceObjectInstanceRevNum"] = this.statusSourceObjectInstanceRevNum;
+        data["statusSetBy"] = this.statusSetBy;
+        data["statusSetByName"] = this.statusSetByName;
+        data["statusSetDate"] = this.statusSetDate;
+        data["activeFlag"] = this.activeFlag;
+        data["statusComments"] = this.statusComments;
+        return data;
+    }
+}
+
+export interface IAIObjectStatus {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    objectStatusID?: number | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectInstanceRevNum?: number;
+    objectStatusTypeID?: number;
+    objectStatusTypeDesc?: string | undefined;
+    objectStatusTypeRptDesc?: string | undefined;
+    statusSourceObjectID?: number;
+    statusSourceObjectInstanceID?: number;
+    statusSourceObjectInstanceRevNum?: number;
+    statusSetBy?: number;
+    statusSetByName?: string | undefined;
+    statusSetDate?: string | undefined;
+    activeFlag?: boolean;
+    statusComments?: string | undefined;
+}
+
+export class AIOpenItems implements IAIOpenItems {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiOpenItemID?: number | undefined;
+    openItemTypeID?: number | undefined;
+    openItemTypeDesc?: string | undefined;
+    descriptions?: string | undefined;
+    owner?: string | undefined;
+    resolution?: string | undefined;
+    resolutionDate?: string | undefined;
+    itemStatusTypeId?: number | undefined;
+    itemStatusTypeDesc?: string | undefined;
+    createdByUser?: string | undefined;
+    updatedByUser?: string | undefined;
+    rowNumber?: number;
+    appIndividualProcImpactID?: number | undefined;
+    impactOnAppProcessingDesc?: string | undefined;
+    resolvedby?: string | undefined;
+    createdDateByUser?: Date;
+    issueIdentifiedDate?: string | undefined;
+    applFeeReceievedDate?: string | undefined;
+    applFeeComments?: string | undefined;
+    toolTip?: string | undefined;
+
+    constructor(data?: IAIOpenItems) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.aiOpenItemID = _data["aiOpenItemID"];
+            this.openItemTypeID = _data["openItemTypeID"];
+            this.openItemTypeDesc = _data["openItemTypeDesc"];
+            this.descriptions = _data["descriptions"];
+            this.owner = _data["owner"];
+            this.resolution = _data["resolution"];
+            this.resolutionDate = _data["resolutionDate"];
+            this.itemStatusTypeId = _data["itemStatusTypeId"];
+            this.itemStatusTypeDesc = _data["itemStatusTypeDesc"];
+            this.createdByUser = _data["createdByUser"];
+            this.updatedByUser = _data["updatedByUser"];
+            this.rowNumber = _data["rowNumber"];
+            this.appIndividualProcImpactID = _data["appIndividualProcImpactID"];
+            this.impactOnAppProcessingDesc = _data["impactOnAppProcessingDesc"];
+            this.resolvedby = _data["resolvedby"];
+            this.createdDateByUser = _data["createdDateByUser"] ? new Date(_data["createdDateByUser"].toString()) : <any>undefined;
+            this.issueIdentifiedDate = _data["issueIdentifiedDate"];
+            this.applFeeReceievedDate = _data["applFeeReceievedDate"];
+            this.applFeeComments = _data["applFeeComments"];
+            this.toolTip = _data["toolTip"];
+        }
+    }
+
+    static fromJS(data: any): AIOpenItems {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIOpenItems();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["aiOpenItemID"] = this.aiOpenItemID;
+        data["openItemTypeID"] = this.openItemTypeID;
+        data["openItemTypeDesc"] = this.openItemTypeDesc;
+        data["descriptions"] = this.descriptions;
+        data["owner"] = this.owner;
+        data["resolution"] = this.resolution;
+        data["resolutionDate"] = this.resolutionDate;
+        data["itemStatusTypeId"] = this.itemStatusTypeId;
+        data["itemStatusTypeDesc"] = this.itemStatusTypeDesc;
+        data["createdByUser"] = this.createdByUser;
+        data["updatedByUser"] = this.updatedByUser;
+        data["rowNumber"] = this.rowNumber;
+        data["appIndividualProcImpactID"] = this.appIndividualProcImpactID;
+        data["impactOnAppProcessingDesc"] = this.impactOnAppProcessingDesc;
+        data["resolvedby"] = this.resolvedby;
+        data["createdDateByUser"] = this.createdDateByUser ? this.createdDateByUser.toISOString() : <any>undefined;
+        data["issueIdentifiedDate"] = this.issueIdentifiedDate;
+        data["applFeeReceievedDate"] = this.applFeeReceievedDate;
+        data["applFeeComments"] = this.applFeeComments;
+        data["toolTip"] = this.toolTip;
+        return data;
+    }
+}
+
+export interface IAIOpenItems {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiOpenItemID?: number | undefined;
+    openItemTypeID?: number | undefined;
+    openItemTypeDesc?: string | undefined;
+    descriptions?: string | undefined;
+    owner?: string | undefined;
+    resolution?: string | undefined;
+    resolutionDate?: string | undefined;
+    itemStatusTypeId?: number | undefined;
+    itemStatusTypeDesc?: string | undefined;
+    createdByUser?: string | undefined;
+    updatedByUser?: string | undefined;
+    rowNumber?: number;
+    appIndividualProcImpactID?: number | undefined;
+    impactOnAppProcessingDesc?: string | undefined;
+    resolvedby?: string | undefined;
+    createdDateByUser?: Date;
+    issueIdentifiedDate?: string | undefined;
+    applFeeReceievedDate?: string | undefined;
+    applFeeComments?: string | undefined;
+    toolTip?: string | undefined;
+}
+
+export class AIRecommendation implements IAIRecommendation {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiRecomendationID?: number | undefined;
+    aiRecomendationRevNum?: number | undefined;
+    aiRecomObjectWFStatusID?: number | undefined;
+    totalIndustoryExpMonth?: number | undefined;
+    totalIndustoryExpYear?: number | undefined;
+    roleSpecificExpMonth?: number | undefined;
+    roleSpecificExpYear?: number | undefined;
+    recDocID?: number;
+    rptDocReferenceID?: number | undefined;
+    cfFirmScopeCheck?: boolean | undefined;
+    fitnessProprietyCheck?: boolean | undefined;
+    compCapabilityCheck?: boolean | undefined;
+    linkToJobDesc?: string | undefined;
+    rolesResponsibilities?: string | undefined;
+    coAssesment?: string | undefined;
+    condRestrictionReqs?: string | undefined;
+    recomendation?: string | undefined;
+    qualMembershipReq?: string | undefined;
+    experience?: string | undefined;
+    fileName?: string | undefined;
+    fileLocn?: string | undefined;
+    applFeeWaiverFlag?: boolean | undefined;
+    applFeeWaiverReason?: string | undefined;
+    background?: string | undefined;
+    fandPCheckResultID?: number | undefined;
+    fandPCheckResultDesc?: string | undefined;
+    fandPComments?: string | undefined;
+    otherMetters?: string | undefined;
+    supConsideration?: string | undefined;
+    assessmentID?: number | undefined;
+    assessmentRevID?: number | undefined;
+    restrictionsRequirements?: string | undefined;
+    gapsExplanationSatisfactoryFlag?: boolean | undefined;
+    gapsExplanationNotes?: string | undefined;
+    fandPAssessmentSatisfactoryFlag?: boolean | undefined;
+    candCAssessmentSatisfactoryFlag?: boolean | undefined;
+    actionPlanCheckFlag?: boolean | undefined;
+    actionPlanComments?: string | undefined;
+    proposedSupervisorSatisfactoryFlag?: boolean | undefined;
+    proposedSupervisorComments?: string | undefined;
+    conditionsImposed?: string | undefined;
+    pageFlag?: string | undefined;
+    createdByName?: string | undefined;
+    createdByDate?: string | undefined;
+    lastModifiedByName?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    candCComments?: string | undefined;
+    reqForInfoRequiredFlag?: boolean | undefined;
+    reqForInfoComments?: string | undefined;
+    condApprovedDate?: string | undefined;
+    statusChangeEffectiveDate?: string | undefined;
+    appIndividualActionTypeID?: number;
+    aiStatusAlertTypeID?: number;
+
+    constructor(data?: IAIRecommendation) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.aiRecomendationID = _data["aiRecomendationID"];
+            this.aiRecomendationRevNum = _data["aiRecomendationRevNum"];
+            this.aiRecomObjectWFStatusID = _data["aiRecomObjectWFStatusID"];
+            this.totalIndustoryExpMonth = _data["totalIndustoryExpMonth"];
+            this.totalIndustoryExpYear = _data["totalIndustoryExpYear"];
+            this.roleSpecificExpMonth = _data["roleSpecificExpMonth"];
+            this.roleSpecificExpYear = _data["roleSpecificExpYear"];
+            this.recDocID = _data["recDocID"];
+            this.rptDocReferenceID = _data["rptDocReferenceID"];
+            this.cfFirmScopeCheck = _data["cfFirmScopeCheck"];
+            this.fitnessProprietyCheck = _data["fitnessProprietyCheck"];
+            this.compCapabilityCheck = _data["compCapabilityCheck"];
+            this.linkToJobDesc = _data["linkToJobDesc"];
+            this.rolesResponsibilities = _data["rolesResponsibilities"];
+            this.coAssesment = _data["coAssesment"];
+            this.condRestrictionReqs = _data["condRestrictionReqs"];
+            this.recomendation = _data["recomendation"];
+            this.qualMembershipReq = _data["qualMembershipReq"];
+            this.experience = _data["experience"];
+            this.fileName = _data["fileName"];
+            this.fileLocn = _data["fileLocn"];
+            this.applFeeWaiverFlag = _data["applFeeWaiverFlag"];
+            this.applFeeWaiverReason = _data["applFeeWaiverReason"];
+            this.background = _data["background"];
+            this.fandPCheckResultID = _data["fandPCheckResultID"];
+            this.fandPCheckResultDesc = _data["fandPCheckResultDesc"];
+            this.fandPComments = _data["fandPComments"];
+            this.otherMetters = _data["otherMetters"];
+            this.supConsideration = _data["supConsideration"];
+            this.assessmentID = _data["assessmentID"];
+            this.assessmentRevID = _data["assessmentRevID"];
+            this.restrictionsRequirements = _data["restrictionsRequirements"];
+            this.gapsExplanationSatisfactoryFlag = _data["gapsExplanationSatisfactoryFlag"];
+            this.gapsExplanationNotes = _data["gapsExplanationNotes"];
+            this.fandPAssessmentSatisfactoryFlag = _data["fandPAssessmentSatisfactoryFlag"];
+            this.candCAssessmentSatisfactoryFlag = _data["candCAssessmentSatisfactoryFlag"];
+            this.actionPlanCheckFlag = _data["actionPlanCheckFlag"];
+            this.actionPlanComments = _data["actionPlanComments"];
+            this.proposedSupervisorSatisfactoryFlag = _data["proposedSupervisorSatisfactoryFlag"];
+            this.proposedSupervisorComments = _data["proposedSupervisorComments"];
+            this.conditionsImposed = _data["conditionsImposed"];
+            this.pageFlag = _data["pageFlag"];
+            this.createdByName = _data["createdByName"];
+            this.createdByDate = _data["createdByDate"];
+            this.lastModifiedByName = _data["lastModifiedByName"];
+            this.lastModifiedDate = _data["lastModifiedDate"];
+            this.candCComments = _data["candCComments"];
+            this.reqForInfoRequiredFlag = _data["reqForInfoRequiredFlag"];
+            this.reqForInfoComments = _data["reqForInfoComments"];
+            this.condApprovedDate = _data["condApprovedDate"];
+            this.statusChangeEffectiveDate = _data["statusChangeEffectiveDate"];
+            this.appIndividualActionTypeID = _data["appIndividualActionTypeID"];
+            this.aiStatusAlertTypeID = _data["aiStatusAlertTypeID"];
+        }
+    }
+
+    static fromJS(data: any): AIRecommendation {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIRecommendation();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["aiRecomendationID"] = this.aiRecomendationID;
+        data["aiRecomendationRevNum"] = this.aiRecomendationRevNum;
+        data["aiRecomObjectWFStatusID"] = this.aiRecomObjectWFStatusID;
+        data["totalIndustoryExpMonth"] = this.totalIndustoryExpMonth;
+        data["totalIndustoryExpYear"] = this.totalIndustoryExpYear;
+        data["roleSpecificExpMonth"] = this.roleSpecificExpMonth;
+        data["roleSpecificExpYear"] = this.roleSpecificExpYear;
+        data["recDocID"] = this.recDocID;
+        data["rptDocReferenceID"] = this.rptDocReferenceID;
+        data["cfFirmScopeCheck"] = this.cfFirmScopeCheck;
+        data["fitnessProprietyCheck"] = this.fitnessProprietyCheck;
+        data["compCapabilityCheck"] = this.compCapabilityCheck;
+        data["linkToJobDesc"] = this.linkToJobDesc;
+        data["rolesResponsibilities"] = this.rolesResponsibilities;
+        data["coAssesment"] = this.coAssesment;
+        data["condRestrictionReqs"] = this.condRestrictionReqs;
+        data["recomendation"] = this.recomendation;
+        data["qualMembershipReq"] = this.qualMembershipReq;
+        data["experience"] = this.experience;
+        data["fileName"] = this.fileName;
+        data["fileLocn"] = this.fileLocn;
+        data["applFeeWaiverFlag"] = this.applFeeWaiverFlag;
+        data["applFeeWaiverReason"] = this.applFeeWaiverReason;
+        data["background"] = this.background;
+        data["fandPCheckResultID"] = this.fandPCheckResultID;
+        data["fandPCheckResultDesc"] = this.fandPCheckResultDesc;
+        data["fandPComments"] = this.fandPComments;
+        data["otherMetters"] = this.otherMetters;
+        data["supConsideration"] = this.supConsideration;
+        data["assessmentID"] = this.assessmentID;
+        data["assessmentRevID"] = this.assessmentRevID;
+        data["restrictionsRequirements"] = this.restrictionsRequirements;
+        data["gapsExplanationSatisfactoryFlag"] = this.gapsExplanationSatisfactoryFlag;
+        data["gapsExplanationNotes"] = this.gapsExplanationNotes;
+        data["fandPAssessmentSatisfactoryFlag"] = this.fandPAssessmentSatisfactoryFlag;
+        data["candCAssessmentSatisfactoryFlag"] = this.candCAssessmentSatisfactoryFlag;
+        data["actionPlanCheckFlag"] = this.actionPlanCheckFlag;
+        data["actionPlanComments"] = this.actionPlanComments;
+        data["proposedSupervisorSatisfactoryFlag"] = this.proposedSupervisorSatisfactoryFlag;
+        data["proposedSupervisorComments"] = this.proposedSupervisorComments;
+        data["conditionsImposed"] = this.conditionsImposed;
+        data["pageFlag"] = this.pageFlag;
+        data["createdByName"] = this.createdByName;
+        data["createdByDate"] = this.createdByDate;
+        data["lastModifiedByName"] = this.lastModifiedByName;
+        data["lastModifiedDate"] = this.lastModifiedDate;
+        data["candCComments"] = this.candCComments;
+        data["reqForInfoRequiredFlag"] = this.reqForInfoRequiredFlag;
+        data["reqForInfoComments"] = this.reqForInfoComments;
+        data["condApprovedDate"] = this.condApprovedDate;
+        data["statusChangeEffectiveDate"] = this.statusChangeEffectiveDate;
+        data["appIndividualActionTypeID"] = this.appIndividualActionTypeID;
+        data["aiStatusAlertTypeID"] = this.aiStatusAlertTypeID;
+        return data;
+    }
+}
+
+export interface IAIRecommendation {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiRecomendationID?: number | undefined;
+    aiRecomendationRevNum?: number | undefined;
+    aiRecomObjectWFStatusID?: number | undefined;
+    totalIndustoryExpMonth?: number | undefined;
+    totalIndustoryExpYear?: number | undefined;
+    roleSpecificExpMonth?: number | undefined;
+    roleSpecificExpYear?: number | undefined;
+    recDocID?: number;
+    rptDocReferenceID?: number | undefined;
+    cfFirmScopeCheck?: boolean | undefined;
+    fitnessProprietyCheck?: boolean | undefined;
+    compCapabilityCheck?: boolean | undefined;
+    linkToJobDesc?: string | undefined;
+    rolesResponsibilities?: string | undefined;
+    coAssesment?: string | undefined;
+    condRestrictionReqs?: string | undefined;
+    recomendation?: string | undefined;
+    qualMembershipReq?: string | undefined;
+    experience?: string | undefined;
+    fileName?: string | undefined;
+    fileLocn?: string | undefined;
+    applFeeWaiverFlag?: boolean | undefined;
+    applFeeWaiverReason?: string | undefined;
+    background?: string | undefined;
+    fandPCheckResultID?: number | undefined;
+    fandPCheckResultDesc?: string | undefined;
+    fandPComments?: string | undefined;
+    otherMetters?: string | undefined;
+    supConsideration?: string | undefined;
+    assessmentID?: number | undefined;
+    assessmentRevID?: number | undefined;
+    restrictionsRequirements?: string | undefined;
+    gapsExplanationSatisfactoryFlag?: boolean | undefined;
+    gapsExplanationNotes?: string | undefined;
+    fandPAssessmentSatisfactoryFlag?: boolean | undefined;
+    candCAssessmentSatisfactoryFlag?: boolean | undefined;
+    actionPlanCheckFlag?: boolean | undefined;
+    actionPlanComments?: string | undefined;
+    proposedSupervisorSatisfactoryFlag?: boolean | undefined;
+    proposedSupervisorComments?: string | undefined;
+    conditionsImposed?: string | undefined;
+    pageFlag?: string | undefined;
+    createdByName?: string | undefined;
+    createdByDate?: string | undefined;
+    lastModifiedByName?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    candCComments?: string | undefined;
+    reqForInfoRequiredFlag?: boolean | undefined;
+    reqForInfoComments?: string | undefined;
+    condApprovedDate?: string | undefined;
+    statusChangeEffectiveDate?: string | undefined;
+    appIndividualActionTypeID?: number;
+    aiStatusAlertTypeID?: number;
+}
+
+export class AIResidences implements IAIResidences {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiResidenceID?: number | undefined;
+    aiResidencesID?: string | undefined;
+    aiResidencesTypeID?: number | undefined;
+    countryID?: number | undefined;
+    aiResidencesTypeDesc?: string | undefined;
+    countryName?: string | undefined;
+    dateFrom?: string | undefined;
+    dateTo?: string | undefined;
+    notes?: string | undefined;
+    residenceStatusTypes?: number | undefined;
+    residenceStatusTypeDesc?: string | undefined;
+    nationalID?: string | undefined;
+    residenceFromDay?: string | undefined;
+    residenceFromMonth?: string | undefined;
+    residenceFromYear?: string | undefined;
+    residenceToDay?: string | undefined;
+    residenceToMonth?: string | undefined;
+    residenceToYear?: string | undefined;
+    modifiedBy?: number;
+
+    constructor(data?: IAIResidences) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.aiResidenceID = _data["aiResidenceID"];
+            this.aiResidencesID = _data["aiResidencesID"];
+            this.aiResidencesTypeID = _data["aiResidencesTypeID"];
+            this.countryID = _data["countryID"];
+            this.aiResidencesTypeDesc = _data["aiResidencesTypeDesc"];
+            this.countryName = _data["countryName"];
+            this.dateFrom = _data["dateFrom"];
+            this.dateTo = _data["dateTo"];
+            this.notes = _data["notes"];
+            this.residenceStatusTypes = _data["residenceStatusTypes"];
+            this.residenceStatusTypeDesc = _data["residenceStatusTypeDesc"];
+            this.nationalID = _data["nationalID"];
+            this.residenceFromDay = _data["residenceFromDay"];
+            this.residenceFromMonth = _data["residenceFromMonth"];
+            this.residenceFromYear = _data["residenceFromYear"];
+            this.residenceToDay = _data["residenceToDay"];
+            this.residenceToMonth = _data["residenceToMonth"];
+            this.residenceToYear = _data["residenceToYear"];
+            this.modifiedBy = _data["modifiedBy"];
+        }
+    }
+
+    static fromJS(data: any): AIResidences {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIResidences();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["aiResidenceID"] = this.aiResidenceID;
+        data["aiResidencesID"] = this.aiResidencesID;
+        data["aiResidencesTypeID"] = this.aiResidencesTypeID;
+        data["countryID"] = this.countryID;
+        data["aiResidencesTypeDesc"] = this.aiResidencesTypeDesc;
+        data["countryName"] = this.countryName;
+        data["dateFrom"] = this.dateFrom;
+        data["dateTo"] = this.dateTo;
+        data["notes"] = this.notes;
+        data["residenceStatusTypes"] = this.residenceStatusTypes;
+        data["residenceStatusTypeDesc"] = this.residenceStatusTypeDesc;
+        data["nationalID"] = this.nationalID;
+        data["residenceFromDay"] = this.residenceFromDay;
+        data["residenceFromMonth"] = this.residenceFromMonth;
+        data["residenceFromYear"] = this.residenceFromYear;
+        data["residenceToDay"] = this.residenceToDay;
+        data["residenceToMonth"] = this.residenceToMonth;
+        data["residenceToYear"] = this.residenceToYear;
+        data["modifiedBy"] = this.modifiedBy;
+        return data;
+    }
+}
+
+export interface IAIResidences {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    aiResidenceID?: number | undefined;
+    aiResidencesID?: string | undefined;
+    aiResidencesTypeID?: number | undefined;
+    countryID?: number | undefined;
+    aiResidencesTypeDesc?: string | undefined;
+    countryName?: string | undefined;
+    dateFrom?: string | undefined;
+    dateTo?: string | undefined;
+    notes?: string | undefined;
+    residenceStatusTypes?: number | undefined;
+    residenceStatusTypeDesc?: string | undefined;
+    nationalID?: string | undefined;
+    residenceFromDay?: string | undefined;
+    residenceFromMonth?: string | undefined;
+    residenceFromYear?: string | undefined;
+    residenceToDay?: string | undefined;
+    residenceToMonth?: string | undefined;
+    residenceToYear?: string | undefined;
+    modifiedBy?: number;
+}
+
+export class AIsFunction implements IAIsFunction {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectInstanceRevNum?: number;
+    refApprovalAppIndividualCFID?: number | undefined;
+    appIndividualFunctionID?: number | undefined;
+    appIndividualActivityID?: number | undefined;
+    functionTypeID?: number;
+    statusID?: number | undefined;
+    ainId?: number;
+    applicationID?: number | undefined;
+    activityTypeID?: number | undefined;
+    productTypeID?: number | undefined;
+    firmActivityTypeID?: number | undefined;
+    customFacingID?: number;
+    checkedFlage?: number;
+    statusActionType?: string | undefined;
+    functionType?: string | undefined;
+    appliedDate?: string | undefined;
+    approvedDate?: string | undefined;
+    withdrawDate?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    appliedFunctions?: string | undefined;
+    approvedFunctions?: string | undefined;
+    approvalBasedOn?: string | undefined;
+    withdrawnFunctions?: string | undefined;
+    activityTypeDesc?: string | undefined;
+    productTypeDesc?: string | undefined;
+    dlPadding?: string | undefined;
+    checkBoxDisable?: number;
+    proposedCommencDate?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    pastPositionFlag?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    formProcessorDesc?: string | undefined;
+    dateRecieved?: Date;
+    formTypeID?: number | undefined;
+    formTypeDesc?: string | undefined;
+    refAppIndividualApplD?: number | undefined;
+    refAppIndividualCFID?: number | undefined;
+    effectiveDate?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    refFunctionStatusID?: number;
+    lstAIsActivities?: Activities[] | undefined;
+    isParentActivityTypeID?: boolean;
+    parentActivityTypeID?: number | undefined;
+    aiMeetingItemID?: number | undefined;
+    isFeeRequired?: boolean;
+    condApprovalFlag?: boolean;
+    condApprovalFlagDesc?: string | undefined;
+    condApprovalUntillDate?: string | undefined;
+    appIndividualCFStatusID?: number | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    condApprovalReasonTypeDesc?: string | undefined;
+    appliedForWithdrawalDate?: string | undefined;
+    requestWithdrawnDate?: string | undefined;
+    rowColor?: string | undefined;
+    rsgAssessmentDate?: string | undefined;
+    coAssessmentDate?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    conditionalApprovalDate?: string | undefined;
+    functionDisplayOrder?: number | undefined;
+    activityDisplayOrder?: number | undefined;
+    previousStatus?: string | undefined;
+    previousStatusDate?: string | undefined;
+    statusGroupTypeID?: number;
+    approvalProposedCommenceDate?: string | undefined;
+    withdrawalProposedCommenceDate?: string | undefined;
+    approvalCommenceUponApplApprovalFlag?: boolean;
+    withdrawalCommenceUponApplApprovalFlag?: boolean;
+    applFeeReceivedDate?: string | undefined;
+    applFeeComments?: string | undefined;
+
+    constructor(data?: IAIsFunction) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.objectInstanceRevNum = _data["objectInstanceRevNum"];
+            this.refApprovalAppIndividualCFID = _data["refApprovalAppIndividualCFID"];
+            this.appIndividualFunctionID = _data["appIndividualFunctionID"];
+            this.appIndividualActivityID = _data["appIndividualActivityID"];
+            this.functionTypeID = _data["functionTypeID"];
+            this.statusID = _data["statusID"];
+            this.ainId = _data["ainId"];
+            this.applicationID = _data["applicationID"];
+            this.activityTypeID = _data["activityTypeID"];
+            this.productTypeID = _data["productTypeID"];
+            this.firmActivityTypeID = _data["firmActivityTypeID"];
+            this.customFacingID = _data["customFacingID"];
+            this.checkedFlage = _data["checkedFlage"];
+            this.statusActionType = _data["statusActionType"];
+            this.functionType = _data["functionType"];
+            this.appliedDate = _data["appliedDate"];
+            this.approvedDate = _data["approvedDate"];
+            this.withdrawDate = _data["withdrawDate"];
+            this.lastModifiedDate = _data["lastModifiedDate"];
+            this.appliedFunctions = _data["appliedFunctions"];
+            this.approvedFunctions = _data["approvedFunctions"];
+            this.approvalBasedOn = _data["approvalBasedOn"];
+            this.withdrawnFunctions = _data["withdrawnFunctions"];
+            this.activityTypeDesc = _data["activityTypeDesc"];
+            this.productTypeDesc = _data["productTypeDesc"];
+            this.dlPadding = _data["dlPadding"];
+            this.checkBoxDisable = _data["checkBoxDisable"];
+            this.proposedCommencDate = _data["proposedCommencDate"];
+            this.appIndividualArrangementTypeID = _data["appIndividualArrangementTypeID"];
+            this.appIndividualArrangementTypeDesc = _data["appIndividualArrangementTypeDesc"];
+            this.otherArrangementTypeDesc = _data["otherArrangementTypeDesc"];
+            this.pastPositionFlag = _data["pastPositionFlag"];
+            this.pastPositionDesc = _data["pastPositionDesc"];
+            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
+            this.poposedJobTitle = _data["poposedJobTitle"];
+            this.cfExercise = _data["cfExercise"];
+            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
+            this.altArrangementDesc = _data["altArrangementDesc"];
+            this.competenciesAndExp = _data["competenciesAndExp"];
+            this.formProcessor = _data["formProcessor"];
+            this.formProcessorDesc = _data["formProcessorDesc"];
+            this.dateRecieved = _data["dateRecieved"] ? new Date(_data["dateRecieved"].toString()) : <any>undefined;
+            this.formTypeID = _data["formTypeID"];
+            this.formTypeDesc = _data["formTypeDesc"];
+            this.refAppIndividualApplD = _data["refAppIndividualApplD"];
+            this.refAppIndividualCFID = _data["refAppIndividualCFID"];
+            this.effectiveDate = _data["effectiveDate"];
+            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
+            this.refFunctionStatusID = _data["refFunctionStatusID"];
+            if (Array.isArray(_data["lstAIsActivities"])) {
+                this.lstAIsActivities = [] as any;
+                for (let item of _data["lstAIsActivities"])
+                    this.lstAIsActivities!.push(Activities.fromJS(item));
+            }
+            this.isParentActivityTypeID = _data["isParentActivityTypeID"];
+            this.parentActivityTypeID = _data["parentActivityTypeID"];
+            this.aiMeetingItemID = _data["aiMeetingItemID"];
+            this.isFeeRequired = _data["isFeeRequired"];
+            this.condApprovalFlag = _data["condApprovalFlag"];
+            this.condApprovalFlagDesc = _data["condApprovalFlagDesc"];
+            this.condApprovalUntillDate = _data["condApprovalUntillDate"];
+            this.appIndividualCFStatusID = _data["appIndividualCFStatusID"];
+            this.condApprovalReasonTypeID = _data["condApprovalReasonTypeID"];
+            this.condApprovalReasonTypeDesc = _data["condApprovalReasonTypeDesc"];
+            this.appliedForWithdrawalDate = _data["appliedForWithdrawalDate"];
+            this.requestWithdrawnDate = _data["requestWithdrawnDate"];
+            this.rowColor = _data["rowColor"];
+            this.rsgAssessmentDate = _data["rsgAssessmentDate"];
+            this.coAssessmentDate = _data["coAssessmentDate"];
+            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
+            this.conditionalApprovalDate = _data["conditionalApprovalDate"];
+            this.functionDisplayOrder = _data["functionDisplayOrder"];
+            this.activityDisplayOrder = _data["activityDisplayOrder"];
+            this.previousStatus = _data["previousStatus"];
+            this.previousStatusDate = _data["previousStatusDate"];
+            this.statusGroupTypeID = _data["statusGroupTypeID"];
+            this.approvalProposedCommenceDate = _data["approvalProposedCommenceDate"];
+            this.withdrawalProposedCommenceDate = _data["withdrawalProposedCommenceDate"];
+            this.approvalCommenceUponApplApprovalFlag = _data["approvalCommenceUponApplApprovalFlag"];
+            this.withdrawalCommenceUponApplApprovalFlag = _data["withdrawalCommenceUponApplApprovalFlag"];
+            this.applFeeReceivedDate = _data["applFeeReceivedDate"];
+            this.applFeeComments = _data["applFeeComments"];
+        }
+    }
+
+    static fromJS(data: any): AIsFunction {
+        data = typeof data === 'object' ? data : {};
+        let result = new AIsFunction();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["objectInstanceRevNum"] = this.objectInstanceRevNum;
+        data["refApprovalAppIndividualCFID"] = this.refApprovalAppIndividualCFID;
+        data["appIndividualFunctionID"] = this.appIndividualFunctionID;
+        data["appIndividualActivityID"] = this.appIndividualActivityID;
+        data["functionTypeID"] = this.functionTypeID;
+        data["statusID"] = this.statusID;
+        data["ainId"] = this.ainId;
+        data["applicationID"] = this.applicationID;
+        data["activityTypeID"] = this.activityTypeID;
+        data["productTypeID"] = this.productTypeID;
+        data["firmActivityTypeID"] = this.firmActivityTypeID;
+        data["customFacingID"] = this.customFacingID;
+        data["checkedFlage"] = this.checkedFlage;
+        data["statusActionType"] = this.statusActionType;
+        data["functionType"] = this.functionType;
+        data["appliedDate"] = this.appliedDate;
+        data["approvedDate"] = this.approvedDate;
+        data["withdrawDate"] = this.withdrawDate;
+        data["lastModifiedDate"] = this.lastModifiedDate;
+        data["appliedFunctions"] = this.appliedFunctions;
+        data["approvedFunctions"] = this.approvedFunctions;
+        data["approvalBasedOn"] = this.approvalBasedOn;
+        data["withdrawnFunctions"] = this.withdrawnFunctions;
+        data["activityTypeDesc"] = this.activityTypeDesc;
+        data["productTypeDesc"] = this.productTypeDesc;
+        data["dlPadding"] = this.dlPadding;
+        data["checkBoxDisable"] = this.checkBoxDisable;
+        data["proposedCommencDate"] = this.proposedCommencDate;
+        data["appIndividualArrangementTypeID"] = this.appIndividualArrangementTypeID;
+        data["appIndividualArrangementTypeDesc"] = this.appIndividualArrangementTypeDesc;
+        data["otherArrangementTypeDesc"] = this.otherArrangementTypeDesc;
+        data["pastPositionFlag"] = this.pastPositionFlag;
+        data["pastPositionDesc"] = this.pastPositionDesc;
+        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
+        data["poposedJobTitle"] = this.poposedJobTitle;
+        data["cfExercise"] = this.cfExercise;
+        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
+        data["altArrangementDesc"] = this.altArrangementDesc;
+        data["competenciesAndExp"] = this.competenciesAndExp;
+        data["formProcessor"] = this.formProcessor;
+        data["formProcessorDesc"] = this.formProcessorDesc;
+        data["dateRecieved"] = this.dateRecieved ? this.dateRecieved.toISOString() : <any>undefined;
+        data["formTypeID"] = this.formTypeID;
+        data["formTypeDesc"] = this.formTypeDesc;
+        data["refAppIndividualApplD"] = this.refAppIndividualApplD;
+        data["refAppIndividualCFID"] = this.refAppIndividualCFID;
+        data["effectiveDate"] = this.effectiveDate;
+        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
+        data["refFunctionStatusID"] = this.refFunctionStatusID;
+        if (Array.isArray(this.lstAIsActivities)) {
+            data["lstAIsActivities"] = [];
+            for (let item of this.lstAIsActivities)
+                data["lstAIsActivities"].push(item.toJSON());
+        }
+        data["isParentActivityTypeID"] = this.isParentActivityTypeID;
+        data["parentActivityTypeID"] = this.parentActivityTypeID;
+        data["aiMeetingItemID"] = this.aiMeetingItemID;
+        data["isFeeRequired"] = this.isFeeRequired;
+        data["condApprovalFlag"] = this.condApprovalFlag;
+        data["condApprovalFlagDesc"] = this.condApprovalFlagDesc;
+        data["condApprovalUntillDate"] = this.condApprovalUntillDate;
+        data["appIndividualCFStatusID"] = this.appIndividualCFStatusID;
+        data["condApprovalReasonTypeID"] = this.condApprovalReasonTypeID;
+        data["condApprovalReasonTypeDesc"] = this.condApprovalReasonTypeDesc;
+        data["appliedForWithdrawalDate"] = this.appliedForWithdrawalDate;
+        data["requestWithdrawnDate"] = this.requestWithdrawnDate;
+        data["rowColor"] = this.rowColor;
+        data["rsgAssessmentDate"] = this.rsgAssessmentDate;
+        data["coAssessmentDate"] = this.coAssessmentDate;
+        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
+        data["conditionalApprovalDate"] = this.conditionalApprovalDate;
+        data["functionDisplayOrder"] = this.functionDisplayOrder;
+        data["activityDisplayOrder"] = this.activityDisplayOrder;
+        data["previousStatus"] = this.previousStatus;
+        data["previousStatusDate"] = this.previousStatusDate;
+        data["statusGroupTypeID"] = this.statusGroupTypeID;
+        data["approvalProposedCommenceDate"] = this.approvalProposedCommenceDate;
+        data["withdrawalProposedCommenceDate"] = this.withdrawalProposedCommenceDate;
+        data["approvalCommenceUponApplApprovalFlag"] = this.approvalCommenceUponApplApprovalFlag;
+        data["withdrawalCommenceUponApplApprovalFlag"] = this.withdrawalCommenceUponApplApprovalFlag;
+        data["applFeeReceivedDate"] = this.applFeeReceivedDate;
+        data["applFeeComments"] = this.applFeeComments;
+        return data;
+    }
+}
+
+export interface IAIsFunction {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    objectID?: number;
+    objectInstanceID?: number;
+    objectInstanceRevNum?: number;
+    refApprovalAppIndividualCFID?: number | undefined;
+    appIndividualFunctionID?: number | undefined;
+    appIndividualActivityID?: number | undefined;
+    functionTypeID?: number;
+    statusID?: number | undefined;
+    ainId?: number;
+    applicationID?: number | undefined;
+    activityTypeID?: number | undefined;
+    productTypeID?: number | undefined;
+    firmActivityTypeID?: number | undefined;
+    customFacingID?: number;
+    checkedFlage?: number;
+    statusActionType?: string | undefined;
+    functionType?: string | undefined;
+    appliedDate?: string | undefined;
+    approvedDate?: string | undefined;
+    withdrawDate?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    appliedFunctions?: string | undefined;
+    approvedFunctions?: string | undefined;
+    approvalBasedOn?: string | undefined;
+    withdrawnFunctions?: string | undefined;
+    activityTypeDesc?: string | undefined;
+    productTypeDesc?: string | undefined;
+    dlPadding?: string | undefined;
+    checkBoxDisable?: number;
+    proposedCommencDate?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    pastPositionFlag?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    formProcessorDesc?: string | undefined;
+    dateRecieved?: Date;
+    formTypeID?: number | undefined;
+    formTypeDesc?: string | undefined;
+    refAppIndividualApplD?: number | undefined;
+    refAppIndividualCFID?: number | undefined;
+    effectiveDate?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    refFunctionStatusID?: number;
+    lstAIsActivities?: Activities[] | undefined;
+    isParentActivityTypeID?: boolean;
+    parentActivityTypeID?: number | undefined;
+    aiMeetingItemID?: number | undefined;
+    isFeeRequired?: boolean;
+    condApprovalFlag?: boolean;
+    condApprovalFlagDesc?: string | undefined;
+    condApprovalUntillDate?: string | undefined;
+    appIndividualCFStatusID?: number | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    condApprovalReasonTypeDesc?: string | undefined;
+    appliedForWithdrawalDate?: string | undefined;
+    requestWithdrawnDate?: string | undefined;
+    rowColor?: string | undefined;
+    rsgAssessmentDate?: string | undefined;
+    coAssessmentDate?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    conditionalApprovalDate?: string | undefined;
+    functionDisplayOrder?: number | undefined;
+    activityDisplayOrder?: number | undefined;
+    previousStatus?: string | undefined;
+    previousStatusDate?: string | undefined;
+    statusGroupTypeID?: number;
+    approvalProposedCommenceDate?: string | undefined;
+    withdrawalProposedCommenceDate?: string | undefined;
+    approvalCommenceUponApplApprovalFlag?: boolean;
+    withdrawalCommenceUponApplApprovalFlag?: boolean;
+    applFeeReceivedDate?: string | undefined;
+    applFeeComments?: string | undefined;
+}
+
 export class AccessRequest implements IAccessRequest {
     lstUserRoles?: string[] | undefined;
     lstDocAccessRoles?: string[] | undefined;
@@ -9508,6 +15666,58 @@ export class AccessRequest implements IAccessRequest {
 export interface IAccessRequest {
     lstUserRoles?: string[] | undefined;
     lstDocAccessRoles?: string[] | undefined;
+}
+
+export class Activities implements IActivities {
+    activityTypeID?: number;
+    activityTypeDescription?: string | undefined;
+    objectProductActivity?: ProductActivity[] | undefined;
+
+    constructor(data?: IActivities) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.activityTypeID = _data["activityTypeID"];
+            this.activityTypeDescription = _data["activityTypeDescription"];
+            if (Array.isArray(_data["objectProductActivity"])) {
+                this.objectProductActivity = [] as any;
+                for (let item of _data["objectProductActivity"])
+                    this.objectProductActivity!.push(ProductActivity.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): Activities {
+        data = typeof data === 'object' ? data : {};
+        let result = new Activities();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["activityTypeID"] = this.activityTypeID;
+        data["activityTypeDescription"] = this.activityTypeDescription;
+        if (Array.isArray(this.objectProductActivity)) {
+            data["objectProductActivity"] = [];
+            for (let item of this.objectProductActivity)
+                data["objectProductActivity"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IActivities {
+    activityTypeID?: number;
+    activityTypeDescription?: string | undefined;
+    objectProductActivity?: ProductActivity[] | undefined;
 }
 
 export class Address implements IAddress {
@@ -9760,6 +15970,870 @@ export interface IAppControlsListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: AppControls[] | undefined;
+}
+
+export class AppIndividualProcImpactNotes implements IAppIndividualProcImpactNotes {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    appIndividualProcImpactNoteID?: number | undefined;
+    appIndividualProcImpactNoteIDs?: string | undefined;
+    appIndividualProcImpactID?: number | undefined;
+    impactDesc?: string | undefined;
+    addedBy?: string | undefined;
+    toolTip?: string | undefined;
+
+    constructor(data?: IAppIndividualProcImpactNotes) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+            this.appIndividualProcImpactNoteID = _data["appIndividualProcImpactNoteID"];
+            this.appIndividualProcImpactNoteIDs = _data["appIndividualProcImpactNoteIDs"];
+            this.appIndividualProcImpactID = _data["appIndividualProcImpactID"];
+            this.impactDesc = _data["impactDesc"];
+            this.addedBy = _data["addedBy"];
+            this.toolTip = _data["toolTip"];
+        }
+    }
+
+    static fromJS(data: any): AppIndividualProcImpactNotes {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppIndividualProcImpactNotes();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        data["appIndividualProcImpactNoteID"] = this.appIndividualProcImpactNoteID;
+        data["appIndividualProcImpactNoteIDs"] = this.appIndividualProcImpactNoteIDs;
+        data["appIndividualProcImpactID"] = this.appIndividualProcImpactID;
+        data["impactDesc"] = this.impactDesc;
+        data["addedBy"] = this.addedBy;
+        data["toolTip"] = this.toolTip;
+        return data;
+    }
+}
+
+export interface IAppIndividualProcImpactNotes {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+    appIndividualProcImpactNoteID?: number | undefined;
+    appIndividualProcImpactNoteIDs?: string | undefined;
+    appIndividualProcImpactID?: number | undefined;
+    impactDesc?: string | undefined;
+    addedBy?: string | undefined;
+    toolTip?: string | undefined;
+}
+
+export class AppIndividualsAppl implements IAppIndividualsAppl {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
+
+    constructor(data?: IAppIndividualsAppl) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.appIndividualID = _data["appIndividualID"];
+            this.ainNumber = _data["ainNumber"];
+            this.appIndName = _data["appIndName"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.loginBy = _data["loginBy"];
+            this.createdDate = _data["createdDate"];
+            this.modifiedDate = _data["modifiedDate"];
+            if (Array.isArray(_data["lstAIApplications"])) {
+                this.lstAIApplications = [] as any;
+                for (let item of _data["lstAIApplications"])
+                    this.lstAIApplications!.push(AppIndividualsAppl.fromJS(item));
+            }
+            this.objFirm = _data["objFirm"] ? Firm.fromJS(_data["objFirm"]) : <any>undefined;
+            this.objContactDetail = _data["objContactDetail"] ? ContactDetails.fromJS(_data["objContactDetail"]) : <any>undefined;
+            this.appIndividualAssociations = _data["appIndividualAssociations"];
+            this.appIndividualsApplID = _data["appIndividualsApplID"];
+            this.firmID = _data["firmID"];
+            this.appIndividualsApplStatusID = _data["appIndividualsApplStatusID"];
+            this.appIndividualApplStatusTypeID = _data["appIndividualApplStatusTypeID"];
+            this.docTypeID = _data["docTypeID"];
+            this.totalIndustryExp = _data["totalIndustryExp"];
+            this.roleSpecificExp = _data["roleSpecificExp"];
+            this.saveFlag = _data["saveFlag"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.withrawlStatus = _data["withrawlStatus"];
+            this.aiApplStatusTypeID = _data["aiApplStatusTypeID"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.conditions = _data["conditions"];
+            this.appIndividualsApplStatusDesc = _data["appIndividualsApplStatusDesc"];
+            this.statusDate = _data["statusDate"];
+            this.existingStatusDate = _data["existingStatusDate"];
+            this.appIndividualsApplDate = _data["appIndividualsApplDate"];
+            this.docTypeDesc = _data["docTypeDesc"];
+            this.docTypeAbbr = _data["docTypeAbbr"];
+            this.formProcessorUserID = _data["formProcessorUserID"];
+            this.createdBy = _data["createdBy"];
+            this.dateRecived = _data["dateRecived"] ? new Date(_data["dateRecived"].toString()) : <any>undefined;
+            if (Array.isArray(_data["lstAIAssessment"])) {
+                this.lstAIAssessment = [] as any;
+                for (let item of _data["lstAIAssessment"])
+                    this.lstAIAssessment!.push(AIAssessment.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIOpenItems"])) {
+                this.lstAIOpenItems = [] as any;
+                for (let item of _data["lstAIOpenItems"])
+                    this.lstAIOpenItems!.push(AIOpenItems.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIResidences"])) {
+                this.lstAIResidences = [] as any;
+                for (let item of _data["lstAIResidences"])
+                    this.lstAIResidences!.push(AIResidences.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIsFunction"])) {
+                this.lstAIsFunction = [] as any;
+                for (let item of _data["lstAIsFunction"])
+                    this.lstAIsFunction!.push(AIsFunction.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAIAliases"])) {
+                this.lstAIAliases = [] as any;
+                for (let item of _data["lstAIAliases"])
+                    this.lstAIAliases!.push(AIAliases.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAddress"])) {
+                this.lstAddress = [] as any;
+                for (let item of _data["lstAddress"])
+                    this.lstAddress!.push(Address.fromJS(item));
+            }
+            this.strControlledFunctionId = _data["strControlledFunctionId"];
+            this.strControlledFunctionDesc = _data["strControlledFunctionDesc"];
+            this.strFunctionStatus = _data["strFunctionStatus"];
+            this.firmName = _data["firmName"];
+            this.firmIDs = _data["firmIDs"];
+            this.qfcNum = _data["qfcNum"];
+            this.strAppliedFunctions = _data["strAppliedFunctions"];
+            this.strWithdrawnFunctions = _data["strWithdrawnFunctions"];
+            this.isMLROFuntExists = _data["isMLROFuntExists"];
+            this.jobDescription = _data["jobDescription"];
+            this.aiApprovedFunctions = _data["aiApprovedFunctions"];
+            this.feeRequiredFlag = _data["feeRequiredFlag"];
+            this.strOpenItemTypeDesc = _data["strOpenItemTypeDesc"];
+            this.isAIForumDecCompleted = _data["isAIForumDecCompleted"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.objAIRecommendation = _data["objAIRecommendation"] ? AIRecommendation.fromJS(_data["objAIRecommendation"]) : <any>undefined;
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.isAppnRefESubmissionNCompleted = _data["isAppnRefESubmissionNCompleted"];
+            if (Array.isArray(_data["lstImpactDesc"])) {
+                this.lstImpactDesc = [] as any;
+                for (let item of _data["lstImpactDesc"])
+                    this.lstImpactDesc!.push(AppIndividualProcImpactNotes.fromJS(item));
+            }
+            this.mainConactEmail = _data["mainConactEmail"];
+            this.isCondApprolApplication = _data["isCondApprolApplication"];
+            this.condApprovalActionPlanDesc = _data["condApprovalActionPlanDesc"];
+            this.condApprovalActionPlanID = _data["condApprovalActionPlanID"];
+            this.comments = _data["comments"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.requestedBy = _data["requestedBy"];
+            this.isESSApplication = _data["isESSApplication"];
+            this.active = _data["active"];
+            this.ipAddress = _data["ipAddress"];
+            this.condApprovalEndDate = _data["condApprovalEndDate"];
+            this.objFunctions = _data["objFunctions"] ? AIsFunction.fromJS(_data["objFunctions"]) : <any>undefined;
+            this.objStatus = _data["objStatus"] ? AIObjectStatus.fromJS(_data["objStatus"]) : <any>undefined;
+            this.flagDesc = _data["flagDesc"];
+            this.flagVisiblity = _data["flagVisiblity"];
+            this.residentStatus = _data["residentStatus"];
+            this.mlroCount = _data["mlroCount"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.isApplicationCompletedBeforeAIRegiem = _data["isApplicationCompletedBeforeAIRegiem"];
+        }
+    }
+
+    static fromJS(data: any): AppIndividualsAppl {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppIndividualsAppl();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["appIndividualID"] = this.appIndividualID;
+        data["ainNumber"] = this.ainNumber;
+        data["appIndName"] = this.appIndName;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["loginBy"] = this.loginBy;
+        data["createdDate"] = this.createdDate;
+        data["modifiedDate"] = this.modifiedDate;
+        if (Array.isArray(this.lstAIApplications)) {
+            data["lstAIApplications"] = [];
+            for (let item of this.lstAIApplications)
+                data["lstAIApplications"].push(item.toJSON());
+        }
+        data["objFirm"] = this.objFirm ? this.objFirm.toJSON() : <any>undefined;
+        data["objContactDetail"] = this.objContactDetail ? this.objContactDetail.toJSON() : <any>undefined;
+        data["appIndividualAssociations"] = this.appIndividualAssociations;
+        data["appIndividualsApplID"] = this.appIndividualsApplID;
+        data["firmID"] = this.firmID;
+        data["appIndividualsApplStatusID"] = this.appIndividualsApplStatusID;
+        data["appIndividualApplStatusTypeID"] = this.appIndividualApplStatusTypeID;
+        data["docTypeID"] = this.docTypeID;
+        data["totalIndustryExp"] = this.totalIndustryExp;
+        data["roleSpecificExp"] = this.roleSpecificExp;
+        data["saveFlag"] = this.saveFlag;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["withrawlStatus"] = this.withrawlStatus;
+        data["aiApplStatusTypeID"] = this.aiApplStatusTypeID;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["conditions"] = this.conditions;
+        data["appIndividualsApplStatusDesc"] = this.appIndividualsApplStatusDesc;
+        data["statusDate"] = this.statusDate;
+        data["existingStatusDate"] = this.existingStatusDate;
+        data["appIndividualsApplDate"] = this.appIndividualsApplDate;
+        data["docTypeDesc"] = this.docTypeDesc;
+        data["docTypeAbbr"] = this.docTypeAbbr;
+        data["formProcessorUserID"] = this.formProcessorUserID;
+        data["createdBy"] = this.createdBy;
+        data["dateRecived"] = this.dateRecived ? this.dateRecived.toISOString() : <any>undefined;
+        if (Array.isArray(this.lstAIAssessment)) {
+            data["lstAIAssessment"] = [];
+            for (let item of this.lstAIAssessment)
+                data["lstAIAssessment"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIOpenItems)) {
+            data["lstAIOpenItems"] = [];
+            for (let item of this.lstAIOpenItems)
+                data["lstAIOpenItems"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIResidences)) {
+            data["lstAIResidences"] = [];
+            for (let item of this.lstAIResidences)
+                data["lstAIResidences"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIsFunction)) {
+            data["lstAIsFunction"] = [];
+            for (let item of this.lstAIsFunction)
+                data["lstAIsFunction"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAIAliases)) {
+            data["lstAIAliases"] = [];
+            for (let item of this.lstAIAliases)
+                data["lstAIAliases"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAddress)) {
+            data["lstAddress"] = [];
+            for (let item of this.lstAddress)
+                data["lstAddress"].push(item.toJSON());
+        }
+        data["strControlledFunctionId"] = this.strControlledFunctionId;
+        data["strControlledFunctionDesc"] = this.strControlledFunctionDesc;
+        data["strFunctionStatus"] = this.strFunctionStatus;
+        data["firmName"] = this.firmName;
+        data["firmIDs"] = this.firmIDs;
+        data["qfcNum"] = this.qfcNum;
+        data["strAppliedFunctions"] = this.strAppliedFunctions;
+        data["strWithdrawnFunctions"] = this.strWithdrawnFunctions;
+        data["isMLROFuntExists"] = this.isMLROFuntExists;
+        data["jobDescription"] = this.jobDescription;
+        data["aiApprovedFunctions"] = this.aiApprovedFunctions;
+        data["feeRequiredFlag"] = this.feeRequiredFlag;
+        data["strOpenItemTypeDesc"] = this.strOpenItemTypeDesc;
+        data["isAIForumDecCompleted"] = this.isAIForumDecCompleted;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["objAIRecommendation"] = this.objAIRecommendation ? this.objAIRecommendation.toJSON() : <any>undefined;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["isAppnRefESubmissionNCompleted"] = this.isAppnRefESubmissionNCompleted;
+        if (Array.isArray(this.lstImpactDesc)) {
+            data["lstImpactDesc"] = [];
+            for (let item of this.lstImpactDesc)
+                data["lstImpactDesc"].push(item.toJSON());
+        }
+        data["mainConactEmail"] = this.mainConactEmail;
+        data["isCondApprolApplication"] = this.isCondApprolApplication;
+        data["condApprovalActionPlanDesc"] = this.condApprovalActionPlanDesc;
+        data["condApprovalActionPlanID"] = this.condApprovalActionPlanID;
+        data["comments"] = this.comments;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["requestedBy"] = this.requestedBy;
+        data["isESSApplication"] = this.isESSApplication;
+        data["active"] = this.active;
+        data["ipAddress"] = this.ipAddress;
+        data["condApprovalEndDate"] = this.condApprovalEndDate;
+        data["objFunctions"] = this.objFunctions ? this.objFunctions.toJSON() : <any>undefined;
+        data["objStatus"] = this.objStatus ? this.objStatus.toJSON() : <any>undefined;
+        data["flagDesc"] = this.flagDesc;
+        data["flagVisiblity"] = this.flagVisiblity;
+        data["residentStatus"] = this.residentStatus;
+        data["mlroCount"] = this.mlroCount;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["isApplicationCompletedBeforeAIRegiem"] = this.isApplicationCompletedBeforeAIRegiem;
+        return data;
+    }
+}
+
+export interface IAppIndividualsAppl {
+    appIndividualID?: number | undefined;
+    ainNumber?: string | undefined;
+    appIndName?: string | undefined;
+    contactID?: number;
+    contactAssnID?: number;
+    loginBy?: number;
+    createdDate?: string | undefined;
+    modifiedDate?: string | undefined;
+    lstAIApplications?: AppIndividualsAppl[] | undefined;
+    objFirm?: Firm;
+    objContactDetail?: ContactDetails;
+    appIndividualAssociations?: string | undefined;
+    appIndividualsApplID?: number | undefined;
+    firmID?: number | undefined;
+    appIndividualsApplStatusID?: number | undefined;
+    appIndividualApplStatusTypeID?: number | undefined;
+    docTypeID?: number | undefined;
+    totalIndustryExp?: number | undefined;
+    roleSpecificExp?: number | undefined;
+    saveFlag?: boolean;
+    appIndividualDataID?: number | undefined;
+    withrawlStatus?: number;
+    aiApplStatusTypeID?: number | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    conditions?: string | undefined;
+    appIndividualsApplStatusDesc?: string | undefined;
+    statusDate?: string | undefined;
+    existingStatusDate?: string | undefined;
+    appIndividualsApplDate?: string | undefined;
+    docTypeDesc?: string | undefined;
+    docTypeAbbr?: string | undefined;
+    formProcessorUserID?: number | undefined;
+    createdBy?: number;
+    dateRecived?: Date | undefined;
+    lstAIAssessment?: AIAssessment[] | undefined;
+    lstAIOpenItems?: AIOpenItems[] | undefined;
+    lstAIResidences?: AIResidences[] | undefined;
+    lstAIsFunction?: AIsFunction[] | undefined;
+    lstAIAliases?: AIAliases[] | undefined;
+    lstAddress?: Address[] | undefined;
+    strControlledFunctionId?: string | undefined;
+    strControlledFunctionDesc?: string | undefined;
+    strFunctionStatus?: string | undefined;
+    firmName?: string | undefined;
+    firmIDs?: string | undefined;
+    qfcNum?: string | undefined;
+    strAppliedFunctions?: string | undefined;
+    strWithdrawnFunctions?: string | undefined;
+    isMLROFuntExists?: boolean;
+    jobDescription?: string | undefined;
+    aiApprovedFunctions?: string | undefined;
+    feeRequiredFlag?: boolean;
+    strOpenItemTypeDesc?: string | undefined;
+    isAIForumDecCompleted?: boolean;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    objAIRecommendation?: AIRecommendation;
+    countryOfResidence?: number | undefined;
+    legalStatusTypeID?: number | undefined;
+    isAppnRefESubmissionNCompleted?: boolean;
+    lstImpactDesc?: AppIndividualProcImpactNotes[] | undefined;
+    mainConactEmail?: string | undefined;
+    isCondApprolApplication?: number;
+    condApprovalActionPlanDesc?: string | undefined;
+    condApprovalActionPlanID?: number | undefined;
+    comments?: string | undefined;
+    sourceSystemRefID?: number;
+    requestedBy?: string | undefined;
+    isESSApplication?: boolean;
+    active?: boolean | undefined;
+    ipAddress?: string | undefined;
+    condApprovalEndDate?: string | undefined;
+    objFunctions?: AIsFunction;
+    objStatus?: AIObjectStatus;
+    flagDesc?: string | undefined;
+    flagVisiblity?: boolean;
+    residentStatus?: string | undefined;
+    mlroCount?: number;
+    isOrdinarilyResident?: boolean | undefined;
+    isApplicationCompletedBeforeAIRegiem?: boolean;
 }
 
 export class AppRoles implements IAppRoles {
@@ -10638,6 +17712,62 @@ export interface IApplicationDetailDtoBaseResponse {
     response?: ApplicationDetailDto;
 }
 
+export class ApplicationDetailListBaseResponse implements IApplicationDetailListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ApplicationDetail[] | undefined;
+
+    constructor(data?: IApplicationDetailListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ApplicationDetail.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ApplicationDetailListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationDetailListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IApplicationDetailListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ApplicationDetail[] | undefined;
+}
+
 export class AttachmentDto implements IAttachmentDto {
     wIndApplicationID?: number | undefined;
     wObjAttachementID?: number | undefined;
@@ -11429,6 +18559,1438 @@ export interface ICompareInfo {
     name?: string | undefined;
     version?: SortVersion;
     lcid?: number;
+}
+
+export class ContactDetails implements IContactDetails {
+    firmID?: number | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
+    entityID?: number | undefined;
+    contactMethodTypeID?: number | undefined;
+    contactTypeID?: number | undefined;
+    createdBy?: number | undefined;
+    createdDate?: string | undefined;
+    lastModifedDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    entitySubTypeID?: number | undefined;
+    entitySubType?: string | undefined;
+    contactFrom?: string | undefined;
+    contactMethodType?: string | undefined;
+    contactType?: string | undefined;
+    title?: string | undefined;
+    firstName?: string | undefined;
+    secondName?: string | undefined;
+    thirdName?: string | undefined;
+    familyName?: string | undefined;
+    businessPhone?: string | undefined;
+    mobileNum?: string | undefined;
+    busEmail?: string | undefined;
+    otherEmail?: string | undefined;
+    fax?: string | undefined;
+    isExists?: string | undefined;
+    nameInPassport?: string | undefined;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    ainId?: number | undefined;
+    applicationID?: number | undefined;
+    ainNumber?: string | undefined;
+    bussinessEmail?: string | undefined;
+    previousName?: string | undefined;
+    dateOfBirth?: string | undefined;
+    placeOfBirth?: string | undefined;
+    natinality?: number | undefined;
+    nationalityDesc?: string | undefined;
+    copyOfResidence?: string | undefined;
+    countryOfResidence?: number | undefined;
+    countryOfResidenceName?: string | undefined;
+    passportNumber?: string | undefined;
+    nationalId?: string | undefined;
+    fullName?: string | undefined;
+    firmName?: string | undefined;
+    qfcNumber?: string | undefined;
+    userName?: string | undefined;
+    numOfShares?: number | undefined;
+    pctOfShares?: number | undefined;
+    majorityStockHolder?: boolean;
+    controllerControlTypeID?: number | undefined;
+    controllerControlTypeDesc?: string | undefined;
+    docID?: number | undefined;
+    fileName?: string | undefined;
+    fileLocation?: string | undefined;
+    countryName?: string | undefined;
+    conditions?: string | undefined;
+    assnDateFrom?: string | undefined;
+    assnDateTo?: string | undefined;
+    customFacingActivity?: string | undefined;
+    contactAddresses?: Address[] | undefined;
+    functionType?: string | undefined;
+    functionTypeID?: number | undefined;
+    entityTypeID?: number | undefined;
+    entityType?: string | undefined;
+    entityName?: string | undefined;
+    contactFromEntityID?: string | undefined;
+    otherEntityID?: number | undefined;
+    otherEntityName?: string | undefined;
+    myState?: number;
+    showEnabled?: boolean;
+    showReadOnly?: boolean;
+    jobTitle?: string | undefined;
+    countryOfIncorporationName?: string | undefined;
+    readonly isAI?: boolean;
+    tempContactID?: number;
+    tempContactTypeID?: number | undefined;
+    strContactAddnlInfoTypeID?: string | undefined;
+    strContactFunctionType?: string | undefined;
+    lstContactFunctions?: ContactFunctions[] | undefined;
+    lstAliase?: AIAliases[] | undefined;
+    isContact?: boolean;
+    proposedToQatar?: string | undefined;
+    residencePhone?: string | undefined;
+    totalIndiustryExperenceYear?: number;
+    totalIndustryExperenceMonth?: number;
+    roleExperenceMonth?: number;
+    roleExperenceYear?: number;
+    pastPositionFlag?: number | undefined;
+    experience?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    appIndividualDataID?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    jobDescription?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    dateRecieved?: Date | undefined;
+    formType?: number;
+    lstFunctions?: AIsFunction[] | undefined;
+    formTypeDesc?: string | undefined;
+    applicationGUID?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    applContactDetailID?: number | undefined;
+    positionOfMainContact?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean;
+    aliasesNAFlag?: boolean;
+    careerHistoryNAFlag?: boolean;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean;
+    placeOfBirthCountryID?: number | undefined;
+    jurisdictionId?: number | undefined;
+    placeOfBirthCountryDesc?: string | undefined;
+    jurisdictionDesc?: string | undefined;
+    nationalIDNumber?: string | undefined;
+    objAddress?: Address;
+    personalDetailID?: number;
+    otherNames?: string | undefined;
+    lstResidencies?: AIResidences[] | undefined;
+    aiApplExternalRefID?: number | undefined;
+    aiApplContactID?: number | undefined;
+    nameOfMainContact?: string | undefined;
+    sourceSystem?: string | undefined;
+    sourceSystemRefID?: number | undefined;
+    createdByUserName?: string | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    notifyFlag?: boolean;
+    comment?: string | undefined;
+    mccStatusDate?: string | undefined;
+    extNotificationID?: number | undefined;
+    appIndApplStatusID?: number | undefined;
+    refApplID?: number | undefined;
+    objectID?: number;
+    dataFromESubmission?: boolean;
+    aIsContactTypeID?: boolean | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    ipAddress?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    flagDesc?: string | undefined;
+    residentStatus?: string | undefined;
+    isOrdinarilyResident?: boolean | undefined;
+    docAbbrivation?: string | undefined;
+    applFeeReceived?: string | undefined;
+    applFeeComment?: string | undefined;
+    isESSAccessActive?: boolean;
+    isPEP?: boolean;
+
+    constructor(data?: IContactDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmID = _data["firmID"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.entityID = _data["entityID"];
+            this.contactMethodTypeID = _data["contactMethodTypeID"];
+            this.contactTypeID = _data["contactTypeID"];
+            this.createdBy = _data["createdBy"];
+            this.createdDate = _data["createdDate"];
+            this.lastModifedDate = _data["lastModifedDate"];
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            this.entitySubTypeID = _data["entitySubTypeID"];
+            this.entitySubType = _data["entitySubType"];
+            this.contactFrom = _data["contactFrom"];
+            this.contactMethodType = _data["contactMethodType"];
+            this.contactType = _data["contactType"];
+            this.title = _data["title"];
+            this.firstName = _data["firstName"];
+            this.secondName = _data["secondName"];
+            this.thirdName = _data["thirdName"];
+            this.familyName = _data["familyName"];
+            this.businessPhone = _data["businessPhone"];
+            this.mobileNum = _data["mobileNum"];
+            this.busEmail = _data["busEmail"];
+            this.otherEmail = _data["otherEmail"];
+            this.fax = _data["fax"];
+            this.isExists = _data["isExists"];
+            this.nameInPassport = _data["nameInPassport"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.ainId = _data["ainId"];
+            this.applicationID = _data["applicationID"];
+            this.ainNumber = _data["ainNumber"];
+            this.bussinessEmail = _data["bussinessEmail"];
+            this.previousName = _data["previousName"];
+            this.dateOfBirth = _data["dateOfBirth"];
+            this.placeOfBirth = _data["placeOfBirth"];
+            this.natinality = _data["natinality"];
+            this.nationalityDesc = _data["nationalityDesc"];
+            this.copyOfResidence = _data["copyOfResidence"];
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.countryOfResidenceName = _data["countryOfResidenceName"];
+            this.passportNumber = _data["passportNumber"];
+            this.nationalId = _data["nationalId"];
+            this.fullName = _data["fullName"];
+            this.firmName = _data["firmName"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.userName = _data["userName"];
+            this.numOfShares = _data["numOfShares"];
+            this.pctOfShares = _data["pctOfShares"];
+            this.majorityStockHolder = _data["majorityStockHolder"];
+            this.controllerControlTypeID = _data["controllerControlTypeID"];
+            this.controllerControlTypeDesc = _data["controllerControlTypeDesc"];
+            this.docID = _data["docID"];
+            this.fileName = _data["fileName"];
+            this.fileLocation = _data["fileLocation"];
+            this.countryName = _data["countryName"];
+            this.conditions = _data["conditions"];
+            this.assnDateFrom = _data["assnDateFrom"];
+            this.assnDateTo = _data["assnDateTo"];
+            this.customFacingActivity = _data["customFacingActivity"];
+            if (Array.isArray(_data["contactAddresses"])) {
+                this.contactAddresses = [] as any;
+                for (let item of _data["contactAddresses"])
+                    this.contactAddresses!.push(Address.fromJS(item));
+            }
+            this.functionType = _data["functionType"];
+            this.functionTypeID = _data["functionTypeID"];
+            this.entityTypeID = _data["entityTypeID"];
+            this.entityType = _data["entityType"];
+            this.entityName = _data["entityName"];
+            this.contactFromEntityID = _data["contactFromEntityID"];
+            this.otherEntityID = _data["otherEntityID"];
+            this.otherEntityName = _data["otherEntityName"];
+            this.myState = _data["myState"];
+            this.showEnabled = _data["showEnabled"];
+            this.showReadOnly = _data["showReadOnly"];
+            this.jobTitle = _data["jobTitle"];
+            this.countryOfIncorporationName = _data["countryOfIncorporationName"];
+            (<any>this).isAI = _data["isAI"];
+            this.tempContactID = _data["tempContactID"];
+            this.tempContactTypeID = _data["tempContactTypeID"];
+            this.strContactAddnlInfoTypeID = _data["strContactAddnlInfoTypeID"];
+            this.strContactFunctionType = _data["strContactFunctionType"];
+            if (Array.isArray(_data["lstContactFunctions"])) {
+                this.lstContactFunctions = [] as any;
+                for (let item of _data["lstContactFunctions"])
+                    this.lstContactFunctions!.push(ContactFunctions.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAliase"])) {
+                this.lstAliase = [] as any;
+                for (let item of _data["lstAliase"])
+                    this.lstAliase!.push(AIAliases.fromJS(item));
+            }
+            this.isContact = _data["isContact"];
+            this.proposedToQatar = _data["proposedToQatar"];
+            this.residencePhone = _data["residencePhone"];
+            this.totalIndiustryExperenceYear = _data["totalIndiustryExperenceYear"];
+            this.totalIndustryExperenceMonth = _data["totalIndustryExperenceMonth"];
+            this.roleExperenceMonth = _data["roleExperenceMonth"];
+            this.roleExperenceYear = _data["roleExperenceYear"];
+            this.pastPositionFlag = _data["pastPositionFlag"];
+            this.experience = _data["experience"];
+            this.appIndividualArrangementTypeID = _data["appIndividualArrangementTypeID"];
+            this.appIndividualArrangementTypeDesc = _data["appIndividualArrangementTypeDesc"];
+            this.otherArrangementTypeDesc = _data["otherArrangementTypeDesc"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.pastPositionDesc = _data["pastPositionDesc"];
+            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
+            this.poposedJobTitle = _data["poposedJobTitle"];
+            this.jobDescription = _data["jobDescription"];
+            this.cfExercise = _data["cfExercise"];
+            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
+            this.altArrangementDesc = _data["altArrangementDesc"];
+            this.competenciesAndExp = _data["competenciesAndExp"];
+            this.formProcessor = _data["formProcessor"];
+            this.dateRecieved = _data["dateRecieved"] ? new Date(_data["dateRecieved"].toString()) : <any>undefined;
+            this.formType = _data["formType"];
+            if (Array.isArray(_data["lstFunctions"])) {
+                this.lstFunctions = [] as any;
+                for (let item of _data["lstFunctions"])
+                    this.lstFunctions!.push(AIsFunction.fromJS(item));
+            }
+            this.formTypeDesc = _data["formTypeDesc"];
+            this.applicationGUID = _data["applicationGUID"];
+            this.applStatusTypeID = _data["applStatusTypeID"];
+            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
+            this.applContactDetailID = _data["applContactDetailID"];
+            this.positionOfMainContact = _data["positionOfMainContact"];
+            this.fandPChangeDesc = _data["fandPChangeDesc"];
+            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
+            this.residencyNAFlag = _data["residencyNAFlag"];
+            this.aliasesNAFlag = _data["aliasesNAFlag"];
+            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
+            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
+            this.reglsNAFlag = _data["reglsNAFlag"];
+            this.placeOfBirthCountryID = _data["placeOfBirthCountryID"];
+            this.jurisdictionId = _data["jurisdictionId"];
+            this.placeOfBirthCountryDesc = _data["placeOfBirthCountryDesc"];
+            this.jurisdictionDesc = _data["jurisdictionDesc"];
+            this.nationalIDNumber = _data["nationalIDNumber"];
+            this.objAddress = _data["objAddress"] ? Address.fromJS(_data["objAddress"]) : <any>undefined;
+            this.personalDetailID = _data["personalDetailID"];
+            this.otherNames = _data["otherNames"];
+            if (Array.isArray(_data["lstResidencies"])) {
+                this.lstResidencies = [] as any;
+                for (let item of _data["lstResidencies"])
+                    this.lstResidencies!.push(AIResidences.fromJS(item));
+            }
+            this.aiApplExternalRefID = _data["aiApplExternalRefID"];
+            this.aiApplContactID = _data["aiApplContactID"];
+            this.nameOfMainContact = _data["nameOfMainContact"];
+            this.sourceSystem = _data["sourceSystem"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.createdByUserName = _data["createdByUserName"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.notifyFlag = _data["notifyFlag"];
+            this.comment = _data["comment"];
+            this.mccStatusDate = _data["mccStatusDate"];
+            this.extNotificationID = _data["extNotificationID"];
+            this.appIndApplStatusID = _data["appIndApplStatusID"];
+            this.refApplID = _data["refApplID"];
+            this.objectID = _data["objectID"];
+            this.dataFromESubmission = _data["dataFromESubmission"];
+            this.aIsContactTypeID = _data["aIsContactTypeID"];
+            this.condApprovalReasonTypeID = _data["condApprovalReasonTypeID"];
+            this.ipAddress = _data["ipAddress"];
+            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
+            this.flagDesc = _data["flagDesc"];
+            this.residentStatus = _data["residentStatus"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.docAbbrivation = _data["docAbbrivation"];
+            this.applFeeReceived = _data["applFeeReceived"];
+            this.applFeeComment = _data["applFeeComment"];
+            this.isESSAccessActive = _data["isESSAccessActive"];
+            this.isPEP = _data["isPEP"];
+        }
+    }
+
+    static fromJS(data: any): ContactDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ContactDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmID"] = this.firmID;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["entityID"] = this.entityID;
+        data["contactMethodTypeID"] = this.contactMethodTypeID;
+        data["contactTypeID"] = this.contactTypeID;
+        data["createdBy"] = this.createdBy;
+        data["createdDate"] = this.createdDate;
+        data["lastModifedDate"] = this.lastModifedDate;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        data["entitySubTypeID"] = this.entitySubTypeID;
+        data["entitySubType"] = this.entitySubType;
+        data["contactFrom"] = this.contactFrom;
+        data["contactMethodType"] = this.contactMethodType;
+        data["contactType"] = this.contactType;
+        data["title"] = this.title;
+        data["firstName"] = this.firstName;
+        data["secondName"] = this.secondName;
+        data["thirdName"] = this.thirdName;
+        data["familyName"] = this.familyName;
+        data["businessPhone"] = this.businessPhone;
+        data["mobileNum"] = this.mobileNum;
+        data["busEmail"] = this.busEmail;
+        data["otherEmail"] = this.otherEmail;
+        data["fax"] = this.fax;
+        data["isExists"] = this.isExists;
+        data["nameInPassport"] = this.nameInPassport;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["ainId"] = this.ainId;
+        data["applicationID"] = this.applicationID;
+        data["ainNumber"] = this.ainNumber;
+        data["bussinessEmail"] = this.bussinessEmail;
+        data["previousName"] = this.previousName;
+        data["dateOfBirth"] = this.dateOfBirth;
+        data["placeOfBirth"] = this.placeOfBirth;
+        data["natinality"] = this.natinality;
+        data["nationalityDesc"] = this.nationalityDesc;
+        data["copyOfResidence"] = this.copyOfResidence;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["countryOfResidenceName"] = this.countryOfResidenceName;
+        data["passportNumber"] = this.passportNumber;
+        data["nationalId"] = this.nationalId;
+        data["fullName"] = this.fullName;
+        data["firmName"] = this.firmName;
+        data["qfcNumber"] = this.qfcNumber;
+        data["userName"] = this.userName;
+        data["numOfShares"] = this.numOfShares;
+        data["pctOfShares"] = this.pctOfShares;
+        data["majorityStockHolder"] = this.majorityStockHolder;
+        data["controllerControlTypeID"] = this.controllerControlTypeID;
+        data["controllerControlTypeDesc"] = this.controllerControlTypeDesc;
+        data["docID"] = this.docID;
+        data["fileName"] = this.fileName;
+        data["fileLocation"] = this.fileLocation;
+        data["countryName"] = this.countryName;
+        data["conditions"] = this.conditions;
+        data["assnDateFrom"] = this.assnDateFrom;
+        data["assnDateTo"] = this.assnDateTo;
+        data["customFacingActivity"] = this.customFacingActivity;
+        if (Array.isArray(this.contactAddresses)) {
+            data["contactAddresses"] = [];
+            for (let item of this.contactAddresses)
+                data["contactAddresses"].push(item.toJSON());
+        }
+        data["functionType"] = this.functionType;
+        data["functionTypeID"] = this.functionTypeID;
+        data["entityTypeID"] = this.entityTypeID;
+        data["entityType"] = this.entityType;
+        data["entityName"] = this.entityName;
+        data["contactFromEntityID"] = this.contactFromEntityID;
+        data["otherEntityID"] = this.otherEntityID;
+        data["otherEntityName"] = this.otherEntityName;
+        data["myState"] = this.myState;
+        data["showEnabled"] = this.showEnabled;
+        data["showReadOnly"] = this.showReadOnly;
+        data["jobTitle"] = this.jobTitle;
+        data["countryOfIncorporationName"] = this.countryOfIncorporationName;
+        data["isAI"] = this.isAI;
+        data["tempContactID"] = this.tempContactID;
+        data["tempContactTypeID"] = this.tempContactTypeID;
+        data["strContactAddnlInfoTypeID"] = this.strContactAddnlInfoTypeID;
+        data["strContactFunctionType"] = this.strContactFunctionType;
+        if (Array.isArray(this.lstContactFunctions)) {
+            data["lstContactFunctions"] = [];
+            for (let item of this.lstContactFunctions)
+                data["lstContactFunctions"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAliase)) {
+            data["lstAliase"] = [];
+            for (let item of this.lstAliase)
+                data["lstAliase"].push(item.toJSON());
+        }
+        data["isContact"] = this.isContact;
+        data["proposedToQatar"] = this.proposedToQatar;
+        data["residencePhone"] = this.residencePhone;
+        data["totalIndiustryExperenceYear"] = this.totalIndiustryExperenceYear;
+        data["totalIndustryExperenceMonth"] = this.totalIndustryExperenceMonth;
+        data["roleExperenceMonth"] = this.roleExperenceMonth;
+        data["roleExperenceYear"] = this.roleExperenceYear;
+        data["pastPositionFlag"] = this.pastPositionFlag;
+        data["experience"] = this.experience;
+        data["appIndividualArrangementTypeID"] = this.appIndividualArrangementTypeID;
+        data["appIndividualArrangementTypeDesc"] = this.appIndividualArrangementTypeDesc;
+        data["otherArrangementTypeDesc"] = this.otherArrangementTypeDesc;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["pastPositionDesc"] = this.pastPositionDesc;
+        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
+        data["poposedJobTitle"] = this.poposedJobTitle;
+        data["jobDescription"] = this.jobDescription;
+        data["cfExercise"] = this.cfExercise;
+        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
+        data["altArrangementDesc"] = this.altArrangementDesc;
+        data["competenciesAndExp"] = this.competenciesAndExp;
+        data["formProcessor"] = this.formProcessor;
+        data["dateRecieved"] = this.dateRecieved ? this.dateRecieved.toISOString() : <any>undefined;
+        data["formType"] = this.formType;
+        if (Array.isArray(this.lstFunctions)) {
+            data["lstFunctions"] = [];
+            for (let item of this.lstFunctions)
+                data["lstFunctions"].push(item.toJSON());
+        }
+        data["formTypeDesc"] = this.formTypeDesc;
+        data["applicationGUID"] = this.applicationGUID;
+        data["applStatusTypeID"] = this.applStatusTypeID;
+        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
+        data["applContactDetailID"] = this.applContactDetailID;
+        data["positionOfMainContact"] = this.positionOfMainContact;
+        data["fandPChangeDesc"] = this.fandPChangeDesc;
+        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
+        data["residencyNAFlag"] = this.residencyNAFlag;
+        data["aliasesNAFlag"] = this.aliasesNAFlag;
+        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
+        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
+        data["reglsNAFlag"] = this.reglsNAFlag;
+        data["placeOfBirthCountryID"] = this.placeOfBirthCountryID;
+        data["jurisdictionId"] = this.jurisdictionId;
+        data["placeOfBirthCountryDesc"] = this.placeOfBirthCountryDesc;
+        data["jurisdictionDesc"] = this.jurisdictionDesc;
+        data["nationalIDNumber"] = this.nationalIDNumber;
+        data["objAddress"] = this.objAddress ? this.objAddress.toJSON() : <any>undefined;
+        data["personalDetailID"] = this.personalDetailID;
+        data["otherNames"] = this.otherNames;
+        if (Array.isArray(this.lstResidencies)) {
+            data["lstResidencies"] = [];
+            for (let item of this.lstResidencies)
+                data["lstResidencies"].push(item.toJSON());
+        }
+        data["aiApplExternalRefID"] = this.aiApplExternalRefID;
+        data["aiApplContactID"] = this.aiApplContactID;
+        data["nameOfMainContact"] = this.nameOfMainContact;
+        data["sourceSystem"] = this.sourceSystem;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["createdByUserName"] = this.createdByUserName;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["notifyFlag"] = this.notifyFlag;
+        data["comment"] = this.comment;
+        data["mccStatusDate"] = this.mccStatusDate;
+        data["extNotificationID"] = this.extNotificationID;
+        data["appIndApplStatusID"] = this.appIndApplStatusID;
+        data["refApplID"] = this.refApplID;
+        data["objectID"] = this.objectID;
+        data["dataFromESubmission"] = this.dataFromESubmission;
+        data["aIsContactTypeID"] = this.aIsContactTypeID;
+        data["condApprovalReasonTypeID"] = this.condApprovalReasonTypeID;
+        data["ipAddress"] = this.ipAddress;
+        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
+        data["flagDesc"] = this.flagDesc;
+        data["residentStatus"] = this.residentStatus;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["docAbbrivation"] = this.docAbbrivation;
+        data["applFeeReceived"] = this.applFeeReceived;
+        data["applFeeComment"] = this.applFeeComment;
+        data["isESSAccessActive"] = this.isESSAccessActive;
+        data["isPEP"] = this.isPEP;
+        return data;
+    }
+}
+
+export interface IContactDetails {
+    firmID?: number | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
+    entityID?: number | undefined;
+    contactMethodTypeID?: number | undefined;
+    contactTypeID?: number | undefined;
+    createdBy?: number | undefined;
+    createdDate?: string | undefined;
+    lastModifedDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    entitySubTypeID?: number | undefined;
+    entitySubType?: string | undefined;
+    contactFrom?: string | undefined;
+    contactMethodType?: string | undefined;
+    contactType?: string | undefined;
+    title?: string | undefined;
+    firstName?: string | undefined;
+    secondName?: string | undefined;
+    thirdName?: string | undefined;
+    familyName?: string | undefined;
+    businessPhone?: string | undefined;
+    mobileNum?: string | undefined;
+    busEmail?: string | undefined;
+    otherEmail?: string | undefined;
+    fax?: string | undefined;
+    isExists?: string | undefined;
+    nameInPassport?: string | undefined;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    ainId?: number | undefined;
+    applicationID?: number | undefined;
+    ainNumber?: string | undefined;
+    bussinessEmail?: string | undefined;
+    previousName?: string | undefined;
+    dateOfBirth?: string | undefined;
+    placeOfBirth?: string | undefined;
+    natinality?: number | undefined;
+    nationalityDesc?: string | undefined;
+    copyOfResidence?: string | undefined;
+    countryOfResidence?: number | undefined;
+    countryOfResidenceName?: string | undefined;
+    passportNumber?: string | undefined;
+    nationalId?: string | undefined;
+    fullName?: string | undefined;
+    firmName?: string | undefined;
+    qfcNumber?: string | undefined;
+    userName?: string | undefined;
+    numOfShares?: number | undefined;
+    pctOfShares?: number | undefined;
+    majorityStockHolder?: boolean;
+    controllerControlTypeID?: number | undefined;
+    controllerControlTypeDesc?: string | undefined;
+    docID?: number | undefined;
+    fileName?: string | undefined;
+    fileLocation?: string | undefined;
+    countryName?: string | undefined;
+    conditions?: string | undefined;
+    assnDateFrom?: string | undefined;
+    assnDateTo?: string | undefined;
+    customFacingActivity?: string | undefined;
+    contactAddresses?: Address[] | undefined;
+    functionType?: string | undefined;
+    functionTypeID?: number | undefined;
+    entityTypeID?: number | undefined;
+    entityType?: string | undefined;
+    entityName?: string | undefined;
+    contactFromEntityID?: string | undefined;
+    otherEntityID?: number | undefined;
+    otherEntityName?: string | undefined;
+    myState?: number;
+    showEnabled?: boolean;
+    showReadOnly?: boolean;
+    jobTitle?: string | undefined;
+    countryOfIncorporationName?: string | undefined;
+    isAI?: boolean;
+    tempContactID?: number;
+    tempContactTypeID?: number | undefined;
+    strContactAddnlInfoTypeID?: string | undefined;
+    strContactFunctionType?: string | undefined;
+    lstContactFunctions?: ContactFunctions[] | undefined;
+    lstAliase?: AIAliases[] | undefined;
+    isContact?: boolean;
+    proposedToQatar?: string | undefined;
+    residencePhone?: string | undefined;
+    totalIndiustryExperenceYear?: number;
+    totalIndustryExperenceMonth?: number;
+    roleExperenceMonth?: number;
+    roleExperenceYear?: number;
+    pastPositionFlag?: number | undefined;
+    experience?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    appIndividualDataID?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    jobDescription?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    dateRecieved?: Date | undefined;
+    formType?: number;
+    lstFunctions?: AIsFunction[] | undefined;
+    formTypeDesc?: string | undefined;
+    applicationGUID?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    applContactDetailID?: number | undefined;
+    positionOfMainContact?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean;
+    aliasesNAFlag?: boolean;
+    careerHistoryNAFlag?: boolean;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean;
+    placeOfBirthCountryID?: number | undefined;
+    jurisdictionId?: number | undefined;
+    placeOfBirthCountryDesc?: string | undefined;
+    jurisdictionDesc?: string | undefined;
+    nationalIDNumber?: string | undefined;
+    objAddress?: Address;
+    personalDetailID?: number;
+    otherNames?: string | undefined;
+    lstResidencies?: AIResidences[] | undefined;
+    aiApplExternalRefID?: number | undefined;
+    aiApplContactID?: number | undefined;
+    nameOfMainContact?: string | undefined;
+    sourceSystem?: string | undefined;
+    sourceSystemRefID?: number | undefined;
+    createdByUserName?: string | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    notifyFlag?: boolean;
+    comment?: string | undefined;
+    mccStatusDate?: string | undefined;
+    extNotificationID?: number | undefined;
+    appIndApplStatusID?: number | undefined;
+    refApplID?: number | undefined;
+    objectID?: number;
+    dataFromESubmission?: boolean;
+    aIsContactTypeID?: boolean | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    ipAddress?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    flagDesc?: string | undefined;
+    residentStatus?: string | undefined;
+    isOrdinarilyResident?: boolean | undefined;
+    docAbbrivation?: string | undefined;
+    applFeeReceived?: string | undefined;
+    applFeeComment?: string | undefined;
+    isESSAccessActive?: boolean;
+    isPEP?: boolean;
+}
+
+export class ContactFunctions implements IContactFunctions {
+    firmID?: number | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
+    entityID?: number | undefined;
+    contactMethodTypeID?: number | undefined;
+    contactTypeID?: number | undefined;
+    createdBy?: number | undefined;
+    createdDate?: string | undefined;
+    lastModifedDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    entitySubTypeID?: number | undefined;
+    entitySubType?: string | undefined;
+    contactFrom?: string | undefined;
+    contactMethodType?: string | undefined;
+    contactType?: string | undefined;
+    title?: string | undefined;
+    firstName?: string | undefined;
+    secondName?: string | undefined;
+    thirdName?: string | undefined;
+    familyName?: string | undefined;
+    businessPhone?: string | undefined;
+    mobileNum?: string | undefined;
+    busEmail?: string | undefined;
+    otherEmail?: string | undefined;
+    fax?: string | undefined;
+    isExists?: string | undefined;
+    nameInPassport?: string | undefined;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    ainId?: number | undefined;
+    applicationID?: number | undefined;
+    ainNumber?: string | undefined;
+    bussinessEmail?: string | undefined;
+    previousName?: string | undefined;
+    dateOfBirth?: string | undefined;
+    placeOfBirth?: string | undefined;
+    natinality?: number | undefined;
+    nationalityDesc?: string | undefined;
+    copyOfResidence?: string | undefined;
+    countryOfResidence?: number | undefined;
+    countryOfResidenceName?: string | undefined;
+    passportNumber?: string | undefined;
+    nationalId?: string | undefined;
+    fullName?: string | undefined;
+    firmName?: string | undefined;
+    qfcNumber?: string | undefined;
+    userName?: string | undefined;
+    numOfShares?: number | undefined;
+    pctOfShares?: number | undefined;
+    majorityStockHolder?: boolean;
+    controllerControlTypeID?: number | undefined;
+    controllerControlTypeDesc?: string | undefined;
+    docID?: number | undefined;
+    fileName?: string | undefined;
+    fileLocation?: string | undefined;
+    countryName?: string | undefined;
+    conditions?: string | undefined;
+    assnDateFrom?: string | undefined;
+    assnDateTo?: string | undefined;
+    customFacingActivity?: string | undefined;
+    contactAddresses?: Address[] | undefined;
+    functionType?: string | undefined;
+    functionTypeID?: number | undefined;
+    entityTypeID?: number | undefined;
+    entityType?: string | undefined;
+    entityName?: string | undefined;
+    contactFromEntityID?: string | undefined;
+    otherEntityID?: number | undefined;
+    otherEntityName?: string | undefined;
+    myState?: number;
+    showEnabled?: boolean;
+    showReadOnly?: boolean;
+    jobTitle?: string | undefined;
+    countryOfIncorporationName?: string | undefined;
+    readonly isAI?: boolean;
+    tempContactID?: number;
+    tempContactTypeID?: number | undefined;
+    strContactAddnlInfoTypeID?: string | undefined;
+    strContactFunctionType?: string | undefined;
+    lstContactFunctions?: ContactFunctions[] | undefined;
+    lstAliase?: AIAliases[] | undefined;
+    isContact?: boolean;
+    proposedToQatar?: string | undefined;
+    residencePhone?: string | undefined;
+    totalIndiustryExperenceYear?: number;
+    totalIndustryExperenceMonth?: number;
+    roleExperenceMonth?: number;
+    roleExperenceYear?: number;
+    pastPositionFlag?: number | undefined;
+    experience?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    appIndividualDataID?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    jobDescription?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    dateRecieved?: Date | undefined;
+    formType?: number;
+    lstFunctions?: AIsFunction[] | undefined;
+    formTypeDesc?: string | undefined;
+    applicationGUID?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    applContactDetailID?: number | undefined;
+    positionOfMainContact?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean;
+    aliasesNAFlag?: boolean;
+    careerHistoryNAFlag?: boolean;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean;
+    placeOfBirthCountryID?: number | undefined;
+    jurisdictionId?: number | undefined;
+    placeOfBirthCountryDesc?: string | undefined;
+    jurisdictionDesc?: string | undefined;
+    nationalIDNumber?: string | undefined;
+    objAddress?: Address;
+    personalDetailID?: number;
+    otherNames?: string | undefined;
+    lstResidencies?: AIResidences[] | undefined;
+    aiApplExternalRefID?: number | undefined;
+    aiApplContactID?: number | undefined;
+    nameOfMainContact?: string | undefined;
+    sourceSystem?: string | undefined;
+    sourceSystemRefID?: number | undefined;
+    createdByUserName?: string | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    notifyFlag?: boolean;
+    comment?: string | undefined;
+    mccStatusDate?: string | undefined;
+    extNotificationID?: number | undefined;
+    appIndApplStatusID?: number | undefined;
+    refApplID?: number | undefined;
+    objectID?: number;
+    dataFromESubmission?: boolean;
+    aIsContactTypeID?: boolean | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    ipAddress?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    flagDesc?: string | undefined;
+    residentStatus?: string | undefined;
+    isOrdinarilyResident?: boolean | undefined;
+    docAbbrivation?: string | undefined;
+    applFeeReceived?: string | undefined;
+    applFeeComment?: string | undefined;
+    isESSAccessActive?: boolean;
+    isPEP?: boolean;
+    contactFunctionID?: number | undefined;
+    contactFunctionTypeID?: number;
+    contactFunctionTypeDesc?: string | undefined;
+    effectiveDate?: string | undefined;
+    endDate?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    reviewStatus?: string | undefined;
+    selected?: boolean;
+    isFunctionActive?: boolean;
+    isRecordEditable?: number;
+
+    constructor(data?: IContactFunctions) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmID = _data["firmID"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+            this.entityID = _data["entityID"];
+            this.contactMethodTypeID = _data["contactMethodTypeID"];
+            this.contactTypeID = _data["contactTypeID"];
+            this.createdBy = _data["createdBy"];
+            this.createdDate = _data["createdDate"];
+            this.lastModifedDate = _data["lastModifedDate"];
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            this.entitySubTypeID = _data["entitySubTypeID"];
+            this.entitySubType = _data["entitySubType"];
+            this.contactFrom = _data["contactFrom"];
+            this.contactMethodType = _data["contactMethodType"];
+            this.contactType = _data["contactType"];
+            this.title = _data["title"];
+            this.firstName = _data["firstName"];
+            this.secondName = _data["secondName"];
+            this.thirdName = _data["thirdName"];
+            this.familyName = _data["familyName"];
+            this.businessPhone = _data["businessPhone"];
+            this.mobileNum = _data["mobileNum"];
+            this.busEmail = _data["busEmail"];
+            this.otherEmail = _data["otherEmail"];
+            this.fax = _data["fax"];
+            this.isExists = _data["isExists"];
+            this.nameInPassport = _data["nameInPassport"];
+            this.proposedToQatarDateDays = _data["proposedToQatarDateDays"];
+            this.proposedToQatarDateMonth = _data["proposedToQatarDateMonth"];
+            this.proposedToQatarDateYear = _data["proposedToQatarDateYear"];
+            this.ainId = _data["ainId"];
+            this.applicationID = _data["applicationID"];
+            this.ainNumber = _data["ainNumber"];
+            this.bussinessEmail = _data["bussinessEmail"];
+            this.previousName = _data["previousName"];
+            this.dateOfBirth = _data["dateOfBirth"];
+            this.placeOfBirth = _data["placeOfBirth"];
+            this.natinality = _data["natinality"];
+            this.nationalityDesc = _data["nationalityDesc"];
+            this.copyOfResidence = _data["copyOfResidence"];
+            this.countryOfResidence = _data["countryOfResidence"];
+            this.countryOfResidenceName = _data["countryOfResidenceName"];
+            this.passportNumber = _data["passportNumber"];
+            this.nationalId = _data["nationalId"];
+            this.fullName = _data["fullName"];
+            this.firmName = _data["firmName"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.userName = _data["userName"];
+            this.numOfShares = _data["numOfShares"];
+            this.pctOfShares = _data["pctOfShares"];
+            this.majorityStockHolder = _data["majorityStockHolder"];
+            this.controllerControlTypeID = _data["controllerControlTypeID"];
+            this.controllerControlTypeDesc = _data["controllerControlTypeDesc"];
+            this.docID = _data["docID"];
+            this.fileName = _data["fileName"];
+            this.fileLocation = _data["fileLocation"];
+            this.countryName = _data["countryName"];
+            this.conditions = _data["conditions"];
+            this.assnDateFrom = _data["assnDateFrom"];
+            this.assnDateTo = _data["assnDateTo"];
+            this.customFacingActivity = _data["customFacingActivity"];
+            if (Array.isArray(_data["contactAddresses"])) {
+                this.contactAddresses = [] as any;
+                for (let item of _data["contactAddresses"])
+                    this.contactAddresses!.push(Address.fromJS(item));
+            }
+            this.functionType = _data["functionType"];
+            this.functionTypeID = _data["functionTypeID"];
+            this.entityTypeID = _data["entityTypeID"];
+            this.entityType = _data["entityType"];
+            this.entityName = _data["entityName"];
+            this.contactFromEntityID = _data["contactFromEntityID"];
+            this.otherEntityID = _data["otherEntityID"];
+            this.otherEntityName = _data["otherEntityName"];
+            this.myState = _data["myState"];
+            this.showEnabled = _data["showEnabled"];
+            this.showReadOnly = _data["showReadOnly"];
+            this.jobTitle = _data["jobTitle"];
+            this.countryOfIncorporationName = _data["countryOfIncorporationName"];
+            (<any>this).isAI = _data["isAI"];
+            this.tempContactID = _data["tempContactID"];
+            this.tempContactTypeID = _data["tempContactTypeID"];
+            this.strContactAddnlInfoTypeID = _data["strContactAddnlInfoTypeID"];
+            this.strContactFunctionType = _data["strContactFunctionType"];
+            if (Array.isArray(_data["lstContactFunctions"])) {
+                this.lstContactFunctions = [] as any;
+                for (let item of _data["lstContactFunctions"])
+                    this.lstContactFunctions!.push(ContactFunctions.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAliase"])) {
+                this.lstAliase = [] as any;
+                for (let item of _data["lstAliase"])
+                    this.lstAliase!.push(AIAliases.fromJS(item));
+            }
+            this.isContact = _data["isContact"];
+            this.proposedToQatar = _data["proposedToQatar"];
+            this.residencePhone = _data["residencePhone"];
+            this.totalIndiustryExperenceYear = _data["totalIndiustryExperenceYear"];
+            this.totalIndustryExperenceMonth = _data["totalIndustryExperenceMonth"];
+            this.roleExperenceMonth = _data["roleExperenceMonth"];
+            this.roleExperenceYear = _data["roleExperenceYear"];
+            this.pastPositionFlag = _data["pastPositionFlag"];
+            this.experience = _data["experience"];
+            this.appIndividualArrangementTypeID = _data["appIndividualArrangementTypeID"];
+            this.appIndividualArrangementTypeDesc = _data["appIndividualArrangementTypeDesc"];
+            this.otherArrangementTypeDesc = _data["otherArrangementTypeDesc"];
+            this.appIndividualDataID = _data["appIndividualDataID"];
+            this.pastPositionDesc = _data["pastPositionDesc"];
+            this.fandPAddnlInfo = _data["fandPAddnlInfo"];
+            this.poposedJobTitle = _data["poposedJobTitle"];
+            this.jobDescription = _data["jobDescription"];
+            this.cfExercise = _data["cfExercise"];
+            this.withdrawlReasonDesc = _data["withdrawlReasonDesc"];
+            this.altArrangementDesc = _data["altArrangementDesc"];
+            this.competenciesAndExp = _data["competenciesAndExp"];
+            this.formProcessor = _data["formProcessor"];
+            this.dateRecieved = _data["dateRecieved"] ? new Date(_data["dateRecieved"].toString()) : <any>undefined;
+            this.formType = _data["formType"];
+            if (Array.isArray(_data["lstFunctions"])) {
+                this.lstFunctions = [] as any;
+                for (let item of _data["lstFunctions"])
+                    this.lstFunctions!.push(AIsFunction.fromJS(item));
+            }
+            this.formTypeDesc = _data["formTypeDesc"];
+            this.applicationGUID = _data["applicationGUID"];
+            this.applStatusTypeID = _data["applStatusTypeID"];
+            this.applStatusTypeDesc = _data["applStatusTypeDesc"];
+            this.applContactDetailID = _data["applContactDetailID"];
+            this.positionOfMainContact = _data["positionOfMainContact"];
+            this.fandPChangeDesc = _data["fandPChangeDesc"];
+            this.wcfAddnlInfo = _data["wcfAddnlInfo"];
+            this.residencyNAFlag = _data["residencyNAFlag"];
+            this.aliasesNAFlag = _data["aliasesNAFlag"];
+            this.careerHistoryNAFlag = _data["careerHistoryNAFlag"];
+            this.careerHistoryNAReason = _data["careerHistoryNAReason"];
+            this.reglsNAFlag = _data["reglsNAFlag"];
+            this.placeOfBirthCountryID = _data["placeOfBirthCountryID"];
+            this.jurisdictionId = _data["jurisdictionId"];
+            this.placeOfBirthCountryDesc = _data["placeOfBirthCountryDesc"];
+            this.jurisdictionDesc = _data["jurisdictionDesc"];
+            this.nationalIDNumber = _data["nationalIDNumber"];
+            this.objAddress = _data["objAddress"] ? Address.fromJS(_data["objAddress"]) : <any>undefined;
+            this.personalDetailID = _data["personalDetailID"];
+            this.otherNames = _data["otherNames"];
+            if (Array.isArray(_data["lstResidencies"])) {
+                this.lstResidencies = [] as any;
+                for (let item of _data["lstResidencies"])
+                    this.lstResidencies!.push(AIResidences.fromJS(item));
+            }
+            this.aiApplExternalRefID = _data["aiApplExternalRefID"];
+            this.aiApplContactID = _data["aiApplContactID"];
+            this.nameOfMainContact = _data["nameOfMainContact"];
+            this.sourceSystem = _data["sourceSystem"];
+            this.sourceSystemRefID = _data["sourceSystemRefID"];
+            this.createdByUserName = _data["createdByUserName"];
+            this.mcCheckStatusTypeID = _data["mcCheckStatusTypeID"];
+            this.notifyFlag = _data["notifyFlag"];
+            this.comment = _data["comment"];
+            this.mccStatusDate = _data["mccStatusDate"];
+            this.extNotificationID = _data["extNotificationID"];
+            this.appIndApplStatusID = _data["appIndApplStatusID"];
+            this.refApplID = _data["refApplID"];
+            this.objectID = _data["objectID"];
+            this.dataFromESubmission = _data["dataFromESubmission"];
+            this.aIsContactTypeID = _data["aIsContactTypeID"];
+            this.condApprovalReasonTypeID = _data["condApprovalReasonTypeID"];
+            this.ipAddress = _data["ipAddress"];
+            this.reasonForDelayInFiling = _data["reasonForDelayInFiling"];
+            this.flagDesc = _data["flagDesc"];
+            this.residentStatus = _data["residentStatus"];
+            this.isOrdinarilyResident = _data["isOrdinarilyResident"];
+            this.docAbbrivation = _data["docAbbrivation"];
+            this.applFeeReceived = _data["applFeeReceived"];
+            this.applFeeComment = _data["applFeeComment"];
+            this.isESSAccessActive = _data["isESSAccessActive"];
+            this.isPEP = _data["isPEP"];
+            this.contactFunctionID = _data["contactFunctionID"];
+            this.contactFunctionTypeID = _data["contactFunctionTypeID"];
+            this.contactFunctionTypeDesc = _data["contactFunctionTypeDesc"];
+            this.effectiveDate = _data["effectiveDate"];
+            this.endDate = _data["endDate"];
+            this.lastModifiedDate = _data["lastModifiedDate"];
+            this.reviewStatus = _data["reviewStatus"];
+            this.selected = _data["selected"];
+            this.isFunctionActive = _data["isFunctionActive"];
+            this.isRecordEditable = _data["isRecordEditable"];
+        }
+    }
+
+    static fromJS(data: any): ContactFunctions {
+        data = typeof data === 'object' ? data : {};
+        let result = new ContactFunctions();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmID"] = this.firmID;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        data["entityID"] = this.entityID;
+        data["contactMethodTypeID"] = this.contactMethodTypeID;
+        data["contactTypeID"] = this.contactTypeID;
+        data["createdBy"] = this.createdBy;
+        data["createdDate"] = this.createdDate;
+        data["lastModifedDate"] = this.lastModifedDate;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        data["entitySubTypeID"] = this.entitySubTypeID;
+        data["entitySubType"] = this.entitySubType;
+        data["contactFrom"] = this.contactFrom;
+        data["contactMethodType"] = this.contactMethodType;
+        data["contactType"] = this.contactType;
+        data["title"] = this.title;
+        data["firstName"] = this.firstName;
+        data["secondName"] = this.secondName;
+        data["thirdName"] = this.thirdName;
+        data["familyName"] = this.familyName;
+        data["businessPhone"] = this.businessPhone;
+        data["mobileNum"] = this.mobileNum;
+        data["busEmail"] = this.busEmail;
+        data["otherEmail"] = this.otherEmail;
+        data["fax"] = this.fax;
+        data["isExists"] = this.isExists;
+        data["nameInPassport"] = this.nameInPassport;
+        data["proposedToQatarDateDays"] = this.proposedToQatarDateDays;
+        data["proposedToQatarDateMonth"] = this.proposedToQatarDateMonth;
+        data["proposedToQatarDateYear"] = this.proposedToQatarDateYear;
+        data["ainId"] = this.ainId;
+        data["applicationID"] = this.applicationID;
+        data["ainNumber"] = this.ainNumber;
+        data["bussinessEmail"] = this.bussinessEmail;
+        data["previousName"] = this.previousName;
+        data["dateOfBirth"] = this.dateOfBirth;
+        data["placeOfBirth"] = this.placeOfBirth;
+        data["natinality"] = this.natinality;
+        data["nationalityDesc"] = this.nationalityDesc;
+        data["copyOfResidence"] = this.copyOfResidence;
+        data["countryOfResidence"] = this.countryOfResidence;
+        data["countryOfResidenceName"] = this.countryOfResidenceName;
+        data["passportNumber"] = this.passportNumber;
+        data["nationalId"] = this.nationalId;
+        data["fullName"] = this.fullName;
+        data["firmName"] = this.firmName;
+        data["qfcNumber"] = this.qfcNumber;
+        data["userName"] = this.userName;
+        data["numOfShares"] = this.numOfShares;
+        data["pctOfShares"] = this.pctOfShares;
+        data["majorityStockHolder"] = this.majorityStockHolder;
+        data["controllerControlTypeID"] = this.controllerControlTypeID;
+        data["controllerControlTypeDesc"] = this.controllerControlTypeDesc;
+        data["docID"] = this.docID;
+        data["fileName"] = this.fileName;
+        data["fileLocation"] = this.fileLocation;
+        data["countryName"] = this.countryName;
+        data["conditions"] = this.conditions;
+        data["assnDateFrom"] = this.assnDateFrom;
+        data["assnDateTo"] = this.assnDateTo;
+        data["customFacingActivity"] = this.customFacingActivity;
+        if (Array.isArray(this.contactAddresses)) {
+            data["contactAddresses"] = [];
+            for (let item of this.contactAddresses)
+                data["contactAddresses"].push(item.toJSON());
+        }
+        data["functionType"] = this.functionType;
+        data["functionTypeID"] = this.functionTypeID;
+        data["entityTypeID"] = this.entityTypeID;
+        data["entityType"] = this.entityType;
+        data["entityName"] = this.entityName;
+        data["contactFromEntityID"] = this.contactFromEntityID;
+        data["otherEntityID"] = this.otherEntityID;
+        data["otherEntityName"] = this.otherEntityName;
+        data["myState"] = this.myState;
+        data["showEnabled"] = this.showEnabled;
+        data["showReadOnly"] = this.showReadOnly;
+        data["jobTitle"] = this.jobTitle;
+        data["countryOfIncorporationName"] = this.countryOfIncorporationName;
+        data["isAI"] = this.isAI;
+        data["tempContactID"] = this.tempContactID;
+        data["tempContactTypeID"] = this.tempContactTypeID;
+        data["strContactAddnlInfoTypeID"] = this.strContactAddnlInfoTypeID;
+        data["strContactFunctionType"] = this.strContactFunctionType;
+        if (Array.isArray(this.lstContactFunctions)) {
+            data["lstContactFunctions"] = [];
+            for (let item of this.lstContactFunctions)
+                data["lstContactFunctions"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAliase)) {
+            data["lstAliase"] = [];
+            for (let item of this.lstAliase)
+                data["lstAliase"].push(item.toJSON());
+        }
+        data["isContact"] = this.isContact;
+        data["proposedToQatar"] = this.proposedToQatar;
+        data["residencePhone"] = this.residencePhone;
+        data["totalIndiustryExperenceYear"] = this.totalIndiustryExperenceYear;
+        data["totalIndustryExperenceMonth"] = this.totalIndustryExperenceMonth;
+        data["roleExperenceMonth"] = this.roleExperenceMonth;
+        data["roleExperenceYear"] = this.roleExperenceYear;
+        data["pastPositionFlag"] = this.pastPositionFlag;
+        data["experience"] = this.experience;
+        data["appIndividualArrangementTypeID"] = this.appIndividualArrangementTypeID;
+        data["appIndividualArrangementTypeDesc"] = this.appIndividualArrangementTypeDesc;
+        data["otherArrangementTypeDesc"] = this.otherArrangementTypeDesc;
+        data["appIndividualDataID"] = this.appIndividualDataID;
+        data["pastPositionDesc"] = this.pastPositionDesc;
+        data["fandPAddnlInfo"] = this.fandPAddnlInfo;
+        data["poposedJobTitle"] = this.poposedJobTitle;
+        data["jobDescription"] = this.jobDescription;
+        data["cfExercise"] = this.cfExercise;
+        data["withdrawlReasonDesc"] = this.withdrawlReasonDesc;
+        data["altArrangementDesc"] = this.altArrangementDesc;
+        data["competenciesAndExp"] = this.competenciesAndExp;
+        data["formProcessor"] = this.formProcessor;
+        data["dateRecieved"] = this.dateRecieved ? this.dateRecieved.toISOString() : <any>undefined;
+        data["formType"] = this.formType;
+        if (Array.isArray(this.lstFunctions)) {
+            data["lstFunctions"] = [];
+            for (let item of this.lstFunctions)
+                data["lstFunctions"].push(item.toJSON());
+        }
+        data["formTypeDesc"] = this.formTypeDesc;
+        data["applicationGUID"] = this.applicationGUID;
+        data["applStatusTypeID"] = this.applStatusTypeID;
+        data["applStatusTypeDesc"] = this.applStatusTypeDesc;
+        data["applContactDetailID"] = this.applContactDetailID;
+        data["positionOfMainContact"] = this.positionOfMainContact;
+        data["fandPChangeDesc"] = this.fandPChangeDesc;
+        data["wcfAddnlInfo"] = this.wcfAddnlInfo;
+        data["residencyNAFlag"] = this.residencyNAFlag;
+        data["aliasesNAFlag"] = this.aliasesNAFlag;
+        data["careerHistoryNAFlag"] = this.careerHistoryNAFlag;
+        data["careerHistoryNAReason"] = this.careerHistoryNAReason;
+        data["reglsNAFlag"] = this.reglsNAFlag;
+        data["placeOfBirthCountryID"] = this.placeOfBirthCountryID;
+        data["jurisdictionId"] = this.jurisdictionId;
+        data["placeOfBirthCountryDesc"] = this.placeOfBirthCountryDesc;
+        data["jurisdictionDesc"] = this.jurisdictionDesc;
+        data["nationalIDNumber"] = this.nationalIDNumber;
+        data["objAddress"] = this.objAddress ? this.objAddress.toJSON() : <any>undefined;
+        data["personalDetailID"] = this.personalDetailID;
+        data["otherNames"] = this.otherNames;
+        if (Array.isArray(this.lstResidencies)) {
+            data["lstResidencies"] = [];
+            for (let item of this.lstResidencies)
+                data["lstResidencies"].push(item.toJSON());
+        }
+        data["aiApplExternalRefID"] = this.aiApplExternalRefID;
+        data["aiApplContactID"] = this.aiApplContactID;
+        data["nameOfMainContact"] = this.nameOfMainContact;
+        data["sourceSystem"] = this.sourceSystem;
+        data["sourceSystemRefID"] = this.sourceSystemRefID;
+        data["createdByUserName"] = this.createdByUserName;
+        data["mcCheckStatusTypeID"] = this.mcCheckStatusTypeID;
+        data["notifyFlag"] = this.notifyFlag;
+        data["comment"] = this.comment;
+        data["mccStatusDate"] = this.mccStatusDate;
+        data["extNotificationID"] = this.extNotificationID;
+        data["appIndApplStatusID"] = this.appIndApplStatusID;
+        data["refApplID"] = this.refApplID;
+        data["objectID"] = this.objectID;
+        data["dataFromESubmission"] = this.dataFromESubmission;
+        data["aIsContactTypeID"] = this.aIsContactTypeID;
+        data["condApprovalReasonTypeID"] = this.condApprovalReasonTypeID;
+        data["ipAddress"] = this.ipAddress;
+        data["reasonForDelayInFiling"] = this.reasonForDelayInFiling;
+        data["flagDesc"] = this.flagDesc;
+        data["residentStatus"] = this.residentStatus;
+        data["isOrdinarilyResident"] = this.isOrdinarilyResident;
+        data["docAbbrivation"] = this.docAbbrivation;
+        data["applFeeReceived"] = this.applFeeReceived;
+        data["applFeeComment"] = this.applFeeComment;
+        data["isESSAccessActive"] = this.isESSAccessActive;
+        data["isPEP"] = this.isPEP;
+        data["contactFunctionID"] = this.contactFunctionID;
+        data["contactFunctionTypeID"] = this.contactFunctionTypeID;
+        data["contactFunctionTypeDesc"] = this.contactFunctionTypeDesc;
+        data["effectiveDate"] = this.effectiveDate;
+        data["endDate"] = this.endDate;
+        data["lastModifiedDate"] = this.lastModifiedDate;
+        data["reviewStatus"] = this.reviewStatus;
+        data["selected"] = this.selected;
+        data["isFunctionActive"] = this.isFunctionActive;
+        data["isRecordEditable"] = this.isRecordEditable;
+        return data;
+    }
+}
+
+export interface IContactFunctions {
+    firmID?: number | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
+    entityID?: number | undefined;
+    contactMethodTypeID?: number | undefined;
+    contactTypeID?: number | undefined;
+    createdBy?: number | undefined;
+    createdDate?: string | undefined;
+    lastModifedDate?: string | undefined;
+    lastModifiedBy?: number | undefined;
+    entitySubTypeID?: number | undefined;
+    entitySubType?: string | undefined;
+    contactFrom?: string | undefined;
+    contactMethodType?: string | undefined;
+    contactType?: string | undefined;
+    title?: string | undefined;
+    firstName?: string | undefined;
+    secondName?: string | undefined;
+    thirdName?: string | undefined;
+    familyName?: string | undefined;
+    businessPhone?: string | undefined;
+    mobileNum?: string | undefined;
+    busEmail?: string | undefined;
+    otherEmail?: string | undefined;
+    fax?: string | undefined;
+    isExists?: string | undefined;
+    nameInPassport?: string | undefined;
+    proposedToQatarDateDays?: string | undefined;
+    proposedToQatarDateMonth?: string | undefined;
+    proposedToQatarDateYear?: string | undefined;
+    ainId?: number | undefined;
+    applicationID?: number | undefined;
+    ainNumber?: string | undefined;
+    bussinessEmail?: string | undefined;
+    previousName?: string | undefined;
+    dateOfBirth?: string | undefined;
+    placeOfBirth?: string | undefined;
+    natinality?: number | undefined;
+    nationalityDesc?: string | undefined;
+    copyOfResidence?: string | undefined;
+    countryOfResidence?: number | undefined;
+    countryOfResidenceName?: string | undefined;
+    passportNumber?: string | undefined;
+    nationalId?: string | undefined;
+    fullName?: string | undefined;
+    firmName?: string | undefined;
+    qfcNumber?: string | undefined;
+    userName?: string | undefined;
+    numOfShares?: number | undefined;
+    pctOfShares?: number | undefined;
+    majorityStockHolder?: boolean;
+    controllerControlTypeID?: number | undefined;
+    controllerControlTypeDesc?: string | undefined;
+    docID?: number | undefined;
+    fileName?: string | undefined;
+    fileLocation?: string | undefined;
+    countryName?: string | undefined;
+    conditions?: string | undefined;
+    assnDateFrom?: string | undefined;
+    assnDateTo?: string | undefined;
+    customFacingActivity?: string | undefined;
+    contactAddresses?: Address[] | undefined;
+    functionType?: string | undefined;
+    functionTypeID?: number | undefined;
+    entityTypeID?: number | undefined;
+    entityType?: string | undefined;
+    entityName?: string | undefined;
+    contactFromEntityID?: string | undefined;
+    otherEntityID?: number | undefined;
+    otherEntityName?: string | undefined;
+    myState?: number;
+    showEnabled?: boolean;
+    showReadOnly?: boolean;
+    jobTitle?: string | undefined;
+    countryOfIncorporationName?: string | undefined;
+    isAI?: boolean;
+    tempContactID?: number;
+    tempContactTypeID?: number | undefined;
+    strContactAddnlInfoTypeID?: string | undefined;
+    strContactFunctionType?: string | undefined;
+    lstContactFunctions?: ContactFunctions[] | undefined;
+    lstAliase?: AIAliases[] | undefined;
+    isContact?: boolean;
+    proposedToQatar?: string | undefined;
+    residencePhone?: string | undefined;
+    totalIndiustryExperenceYear?: number;
+    totalIndustryExperenceMonth?: number;
+    roleExperenceMonth?: number;
+    roleExperenceYear?: number;
+    pastPositionFlag?: number | undefined;
+    experience?: string | undefined;
+    appIndividualArrangementTypeID?: number | undefined;
+    appIndividualArrangementTypeDesc?: string | undefined;
+    otherArrangementTypeDesc?: string | undefined;
+    appIndividualDataID?: number | undefined;
+    pastPositionDesc?: string | undefined;
+    fandPAddnlInfo?: string | undefined;
+    poposedJobTitle?: string | undefined;
+    jobDescription?: string | undefined;
+    cfExercise?: string | undefined;
+    withdrawlReasonDesc?: string | undefined;
+    altArrangementDesc?: string | undefined;
+    competenciesAndExp?: string | undefined;
+    formProcessor?: number | undefined;
+    dateRecieved?: Date | undefined;
+    formType?: number;
+    lstFunctions?: AIsFunction[] | undefined;
+    formTypeDesc?: string | undefined;
+    applicationGUID?: string | undefined;
+    applStatusTypeID?: number | undefined;
+    applStatusTypeDesc?: string | undefined;
+    applContactDetailID?: number | undefined;
+    positionOfMainContact?: string | undefined;
+    fandPChangeDesc?: string | undefined;
+    wcfAddnlInfo?: string | undefined;
+    residencyNAFlag?: boolean;
+    aliasesNAFlag?: boolean;
+    careerHistoryNAFlag?: boolean;
+    careerHistoryNAReason?: string | undefined;
+    reglsNAFlag?: boolean;
+    placeOfBirthCountryID?: number | undefined;
+    jurisdictionId?: number | undefined;
+    placeOfBirthCountryDesc?: string | undefined;
+    jurisdictionDesc?: string | undefined;
+    nationalIDNumber?: string | undefined;
+    objAddress?: Address;
+    personalDetailID?: number;
+    otherNames?: string | undefined;
+    lstResidencies?: AIResidences[] | undefined;
+    aiApplExternalRefID?: number | undefined;
+    aiApplContactID?: number | undefined;
+    nameOfMainContact?: string | undefined;
+    sourceSystem?: string | undefined;
+    sourceSystemRefID?: number | undefined;
+    createdByUserName?: string | undefined;
+    mcCheckStatusTypeID?: number | undefined;
+    notifyFlag?: boolean;
+    comment?: string | undefined;
+    mccStatusDate?: string | undefined;
+    extNotificationID?: number | undefined;
+    appIndApplStatusID?: number | undefined;
+    refApplID?: number | undefined;
+    objectID?: number;
+    dataFromESubmission?: boolean;
+    aIsContactTypeID?: boolean | undefined;
+    condApprovalReasonTypeID?: number | undefined;
+    ipAddress?: string | undefined;
+    reasonForDelayInFiling?: string | undefined;
+    flagDesc?: string | undefined;
+    residentStatus?: string | undefined;
+    isOrdinarilyResident?: boolean | undefined;
+    docAbbrivation?: string | undefined;
+    applFeeReceived?: string | undefined;
+    applFeeComment?: string | undefined;
+    isESSAccessActive?: boolean;
+    isPEP?: boolean;
+    contactFunctionID?: number | undefined;
+    contactFunctionTypeID?: number;
+    contactFunctionTypeDesc?: string | undefined;
+    effectiveDate?: string | undefined;
+    endDate?: string | undefined;
+    lastModifiedDate?: string | undefined;
+    reviewStatus?: string | undefined;
+    selected?: boolean;
+    isFunctionActive?: boolean;
+    isRecordEditable?: number;
 }
 
 export class ContactUs implements IContactUs {
@@ -12817,6 +21379,146 @@ export interface IDocSignatoriesBaseResponse {
     response?: DocSignatories;
 }
 
+export class DocSignatoriesListBaseResponse implements IDocSignatoriesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories[] | undefined;
+
+    constructor(data?: IDocSignatoriesListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(DocSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DocSignatoriesListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocSignatoriesListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IDocSignatoriesListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: DocSignatories[] | undefined;
+}
+
+export class DocumentDetails implements IDocumentDetails {
+    docTypeID?: number;
+    seqNum?: number;
+    docSignatoryID?: number;
+    roles?: string[] | undefined;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+    lstAllAIs?: ApplicationDetail[] | undefined;
+    qfcNum?: string | undefined;
+
+    constructor(data?: IDocumentDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.docTypeID = _data["docTypeID"];
+            this.seqNum = _data["seqNum"];
+            this.docSignatoryID = _data["docSignatoryID"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
+            if (Array.isArray(_data["lstReportSignatories"])) {
+                this.lstReportSignatories = [] as any;
+                for (let item of _data["lstReportSignatories"])
+                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstAllAIs"])) {
+                this.lstAllAIs = [] as any;
+                for (let item of _data["lstAllAIs"])
+                    this.lstAllAIs!.push(ApplicationDetail.fromJS(item));
+            }
+            this.qfcNum = _data["qfcNum"];
+        }
+    }
+
+    static fromJS(data: any): DocumentDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new DocumentDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["docTypeID"] = this.docTypeID;
+        data["seqNum"] = this.seqNum;
+        data["docSignatoryID"] = this.docSignatoryID;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        if (Array.isArray(this.lstReportSignatories)) {
+            data["lstReportSignatories"] = [];
+            for (let item of this.lstReportSignatories)
+                data["lstReportSignatories"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstAllAIs)) {
+            data["lstAllAIs"] = [];
+            for (let item of this.lstAllAIs)
+                data["lstAllAIs"].push(item.toJSON());
+        }
+        data["qfcNum"] = this.qfcNum;
+        return data;
+    }
+}
+
+export interface IDocumentDetails {
+    docTypeID?: number;
+    seqNum?: number;
+    docSignatoryID?: number;
+    roles?: string[] | undefined;
+    lstReportSignatories?: ReportSignatories[] | undefined;
+    lstAllAIs?: ApplicationDetail[] | undefined;
+    qfcNum?: string | undefined;
+}
+
 export class EmailEventForReportValidationRequest implements IEmailEventForReportValidationRequest {
     objReportSchDetails?: ReportSchDetails;
     lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
@@ -13017,6 +21719,70 @@ export interface IEmailRequisites {
     notifiedBy?: number | undefined;
 }
 
+export class Firm implements IFirm {
+    firmName?: string | undefined;
+    firmCode?: string | undefined;
+    prudentialCategoryId?: number;
+    prudentialCategoryDesc?: string | undefined;
+    legalStatusTypeID?: number;
+    legalStatusTypeDesc?: string | undefined;
+    webSiteAddress?: string | undefined;
+    isAuthorised?: boolean;
+
+    constructor(data?: IFirm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmName = _data["firmName"];
+            this.firmCode = _data["firmCode"];
+            this.prudentialCategoryId = _data["prudentialCategoryId"];
+            this.prudentialCategoryDesc = _data["prudentialCategoryDesc"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.legalStatusTypeDesc = _data["legalStatusTypeDesc"];
+            this.webSiteAddress = _data["webSiteAddress"];
+            this.isAuthorised = _data["isAuthorised"];
+        }
+    }
+
+    static fromJS(data: any): Firm {
+        data = typeof data === 'object' ? data : {};
+        let result = new Firm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmName"] = this.firmName;
+        data["firmCode"] = this.firmCode;
+        data["prudentialCategoryId"] = this.prudentialCategoryId;
+        data["prudentialCategoryDesc"] = this.prudentialCategoryDesc;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["legalStatusTypeDesc"] = this.legalStatusTypeDesc;
+        data["webSiteAddress"] = this.webSiteAddress;
+        data["isAuthorised"] = this.isAuthorised;
+        return data;
+    }
+}
+
+export interface IFirm {
+    firmName?: string | undefined;
+    firmCode?: string | undefined;
+    prudentialCategoryId?: number;
+    prudentialCategoryDesc?: string | undefined;
+    legalStatusTypeID?: number;
+    legalStatusTypeDesc?: string | undefined;
+    webSiteAddress?: string | undefined;
+    isAuthorised?: boolean;
+}
+
 export class FirmContactDetails implements IFirmContactDetails {
     firmID?: number;
     applicationID?: number;
@@ -13215,6 +21981,274 @@ export interface IFirmContactDetails {
     amlDirectorEmailAddress?: string | undefined;
     rsgEmailAddress?: string | undefined;
     firmTypeID?: number;
+}
+
+export class FirmContactDetailsBaseResponse implements IFirmContactDetailsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmContactDetails;
+
+    constructor(data?: IFirmContactDetailsBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? FirmContactDetails.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): FirmContactDetailsBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmContactDetailsBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IFirmContactDetailsBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmContactDetails;
+}
+
+export class FirmDetailsDto implements IFirmDetailsDto {
+    qfcNumber?: string | undefined;
+    firmName?: string | undefined;
+    firmCode?: string | undefined;
+    legalStatusTypeID?: number | undefined;
+    legalStatusTypeDesc?: string | undefined;
+    webSiteAddress?: string | undefined;
+    operationalStatusTypeID?: number | undefined;
+    operationalStatusTypeDesc?: string | undefined;
+    firmPrudentialCategoryId?: number | undefined;
+    prudentialCategoryTypeDesc?: string | undefined;
+    firmSectorTypeID?: number | undefined;
+    firmApplStatus?: number | undefined;
+    firmApplStatusDesc?: string | undefined;
+    firmApplStatusDate?: string | undefined;
+    firmRptBasisTypeID?: number | undefined;
+    firmRptBasisTypeDesc?: string | undefined;
+    createdDate?: Date | undefined;
+    lastModifiedDate?: Date | undefined;
+    firmSectorTypeDesc?: string | undefined;
+    isAuthorised?: boolean | undefined;
+    holdsClientMoney?: boolean | undefined;
+    firmTypeID?: number | undefined;
+    isFirmActive?: boolean | undefined;
+    licensedDate?: string | undefined;
+    licenseStatusTypeDesc?: string | undefined;
+    primarySupervisorEmailAddress?: string | undefined;
+    secondarySupervisorEmailAddress?: string | undefined;
+    additionalSupervisorEmailAddress?: string | undefined;
+    amlPrimarySupervisorEmailAddress?: string | undefined;
+    amlSecondarySupervisorEmailAddress?: string | undefined;
+    additionalAMLSupervisorEmailAddress?: string | undefined;
+    directorEmailAddress?: string | undefined;
+    amlDirectorEmailAddress?: string | undefined;
+    rsgEmailAddress?: string | undefined;
+    firmTypeDesc?: string | undefined;
+
+    constructor(data?: IFirmDetailsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.firmName = _data["firmName"];
+            this.firmCode = _data["firmCode"];
+            this.legalStatusTypeID = _data["legalStatusTypeID"];
+            this.legalStatusTypeDesc = _data["legalStatusTypeDesc"];
+            this.webSiteAddress = _data["webSiteAddress"];
+            this.operationalStatusTypeID = _data["operationalStatusTypeID"];
+            this.operationalStatusTypeDesc = _data["operationalStatusTypeDesc"];
+            this.firmPrudentialCategoryId = _data["firmPrudentialCategoryId"];
+            this.prudentialCategoryTypeDesc = _data["prudentialCategoryTypeDesc"];
+            this.firmSectorTypeID = _data["firmSectorTypeID"];
+            this.firmApplStatus = _data["firmApplStatus"];
+            this.firmApplStatusDesc = _data["firmApplStatusDesc"];
+            this.firmApplStatusDate = _data["firmApplStatusDate"];
+            this.firmRptBasisTypeID = _data["firmRptBasisTypeID"];
+            this.firmRptBasisTypeDesc = _data["firmRptBasisTypeDesc"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.lastModifiedDate = _data["lastModifiedDate"] ? new Date(_data["lastModifiedDate"].toString()) : <any>undefined;
+            this.firmSectorTypeDesc = _data["firmSectorTypeDesc"];
+            this.isAuthorised = _data["isAuthorised"];
+            this.holdsClientMoney = _data["holdsClientMoney"];
+            this.firmTypeID = _data["firmTypeID"];
+            this.isFirmActive = _data["isFirmActive"];
+            this.licensedDate = _data["licensedDate"];
+            this.licenseStatusTypeDesc = _data["licenseStatusTypeDesc"];
+            this.primarySupervisorEmailAddress = _data["primarySupervisorEmailAddress"];
+            this.secondarySupervisorEmailAddress = _data["secondarySupervisorEmailAddress"];
+            this.additionalSupervisorEmailAddress = _data["additionalSupervisorEmailAddress"];
+            this.amlPrimarySupervisorEmailAddress = _data["amlPrimarySupervisorEmailAddress"];
+            this.amlSecondarySupervisorEmailAddress = _data["amlSecondarySupervisorEmailAddress"];
+            this.additionalAMLSupervisorEmailAddress = _data["additionalAMLSupervisorEmailAddress"];
+            this.directorEmailAddress = _data["directorEmailAddress"];
+            this.amlDirectorEmailAddress = _data["amlDirectorEmailAddress"];
+            this.rsgEmailAddress = _data["rsgEmailAddress"];
+            this.firmTypeDesc = _data["firmTypeDesc"];
+        }
+    }
+
+    static fromJS(data: any): FirmDetailsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmDetailsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["firmName"] = this.firmName;
+        data["firmCode"] = this.firmCode;
+        data["legalStatusTypeID"] = this.legalStatusTypeID;
+        data["legalStatusTypeDesc"] = this.legalStatusTypeDesc;
+        data["webSiteAddress"] = this.webSiteAddress;
+        data["operationalStatusTypeID"] = this.operationalStatusTypeID;
+        data["operationalStatusTypeDesc"] = this.operationalStatusTypeDesc;
+        data["firmPrudentialCategoryId"] = this.firmPrudentialCategoryId;
+        data["prudentialCategoryTypeDesc"] = this.prudentialCategoryTypeDesc;
+        data["firmSectorTypeID"] = this.firmSectorTypeID;
+        data["firmApplStatus"] = this.firmApplStatus;
+        data["firmApplStatusDesc"] = this.firmApplStatusDesc;
+        data["firmApplStatusDate"] = this.firmApplStatusDate;
+        data["firmRptBasisTypeID"] = this.firmRptBasisTypeID;
+        data["firmRptBasisTypeDesc"] = this.firmRptBasisTypeDesc;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["lastModifiedDate"] = this.lastModifiedDate ? this.lastModifiedDate.toISOString() : <any>undefined;
+        data["firmSectorTypeDesc"] = this.firmSectorTypeDesc;
+        data["isAuthorised"] = this.isAuthorised;
+        data["holdsClientMoney"] = this.holdsClientMoney;
+        data["firmTypeID"] = this.firmTypeID;
+        data["isFirmActive"] = this.isFirmActive;
+        data["licensedDate"] = this.licensedDate;
+        data["licenseStatusTypeDesc"] = this.licenseStatusTypeDesc;
+        data["primarySupervisorEmailAddress"] = this.primarySupervisorEmailAddress;
+        data["secondarySupervisorEmailAddress"] = this.secondarySupervisorEmailAddress;
+        data["additionalSupervisorEmailAddress"] = this.additionalSupervisorEmailAddress;
+        data["amlPrimarySupervisorEmailAddress"] = this.amlPrimarySupervisorEmailAddress;
+        data["amlSecondarySupervisorEmailAddress"] = this.amlSecondarySupervisorEmailAddress;
+        data["additionalAMLSupervisorEmailAddress"] = this.additionalAMLSupervisorEmailAddress;
+        data["directorEmailAddress"] = this.directorEmailAddress;
+        data["amlDirectorEmailAddress"] = this.amlDirectorEmailAddress;
+        data["rsgEmailAddress"] = this.rsgEmailAddress;
+        data["firmTypeDesc"] = this.firmTypeDesc;
+        return data;
+    }
+}
+
+export interface IFirmDetailsDto {
+    qfcNumber?: string | undefined;
+    firmName?: string | undefined;
+    firmCode?: string | undefined;
+    legalStatusTypeID?: number | undefined;
+    legalStatusTypeDesc?: string | undefined;
+    webSiteAddress?: string | undefined;
+    operationalStatusTypeID?: number | undefined;
+    operationalStatusTypeDesc?: string | undefined;
+    firmPrudentialCategoryId?: number | undefined;
+    prudentialCategoryTypeDesc?: string | undefined;
+    firmSectorTypeID?: number | undefined;
+    firmApplStatus?: number | undefined;
+    firmApplStatusDesc?: string | undefined;
+    firmApplStatusDate?: string | undefined;
+    firmRptBasisTypeID?: number | undefined;
+    firmRptBasisTypeDesc?: string | undefined;
+    createdDate?: Date | undefined;
+    lastModifiedDate?: Date | undefined;
+    firmSectorTypeDesc?: string | undefined;
+    isAuthorised?: boolean | undefined;
+    holdsClientMoney?: boolean | undefined;
+    firmTypeID?: number | undefined;
+    isFirmActive?: boolean | undefined;
+    licensedDate?: string | undefined;
+    licenseStatusTypeDesc?: string | undefined;
+    primarySupervisorEmailAddress?: string | undefined;
+    secondarySupervisorEmailAddress?: string | undefined;
+    additionalSupervisorEmailAddress?: string | undefined;
+    amlPrimarySupervisorEmailAddress?: string | undefined;
+    amlSecondarySupervisorEmailAddress?: string | undefined;
+    additionalAMLSupervisorEmailAddress?: string | undefined;
+    directorEmailAddress?: string | undefined;
+    amlDirectorEmailAddress?: string | undefined;
+    rsgEmailAddress?: string | undefined;
+    firmTypeDesc?: string | undefined;
+}
+
+export class FirmDetailsDtoBaseResponse implements IFirmDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmDetailsDto;
+
+    constructor(data?: IFirmDetailsDtoBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? FirmDetailsDto.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): FirmDetailsDtoBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FirmDetailsDtoBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IFirmDetailsDtoBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: FirmDetailsDto;
 }
 
 export class FirmDto implements IFirmDto {
@@ -15337,6 +24371,86 @@ export interface IObjTasksListBaseResponse {
     response?: ObjTasks[] | undefined;
 }
 
+export class ObjectSOStatus implements IObjectSOStatus {
+    objectSOStatusID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    soStatusTypeID?: number;
+    soStatusTypeDesc?: string | undefined;
+    soInitiationDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    userID?: number;
+    soTaskValid?: boolean | undefined;
+    docTypeID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    attachmentID?: number;
+
+    constructor(data?: IObjectSOStatus) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objectSOStatusID = _data["objectSOStatusID"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.soStatusTypeDesc = _data["soStatusTypeDesc"];
+            this.soInitiationDate = _data["soInitiationDate"];
+            this.soCompletionDate = _data["soCompletionDate"];
+            this.userID = _data["userID"];
+            this.soTaskValid = _data["soTaskValid"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.attachmentID = _data["attachmentID"];
+        }
+    }
+
+    static fromJS(data: any): ObjectSOStatus {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOStatus();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objectSOStatusID"] = this.objectSOStatusID;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["soStatusTypeDesc"] = this.soStatusTypeDesc;
+        data["soInitiationDate"] = this.soInitiationDate;
+        data["soCompletionDate"] = this.soCompletionDate;
+        data["userID"] = this.userID;
+        data["soTaskValid"] = this.soTaskValid;
+        data["docTypeID"] = this.docTypeID;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["attachmentID"] = this.attachmentID;
+        return data;
+    }
+}
+
+export interface IObjectSOStatus {
+    objectSOStatusID?: number;
+    objectID?: number;
+    objectInstanceID?: number;
+    soStatusTypeID?: number;
+    soStatusTypeDesc?: string | undefined;
+    soInitiationDate?: string | undefined;
+    soCompletionDate?: string | undefined;
+    userID?: number;
+    soTaskValid?: boolean | undefined;
+    docTypeID?: number;
+    rptFreqTypeDesc?: string | undefined;
+    attachmentID?: number;
+}
+
 export class ObjectSOStatusDto implements IObjectSOStatusDto {
     objectID?: number | undefined;
     objectInstanceID?: number | undefined;
@@ -15387,6 +24501,62 @@ export interface IObjectSOStatusDto {
     soStatusTypeID?: number | undefined;
     userID?: number | undefined;
     soTaskValid?: boolean | undefined;
+}
+
+export class ObjectSOStatusListBaseResponse implements IObjectSOStatusListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSOStatus[] | undefined;
+
+    constructor(data?: IObjectSOStatusListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjectSOStatus.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectSOStatusListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOStatusListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjectSOStatusListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSOStatus[] | undefined;
 }
 
 export class ObjectSOTaskStatus implements IObjectSOTaskStatus {
@@ -15619,6 +24789,62 @@ export interface IObjectSOTaskStatusDto {
     individualJobTitle?: string | undefined;
     objectID?: any | undefined;
     objectInstanceID?: any | undefined;
+}
+
+export class ObjectSOTaskStatusDtoListBaseResponse implements IObjectSOTaskStatusDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSOTaskStatusDto[] | undefined;
+
+    constructor(data?: IObjectSOTaskStatusDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjectSOTaskStatusDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectSOTaskStatusDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectSOTaskStatusDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjectSOTaskStatusDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectSOTaskStatusDto[] | undefined;
 }
 
 export class ObjectSOTaskStatusListBaseResponse implements IObjectSOTaskStatusListBaseResponse {
@@ -16247,6 +25473,150 @@ export class ProcessNoticeEmailDetailsRequest implements IProcessNoticeEmailDeta
 export interface IProcessNoticeEmailDetailsRequest {
     dsNoticeEmail?: DataSet;
     objNotice?: WNoticeDto;
+}
+
+export class ProductActivity implements IProductActivity {
+    productRowCount?: string | undefined;
+    productTypeID?: string | undefined;
+    productTypeDescription?: string | undefined;
+    appliedDate?: string | undefined;
+    withDrawnDate?: string | undefined;
+    effectiveDate?: string | undefined;
+    firmScopeTypeID?: number;
+    firmScopeTypeDescription?: string | undefined;
+    firmActivityID?: number | undefined;
+    productCatTypeDesc?: string | undefined;
+    productCatTypeId?: number;
+    productCatCSS?: string | undefined;
+    productCSS?: string | undefined;
+    childProductCount?: number;
+    totalProductUnderCategoryCount?: number;
+    savedProductCount?: number;
+    isProductReferencedInAis?: number;
+    approvedDate?: string | undefined;
+    appliedforWithDrawnDate?: string | undefined;
+    statusDate?: string | undefined;
+    statusID?: number;
+    statusDesc?: string | undefined;
+    activityTypeID?: number | undefined;
+    approvalProposedCommenceDate?: string | undefined;
+    withdrawalProposedCommenceDate?: string | undefined;
+    approvalCommenceUponApplApprovalFlag?: boolean;
+    withdrawalCommenceUponApplApprovalFlag?: boolean;
+    conditionalApprovalDate?: string | undefined;
+
+    constructor(data?: IProductActivity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.productRowCount = _data["productRowCount"];
+            this.productTypeID = _data["productTypeID"];
+            this.productTypeDescription = _data["productTypeDescription"];
+            this.appliedDate = _data["appliedDate"];
+            this.withDrawnDate = _data["withDrawnDate"];
+            this.effectiveDate = _data["effectiveDate"];
+            this.firmScopeTypeID = _data["firmScopeTypeID"];
+            this.firmScopeTypeDescription = _data["firmScopeTypeDescription"];
+            this.firmActivityID = _data["firmActivityID"];
+            this.productCatTypeDesc = _data["productCatTypeDesc"];
+            this.productCatTypeId = _data["productCatTypeId"];
+            this.productCatCSS = _data["productCatCSS"];
+            this.productCSS = _data["productCSS"];
+            this.childProductCount = _data["childProductCount"];
+            this.totalProductUnderCategoryCount = _data["totalProductUnderCategoryCount"];
+            this.savedProductCount = _data["savedProductCount"];
+            this.isProductReferencedInAis = _data["isProductReferencedInAis"];
+            this.approvedDate = _data["approvedDate"];
+            this.appliedforWithDrawnDate = _data["appliedforWithDrawnDate"];
+            this.statusDate = _data["statusDate"];
+            this.statusID = _data["statusID"];
+            this.statusDesc = _data["statusDesc"];
+            this.activityTypeID = _data["activityTypeID"];
+            this.approvalProposedCommenceDate = _data["approvalProposedCommenceDate"];
+            this.withdrawalProposedCommenceDate = _data["withdrawalProposedCommenceDate"];
+            this.approvalCommenceUponApplApprovalFlag = _data["approvalCommenceUponApplApprovalFlag"];
+            this.withdrawalCommenceUponApplApprovalFlag = _data["withdrawalCommenceUponApplApprovalFlag"];
+            this.conditionalApprovalDate = _data["conditionalApprovalDate"];
+        }
+    }
+
+    static fromJS(data: any): ProductActivity {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProductActivity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["productRowCount"] = this.productRowCount;
+        data["productTypeID"] = this.productTypeID;
+        data["productTypeDescription"] = this.productTypeDescription;
+        data["appliedDate"] = this.appliedDate;
+        data["withDrawnDate"] = this.withDrawnDate;
+        data["effectiveDate"] = this.effectiveDate;
+        data["firmScopeTypeID"] = this.firmScopeTypeID;
+        data["firmScopeTypeDescription"] = this.firmScopeTypeDescription;
+        data["firmActivityID"] = this.firmActivityID;
+        data["productCatTypeDesc"] = this.productCatTypeDesc;
+        data["productCatTypeId"] = this.productCatTypeId;
+        data["productCatCSS"] = this.productCatCSS;
+        data["productCSS"] = this.productCSS;
+        data["childProductCount"] = this.childProductCount;
+        data["totalProductUnderCategoryCount"] = this.totalProductUnderCategoryCount;
+        data["savedProductCount"] = this.savedProductCount;
+        data["isProductReferencedInAis"] = this.isProductReferencedInAis;
+        data["approvedDate"] = this.approvedDate;
+        data["appliedforWithDrawnDate"] = this.appliedforWithDrawnDate;
+        data["statusDate"] = this.statusDate;
+        data["statusID"] = this.statusID;
+        data["statusDesc"] = this.statusDesc;
+        data["activityTypeID"] = this.activityTypeID;
+        data["approvalProposedCommenceDate"] = this.approvalProposedCommenceDate;
+        data["withdrawalProposedCommenceDate"] = this.withdrawalProposedCommenceDate;
+        data["approvalCommenceUponApplApprovalFlag"] = this.approvalCommenceUponApplApprovalFlag;
+        data["withdrawalCommenceUponApplApprovalFlag"] = this.withdrawalCommenceUponApplApprovalFlag;
+        data["conditionalApprovalDate"] = this.conditionalApprovalDate;
+        return data;
+    }
+}
+
+export interface IProductActivity {
+    productRowCount?: string | undefined;
+    productTypeID?: string | undefined;
+    productTypeDescription?: string | undefined;
+    appliedDate?: string | undefined;
+    withDrawnDate?: string | undefined;
+    effectiveDate?: string | undefined;
+    firmScopeTypeID?: number;
+    firmScopeTypeDescription?: string | undefined;
+    firmActivityID?: number | undefined;
+    productCatTypeDesc?: string | undefined;
+    productCatTypeId?: number;
+    productCatCSS?: string | undefined;
+    productCSS?: string | undefined;
+    childProductCount?: number;
+    totalProductUnderCategoryCount?: number;
+    savedProductCount?: number;
+    isProductReferencedInAis?: number;
+    approvedDate?: string | undefined;
+    appliedforWithDrawnDate?: string | undefined;
+    statusDate?: string | undefined;
+    statusID?: number;
+    statusDesc?: string | undefined;
+    activityTypeID?: number | undefined;
+    approvalProposedCommenceDate?: string | undefined;
+    withdrawalProposedCommenceDate?: string | undefined;
+    approvalCommenceUponApplApprovalFlag?: boolean;
+    withdrawalCommenceUponApplApprovalFlag?: boolean;
+    conditionalApprovalDate?: string | undefined;
 }
 
 export class ReportSchDetails implements IReportSchDetails {
@@ -17385,6 +26755,54 @@ export interface IReportSignatories {
     userRole?: number;
 }
 
+export class ReportSignatoriesBaseResponse implements IReportSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSignatories;
+
+    constructor(data?: IReportSignatoriesBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? ReportSignatories.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ReportSignatoriesBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatoriesBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IReportSignatoriesBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ReportSignatories;
+}
+
 export class ReportSignatoriesListBaseResponse implements IReportSignatoriesListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -17439,6 +26857,210 @@ export interface IReportSignatoriesListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: ReportSignatories[] | undefined;
+}
+
+export class ReportSignatoryGroups implements IReportSignatoryGroups {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
+    lstThird?: ReportSignatories[] | undefined;
+    lstFourth?: ReportSignatories[] | undefined;
+
+    constructor(data?: IReportSignatoryGroups) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["lstFirst"])) {
+                this.lstFirst = [] as any;
+                for (let item of _data["lstFirst"])
+                    this.lstFirst!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstSecond"])) {
+                this.lstSecond = [] as any;
+                for (let item of _data["lstSecond"])
+                    this.lstSecond!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstThird"])) {
+                this.lstThird = [] as any;
+                for (let item of _data["lstThird"])
+                    this.lstThird!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstFourth"])) {
+                this.lstFourth = [] as any;
+                for (let item of _data["lstFourth"])
+                    this.lstFourth!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSignatoryGroups {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatoryGroups();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.lstFirst)) {
+            data["lstFirst"] = [];
+            for (let item of this.lstFirst)
+                data["lstFirst"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstSecond)) {
+            data["lstSecond"] = [];
+            for (let item of this.lstSecond)
+                data["lstSecond"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstThird)) {
+            data["lstThird"] = [];
+            for (let item of this.lstThird)
+                data["lstThird"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstFourth)) {
+            data["lstFourth"] = [];
+            for (let item of this.lstFourth)
+                data["lstFourth"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSignatoryGroups {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
+    lstThird?: ReportSignatories[] | undefined;
+    lstFourth?: ReportSignatories[] | undefined;
+}
+
+export class ReportSignatoryGroupsWithThreeLists implements IReportSignatoryGroupsWithThreeLists {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
+    lstThird?: ReportSignatories[] | undefined;
+
+    constructor(data?: IReportSignatoryGroupsWithThreeLists) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["lstFirst"])) {
+                this.lstFirst = [] as any;
+                for (let item of _data["lstFirst"])
+                    this.lstFirst!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstSecond"])) {
+                this.lstSecond = [] as any;
+                for (let item of _data["lstSecond"])
+                    this.lstSecond!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstThird"])) {
+                this.lstThird = [] as any;
+                for (let item of _data["lstThird"])
+                    this.lstThird!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSignatoryGroupsWithThreeLists {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatoryGroupsWithThreeLists();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.lstFirst)) {
+            data["lstFirst"] = [];
+            for (let item of this.lstFirst)
+                data["lstFirst"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstSecond)) {
+            data["lstSecond"] = [];
+            for (let item of this.lstSecond)
+                data["lstSecond"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstThird)) {
+            data["lstThird"] = [];
+            for (let item of this.lstThird)
+                data["lstThird"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSignatoryGroupsWithThreeLists {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
+    lstThird?: ReportSignatories[] | undefined;
+}
+
+export class ReportSignatoryGroupsWithTwoLists implements IReportSignatoryGroupsWithTwoLists {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
+
+    constructor(data?: IReportSignatoryGroupsWithTwoLists) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["lstFirst"])) {
+                this.lstFirst = [] as any;
+                for (let item of _data["lstFirst"])
+                    this.lstFirst!.push(ReportSignatories.fromJS(item));
+            }
+            if (Array.isArray(_data["lstSecond"])) {
+                this.lstSecond = [] as any;
+                for (let item of _data["lstSecond"])
+                    this.lstSecond!.push(ReportSignatories.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ReportSignatoryGroupsWithTwoLists {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSignatoryGroupsWithTwoLists();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.lstFirst)) {
+            data["lstFirst"] = [];
+            for (let item of this.lstFirst)
+                data["lstFirst"].push(item.toJSON());
+        }
+        if (Array.isArray(this.lstSecond)) {
+            data["lstSecond"] = [];
+            for (let item of this.lstSecond)
+                data["lstSecond"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IReportSignatoryGroupsWithTwoLists {
+    lstFirst?: ReportSignatories[] | undefined;
+    lstSecond?: ReportSignatories[] | undefined;
 }
 
 export class Residencies implements IResidencies {
@@ -17741,6 +27363,62 @@ export interface ISignOffDetails {
     agreedOnTerms?: boolean | undefined;
     termsAgreedDate?: string | undefined;
     soTaskValid?: boolean | undefined;
+}
+
+export class SignOffDetailsListBaseResponse implements ISignOffDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SignOffDetails[] | undefined;
+
+    constructor(data?: ISignOffDetailsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(SignOffDetails.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SignOffDetailsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SignOffDetailsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISignOffDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SignOffDetails[] | undefined;
 }
 
 export class SortVersion implements ISortVersion {
@@ -22425,7 +32103,7 @@ export interface FileParameter {
 }
 
 export class ApiException extends Error {
-    override message: string;
+   override  message: string;
     status: number;
     response: string;
     headers: { [key: string]: any; };
