@@ -56,18 +56,57 @@ export class ApprovalComponent {
   };
 
   controlledFunctions = [
-    { id: 1, name: 'Non-Executive Governance Function', isSelected: false },
-    { id: 2, name: 'Executive Governance Function', isSelected: false },
-    { name: 'Senior Executive Function', isSelected: false },
-    { name: 'Senior Management Function', isSelected: false },
-    { name: 'Finance Function', isSelected: false },
-    { name: 'Risk Management Function', isSelected: false },
-    { name: 'Compliance Oversight Function', isSelected: false },
-    { name: 'MLRO Function', isSelected: false },
-    { name: 'Internal Audit Function', isSelected: false },
-    { name: 'Actuarial Function', isSelected: false },
+    {
+      id: 1,
+      name: 'Non-Executive Governance Function',
+      typeId: 101,
+      isSelected: false,
+    },
+    {
+      id: 2,
+      name: 'Executive Governance Function',
+      typeId: 102,
+      isSelected: false,
+    },
+    {
+      id: 3,
+      name: 'Senior Executive Function',
+      typeId: 103,
+      isSelected: false,
+    },
+    {
+      id: 4,
+      name: 'Senior Management Function',
+      typeId: 104,
+      isSelected: false,
+    },
+    { id: 5, name: 'Finance Function', typeId: 105, isSelected: false },
+    { id: 6, name: 'Risk Management Function', typeId: 106, isSelected: false },
+    {
+      id: 7,
+      name: 'Compliance Oversight Function',
+      typeId: 107,
+      isSelected: false,
+    },
+    { id: 8, name: 'MLRO Function', typeId: 108, isSelected: false },
+    { id: 9, name: 'Internal Audit Function', typeId: 109, isSelected: false },
+    { id: 10, name: 'Actuarial Function', typeId: 110, isSelected: false },
   ];
-
+  getSelectedFunctions(): ControlledFunctionDto[] {
+    return this.controlledFunctions
+      .filter((func) => func.isSelected)
+      .map((func) =>
+        ControlledFunctionDto.fromJS({
+          controlFunctionID: func.id, // C# equivalent of hdnFunctionID
+          applicationID: this.ApplicationID ?? undefined, // Equivalent of lblAppicationID
+          functionTypeID: func.typeId, // C# equivalent of hdnFunctionTypeID
+          functionTypeDesc: func.name.replace(/<i>|<\/i>/g, ''), // Remove <i> tags if present
+          actionTypeID: 1, // Equivalent of ActionType.Add in C#
+          userID: this.data.userID, // Equivalent of _userID
+          pageFlag: 'CF',
+        })
+      );
+  }
   dropdwonvalues(): void {
     this.client.getObjectTypeTable('Countries').subscribe({
       next: (response) => {
@@ -249,18 +288,31 @@ export class ApprovalComponent {
 
   // Save functionality
   async onSave(): Promise<void> {
-    console.log(this.applicant.dob);
-    // const isValid = await this.validateForm(1);
-    // if (!isValid) {
-    //   this.toastr.error('Please fix validation errors before submitting.');
-    //   return;
-    // }
-    // console.log('Submit clicked');
-    // this.saveApplicationData();
+    const isValid = await this.validateForm(1);
+    if (!isValid) {
+      this.toastr.error('Please fix validation errors before submitting.');
+      return;
+    }
+    let appID = 0;
+    try {
+      appID = await this.saveApplicationData(); // Use await to get the resolved value
+    } catch (error) {
+      console.error('Error while saving application data', error);
+    }
+
+    if (appID > 0) {
+      this.toastr.success('Application saved successfully!', 'Success');
+      this.unsavedChanges = false; // Reset unsaved changes flag
+    } else {
+      this.validationErrors['savemessage'] = await this.getValidationMessage(
+        IndividualDetailsValidation.REQUIREDFIELD_VALDATION.toString()
+      );
+    }
   }
 
   // Save and close functionality
   onSaveAndClose(): void {
+    this.onSave();
     this.toastr.success('Changes saved successfully!', 'Success');
     this.dialogRef.close();
   }
@@ -286,7 +338,21 @@ export class ApprovalComponent {
       this.toastr.error('Please fix validation errors before submitting.');
       return;
     }
-    console.log('Submit clicked');
+    let appID = 0;
+    try {
+      appID = await this.saveApplicationData(); // Use await to get the resolved value
+    } catch (error) {
+      console.error('Error while saving application data', error);
+    }
+
+    if (appID > 0) {
+      this.toastr.success('Application saved successfully!', 'Success');
+      this.unsavedChanges = false; // Reset unsaved changes flag
+    } else {
+      this.validationErrors['savemessage'] = await this.getValidationMessage(
+        IndividualDetailsValidation.REQUIREDFIELD_VALDATION.toString()
+      );
+    }
   }
 
   private async checkUnsavedChanges(): Promise<void> {
@@ -447,7 +513,9 @@ export class ApprovalComponent {
       //check selected function
       if (!this.isFunctionsSelected()) {
         this.validationErrors['controlledFunctions'] =
-          await this.getValidationMessage( ControlledFunctionMessage.ControlledFunctionSelect.toString());
+          await this.getValidationMessage(
+            ControlledFunctionMessage.ControlledFunctionSelect.toString()
+          );
         isValid = false;
       }
 
@@ -455,15 +523,16 @@ export class ApprovalComponent {
       if (isValid === true) {
         if (await this.checkDuplicateApplication()) {
           this.validationErrors['duplicate'] = await this.getValidationMessage(
-           "298"
+            '298'
           );
           isValid = false;
         }
       }
-      if (!this.isDocumentSelected())
-        { this.validationErrors['docselected'] = await this.getValidationMessage(
-          "295"
-         );}
+      if (!this.isDocumentSelected()) {
+        this.validationErrors['docselected'] = await this.getValidationMessage(
+          '295'
+        );
+      }
     }
 
     return isValid;
@@ -508,15 +577,19 @@ export class ApprovalComponent {
     }
   }
 
-  async saveApplicationData(): Promise<void> {
+  async saveApplicationData(): Promise<number> {
+    let appID = 0;
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
         applicationID: this.ApplicationID || undefined,
+        qfcNumber: localStorage.getItem('qfc_no') || undefined,
+        userID: this.data.userID || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
         formTypeID: this.data.formTypeID?.toString() || undefined,
         familyName: this.applicant.familyName || undefined,
         otherNames: this.applicant.otherName || undefined,
         dateOfBirth: this.applicant.dob || undefined,
+        wObjectSOStatusID: this.data.WObjectSOStatusID || undefined,
         passportnumber: this.applicant.passportNumber || undefined,
         placeOfBirthCity: this.applicant.placeOfBirth || undefined,
         jurisdiction: this.applicant.jurisdiction || undefined,
@@ -524,14 +597,12 @@ export class ApprovalComponent {
         isOrdinarilyResidentFlag: this.applicant.isResident || undefined,
       });
 
-      const selectedFunctionIDs: ControlledFunctionDto[] =
-        this.controlledFunctions
-          .filter((func) => func.isSelected)
-          .map((func) => ControlledFunctionDto.fromJS({ id: func.id })); // Correct instantiation
+      const selectedFunctions: ControlledFunctionDto[] =
+        this.getSelectedFunctions();
 
       const applicationData: ApplicationDataDto = new ApplicationDataDto({
         objIndividualDetails: individualDetails,
-        lstControledFunctionIDs: selectedFunctionIDs, // Now properly instantiated
+        lstControledFunctionIDs: selectedFunctions, // Now properly instantiated
       });
 
       console.log('Submitting application data:', applicationData);
@@ -551,6 +622,7 @@ export class ApprovalComponent {
       console.error('Error submitting application:', error);
       this.toastr.error('An error occurred while submitting the application.');
     }
+    return appID;
   }
 
   redirectToApprovalForm(appID: number): void {
