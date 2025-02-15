@@ -62,7 +62,7 @@
                     <span class="spacer"></span>
                     <mat-form-field appearance="outline" class="half-width">
                       <mat-select placeholder="Jurisdiction of Issue" [(value)]="applicant.jurisdiction">
-                        <mat-option *ngFor="let option of jurisdictions" [value]="option">{{ option }}</mat-option>
+                        <mat-option *ngFor="let option of jurisdictions" [value]="option.key">{{ option.value }}</mat-option>
                       </mat-select>
                     </mat-form-field>
                     <div *ngIf="validationErrors['passportNumber']" class="error-message">
