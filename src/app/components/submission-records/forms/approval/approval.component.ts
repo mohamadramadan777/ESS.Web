@@ -43,6 +43,7 @@ export class ApprovalComponent {
   validationErrors: { [key: string]: string } = {};
   AI_ERROR_MESSAGE = '';
   jurisdictions: any[] = [];
+
   applicant = {
     familyName: '',
     otherName: '',
@@ -98,7 +99,7 @@ export class ApprovalComponent {
       .map((func) =>
         ControlledFunctionDto.fromJS({
           controlFunctionID: func.id, // C# equivalent of hdnFunctionID
-          applicationID: this.ApplicationID ?? undefined, // Equivalent of lblAppicationID
+          applicationID: this.data.ApplicationID ?? 0, // Equivalent of lblAppicationID
           functionTypeID: func.typeId, // C# equivalent of hdnFunctionTypeID
           functionTypeDesc: func.name.replace(/<i>|<\/i>/g, ''), // Remove <i> tags if present
           actionTypeID: 1, // Equivalent of ActionType.Add in C#
@@ -110,15 +111,27 @@ export class ApprovalComponent {
   dropdwonvalues(): void {
     this.client.getObjectTypeTable('Countries').subscribe({
       next: (response) => {
-        if (response && response.isSuccess && response.response) {
-          this.jurisdictions = Object.values(response.response);
+        // Check if response and response.response both exist
+        if (response && response?.isSuccess && response?.response) {
+          this.jurisdictions = Object.keys(response.response).map((key) => {
+            return {
+              key: key,
+              value: response.response ? response.response[key] : undefined,
+            };
+          });
         } else {
-          this.toastr.error('Failed to load countries list .', 'Error');
-          console.error('Failed to load countires:', response?.errorMessage);
+          this.toastr.error('Failed to load countries list.', 'Error');
+          console.error('Failed to load countries:', response?.errorMessage);
         }
       },
+      error: (err) => {
+        // Handle any errors from the API call
+        this.toastr.error('An error occurred while fetching countries.', 'Error');
+        console.error('Error fetching countries:', err);
+      }
     });
   }
+  
 
   showEmailField = false;
   showResidentQuestion = false;
@@ -549,7 +562,7 @@ export class ApprovalComponent {
       const qfcNumber = localStorage.getItem('qfc_no') || '';
       const aiNumber = this.applicant.aiNumber || '';
       const formTypeID = this.data.formTypeID || 0;
-      const windApplicationID = this.ApplicationID || 0;
+      const windApplicationID = this.data.ApplicationID || 0;
 
       // Get selected controlled function IDs
       const lstFunctions: number[] = this.controlledFunctions
@@ -582,7 +595,7 @@ export class ApprovalComponent {
     let appID = 0;
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
-        applicationID: this.data.ApplicationID || undefined,
+        applicationID: this.data.ApplicationID || 0,
         qfcNumber: localStorage.getItem('qfc_no') || undefined,
         userID: this.data.userID || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
@@ -614,7 +627,7 @@ export class ApprovalComponent {
 
       if (response && response.response) {
         console.log('Application submitted successfully:', response);
-        this.redirectToApprovalForm(response.response);
+        // this.redirectToApprovalForm(response.response);
       } else {
         console.error('Application submission failed', response);
         this.toastr.error('Failed to submit application. Please try again.');
