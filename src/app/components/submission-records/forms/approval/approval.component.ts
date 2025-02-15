@@ -346,6 +346,7 @@ export class ApprovalComponent {
     }
 
     if (appID > 0) {
+      // this.submitAIApplicationData();
       this.toastr.success('Application saved successfully!', 'Success');
       this.unsavedChanges = false; // Reset unsaved changes flag
     } else {
