@@ -60,6 +60,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { GensubComponent } from './components/submission-records/forms/gensub/gensub.component';
 import { SignOffGenericComponent } from './components/sign-off-generic/sign-off-generic.component';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -125,7 +126,7 @@ import { SignOffGenericComponent } from './components/sign-off-generic/sign-off-
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
+  providers: [provideAnimationsAsync(),DatePipe, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })

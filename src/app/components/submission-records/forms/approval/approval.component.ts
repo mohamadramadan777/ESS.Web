@@ -1,8 +1,15 @@
 import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { WObjects, FirmsContactDetailPage } from '../../../../enums/app.enums';
+import {
+  WObjects,
+  FirmsContactDetailPage,
+  IndividualDetailsValidation,
+  UserRegistrationPage,
+  ControlledFunctionMessage,
+} from '../../../../enums/app.enums';
 import { AppConstants } from '../../../../constants/app.constants';
 import { lastValueFrom } from 'rxjs';
+import { DatePipe } from '@angular/common';
 import {
   ApplicationDataDto,
   IndividualDetailsDto,
@@ -85,7 +92,8 @@ export class ApprovalComponent {
     public dialogRef: MatDialogRef<ApprovalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialog: MatDialog,
-    private messagePropertyService: MessagePropertyService
+    private messagePropertyService: MessagePropertyService,
+    private datePipe: DatePipe
   ) {}
 
   ngOnInit(): void {
@@ -102,30 +110,97 @@ export class ApprovalComponent {
       });
   }
   // AI Number Validation
-  validateAiNumber(): void {
+  validateAiNumber(): boolean {
     let aiNumber = this.applicant.aiNumber.trim();
     this.aiNumberError = '';
 
     if (aiNumber !== '') {
-      if (aiNumber.length > 8) {
-        this.aiNumberError = this.AI_ERROR_MESSAGE;
-        return;
+      // Remove "AI " prefix if present (case insensitive)
+      if (aiNumber.toUpperCase().startsWith('AI')) {
+        aiNumber = aiNumber.substring(2).trim();
       }
 
-      if (aiNumber.startsWith('AI')) {
-        aiNumber = aiNumber.substring(2).trim();
+      // Ensure it contains only digits
+      if (!/^\d+$/.test(aiNumber)) {
+        this.aiNumberError = this.AI_ERROR_MESSAGE;
+        return false;
       }
 
       const num = parseInt(aiNumber, 10);
 
-      if (isNaN(num) || num <= 0) {
+      // Ensure valid number (positive and up to 5 digits)
+      if (isNaN(num) || num <= 0 || num.toString().length > 5) {
         this.aiNumberError = this.AI_ERROR_MESSAGE;
-        return;
+        return false;
       }
 
-      // Ensure the number is 5 digits long (padded with zeros)
+      // Format AI number correctly as "AI 00001" (5-digit format)
       this.applicant.aiNumber = 'AI ' + num.toString().padStart(5, '0');
     }
+    return true;
+  }
+
+  async validateAiNumberwithFirms(dob: string): Promise<boolean> {
+    try {
+      let aiNumber = this.applicant.aiNumber.trim();
+      let datetosend = this.datePipe.transform(dob, 'dd-MMM-yyyy') || undefined;
+      // If AI number is empty, return true (matching WebForms behavior)
+      if (!aiNumber) {
+        return true;
+      }
+
+      // Ensure AI number format is valid (assuming you have a method for this)
+      if (!this.validateAiNumber()) {
+        return false;
+      }
+
+      const response = await this.client
+        .isValidAiNumber(aiNumber, datetosend)
+        .toPromise();
+
+      if (!response || response.response === undefined) {
+        throw new Error('Error fetching AI number: Server error');
+      }
+
+      return response.response === 1;
+    } catch (error) {
+      console.error('Error validating AI number:', error);
+      return false; // Return false instead of 'error' to match boolean return type
+    }
+  }
+  // Mock of the email check
+  validateEmail(): boolean {
+    const email = this.applicant.email?.trim() || '';
+
+    // Check if email is empty (Required field)
+    if (!email) {
+      return false; // Invalid: Email is required
+    }
+
+    // Email format validation (Basic regex pattern for email)
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailPattern.test(email)) {
+      return false; // Invalid: Email format is incorrect
+    }
+
+    return true; // Valid email
+  }
+  // Mock of the TextDataValidation check
+  isValidTextData(value: string): boolean {
+    // Check if the value contains special characters
+    const regex = /^[a-zA-Z\s]*$/; // Only letters and spaces allowed
+    return regex.test(value);
+  }
+
+  // Mock of the Passport validation check
+  isValidPassport(value: string): boolean {
+    // Passport validation: for simplicity, assume alphanumeric with no special characters
+    const regex = /^[a-zA-Z0-9]*$/; // Only alphanumeric characters allowed
+    return regex.test(value);
+  }
+
+  isDocumentSelected(): boolean {
+    return this.uploadedFiles.length > 0; // Returns true if files exist, false otherwise
   }
 
   // Triggered when a controlled function checkbox is toggled
@@ -173,8 +248,15 @@ export class ApprovalComponent {
   }
 
   // Save functionality
-  onSave(): void {
-    this.toastr.success('Changes saved successfully!', 'Success');
+  async onSave(): Promise<void> {
+    console.log(this.applicant.dob);
+    // const isValid = await this.validateForm(1);
+    // if (!isValid) {
+    //   this.toastr.error('Please fix validation errors before submitting.');
+    //   return;
+    // }
+    // console.log('Submit clicked');
+    // this.saveApplicationData();
   }
 
   // Save and close functionality
@@ -183,10 +265,11 @@ export class ApprovalComponent {
     this.dialogRef.close();
   }
 
-  onFileUploaded(uploadIds: number[]): void {
-    console.log('Uploaded File IDs:', uploadIds);
-  }
+  uploadedFiles: any[] = []; // Array to store uploaded file details
 
+  onFileUploaded(file: any) {
+    this.uploadedFiles.push(file); // Store the uploaded file
+  }
   onClose(): void {
     this.dialogRef.close();
   }
@@ -198,13 +281,12 @@ export class ApprovalComponent {
 
   // Submit functionality
   async onSubmit() {
-    const isValid = await this.validateForm();
+    const isValid = await this.validateForm(2);
     if (!isValid) {
       this.toastr.error('Please fix validation errors before submitting.');
       return;
     }
     console.log('Submit clicked');
-    this.saveApplicationData();
   }
 
   private async checkUnsavedChanges(): Promise<void> {
@@ -241,82 +323,147 @@ export class ApprovalComponent {
     }
   }
 
-  async validateForm(): Promise<boolean> {
+  async validateForm(flag: number): Promise<boolean> {
     this.validationErrors = {}; //reset the errors
     let isValid = true;
 
-    if (!this.applicant.familyName) {
-      this.validationErrors['familyName'] = await this.getValidationMessage(
-        '111'
-      );
-      isValid = false;
-    }
-    if (
-      !this.applicant.familyName &&
-      /[^a-zA-Z]/.test(this.applicant.familyName)
-    ) {
-      this.validationErrors['familyName'] = await this.getValidationMessage(
-        '139'
-      );
-      isValid = false;
-    }
-
-    if (!this.applicant.otherName) {
-      this.validationErrors['otherName'] = await this.getValidationMessage(
-        '112'
-      );
-      isValid = false;
-    }
-    if (!this.applicant.dob) {
-      this.validationErrors['dob'] = await this.getValidationMessage('2015');
-      isValid = false;
-    }
-    if (this.applicant.dob && new Date(this.applicant.dob) > new Date()) {
-      this.validationErrors['dob'] = await this.getValidationMessage('191');
-      isValid = false;
-    }
-
-    if (!this.applicant.placeOfBirth) {
-      this.validationErrors['placeOfBirth'] = await this.getValidationMessage(
-        '299'
-      );
-      isValid = false;
-    }
-
-    if (!this.applicant.passportNumber) {
-      this.validationErrors['passportNumber'] = await this.getValidationMessage(
-        '162'
-      );
-      isValid = false;
-    }
-
-    if (!this.applicant.jurisdiction) {
-      this.validationErrors['jurisdiction'] = await this.getValidationMessage(
-        '163'
-      );
-      isValid = false;
-    }
-
-    // if (this.applicant.aiNumber) {
-    //   const aiValidationResponse = await this.client.validateAiNumber(this.applicant.aiNumber);
-    //   if (!aiValidationResponse.valid) {
-    //     this.aiNumberError = await this.getValidationMessage("16019");
-    //     isValid = false;
-    //   }
-    // }
-
-    if (!this.isFunctionsSelected()) {
-      this.validationErrors['controlledFunctions'] =
-        await this.getValidationMessage('263');
-      isValid = false;
-    }
-    if (isValid === true) {
-      if (await this.checkDuplicateApplication()) {
-        this.validationErrors['duplicate'] = await this.getValidationMessage(
-          '298'
+    if (flag == 2) {
+      if (!this.applicant.familyName) {
+        this.validationErrors['familyName'] = await this.getValidationMessage(
+          IndividualDetailsValidation.FamilyName.toString()
         );
         isValid = false;
       }
+      if (
+        !this.applicant.familyName &&
+        /[^a-zA-Z]/.test(this.applicant.familyName)
+      ) {
+        this.validationErrors['familyName'] = await this.getValidationMessage(
+          IndividualDetailsValidation.FamilyNamenotspecialcharacters.toString()
+        );
+        isValid = false;
+      }
+
+      if (!this.applicant.otherName) {
+        this.validationErrors['othersName'] = await this.getValidationMessage(
+          IndividualDetailsValidation.OthersName.toString()
+        );
+        isValid = false;
+      }
+    }
+    let dovalidate = true;
+    if (flag === 2) {
+      if (!this.applicant.dob) {
+        this.validationErrors['dob'] = await this.getValidationMessage(
+          IndividualDetailsValidation.CompleteDOB.toString()
+        );
+        isValid = false;
+        dovalidate = false;
+      }
+      if (this.applicant.dob && new Date(this.applicant.dob) > new Date()) {
+        this.validationErrors['dob'] = await this.getValidationMessage(
+          IndividualDetailsValidation.DOBGreaterToday.toString()
+        );
+        isValid = false;
+        dovalidate = false;
+      }
+
+      if (!this.applicant.placeOfBirth) {
+        this.validationErrors['placeOfBirth'] = await this.getValidationMessage(
+          '299'
+        );
+        isValid = false;
+      }
+      if (
+        this.applicant.placeOfBirth.trim() !== '' &&
+        !this.isValidTextData(this.applicant.placeOfBirth.trim())
+      ) {
+        this.validationErrors['placeOfBirth'] = await this.getValidationMessage(
+          IndividualDetailsValidation.BirthPlaceSpecialChar.toString()
+        );
+        isValid = false;
+      }
+
+      // Validate Passport Number
+      if (!this.applicant.passportNumber) {
+        this.validationErrors['passportNumber'] =
+          await this.getValidationMessage(
+            IndividualDetailsValidation.PassportNumber.toString()
+          );
+        isValid = false;
+      }
+      if (
+        this.applicant.passportNumber.trim() !== '' &&
+        !this.isValidPassport(this.applicant.passportNumber.trim())
+      ) {
+        this.validationErrors['passportNumber'] =
+          await this.getValidationMessage(
+            IndividualDetailsValidation.PassportNumnotspecialcharacters.toString()
+          );
+        isValid = false;
+      }
+
+      if (!this.applicant.jurisdiction) {
+        this.validationErrors['jurisdiction'] = await this.getValidationMessage(
+          IndividualDetailsValidation.Jurisdiction.toString()
+        );
+        isValid = false;
+      }
+      if (dovalidate) {
+        if (this.applicant.aiNumber) {
+          let aiValidationResponse = await this.validateAiNumberwithFirms(
+            this.applicant.dob || ''
+          );
+
+          if (!aiValidationResponse) {
+            this.aiNumberError = await this.getValidationMessage(
+              FirmsContactDetailPage.AI_ERRORR_MSG.toString()
+            );
+            isValid = false;
+          }
+        }
+      }
+
+      //check if visibile email
+      if (this.showEmailField) {
+        if (!this.validateEmail()) {
+          this.validationErrors['email'] = await this.getValidationMessage(
+            FirmsContactDetailPage.MainEmailId.toString()
+          );
+          isValid = false;
+        }
+      }
+      //check trIsOrdinarilyResident
+
+      if (this.showResidentQuestion) {
+        if (this.applicant.isResident === null) {
+          this.validationErrors['isResident'] = await this.getValidationMessage(
+            '294'
+          );
+          isValid = false;
+        }
+      }
+
+      //check selected function
+      if (!this.isFunctionsSelected()) {
+        this.validationErrors['controlledFunctions'] =
+          await this.getValidationMessage( ControlledFunctionMessage.ControlledFunctionSelect.toString());
+        isValid = false;
+      }
+
+      //check duplicate application
+      if (isValid === true) {
+        if (await this.checkDuplicateApplication()) {
+          this.validationErrors['duplicate'] = await this.getValidationMessage(
+           "298"
+          );
+          isValid = false;
+        }
+      }
+      if (!this.isDocumentSelected())
+        { this.validationErrors['docselected'] = await this.getValidationMessage(
+          "295"
+         );}
     }
 
     return isValid;
