@@ -15,7 +15,7 @@
             <table class="applicant-details-table">
               <tbody>
                 <tr>
-                  <td class="label">Family Name:</td>
+                  <td class="label">Family Name:*</td>
                   <td>
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput placeholder="Enter family name" [(ngModel)]="applicant.familyName" />
@@ -26,7 +26,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="label">Other Name:</td>
+                  <td class="label">Other Name:*</td>
                   <td>
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput placeholder="Enter other name" [(ngModel)]="applicant.otherName" />
@@ -37,7 +37,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="label">Date of Birth:</td>
+                  <td class="label">Date of Birth:*</td>
                   <td>
                     <mat-form-field appearance="outline" class="half-width">
                       <input matInput [matDatepicker]="picker" placeholder="Choose a date" [(ngModel)]="applicant.dob" />
@@ -54,7 +54,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="label">Passport Number:</td>
+                  <td class="label">Passport Number:*</td>
                   <td>
                     <mat-form-field appearance="outline" class="half-width">
                       <input matInput placeholder="Enter passport number" [(ngModel)]="applicant.passportNumber" />
@@ -83,7 +83,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="label">Controlled function(s) for which individual approval is sought:</td>
+                  <td class="label">Controlled function(s) for which individual approval is sought:*</td>
                   <td>
                     <div class="controlled-functions-grid">
                         <div *ngFor="let function of controlledFunctions" class="controlled-function-item">
@@ -100,7 +100,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="showEmailField">
-                  <td class="label">Email Address:</td>
+                  <td class="label">Email Address:*</td>
                   <td>
                     <mat-form-field appearance="outline" class="full-width">
                       <input matInput placeholder="Enter email address" [(ngModel)]="applicant.email" />
@@ -108,7 +108,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="showResidentQuestion">
-                  <td class="label">Will the individual be ordinarily resident in Qatar?</td>
+                  <td class="label">Will the individual be ordinarily resident in Qatar?*</td>
                   <td>
                     <mat-radio-group [(ngModel)]="applicant.isResident" class="radio-group">
                       <mat-radio-button [value]="true">Yes</mat-radio-button>
