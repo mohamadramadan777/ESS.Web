@@ -1,162 +1,264 @@
 <div class="dialog-container">
-    <div class="dialog-header">
-      <h1 mat-dialog-title class="dialog-title">
-        <span class="label">{{ data.Form }}</span>
-      </h1>
-      <button mat-icon-button class="close-button" (click)="onClose()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-    <div class="dialog-body">
-      <mat-tab-group class="custom-tab-group">
-        <!-- Applicant Details Tab -->
-        <mat-tab label="Applicant Details">
-          <div class="tab-content">
-            <table class="applicant-details-table">
-              <tbody>
-                <tr>
-                  <td class="label">Family Name:*</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="full-width">
-                      <input matInput placeholder="Enter family name" [(ngModel)]="applicant.familyName" />
-                    </mat-form-field>
-                    <div *ngIf="validationErrors['familyName']" class="error-message">
-                      {{ validationErrors['familyName'] }}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">Other Name:*</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="full-width">
-                      <input matInput placeholder="Enter other name" [(ngModel)]="applicant.otherName" />
-                    </mat-form-field>
-                    <div *ngIf="validationErrors['otherName']" class="error-message">
-                      {{ validationErrors['otherName'] }}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">Date of Birth:*</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="half-width">
-                      <input matInput [matDatepicker]="picker" placeholder="Choose a date" [(ngModel)]="applicant.dob" />
-                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                      <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
-                    <span class="spacer"></span>
-                    <mat-form-field appearance="outline" class="half-width">
-                      <input matInput placeholder="Place of Birth" [(ngModel)]="applicant.placeOfBirth" />
-                    </mat-form-field>
-                    <div *ngIf="validationErrors['dob']" class="error-message">
-                      {{ validationErrors['dob'] }}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">Passport Number:*</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="half-width">
-                      <input matInput placeholder="Enter passport number" [(ngModel)]="applicant.passportNumber" />
-                    </mat-form-field>
-                    <span class="spacer"></span>
-                    <mat-form-field appearance="outline" class="half-width">
-                      <mat-select placeholder="Jurisdiction of Issue" [(value)]="applicant.jurisdiction">
-                        <mat-option *ngFor="let option of jurisdictions" [value]="option.key">{{ option.value }}</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <div *ngIf="validationErrors['passportNumber']" class="error-message">
-                      {{ validationErrors['passportNumber'] }}
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">AI Number (if Any):</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="full-width">
-                      <input matInput 
-                             placeholder="Enter AI number" 
-                             [(ngModel)]="applicant.aiNumber"
-                             (blur)="validateAiNumber()" />
-                    </mat-form-field>
-                    <div *ngIf="aiNumberError" class="error-message">{{ aiNumberError }}</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label">Controlled function(s) for which individual approval is sought:*</td>
-                  <td>
-                    <div class="controlled-functions-grid">
-                        <div *ngFor="let function of controlledFunctions" class="controlled-function-item">
-                          <mat-checkbox
-                            [(ngModel)]="function.isSelected"
-                            (change)="onFunctionChange(function.name)">
-                            {{ function.name }}
-                          </mat-checkbox>
-                        </div>
-                      </div>
-                      <div *ngIf="validationErrors['controlledFunctions']" class="error-message">
-                        {{ validationErrors['controlledFunctions'] }}
-                      </div>
-                  </td>
-                </tr>
-                <tr *ngIf="showEmailField">
-                  <td class="label">Email Address:*</td>
-                  <td>
-                    <mat-form-field appearance="outline" class="full-width">
-                      <input matInput placeholder="Enter email address" [(ngModel)]="applicant.email" />
-                    </mat-form-field>
-                  </td>
-                </tr>
-                <tr *ngIf="showResidentQuestion">
-                  <td class="label">Will the individual be ordinarily resident in Qatar?*</td>
-                  <td>
-                    <mat-radio-group [(ngModel)]="applicant.isResident" class="radio-group">
-                      <mat-radio-button [value]="true">Yes</mat-radio-button>
-                      <mat-radio-button [value]="false">No</mat-radio-button>
-                    </mat-radio-group>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </mat-tab>
-  
-        <!-- Attachments Tab -->
-        <mat-tab label="Attachments">
-          <div class="tab-content">
-            <app-file-uploader
-              [ShowHeaderPanel]="true"
-              [ShowHeaderFormName]="false"
-              [ObjectID]="this.AttObjectID"
-              [ObjectInstanceID]="this.ApplicationID"
-              [ObjectInstanceRevNum]="1"
-              [DocTypeID]="this.data.DocTypeId"
-              [FormTypeID]="this.data.WIndFromTypeID"
-              [ShowPrimaryDoc]="true"
-              [DocSignText]="this.DocSignText"
-              [ReportFormName]="data.Form"
-              (fileUploaded)="onFileUploaded($event)"
-            ></app-file-uploader>
-          </div>
-        </mat-tab>
-      </mat-tab-group>
-    </div>
-    <div class="modal-footer" *ngIf="!ReadOnly">
-        <button mat-icon-button class="animated-icon-button" (click)="navigateToTab(3)">
-          <mat-icon>attach_file</mat-icon>
-          <span class="animated-text">Attachments</span>
-        </button>
-        <button mat-icon-button class="animated-icon-button-small" (click)="onSave()">
-          <mat-icon>save</mat-icon>
-          <span class="animated-text">Save</span>
-        </button>
-        <button mat-icon-button class="animated-icon-button" (click)="onSaveAndClose()">
-          <mat-icon>folder_check</mat-icon>
-          <span class="animated-text">Save & Close</span>
-        </button>
-        <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
-          <mat-icon>send</mat-icon> Submit
-        </button>
-      </div>
+  <div class="dialog-header">
+    <h1 mat-dialog-title class="dialog-title">
+      <span class="label">{{ data.Form }}</span>
+    </h1>
+    <button mat-icon-button class="close-button" (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
-  
+  <div class="dialog-body">
+    <mat-tab-group class="custom-tab-group">
+      <!-- Applicant Details Tab -->
+      <mat-tab label="Applicant Details">
+        <div class="tab-content">
+          <table class="applicant-details-table">
+            <tbody>
+              <tr>
+                <td class="label">Family Name:*</td>
+                <td>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input
+                      matInput
+                      placeholder="Enter family name"
+                      [(ngModel)]="applicant.familyName"
+                    />
+                  </mat-form-field>
+                  <div
+                    *ngIf="validationErrors['familyName']"
+                    class="error-message"
+                  >
+                    {{ validationErrors["familyName"] }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Other Name:*</td>
+                <td>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input
+                      matInput
+                      placeholder="Enter other name"
+                      [(ngModel)]="applicant.otherName"
+                    />
+                  </mat-form-field>
+                  <div
+                    *ngIf="validationErrors['othersName']"
+                    class="error-message"
+                  >
+                    {{ validationErrors["othersName"] }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Date of Birth:*</td>
+                <td>
+                  <mat-form-field appearance="outline" class="half-width">
+                    <input
+                      matInput
+                      [matDatepicker]="picker"
+                      placeholder="Choose a date"
+                      [(ngModel)]="applicant.dob"
+                    />
+                    <mat-datepicker-toggle
+                      matSuffix
+                      [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                  <span class="spacer"></span>
+                  <mat-form-field appearance="outline" class="half-width">
+                    <input
+                      matInput
+                      placeholder="Place of Birth"
+                      [(ngModel)]="applicant.placeOfBirth"
+                    />
+                  </mat-form-field>
+
+                  <div
+                    *ngIf="validationErrors['placeOfBirth']"
+                    class="error-message half-width"
+                  >
+                    {{ validationErrors["placeOfBirth"] }}
+                  </div>
+
+                  <div *ngIf="validationErrors['dob']" class="error-message">
+                    {{ validationErrors["dob"] }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">Passport Number:*</td>
+                <td>
+                  <mat-form-field appearance="outline" class="half-width">
+                    <input
+                      matInput
+                      placeholder="Enter passport number"
+                      [(ngModel)]="applicant.passportNumber"
+                    />
+                  </mat-form-field>
+                  <span class="spacer"></span>
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-select
+                      placeholder="Jurisdiction of Issue"
+                      [(value)]="applicant.jurisdiction"
+                    >
+                      <mat-option
+                        *ngFor="let option of jurisdictions"
+                        [value]="option.key"
+                        >{{ option.value }}</mat-option
+                      >
+           
+                    </mat-select>
+                  </mat-form-field>
+                  <div
+                    *ngIf="validationErrors['passportNumber']"
+                    class="error-message"
+                  >
+                    {{ validationErrors["passportNumber"] }}
+                  </div>
+                  <div
+                  *ngIf="validationErrors['jurisdiction']"
+                  class="error-message"
+                >
+                  {{ validationErrors["jurisdiction"] }}
+                </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">AI Number (if Any):</td>
+                <td>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input
+                      matInput
+                      placeholder="Enter AI number"
+                      [(ngModel)]="applicant.aiNumber"
+                      (blur)="validateAiNumber()"
+                    />
+                  </mat-form-field>
+                  <div *ngIf="aiNumberError" class="error-message">
+                    {{ aiNumberError }}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="label">
+                  Controlled function(s) for which individual approval is
+                  sought:*
+                </td>
+                <td>
+                  <div class="controlled-functions-grid">
+                    <div
+                      *ngFor="let function of controlledFunctions"
+                      class="controlled-function-item"
+                    >
+                      <mat-checkbox
+                        [(ngModel)]="function.isSelected"
+                        (change)="onFunctionChange(function.name)"
+                      >
+                        {{ function.name }}
+                      </mat-checkbox>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="validationErrors['controlledFunctions']"
+                    class="error-message"
+                  >
+                    {{ validationErrors["controlledFunctions"] }}
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="showEmailField">
+                <td class="label">Email Address:*</td>
+                <td>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <input
+                      matInput
+                      placeholder="Enter email address"
+                      [(ngModel)]="applicant.email"
+                    />
+                  </mat-form-field>
+
+                  <div
+                    *ngIf="validationErrors['email']"
+                    class="error-message half-width"
+                  >
+                    {{ validationErrors["email"] }}
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="showResidentQuestion">
+                <td class="label">
+                  Will the individual be ordinarily resident in Qatar?*
+                </td>
+                <td>
+                  <mat-radio-group
+                    [(ngModel)]="applicant.isResident"
+                    class="radio-group"
+                  >
+                    <mat-radio-button [value]="true">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
+                  </mat-radio-group>
+                  <div
+                    *ngIf="validationErrors['isResident']"
+                    class="error-message half-width"
+                  >
+                    {{ validationErrors["isResident"] }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-tab>
+
+      <!-- Attachments Tab -->
+      <mat-tab label="Attachments">
+        <div class="tab-content">
+          <app-file-uploader
+            [ShowHeaderPanel]="true"
+            [ShowHeaderFormName]="false"
+            [ObjectID]="this.AttObjectID"
+            [ObjectInstanceID]="this.ApplicationID"
+            [ObjectInstanceRevNum]="1"
+            [DocTypeID]="this.data.DocTypeId"
+            [FormTypeID]="this.data.WIndFromTypeID"
+            [ShowPrimaryDoc]="true"
+            [DocSignText]="this.DocSignText"
+            [ReportFormName]="data.Form"
+            (fileUploaded)="onFileUploaded($event)"
+          ></app-file-uploader>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+  <div class="modal-footer" *ngIf="!ReadOnly">
+    <button
+      mat-icon-button
+      class="animated-icon-button"
+      (click)="navigateToTab(3)"
+    >
+      <mat-icon>attach_file</mat-icon>
+      <span class="animated-text">Attachments</span>
+    </button>
+    <button
+      mat-icon-button
+      class="animated-icon-button-small"
+      (click)="onSave()"
+    >
+      <mat-icon>save</mat-icon>
+      <span class="animated-text">Save</span>
+    </button>
+    <button
+      mat-icon-button
+      class="animated-icon-button"
+      (click)="onSaveAndClose()"
+    >
+      <mat-icon>folder_check</mat-icon>
+      <span class="animated-text">Save & Close</span>
+    </button>
+    <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+      <mat-icon>send</mat-icon> Submit
+    </button>
+  </div>
+</div>
