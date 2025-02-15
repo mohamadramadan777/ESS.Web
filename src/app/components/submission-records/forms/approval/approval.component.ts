@@ -35,6 +35,7 @@ export class ApprovalComponent {
   aiNumberError: string = ''; // Error message for AI Number validation
   validationErrors: { [key: string]: string } = {};
   AI_ERROR_MESSAGE = '';
+  jurisdictions: any[] = [];
   applicant = {
     familyName: '',
     otherName: '',
@@ -60,7 +61,18 @@ export class ApprovalComponent {
     { name: 'Actuarial Function', isSelected: false },
   ];
 
-  jurisdictions = ['Jurisdiction 1', 'Jurisdiction 2', 'Jurisdiction 3'];
+  dropdwonvalues(): void {
+    this.client.getObjectTypeTable('Countries').subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          this.jurisdictions = Object.values(response.response);
+        } else {
+          this.toastr.error('Failed to load countries list .', 'Error');
+          console.error('Failed to load countires:', response?.errorMessage);
+        }
+      },
+    });
+  }
 
   showEmailField = false;
   showResidentQuestion = false;
@@ -77,6 +89,7 @@ export class ApprovalComponent {
   ) {}
 
   ngOnInit(): void {
+    this.dropdwonvalues();
     this.setDocDescriptionTextForAttachments();
     this.loadMessageProperties();
   }
