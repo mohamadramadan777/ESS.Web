@@ -596,10 +596,10 @@ export class ApprovalComponent {
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
         applicationID: this.data.ApplicationID || 0,
+        userID:localStorage.getItem('w_userid') || 0,
         qfcNumber: localStorage.getItem('qfc_no') || undefined,
-        userID: this.data.userID || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
-        formTypeID: this.data.formTypeID?.toString() || undefined,
+        formTypeID: this.data.WIndFromTypeID?.toString() || undefined,
         familyName: this.applicant.familyName || undefined,
         otherNames: this.applicant.otherName || undefined,
         dateOfBirth: this.applicant.dob || undefined,
