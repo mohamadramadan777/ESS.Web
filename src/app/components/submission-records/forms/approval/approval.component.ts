@@ -99,11 +99,12 @@ export class ApprovalComponent {
       .map((func) =>
         ControlledFunctionDto.fromJS({
           controlFunctionID: func.id, // C# equivalent of hdnFunctionID
-          applicationID: this.data.ApplicationID ?? 0, // Equivalent of lblAppicationID
+          ApplicationID: this.data.ApplicationID ?? 0, // Equivalent of lblAppicationID
           functionTypeID: func.typeId, // C# equivalent of hdnFunctionTypeID
           functionTypeDesc: func.name.replace(/<i>|<\/i>/g, ''), // Remove <i> tags if present
           actionTypeID: 1, // Equivalent of ActionType.Add in C#
-          userID: this.data.userID, // Equivalent of _userID
+          userID: localStorage.getItem('w_userid') || 0,
+          formTypeID: this.data.WIndFromTypeID?.toString() || undefined,
           pageFlag: 'CF',
         })
       );
@@ -126,12 +127,14 @@ export class ApprovalComponent {
       },
       error: (err) => {
         // Handle any errors from the API call
-        this.toastr.error('An error occurred while fetching countries.', 'Error');
+        this.toastr.error(
+          'An error occurred while fetching countries.',
+          'Error'
+        );
         console.error('Error fetching countries:', err);
-      }
+      },
     });
   }
-  
 
   showEmailField = false;
   showResidentQuestion = false;
@@ -303,7 +306,7 @@ export class ApprovalComponent {
   async onSave(): Promise<void> {
     const isValid = await this.validateForm(1);
     if (!isValid) {
-      this.toastr.error('Please fix validation errors before submitting.');
+      this.toastr.error('Please fix validation errors before saving.');
       return;
     }
     let appID = 0;
@@ -355,15 +358,19 @@ export class ApprovalComponent {
     try {
       appID = await this.saveApplicationData(); // Use await to get the resolved value
     } catch (error) {
-      console.error('Error while saving application data', error);
+      console.error('Error while submitting application data', error);
     }
 
     if (appID > 0) {
-      // this.submitAIApplicationData();
-      this.toastr.success('Application saved successfully!', 'Success');
+      this.submitAIApplicationData(
+        appID.toString(),
+        this.data.Form,
+        this.data.DocTypeId
+      );
+      this.toastr.success('Application submited successfully!', 'Success');
       this.unsavedChanges = false; // Reset unsaved changes flag
     } else {
-      this.validationErrors['savemessage'] = await this.getValidationMessage(
+      this.validationErrors['submitmessage'] = await this.getValidationMessage(
         IndividualDetailsValidation.REQUIREDFIELD_VALDATION.toString()
       );
     }
@@ -561,7 +568,7 @@ export class ApprovalComponent {
       // Ensure values are properly set before calling the API
       const qfcNumber = localStorage.getItem('qfc_no') || '';
       const aiNumber = this.applicant.aiNumber || '';
-      const formTypeID = this.data.formTypeID || 0;
+      const formTypeID= this.data.WIndFromTypeID?.toString() || undefined;
       const windApplicationID = this.data.ApplicationID || 0;
 
       // Get selected controlled function IDs
@@ -596,7 +603,7 @@ export class ApprovalComponent {
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
         applicationID: this.data.ApplicationID || 0,
-        userID:localStorage.getItem('w_userid') || 0,
+        userID: localStorage.getItem('w_userid') || 0,
         qfcNumber: localStorage.getItem('qfc_no') || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
         formTypeID: this.data.WIndFromTypeID?.toString() || undefined,
@@ -626,17 +633,32 @@ export class ApprovalComponent {
       );
 
       if (response && response.response) {
-        console.log('Application submitted successfully:', response);
-        // this.redirectToApprovalForm(response.response);
+        console.log('Application saved successfully:', response);
+        appID = response.response;
       } else {
-        console.error('Application submission failed', response);
-        this.toastr.error('Failed to submit application. Please try again.');
+        console.error('Application saving failed', response);
+        this.toastr.error('Failed to save application. Please try again.');
       }
     } catch (error) {
-      console.error('Error submitting application:', error);
-      this.toastr.error('An error occurred while submitting the application.');
+      console.error('Error saving application:', error);
+      this.toastr.error('An error occurred while saving the application.');
     }
     return appID;
+  }
+  async submitAIApplicationData(
+    appID: string,
+    formName: string,
+    docTypeID: number
+  ): Promise<void> {
+    const response = await lastValueFrom(
+      this.client.submitApplication(appID, formName, docTypeID)
+    );
+    if (response && response.isSuccess===true) {
+      console.log('Application submitted successfully:', response);
+    } else {
+      console.error('Application submission failed', response);
+      this.toastr.error('Failed to submit application. Please try again.');
+    }
   }
 
   redirectToApprovalForm(appID: number): void {

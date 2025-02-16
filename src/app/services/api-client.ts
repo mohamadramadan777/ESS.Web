@@ -13,7 +13,6 @@ import { Observable, throwError as _observableThrow, of as _observableOf } from 
 import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -4687,6 +4686,72 @@ export class Client {
     }
 
     protected processDeleteApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appId (optional) 
+     * @param formName (optional) 
+     * @param docTypeID (optional) 
+     * @return OK
+     */
+    submitApplication(appId: string | undefined, formName: string | undefined, docTypeID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/submit-application?";
+        if (appId === null)
+            throw new Error("The parameter 'appId' cannot be null.");
+        else if (appId !== undefined)
+            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
+        if (formName === null)
+            throw new Error("The parameter 'formName' cannot be null.");
+        else if (formName !== undefined)
+            url_ += "formName=" + encodeURIComponent("" + formName) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitApplication(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitApplication(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processSubmitApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -26311,9 +26376,6 @@ export class ReportSchDto implements IReportSchDto {
     qfcNum?: string | undefined;
     rptSchFinYearFromDate?: string | undefined;
     rptSchFinYearToDate?: string | undefined;
-    firmRptFinancialStart?: string | undefined;
-    firmRptFinancialEnd?: string | undefined;
-    rptSchFinYearPeriod?: string | undefined;
     userID?: number | undefined;
 
     constructor(data?: IReportSchDto) {
@@ -26330,9 +26392,6 @@ export class ReportSchDto implements IReportSchDto {
             this.qfcNum = _data["qfcNum"];
             this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
             this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
-            this.firmRptFinancialStart = _data["firmRptFinancialStart"];
-            this.firmRptFinancialEnd = _data["firmRptFinancialEnd"];
-            this.rptSchFinYearPeriod = _data["rptSchFinYearPeriod"];
             this.userID = _data["userID"];
         }
     }
@@ -26349,9 +26408,6 @@ export class ReportSchDto implements IReportSchDto {
         data["qfcNum"] = this.qfcNum;
         data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
         data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
-        data["firmRptFinancialStart"] = this.firmRptFinancialStart;
-        data["firmRptFinancialEnd"] = this.firmRptFinancialEnd;
-        data["rptSchFinYearPeriod"] = this.rptSchFinYearPeriod;
         data["userID"] = this.userID;
         return data;
     }
@@ -26361,9 +26417,6 @@ export interface IReportSchDto {
     qfcNum?: string | undefined;
     rptSchFinYearFromDate?: string | undefined;
     rptSchFinYearToDate?: string | undefined;
-    firmRptFinancialStart?: string | undefined;
-    firmRptFinancialEnd?: string | undefined;
-    rptSchFinYearPeriod?: string | undefined;
     userID?: number | undefined;
 }
 
