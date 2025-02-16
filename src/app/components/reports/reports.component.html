@@ -7,7 +7,7 @@
     <label for="report-schedule">Report Schedule for:</label>
     <select id="report-schedule" [(ngModel)]="selectedSchedule" (change)="onScheduleChange()">
       <option *ngFor="let schedule of schedules" [ngValue]="schedule">
-        {{ schedule.text }}
+        {{ schedule.rptSchFinYearPeriod }}
       </option>
     </select>
   </div>
@@ -15,7 +15,7 @@
   <mat-tab-group class="custom-tab-group">
     <!-- Reports to be Submitted -->
     <mat-tab label="Reports to be Submitted">
-      <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
+      <!-- <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
           <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
@@ -58,7 +58,7 @@
             </td>
           </tr>
         </table>
-      </div>
+      </div> -->
     </mat-tab>
 
     <!-- Reports Submitted -->
@@ -66,14 +66,54 @@
       <div *ngFor="let report of reportsSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-          <p class="due-date"><strong>Submission Date:</strong> {{ report.submittedOn }}</p>
+        
+          <!-- New container for due date and buttons -->
+          <div class="due-date-container">
+            <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
+        
+            <div class="button-container">
+              <button mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+                <mat-icon>history</mat-icon>
+                <span class="animated-text">History</span>
+              </button>
+        
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings || report.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+                <mat-icon>description</mat-icon>
+                <span class="animated-text">View in Excel</span>
+              </button>
+        
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+                <mat-icon>warning</mat-icon>
+                <span class="animated-text">Warnings</span>
+              </button>
+
+              <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+                <mat-icon>error</mat-icon>
+                <span class="animated-text">Errors</span>
+              </button>
+            </div>
+          </div>
         </div>
+        
+        <p>
+          <span class="label">Attached File:</span>
+          <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
+        </p>
+        
+        <p class="inline-list">
+          <span class="label">Signed by:</span>
+          <span class="names-list">
+            <span *ngFor="let signinfo of submittedLstObjectSOTaskStatus?.[report?.rptSchItemID ?? 0] ?? []">
+              {{ signinfo.individualName + ' on ' + signinfo.soTaskCompletionDate }}
+            </span>
+          </span>
+        </p>
+        
+        
 
-        <p><span class="label">Attached File:</span> <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a></p>
-        <p><span class="label">Signed by:</span> {{ report.signedByMessage }}</p>
 
-       <!-- Conditional Links -->
-    <p *ngIf="report.showHistory">
+
+        <!-- <p *ngIf="report.showHistory">
       <span class="label">Links:</span>
       <a [href]="report.historyLink" target="_blank" class="history-link">History</a>
     </p>
@@ -90,8 +130,8 @@
 
     <p *ngIf="report.showErrors">
       <span class="label">Links:</span>
-      <a [href]="report.errorsLink" target="_blank" class="errors-link">Errors</a>
-    </p>
+      <a [href]="report.warningsLink" target="_blank" class="errors-link">Errors</a>
+    </p> -->
       </div>
     </mat-tab>
   </mat-tab-group>

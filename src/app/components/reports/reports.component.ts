@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Client ,ReportSchDetailsDtoListBaseResponse,ObjTasks, ReportSchDto,ReportSchItem,InsertObjectSOStatusDetailsDto,InsertReportSchDetailsDto,ReportSchDetailsDto,ReportSchDetailsDtoBaseResponse} from '../../services/api-client';
+import { Client, ObjectSOTaskStatus, ObjTasks, ReportSchDto, HistoryDetailsDto, InsertObjectSOStatusDetailsDto, InsertReportSchDetailsDto, ReportSchDetailsDto, ReportSchDetailsDtoBaseResponse } from '../../services/api-client';
 import { AppConstants } from '../../constants/app.constants';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
-import { jwtDecode } from "jwt-decode";
+import { MatDialog } from '@angular/material/dialog';
+import { HistoryComponent } from './history/history.component';
+import { WObjects } from '../../enums/app.enums';
 
 @Component({
   selector: 'app-reports',
@@ -11,32 +13,58 @@ import { jwtDecode } from "jwt-decode";
   styleUrls: ['./reports.component.scss'],
 })
 export class ReportsComponent implements OnInit {
-  schedules: any[] = [];
-  selectedSchedule: any;
-  reports: any[] = [];
-  reportsToBeSubmitted: any[] = [];
-  reportsSubmitted: any[] = [];
-  qfcNum: string = '00173';
+  schedules: ReportSchDto[] = [];
+  selectedSchedule: ReportSchDto | null = null;
+  reports: ReportSchDetailsDto[] | undefined = [];
+  reportsToBeSubmitted: ReportSchDetailsDto[] | undefined = [];
+  reportsSubmitted: ReportSchDetailsDto[] | undefined = [];
+  submittedLstObjectSOTaskStatus: {
+    [key: string]: ObjectSOTaskStatus[];
+  } | undefined = undefined;
   _SEFUsers: string[] = [];
-  _lstObjTasks: ObjTasks[] =  []
+  _lstObjTasks: ObjTasks[] = []
   lstXBRLDocTypes: number[] = []
   firmTypeString: string = localStorage.getItem(AppConstants.Session.SESSION_FIRM_TYPE) ?? '';
   qfcNo: string = localStorage.getItem(AppConstants.Session.SESSION_QFC_NO) ?? '';
   firmType = 0;
   constructor(private client: Client,
     private loadingService: LoadingService,
-    private toastr: ToastrService,) {}
+    private toastr: ToastrService,
+    private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
-    this.loadReports();
+    this.FillDropdown();
     this.GetSEFUserDetails();
-    this.getXbrlDoctypes();
+    // this.getXbrlDoctypes();
     this.GetObjectTaskStatus();
   }
- 
-  GetSEFUserDetails(): void{
-    this.client.getSefUsserDetails(this.qfcNo,this.firmType).subscribe({
+
+  FillDropdown(): void {
+    this.loadingService.show();
+    this.client.getReportSch().subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          if (response.response != undefined) {
+            this.schedules = response.response;
+            this.selectedSchedule = this.schedules[0];
+            this.onScheduleChange();
+          }
+        } else {
+          this.loadingService.hide();
+          console.error('Failed to load dropdown list:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching dropdown list.', 'Error');
+        console.error('Error occurred while fetching dropdown list:', error);
+      },
+    });
+  }
+
+  GetSEFUserDetails(): void {
+    this.client.getSefUsserDetails(this.qfcNo, this.firmType).subscribe({
       next: (response) => {
         if (response && response.isSuccess && response.response) {
           if (response.response != undefined) {
@@ -52,7 +80,7 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  GetObjectTaskStatus(): void{
+  GetObjectTaskStatus(): void {
     this.client.getObjectTaskStatus().subscribe({
       next: (response) => {
         if (response && response.isSuccess && response.response) {
@@ -75,7 +103,7 @@ export class ReportsComponent implements OnInit {
       next: (response) => {
         if (response && response.isSuccess && response.response) {
           if (response.response != undefined) {
-              this.lstXBRLDocTypes = response.response;
+            this.lstXBRLDocTypes = response.response;
           }
         } else {
           this.toastr.error('Failed to load Xbrl Doctypes.', 'Error');
@@ -89,123 +117,61 @@ export class ReportsComponent implements OnInit {
       },
     });
   }
- 
-  /**
-   * Fetch all reports using QFC number.
-   */
-  loadReports(): void {
-    this.client.getSubmissionDetailsForHomePage().subscribe(
-      (response: ReportSchDetailsDtoListBaseResponse) => {
-        if (response && response.response) {
-          this.reports = Array.isArray(response.response)
-            ? response.response
-            : [response.response];
-          this.extractFinancialYears();
+
+  onScheduleChange(): void {
+    this.loadingService.show();
+    this.client.loadReportSchDetails(this.selectedSchedule?.rptSchFinYearFromDate, this.selectedSchedule?.rptSchFinYearToDate).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response) {
+          if (response.response != undefined) {
+            this.reports = response.response?.allReports;
+            this.reportsSubmitted = response.response?.submittedReports;
+            this.reportsToBeSubmitted = response.response?.dueReports;
+            this.submittedLstObjectSOTaskStatus = response.response?.submittedLstObjectSOTaskStatus;
+          }
+        } else {
+          console.error('Failed to load reports list:', response?.errorMessage);
         }
       },
-      (error) => console.error('Error fetching reports:', error)
-    );
-  }
-
-  /**
-   * Extract unique financial years from reports and populate dropdown.
-   */
-  extractFinancialYears(): void {
-    const uniqueYears = new Set();
-    this.reports.forEach((report) => {
-      if (report.rptSchFinYearFromDate && report.rptSchFinYearToDate) {
-        const yearRange = `${report.rptSchFinYearFromDate} to ${report.rptSchFinYearFromDate}`;
-        uniqueYears.add(yearRange);
-      }
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching reports list.', 'Error');
+        console.error('Error occurred while fetching reports list:', error);
+      },
     });
-
-    this.schedules = Array.from(uniqueYears).map((year) => ({
-      text: year,
-      value: year,
-    }));
-
-    if (this.schedules.length > 0) {
-      this.selectedSchedule = this.schedules[0];
-      this.onScheduleChange();
-    }
   }
 
-  /**
-   * Load reports when the schedule selection changes.
-   */
-  onScheduleChange(): void {
-    if (!this.selectedSchedule) return;
-
-    const [fromDate, toDate] = this.selectedSchedule.value.split(' to ');
-
-    this.filterReportsByYear(fromDate, toDate);
-  }
-
-  /**
-   * Filter reports based on the selected financial year and submission status.
-   */
-  filterReportsByYear(fromDate: string, toDate: string): void {
-    const from = new Date(fromDate);
-    const to = new Date(toDate);
-
-    this.reportsToBeSubmitted = this.reports.filter((report) => {
-      const manuallyReceived = report.manuallyReceived === true;
-      const allowResubmit = report.allowReSubmit === false;
-      const isSubmitted = report.soStatusTypeID; // Adjust based on actual pending ID
-
-      return (
-        new Date(report.rptSchFinYearFromDate) <= to &&
-        new Date(report.rptSchFinYearToDate) >= from &&
-        !(manuallyReceived && allowResubmit) && // Equivalent of ASP.NET logic
-        !isSubmitted // Not submitted
-      );
+  openHistory(id: number): void {
+    this.loadingService.show();
+    var obj = new HistoryDetailsDto();
+    obj.objectID = WObjects.ReportSchedule;
+    obj.rptSchItemID = id;
+    obj.docTypeID = 0;
+    this.client.getHistoryDetailsWithAttachments(obj).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response) {
+          if (response.response != undefined) {
+            const dialogRef = this.dialog.open(HistoryComponent, {
+              width: '80%',
+              height: '85%',
+              data: response.response
+            });
+          }
+        } else {
+          this.toastr.error('Failed to load History.', 'Error');
+          console.error('Failed to load History:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching History.', 'Error');
+        console.error('Error occurred while fetching History:', error);
+      },
     });
-
-    this.reportsSubmitted = this.reports
-      .filter((report) => {
-        const isSubmitted = report.soStatusTypeID === 2; // Adjust based on actual submitted ID
-        return (
-          new Date(report.rptSchFinYearFromDate) <= to &&
-          new Date(report.rptSchFinYearToDate) >= from &&
-          isSubmitted // Matches submission logic
-        );
-      })
-      .map((report) => {
-        //  Add signedByMessage dynamically
-        const signedByMessage =
-          report.fileUploadedByName && report.rptAttachmentStatusDate
-            ? `Report signed by ${report.fileUploadedByName} on ${report.rptAttachmentStatusDate}`
-            : '';
-
-        return {
-          ...report,
-          signedByMessage,
-          showHistory: !!report.fileName, // Show history if a file is attached
-          showExcel:
-            report.attachmentStatusTypeID === 1 ||
-            report.attachmentStatusTypeID === 2,
-          showWarnings: report.attachmentStatusTypeID === 3,
-          showErrors: report.attachmentStatusTypeID === 4,
-          historyLink: report.fileName
-            ? `https://history.example.com/${report.rptSchItemID}`
-            : '',
-          excelLink:
-            report.attachmentStatusTypeID === 1 ||
-            report.attachmentStatusTypeID === 2
-              ? `https://excel.example.com/${report.rptSchItemID}`
-              : '',
-          warningsLink:
-            report.attachmentStatusTypeID === 3
-              ? `https://warnings.example.com/${report.rptSchItemID}`
-              : '',
-          errorsLink:
-            report.attachmentStatusTypeID === 4
-              ? `https://errors.example.com/${report.rptSchItemID}`
-              : '',
-        }; 
-      });
   }
-  attachFile() {}
-  submitReport() {}
-  signOff() {}
+  attachFile() { }
+  submitReport() { }
+  signOff() { }
 }

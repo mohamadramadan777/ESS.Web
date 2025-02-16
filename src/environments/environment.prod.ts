@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    apiBaseUrl: 'https://your-production-api.com' // Production API URL
-};
+    production: false,
+    apiBaseUrl: 'https://app-backend-bizapps-ext-dev-qc-01-gebpgtemfjbjf7hj.qatarcentral-01.azurewebsites.net'
+}

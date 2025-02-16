@@ -51,6 +51,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
   ];
 
+  pendingSubmissions: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [
+    { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
+  ];
+
   generalSubmissionForms: { title: string; link: string; WIndFromTypeID: number; DocTypeId: number }[] = [
     { title: "Loading...", link: "", WIndFromTypeID: 0, DocTypeId: 0 }
   ];
@@ -58,6 +62,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   filteredTables: any[] = []; // Stores tables with data
   requiredSignoffLoaded = false;
   pendingSubmissionsLoaded = false;
+  generalCommunicationLoaded = false;
+  formsLoaded = false;
+  defaultTableSelected = false;
 
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
@@ -75,13 +82,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     //this.stopAutoSwitch();
   }
 
-  getXbrlDoctypes(): void{
+  getXbrlDoctypes(): void {
     const xbrlDocTypes = sessionStorage.getItem(AppConstants.Keywords.XBRLDocType); // Check session storage
-    if(!xbrlDocTypes){
+    if (!xbrlDocTypes) {
       this.client.getXbrlDocTypes(Number(AppConstants.Keywords.XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID)).subscribe({
         next: (response) => {
           if (response && response.isSuccess && response.response) {
-          sessionStorage.setItem(AppConstants.Keywords.XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID, JSON.stringify(response.response)); // Store in sessionStorage
+            sessionStorage.setItem(AppConstants.Keywords.XBRL_GENERALSUBMISSION_CATEGORYTYPE_ID, JSON.stringify(response.response)); // Store in sessionStorage
           } else {
             this.toastr.error('Failed to load XbrlDocTypes.', 'Error');
             console.error('Failed to load XbrlDocTypes:', response?.errorMessage);
@@ -94,7 +101,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
+
   // Notice Message
   showNoticeMessage: boolean = true;
   ESSAnnoucement: string = "";
@@ -263,7 +270,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         });
       }
-      else if(data.WIndFromTypeID != 0 && data.WIndFromTypeID != undefined){ //GenSub Here
+      else if (data.WIndFromTypeID != 0 && data.WIndFromTypeID != undefined) { //GenSub Here
         const dialogRef = this.dialog.open(GensubComponent, {
           width: '80%',
           height: '85%',
@@ -274,18 +281,18 @@ export class HomeComponent implements OnInit, OnDestroy {
           },
         });
       }
-      else{
+      else {
         // Determine the message based on the isRegistered field
-      const message = data.link;
-      // Display confirmation dialog
-      Swal.fire({
-        html: message,
-        confirmButtonColor: '#a51e36',
-        confirmButtonText: 'Close',
-      }).then((result) => {
-        if (result.isConfirmed) {
-        }
-      });
+        const message = data.link;
+        // Display confirmation dialog
+        Swal.fire({
+          html: message,
+          confirmButtonColor: '#a51e36',
+          confirmButtonText: 'Close',
+        }).then((result) => {
+          if (result.isConfirmed) {
+          }
+        });
       }
     }
   }
@@ -450,17 +457,20 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.generealCommunications.pop();
         if (response && response.isSuccess && response.response) {
+          this.generalCommunicationLoaded = true;
           sessionStorage.setItem(this.VIEWSTATE_NOTICE, JSON.stringify(response.response)); // Store in sessionStorage
           this.processGeneralCommunication(response.response);//map the response to the table data here.
         } else {
           this.toastr.error('Failed to load General Communication.', 'Error');
           console.error('Failed to load General Communication:', response?.errorMessage);
+          this.loadingService.hide();
         }
       },
       error: (error) => {
         this.generealCommunications.pop();
         this.toastr.error('Error occurred while fetching General Communication.', 'Error');
         console.error('Error occurred while fetching General Communication:', error);
+        this.loadingService.hide();
       },
     });
   }
@@ -492,10 +502,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.generalSubmissionForms.pop();
         if (response && response.isSuccess && response.response) {
+          this.formsLoaded = true;
           this.processGeneralSubmissionForms(response.response);//map the response to the table data here.
+          this.selectDefaultTable();
         } else {
           this.toastr.error('Failed to load General Submission Forms.', 'Error');
           console.error('Failed to load General Submission Forms:', response?.errorMessage);
+          this.loadingService.hide();
         }
       },
       error: (error) => {
@@ -555,15 +568,55 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   selectDefaultTable(): void {
-    if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded) {
-      const indexToSelect = this.requiredSignoff.length > 0 ? 0 : (this.generealCommunications.length > 0 ? 1 : 2);
+    if (!this.defaultTableSelected) {
       setTimeout(() => {
-      this.selectTable(indexToSelect > 0 ? indexToSelect - 1 : indexToSelect + 1);
-      setTimeout(() => {
-        this.selectTable(indexToSelect);
-        this.loadingService.hide();
+        if (this.requiredSignoffLoaded && this.requiredSignoff.length > 0) {
+          this.selectTable(1);
+          setTimeout(() => {
+            this.selectTable(0);
+            this.defaultTableSelected = true;
+            this.loadingService.hide();
+          }, 100);
+        }
+        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded) {
+          if (this.pendingSubmissions.length > 0) {
+            this.selectTable(2);
+            setTimeout(() => {
+              this.selectTable(1);
+              this.defaultTableSelected = true;
+              this.loadingService.hide();
+            }, 100);
+          }
+        }
+        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded && this.generalCommunicationLoaded) {
+          if (this.generealCommunications.length > 0) {
+            this.selectTable(1);
+            setTimeout(() => {
+              this.selectTable(2);
+              this.defaultTableSelected = true;
+              this.loadingService.hide();
+            }, 100);
+          }
+          else if (this.formsLoaded && this.generalSubmissionForms.length > 0) {
+            this.selectTable(1);
+            setTimeout(() => {
+              this.selectTable(2);
+              this.defaultTableSelected = true;
+              this.loadingService.hide();
+            }, 100);
+          }
+        }
       }, 100);
-    }, 100);
+    }
+    else if (this.currentTableIndex == (this.filteredTables.length - 1)) {
+      setTimeout(() => {
+        this.selectTable(this.filteredTables.length - 2);
+        setTimeout(() => {
+          this.selectTable(this.filteredTables.length - 1);
+          this.defaultTableSelected = true;
+          this.loadingService.hide();
+        }, 100);
+      }, 100);
     }
   }
 }

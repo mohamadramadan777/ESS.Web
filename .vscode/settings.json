@@ -1,0 +1,5 @@
+{
+    "appService.showBuildDuringDeployPrompt": false,
+    "appService.defaultWebAppToDeploy": "/subscriptions/ba9759bf-c994-4474-832d-3c7bd917965d/resourceGroups/rg-bizapps-ext-dev-qc-01/providers/Microsoft.Web/sites/app-frontend-bizapps-ext-dev-qc-01",
+    "appService.deploySubpath": ""
+}

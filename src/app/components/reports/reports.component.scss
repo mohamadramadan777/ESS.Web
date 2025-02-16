@@ -75,7 +75,7 @@
         margin-bottom: 15px;
   
         h3 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           font-weight: bold;
           margin: 0;
           color: #333;
@@ -91,6 +91,41 @@
         }
       }
   
+      .animated-icon-button {
+        float: left;
+        margin: 4px;
+        display: flex;
+        align-items: center;
+        background-color: #a51e36;
+        color: white;
+        border-radius: 20px;
+        padding: 8px;
+        overflow: hidden;
+        transition: width 0.3s ease;
+      
+        &:hover {
+          width: 150px;
+          justify-content: flex-start;
+          padding: 8px 16px;
+        }
+      
+        mat-icon {
+          font-size: 1.2rem;
+          margin-right: 5px;
+          margin-left: 5px;
+        }
+      
+        .animated-text {
+          display: none;
+          font-size: 0.9rem;
+          white-space: nowrap;
+        }
+      
+        &:hover .animated-text {
+          display: inline-block;
+        }
+      }
+      
       table {
         width: 100%;
         border-collapse: collapse;
@@ -109,6 +144,16 @@
         font-weight: bold;
         color: #a51e36;
         margin-right: 5px;
+      }
+
+      .inline-list {
+        display: flex;
+        align-items: flex-start;
+      }
+
+      .names-list {
+        display: flex;
+        flex-direction: column; /* Ensures names are stacked vertically */
       }
   
       .button-group {
@@ -142,3 +187,19 @@
       }
     }
   }
+
+  
+
+  .button-container {
+    display: flex;
+    // gap: 10px; /* Space between buttons */
+    margin-top: 5px; /* Adds spacing between due date and buttons */
+  }
+
+  
+  .due-date-container {
+    display: flex;
+    flex-direction: column; /* Stack due date and buttons vertically */
+    align-items: flex-end; /* Aligns to the right side */
+  }
+  

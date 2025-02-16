@@ -1,0 +1,63 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <h1 mat-dialog-title class="dialog-title">
+            <span class="label">History</span>
+        </h1>
+        <button mat-icon-button class="close-button" (click)="onClose()">
+            <span class="material-icons">close</span>
+        </button>
+    </div>
+
+    <div class="dialog-body">
+        <!-- Loop through each file in the history data -->
+        <div *ngFor="let file of data" class="file-history-container">
+            <!-- File Header with Name and Buttons -->
+            <div class="file-header">
+                <p class="file-name">
+                    <span class="label">File Name:</span>
+                    <a href="www.google.com" target="_blank">{{ file.mainAttachmentObject.fileName }}</a>
+                </p>
+
+                <div class="button-group">
+                    <button *ngIf="file.isRptXBRLValidationPassedwithwarnings || file.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="viewInExcel(file)">
+                        <mat-icon>description</mat-icon>
+                        <span class="animated-text">View in Excel</span>
+                    </button>
+
+                    <button *ngIf="file.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>warning</mat-icon>
+                        <span class="animated-text">Warnings</span>
+                    </button>
+
+                    <button *ngIf="file.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>error</mat-icon>
+                        <span class="animated-text">Errors</span>
+                    </button>
+
+                    <button *ngIf="file.isdocTypeToValidate" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>fact_check</mat-icon>
+                        <span class="animated-text">Data Validation</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Status Set by</th>
+                        <th>Status Set Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let history of file.attachments">
+                        <td>{{ history.statusDesc }}</td>
+                        <td>{{ history.userName }}</td>
+                        <td>{{ history.attachmentStatusDate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

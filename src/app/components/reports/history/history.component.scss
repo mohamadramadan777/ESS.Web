@@ -1,0 +1,120 @@
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dialog-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+// Styles for each file history container
+.file-history-container {
+    border: 1px solid #a51e36;
+    border-radius: 8px; // Rounded edges
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+// File header (File Name + Buttons in one row)
+.file-header {
+    display: flex;
+    justify-content: space-between; // Aligns file name left & buttons right
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+// File Name Styling
+.file-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+// Button Group Styling
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+// Animated Buttons
+.animated-icon-button {
+    display: flex;
+    align-items: center;
+    background-color: #a51e36;
+    color: white;
+    border-radius: 20px;
+    padding: 8px;
+    overflow: hidden;
+    transition: width 0.3s ease;
+
+    &:hover {
+        width: 150px;
+        justify-content: flex-start;
+        padding: 8px 16px;
+    }
+
+    mat-icon {
+        font-size: 1.2rem;
+        margin-right: 5px;
+        margin-left: 5px;
+    }
+
+    .animated-text {
+        display: none;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    &:hover .animated-text {
+        display: inline-block;
+    }
+}
+
+// Table styles
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+
+    thead {
+        background-color: #e8e8e8;
+        border-radius: 8px;
+    }
+
+    th {
+        padding: 10px;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #ccc;
+        position: relative;
+
+        &:after { 
+            content: ' ⯆'; /* Sorting icon */
+            font-size: 12px;
+            opacity: 0.6;
+            margin-left: 5px;
+        }
+    }
+
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #fff;
+    }
+
+    tbody tr:hover {
+        background-color: #f2dede; /* Light red like in the image */
+        transition: background-color 0.3s;
+    }
+}
