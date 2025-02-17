@@ -127,7 +127,7 @@ import { HistoryComponent } from './components/reports/history/history.component
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
+  providers: [provideAnimationsAsync(),DatePipe, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })

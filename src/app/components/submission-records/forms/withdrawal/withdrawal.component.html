@@ -64,16 +64,19 @@
         <!-- Attachments Tab -->
         <mat-tab label="Attachments">
           <div class="tab-content">
-            <app-file-uploader
+            <app-file-uploader  *ngIf="WithdrawalObjectID && WithdrawalID"
               [ShowHeaderPanel]="true"
-              [ShowHeaderFormName]="false"
-              [ObjectID]="123"
-              [ObjectInstanceID]="456"
+              [ShowHeaderFormName]="true"
+              [ObjectID]="this.WithdrawalObjectID"
+              [ObjectInstanceID]="this.WithdrawalID"
               [ObjectInstanceRevNum]="1"
-              [DocTypeID]="789"
-              [FormTypeID]="101112"
+              [DocTypeID]="this.data.DocTypeId"
+              [FormTypeID]="this.data.WIndFromTypeID"
               [ShowPrimaryDoc]="true"
+              [DocSignText]="this.DocSignText"
+              [ReportFormName]="data.Form"
               (fileUploaded)="onFileUploaded($event)"
+              (ObjectInstanceIDChange)="onObjectInstanceIDChange($event)"
             ></app-file-uploader>
           </div>
         </mat-tab>
