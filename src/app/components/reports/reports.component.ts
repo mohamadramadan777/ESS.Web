@@ -35,9 +35,9 @@ export class ReportsComponent implements OnInit {
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
     this.FillDropdown();
-    this.GetSEFUserDetails();
+    // this.GetSEFUserDetails();
     // this.getXbrlDoctypes();
-    this.GetObjectTaskStatus();
+    // this.GetObjectTaskStatus();
   }
 
   FillDropdown(): void {
