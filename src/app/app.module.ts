@@ -61,7 +61,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { GensubComponent } from './components/submission-records/forms/gensub/gensub.component';
 import { SignOffGenericComponent } from './components/sign-off-generic/sign-off-generic.component';
 import { HistoryComponent } from './components/reports/history/history.component';
-
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [
     AppComponent,
