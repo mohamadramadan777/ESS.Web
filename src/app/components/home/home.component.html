@@ -1,47 +1,69 @@
 <app-header></app-header>
 <app-navbar [selectedPage]="'home'"></app-navbar>
 
-<div class="home-container">
-  <!-- Top Notice Message -->
-  <div class="notice-message" *ngIf="showNoticeMessage">
-    <mat-icon class="blinking-icon">error_outline</mat-icon>
-    <span>{{ ESSAnnoucement }}</span>
-    <button mat-icon-button (click)="closeNoticeMessage()">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
-  <!-- Top Section -->
-  <div class="top-section">
-    <!-- Left Panel -->
-    <div class="left-panel">
-      <div class="headers">
-        <span *ngFor="let table of filteredTables; let i = index"
-        [class.active]="currentTableIndex === i"
-          (click)="selectTable(i)"
-          >
-          <mat-icon class="header-icon">{{ table.icon }}</mat-icon>
-          {{ table.header }} 
-          <span *ngIf="i < 2 && table.data.length > 0" class="row-count">{{ table.data.length }}</span>
-        </span>
+<div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESS Dashboard</title>
+  <style>
+    .home-body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          padding: 20px;
+      }
+      home-container {
+          border: 2px solid #800000;
+          padding: 10px;
+          width: 80%;
+      }
+      home-header {
+          display: flex;
+          justify-content: space-between;
+          background: #eee;
+          padding: 10px;
+          border-bottom: 2px solid #800000;
+      }
+      home-section {
+          background: #666;
+          color: white;
+          padding: 8px;
+          margin-top: 5px;
+      }
+      home-content {
+          padding: 10px;
+          color: red;
+      }
+      home-buttons {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-top: 10px;
+      }
+      home-button {
+          background: #800000;
+          color: white;
+          border: none;
+          padding: 8px 12px;
+          cursor: pointer;
+      }
+  </style>
+</div>
+<div>
+  <div class="home-container">
+      <div class="home-header">
+          <span>Is ESS Website in Maintenance Mode?</span>
+          <span>No</span>
+          <button class="home-button">De-activate ESS</button>
       </div>
-      <div class="table-container" data-ag-theme-mode="light-red">
-        <ag-grid-angular class="ag-theme-alpine custom-ag-grid" [rowData]="currentTable.data"
-          [columnDefs]="currentTable.columns" [defaultColDef]="defaultColDef" [theme]="theme" [modules]="modules"
-          [pagination]="true" [paginationPageSize]="paginationPageSize"
-          [paginationPageSizeSelector]="paginationPageSizeSelector" [domLayout]="'autoHeight'"
-          (cellClicked)="onCellClicked($event)"
-          (rowDoubleClicked)="onRowDoubleClicked($event)">
-        </ag-grid-angular>
+      <div class="home-section">Users currently active</div>
+      <div class="home-content">User not available.</div>
+      <div class="home-section">Pending Jobs</div>
+      <div class="home-content">There are no data transfer jobs pending on ESS.</div>
+      <div class="home-section">Schedule Task</div>
+      <div class="home-buttons">
+          <button class="home-button">Refresh Task</button>
+          <button class="home-button">Run Task</button>
+          <button class="home-button">Enable/Disable Task</button>
       </div>
-    </div>
-
-    <!-- Right Panel -->
-    <div class="right-panel">
-      <div class="card" *ngFor="let card of topCards" (click)="navigate(card.route)">
-        <mat-icon>{{ card.icon }}</mat-icon>
-        <h3>{{ card.title }}</h3>
-      </div>
-    </div>
   </div>
 </div>

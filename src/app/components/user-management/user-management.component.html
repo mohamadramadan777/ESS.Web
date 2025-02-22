@@ -1,0 +1,62 @@
+<app-header></app-header>
+<app-navbar [selectedPage]="'reports'"></app-navbar>
+
+<div class="container">
+  <div class="search-criteria">
+    <form (ngSubmit)="onSearch()">
+      <div class="form-group">
+        <label for="firmName">Firm Name:</label>
+        <select id="firmName" [(ngModel)]="searchCriteria.firmName" name="firmName" class="form-control">
+          <option *ngFor="let firm of firms" [value]="firm">{{ firm }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="qfcNumber">QFC Number:</label>
+        <input type="text" id="qfcNumber" [(ngModel)]="searchCriteria.qfcNumber" name="qfcNumber" class="form-control" maxlength="5" />
+      </div>
+      <div class="form-group">
+        <label for="firmType">Firm Types:</label>
+        <select id="firmType" [(ngModel)]="searchCriteria.firmType" name="firmType" class="form-control">
+          <option *ngFor="let type of firmTypes" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="userRole">User Role(s):</label>
+        <select id="userRole" [(ngModel)]="searchCriteria.userRole" name="userRole" class="form-control">
+          <option *ngFor="let role of userRoles" [value]="role">{{ role }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="aiNumber">AI Number:</label>
+        <input type="text" id="aiNumber" [(ngModel)]="searchCriteria.aiNumber" name="aiNumber" class="form-control" maxlength="5" />
+      </div>
+      <div class="form-group">
+        <label for="emailAddress">Email Address:</label>
+        <input type="email" id="emailAddress" [(ngModel)]="searchCriteria.emailAddress" name="emailAddress" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+      <button type="button" class="btn btn-secondary" (click)="onReset()">Reset</button>
+    </form>
+  </div>
+
+  <div class="user-list">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Firm Name</th>
+          <th>User Name</th>
+          <th>User Role</th>
+          <th>Email Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.firmName }}</td>
+          <td>{{ user.userName }}</td>
+          <td>{{ user.userRole }}</td>
+          <td>{{ user.emailAddress }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

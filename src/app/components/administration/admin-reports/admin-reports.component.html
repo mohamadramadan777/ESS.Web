@@ -1,0 +1,114 @@
+<app-header></app-header>
+<app-navbar [selectedPage]="'admin-reports'"></app-navbar>
+
+<div id="divLoginBody">
+    <div class="modalBackground" *ngIf="isLoading">
+        <label class="font-bold text-blue">Please wait...</label>
+        <img src="assets/Images/icon/loading.gif" alt="Loading...">
+    </div>
+    <div class="outerBodyStyle">
+        <div class="outerTopMargin"></div>
+        <div class="outerLeftMargin"></div>
+        <div>
+            <div class="innerBodyStyle">
+                <div class="TableColor">
+                    <div *ngIf="lblErrorMessage" class="FormTableRow">
+                        <div class="TextCellLeftMiddle errMessageSmall">{{ lblErrorMessage }}</div>
+                    </div>
+                    <div class="FormTableRow">
+                        <div class="TextCellLeftMiddle" style="width: 40%">
+                            Report Type: <span class="mandatoryFields">*</span>
+                        </div>
+                        <div style="width: 60%">
+                            <select [(ngModel)]="selectedReportType" class="mendatoryBackColor" style="width: 50%">
+                                <option value="0">Select</option>
+                                <option value="1">Audit Trail Report</option>
+                                <option value="2">User Account(s) by Firm Report</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="FormTableRow" style="text-align: center; width: 100%">
+                        <button (click)="generateReport()" class="BTN_LightMaroon" style="width: 160px; height: 25px; border: solid 1.5pt White;">Generate Report</button>
+                    </div>
+                    <div class="sectionHeading">
+                        <div class="sectionHeadingQ03" style="float: left">{{ lblReportName }}</div>
+                        <div style="float: right">
+                            <button *ngIf="isExportVisible" (click)="exportToExcel()" class="BTN_LightMaroon" style="width: 160px; height: 25px; border: solid 1.5pt White;">Export to Excel</button>
+                        </div>
+                    </div>
+                    <div class="FormTableRow" *ngIf="isProcessRequestVisible">
+                        <div>
+                            <div class="errMessageSmall">{{ lblMessage }}</div>
+                            <table class="GridView" style="width: 100%; border-right: solid 1px #E9E7E3;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 10%">Transaction ID</th>
+                                        <th style="width: 10%">Service Request No</th>
+                                        <th style="width: 25%">Description</th>
+                                        <th style="width: 25%">Note</th>
+                                        <th style="width: 15%">Created By</th>
+                                        <th style="width: 15%">Created Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let process of serviceProcesses">
+                                        <td>{{ process.ServiceProcessID }}</td>
+                                        <td>{{ process.ServiceRequestNo }}</td>
+                                        <td>{{ process.ServiceProcessDesc }}</td>
+                                        <td>{{ process.ServiceProcessUserNote }}</td>
+                                        <td>{{ process.CreatedByName }}</td>
+                                        <td>{{ process.CreatedDate }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="FormTableRow" *ngIf="isFirmListVisible">
+                        <div>
+                            <div class="errMessageSmall">{{ lblFirmMessage }}</div>
+                            <table class="GridView" style="width: 100%; border-right: solid 1px #E9E7E3;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 15%">Firm Type</th>
+                                        <th style="width: 15%">Firm Name</th>
+                                        <th style="width: 10%">License Status</th>
+                                        <th style="width: 10%">Authorisation Status</th>
+                                        <th style="width: 5%">Activated for ESS</th>
+                                        <th style="width: 17%">User Name</th>
+                                        <th style="width: 13%">Email Address</th>
+                                        <th style="width: 15%">Active Roles</th>
+                                        <th style="width: 15%">Functions Approved For (if any)</th>
+                                        <th style="width: 5%">Is User Access Authorized?</th>
+                                        <th style="width: 5%">Is User Registered?</th>
+                                        <th style="width: 5%">Is Account Active?</th>
+                                        <th style="width: 5%">Is Account Locked?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let firm of firmList">
+                                        <td>{{ firm.FirmTypeDesc }}</td>
+                                        <td>{{ firm.FirmName }}</td>
+                                        <td>{{ firm.LicensedTypeDesc }}</td>
+                                        <td>{{ firm.AuthorisationStatus }}</td>
+                                        <td>{{ firm.isEssActivestr }}</td>
+                                        <td>{{ firm.UserName }}</td>
+                                        <td>{{ firm.EmailAddress }}</td>
+                                        <td>{{ firm.ActiveRoles }}</td>
+                                        <td>{{ firm.ApproveFunctions }}</td>
+                                        <td>{{ firm.IsUserAccessAuthorised }}</td>
+                                        <td>{{ firm.IsRegistered }}</td>
+                                        <td>{{ firm.IsActive }}</td>
+                                        <td>{{ firm.IsLocked }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="outerRightMargin"></div>
+        <div class="outerBottomMargin"></div>
+    </div>
+</div>
+<p>admin-reports works!</p>

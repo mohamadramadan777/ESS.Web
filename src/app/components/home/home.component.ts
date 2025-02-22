@@ -1,26 +1,25 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AppConstants } from '../../constants/app.constants';
-import { FirmType, WObjects, DocTypes } from '../../enums/app.enums';
-import { Client, GeneralSubmissionForm, UserPendingItems, WNoticeList } from '../../services/api-client';
-import { ToastrService } from 'ngx-toastr';
-import { LoadingService } from '../../services/loader.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { AppConstants } from '../../constants/app.constants';
+import { DocTypes, FirmType, WObjects } from '../../enums/app.enums';
+import { Client, GeneralSubmissionForm, UserPendingItems, WNoticeList } from '../../services/api-client';
+import { LoadingService } from '../../services/loader.service';
 import { ViewNoticeComponent } from '../notices/view-notice/view-notice.component';
 
-import {
-  ColDef,
-  themeAlpine,
-  ClientSideRowModelModule,
-  TextFilterModule,
-  RowSelectionModule,
-  PaginationModule,
-} from 'ag-grid-community';
 import { Router } from '@angular/router';
+import {
+  ClientSideRowModelModule,
+  ColDef,
+  PaginationModule,
+  RowSelectionModule,
+  TextFilterModule,
+  themeAlpine,
+} from 'ag-grid-community';
 import Swal from 'sweetalert2';
-import { min } from 'rxjs';
-import { WithdrawalComponent } from '../submission-records/forms/withdrawal/withdrawal.component';
 import { ApprovalComponent } from '../submission-records/forms/approval/approval.component';
 import { GensubComponent } from '../submission-records/forms/gensub/gensub.component';
+import { WithdrawalComponent } from '../submission-records/forms/withdrawal/withdrawal.component';
 
 @Component({
   selector: 'app-home',
@@ -60,21 +59,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   pendingSubmissionsLoaded = false;
 
   ngOnInit(): void {
-    this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
-    this.loadingService.show();
-    this.getXbrlDoctypes();
-    this.displayESSAnncouncement();
-    this.getPendingForLoggedInUser();
-    this.getGeneralCommunication();
-    this.getGeneralSubmissionForms();
-    this.pendingSubmissionsLoaded = true;
+
     //this.startAutoSwitch();
   }
 
   ngOnDestroy(): void {
     //this.stopAutoSwitch();
   }
-
+/*
   getXbrlDoctypes(): void{
     const xbrlDocTypes = sessionStorage.getItem(AppConstants.Keywords.XBRLDocType); // Check session storage
     if(!xbrlDocTypes){
@@ -565,5 +557,5 @@ export class HomeComponent implements OnInit, OnDestroy {
       }, 100);
     }, 100);
     }
-  }
+  }*/
 }

@@ -1,48 +1,12 @@
 <nav class="navbar">
-  <div class="dropdown-container" (mouseleave)="closeDropdown()">
-    <button
-      mat-button
-      routerLink="/home"
-      [ngClass]="{ active: selectedPage === 'home' }"
-      (click)="setActivePage('home')"
-      (mouseenter)="openDropdown()"
-    >
-      Home
-    </button>
-    <!-- Dropdown Menu -->
-    <div class="dropdown-menu" *ngIf="isDropdownOpen">
-      <button
-        mat-menu-item
-        routerLink="/submission-records"
-        (click)="setActivePage('submission-records')"
-      >
-        Submission Records
-      </button>
-    </div>
-  </div>
-
-  <button
-    mat-button
-    routerLink="/reports"
-    [ngClass]="{ active: selectedPage === 'reports' }"
-    (click)="setActivePage('reports')"
-  >
-    Reports
-  </button>
-  <button
-    mat-button
-    routerLink="/notices"
-    [ngClass]="{ active: selectedPage === 'notices' }"
-    (click)="setActivePage('notices')"
-  >
-    Notices
-  </button>
-  <button
-    mat-button
-    routerLink="/system-access"
-    [ngClass]="{ active: selectedPage === 'system-access' }"
-    (click)="setActivePage('system-access')"
-  >
-    System Access
-  </button>
+  <ul>
+    <li *ngFor="let item of menuItems" (mouseenter)="toggleDropdown(item)" (mouseleave)="toggleDropdown(item)">
+      <a [routerLink]="item.route" (click)="setActivePage(item.value)">{{ item.name }}</a>
+      <ul *ngIf="item.isDropdownOpen" class="dropdown-menu">
+        <li *ngFor="let submenu of item.submenus">
+          <a [routerLink]="submenu.route">{{ submenu.name }}</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
 </nav>

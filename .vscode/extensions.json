@@ -1,3 +1,9 @@
 {
-  "recommendations": ["angular.ng-template"]
+  "recommendations": [
+    "angular.ng-template",
+    "manassahu.openai-developer",
+    "jaybarnes.chatgpt-vscode-plugin",
+    "yalehuang.chatgpt-ai",
+    "easycodeai.chatgpt-gpt4-gpt3-vscode"
+  ]
 }

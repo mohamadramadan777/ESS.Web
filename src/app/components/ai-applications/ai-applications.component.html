@@ -1,0 +1,189 @@
+<app-header></app-header>
+<app-navbar [selectedPage]="'ai-applcications'"></app-navbar>
+<p>ai-applications works!</p>
+
+
+<div class="ai-applications">
+    <h1>AI Applications</h1>
+    <div id="divLoginBody">
+      <div class="modalBackground" *ngIf="isLoading">
+        <label>Please wait...</label>
+        <img src="assets/images/loading.gif" alt="Loading...">
+      </div>
+      <div>
+        <div class="message-box" *ngIf="message">{{ message }}</div>
+        <input type="hidden" [(ngModel)]="searchFlag" value="0">
+        <table class="outerBodyStyle">
+          <!-- ...existing code... -->
+          <tr>
+            <td>
+              <div>
+                <table class="innerBodyStyle">
+                  <!-- ...existing code... -->
+                  <tr>
+                    <td>
+                      <div>
+                        <table>
+                          <tr class="sectionHeading">
+                            <td>
+                              <a href="#">
+                                <img src="assets/images/RightArrow.gif">
+                                <span class="darkGrayNote tdMarginLeftBy5">Search Approved Individual Applications</span>
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div>
+                        <table class="TableColor">
+                          <tr class="FormTableRow">
+                            <td class="TextCellLeftMiddle">Firm Name:</td>
+                            <td>
+                              <select [(ngModel)]="selectedFirm" (change)="onFirmChange()">
+                                <option *ngFor="let firm of firms" [value]="firm.value">{{ firm.text }}</option>
+                              </select>
+                            </td>
+                            <td class="TextCellLeftMiddle">QFC Number:</td>
+                            <td>
+                              <input type="text" [(ngModel)]="qfcNumber" maxlength="5" autocomplete="off">
+                            </td>
+                          </tr>
+                          <!-- ...existing code... -->
+                          <tr class="FormTableRow">
+                            <td class="TextCellLeftMiddle">Form Type:</td>
+                            <td>
+                              <select [(ngModel)]="selectedFormType">
+                                <option *ngFor="let formType of formTypes" [value]="formType.value">{{ formType.text }}</option>
+                              </select>
+                            </td>
+                            <td class="TextCellLeftMiddle">Application Status:</td>
+                            <td>
+                              <select [(ngModel)]="selectedApplicationStatus">
+                                <option *ngFor="let status of applicationStatuses" [value]="status.value">{{ status.text }}</option>
+                              </select>
+                            </td>
+                          </tr>
+                          <tr class="FormTableRow">
+                            <td colspan="4" align="center">
+                              <button (click)="onSearch()">Search</button>
+                              <button (click)="onReset()">Reset</button>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div>
+                        <table>
+                          <tr class="sectionHeading">
+                            <td>
+                              <a href="#"><span class="darkGrayNote tdMarginLeftBy5">Search Results</span></a>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div>
+                        <table class="GridRow">
+                          <tr class="GridHeader">
+                            <td>Firm Name</td>
+                            <td>Applicant Name</td>
+                            <td>Form Type</td>
+                            <td>Functions</td>
+                            <td>Application Status</td>
+                            <td>Created Date</td>
+                          </tr>
+                          <tr *ngFor="let application of applications" (click)="onSelect(application)">
+                            <td>{{ application.firmName }}</td>
+                            <td>{{ application.applicantName }}</td>
+                            <td>{{ application.formTypeDesc }}</td>
+                            <td>{{ application.functions }}</td>
+                            <td>{{ application.applicationStatus }}</td>
+                            <td>{{ application.createdDate }}</td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="selectedApplication">
+                    <td colspan="7">
+                      <div>
+                        <table>
+                          <tr class="sectionHeading">
+                            <td>
+                              <a href="#"><span class="darkGrayNote tdMarginLeftBy5">Application Details</span></a>
+                            </td>
+                          </tr>
+                          <tr class="GridRow GridHeader">
+                            <td>Application / Contact Details</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <table class="TableColor">
+                                <tr class="FormTableRow">
+                                  <td class="TextCellLeftMiddle">Firm Name:</td>
+                                  <td class="TextCellRight">{{ selectedApplication.firmName }}</td>
+                                  <td class="TextCellLeftMiddle">Form Type:</td>
+                                  <td class="TextCellRight">{{ selectedApplication.formTypeDesc }}</td>
+                                </tr>
+                                <tr class="FormTableRow">
+                                  <td class="TextCellLeftMiddle">Application Status:</td>
+                                  <td class="TextCellRight">{{ selectedApplication.applicationStatus }}</td>
+                                  <td class="TextCellLeftMiddle">Created Date:</td>
+                                  <td class="TextCellRight">{{ selectedApplication.createdDate }}</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <!-- ...existing code... -->
+                          <tr class="GridRow GridHeader">
+                            <td>Sign-off Details</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div *ngIf="signOffDetails.length === 0" class="errMessageSmall">No sign-off details found.</div>
+                              <table *ngIf="signOffDetails.length > 0" class="GridView">
+                                <tr>
+                                  <th>Signoff Sequence</th>
+                                  <th>Signatory Name</th>
+                                  <th>Role(s)</th>
+                                  <th>Email Address</th>
+                                  <th>Signoff Status</th>
+                                  <th>Assigned Date</th>
+                                  <th>Completed Date</th>
+                                </tr>
+                                <tr *ngFor="let signOff of signOffDetails">
+                                  <td>{{ signOff.taskSeq }}</td>
+                                  <td>{{ signOff.signatoryName }}</td>
+                                  <td>{{ signOff.signatoryRole }}</td>
+                                  <td>{{ signOff.signatoryEmailAddress }}</td>
+                                  <td>{{ signOff.wObjectSoTaskStatusDesc }}</td>
+                                  <td>{{ signOff.soStatusAssignedDate }}</td>
+                                  <td>{{ signOff.soStatusCompletedDate }}</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <!-- ...existing code... -->
+        </table>
+      </div>
+    </div>
+  </div>
+  

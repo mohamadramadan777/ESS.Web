@@ -59,7 +59,27 @@ import { ApprovalComponent } from './components/submission-records/forms/approva
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { GensubComponent } from './components/submission-records/forms/gensub/gensub.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
+import { AdministrationComponent } from './components/administration/administration.component';
+import { AiApplicationsComponent } from './components/ai-applications/ai-applications.component';
+import { UserService } from './services/user.service';
+import { CreateNewUserComponent } from './components/user-management/create-new-user/create-new-user.component';
+import { UserComponent } from './components/user-management/user/user.component';
+import { CreateNewAiApplicationComponent } from './components/ai-applications/create-new-ai-application/create-new-ai-application.component';
+import { CreateNewWorkflowComponent } from './components/workflows/create-new-workflow/create-new-workflow.component';
+ import { CreateNewNotificationComponent } from './components/notifications/create-new-notification/create-new-notification.component';
 
+ import { ManageFirmsComponent } from './components/administration/manage-firms/manage-firms.component';
+import { ManageConfigurationComponent } from './components/administration/manage-configuration/manage-configuration.component';
+import { AdminReportsComponent } from './components/administration/admin-reports/admin-reports.component';
+import { AdminHomeComponent } from './components/admin-home/admin-home.component';
+import { WorkflowsComponent } from './components/workflows/workflows.component';
+import { SideNavComponent } from './components/home/shared/side-nav/side-nav.component';
+import { NotificationsComponent } from './components/notifications/notifications.component';
+
+ import { CommonModule } from '@angular/common';
+ 
+  
 @NgModule({
   declarations: [
     AppComponent,
@@ -90,6 +110,21 @@ import { GensubComponent } from './components/submission-records/forms/gensub/ge
     WithdrawalComponent,
     ApprovalComponent,
     GensubComponent,
+    UserManagementComponent,
+    AdministrationComponent,
+    AiApplicationsComponent,
+    CreateNewUserComponent,
+    UserComponent,
+    CreateNewAiApplicationComponent,
+    CreateNewWorkflowComponent,
+    WorkflowsComponent,
+    CreateNewNotificationComponent,
+    NotificationsComponent,
+    ManageFirmsComponent,
+    ManageConfigurationComponent,
+    AdminReportsComponent,
+    AdminHomeComponent,
+    SideNavComponent,
   ],
   imports: [
     BrowserModule,
@@ -116,6 +151,7 @@ import { GensubComponent } from './components/submission-records/forms/gensub/ge
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    CommonModule,
     ToastrModule.forRoot({
       timeOut: 3000, // Duration in milliseconds (3 seconds)
       positionClass: 'toast-top-center', // Position on the page
@@ -123,7 +159,7 @@ import { GensubComponent } from './components/submission-records/forms/gensub/ge
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
+  providers: [provideAnimationsAsync(), { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule, UserService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
