@@ -15,7 +15,6 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 import { API_BASE_URL } from './tokens';
 
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -10514,12 +10513,11 @@ export class Client {
      * @param rptSchItemAttachmentID (optional) 
      * @param attachmentFilePath (optional) 
      * @param attachmentStatusTypeID (optional) 
-     * @param firmsRptSchItemID (optional) 
      * @param allowReSubmit (optional) 
      * @param pFileName (optional) 
      * @return OK
      */
-    uploadReport(file: FileParameter | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, attachmentFilePath: string | undefined, attachmentStatusTypeID: number | undefined, firmsRptSchItemID: number | undefined, allowReSubmit: boolean | undefined, pFileName: string | undefined): Observable<BooleanBaseResponse> {
+    uploadReport(file: FileParameter | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, attachmentFilePath: string | undefined, attachmentStatusTypeID: number | undefined, allowReSubmit: boolean | undefined, pFileName: string | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/upload-report";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -10588,10 +10586,6 @@ export class Client {
             throw new Error("The parameter 'attachmentStatusTypeID' cannot be null.");
         else
             content_.append("AttachmentStatusTypeID", attachmentStatusTypeID.toString());
-        if (firmsRptSchItemID === null || firmsRptSchItemID === undefined)
-            throw new Error("The parameter 'firmsRptSchItemID' cannot be null.");
-        else
-            content_.append("FirmsRptSchItemID", firmsRptSchItemID.toString());
         if (allowReSubmit === null || allowReSubmit === undefined)
             throw new Error("The parameter 'allowReSubmit' cannot be null.");
         else
