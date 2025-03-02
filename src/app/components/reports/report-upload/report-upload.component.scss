@@ -1,0 +1,58 @@
+.file-uploader-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    .file-uploader-container {
+      flex: 1;
+      text-align: center;
+  
+
+      .drop-zone {
+        border: 2px dashed #a51e36;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 20px;
+        background-color: #fafafa;
+        cursor: pointer;
+        transition: background-color 0.3s;
+  
+        &.drag-over {
+          background-color: #f7e4e9;
+        }
+  
+        p {
+          margin: 0 0 10px;
+          font-size: 1rem;
+          color: #555555;
+        }
+  
+        button {
+          font-size: 0.9rem;
+          background-color: #a51e36 !important;
+        }
+      }
+  
+    }
+  }
+  
+
+  .dialog-body {
+    flex: 1 1 auto; /* Body takes remaining space and allows scrolling if needed */
+    overflow-y: auto; /* Enable scrolling for large content */
+    padding: 20px;
+  }
+
+  .Cancel {
+    color: rgb(0, 102, 255);
+    text-decoration: underline;
+    cursor: pointer;
+    align-self: flex-end; // Ensures it aligns properly in flex containers
+    display: inline-block; // Makes sure it behaves like a link
+    padding-right: 20px; // Adds some spacing from the right edge if needed
+
+    &:hover {
+        color: rgb(0, 80, 200); // Darker blue on hover for better UX
+    }
+}
+
+  

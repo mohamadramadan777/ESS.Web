@@ -15,50 +15,103 @@
   <mat-tab-group class="custom-tab-group">
     <!-- Reports to be Submitted -->
     <mat-tab label="Reports to be Submitted">
-      <!-- <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
+      <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-          <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
+        
+          <!-- New container for due date and buttons -->
+          <div class="due-date-container">
+            <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
+            <p *ngIf="report.resubmissionDueDate != ''" class="due-date"><strong>Resubmission Due Date:</strong> {{ report.resubmissionDueDate }}</p>
+            <div class="button-container">
+
+              <button *ngIf="report.btnUploadFileVisible" mat-icon-button class="animated-icon-button" (click)="attachFile(report?.rptSchItemID ?? 0, report)">
+                <mat-icon>attach_file</mat-icon>
+                <span class="animated-text">Attach File</span>
+              </button>
+
+              <button *ngIf="report.rowLinksVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+                <mat-icon>history</mat-icon>
+                <span class="animated-text">History</span>
+              </button>
+        
+              <button *ngIf="report.lkbtnViewInExcelVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+                <mat-icon>description</mat-icon>
+                <span class="animated-text">View in Excel</span>
+              </button>
+        
+              <button *ngIf="report.lkbtnWarningsVisible" mat-icon-button class="animated-icon-button" (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
+                <mat-icon>warning</mat-icon>
+                <span class="animated-text">Warnings</span>
+              </button>
+
+              <button *ngIf="report.lkbtnDataValidationVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+                <mat-icon>fact_check</mat-icon>
+                <span class="animated-text">Data Validation</span>
+              </button>
+
+              <button *ngIf="report.btnSignOffVisible" mat-raised-button color="primary" class="btn" (click)="submitReport()">
+                <mat-icon>draw</mat-icon> Sign off
+              </button>
+
+              <button *ngIf="report.btnSubmitVisible" mat-raised-button color="primary" class="btn" (click)="submitReport()">
+                <mat-icon>send</mat-icon> Submit
+              </button>
+
+              <!-- <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+                <mat-icon>error</mat-icon>
+                <span class="animated-text">Errors</span>
+              </button> -->
+            </div>
+          </div>
         </div>
-        <table>
-          <tr>
-            <td style="width: 90%">
-              <p><span class="label">Submission Type:</span> {{ report.rptSubmissionType }}</p>
-              
-              <p *ngIf="report.fileName">
-                <span class="label">Attached File:</span>
-                <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
-              </p>
-              <p *ngIf="!report.fileName" class="warning">No file attached yet.</p>
+        
+        <p>
+          <span class="label">Submission Type:</span>
+          <span>{{ report.rptSubmissionType }}</span> &nbsp;&nbsp;&nbsp;&nbsp;
+          <span *ngIf="report.rptFormsToBeSubmited != ''" class="label">Additional Forms to be submitted:</span>
+          <span>{{ report.rptFormsToBeSubmited }}</span>
+        </p>
+        
+        <p *ngIf="report.fileNameBtnVisible &&  report.fileName != '' &&  report.fileName != null">
+          <span class="label">Attached File:</span>
+          <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
+        </p>
 
-              <p><span class="label">Report to be Signed by:</span> {{ report.soStatusTypeDesc }}</p>
-            </td>
-            <td style="width: 10%; text-align: right">
-              <div class="button-group">
-                <button mat-raised-button class="attach-button" (click)="attachFile()">
-                  Attach File
-                </button>
+        <p *ngIf="report.fileNameLabelVisible &&  report.fileName != '' &&  report.fileName != null">
+          <span class="label">Attached File:</span>
+          <span>{{ report.fileName }}</span>
+        </p>
 
-                <button 
-                  mat-raised-button 
-                  class="submit-button" 
-                  *ngIf="report.fileName" 
-                  (click)="submitReport()">
-                  Submit
-                </button>
+        <p class="inline-list">
+          <span class="label">Report to be signed by:</span>
+          <span *ngIf="report.rowAllSigNotPresentVisible">{{ report.lblUserNotRegistered}}<br></span>
+          <span *ngIf="report.lblUserNotRegisteredVisible">{{ report.lblSigNotPresent}}<br></span>
+          <span *ngIf="report.repDueReportSigVisible" class="names-list">
+            <span *ngFor="let signinfo of report.lstSignOffDetails">
+              {{ signinfo.signOffName + ' / '}}
+            </span> <br>
+          </span>
+          <span [innerHTML]="report.docSignText"></span>
+        </p>
 
-                <button 
-                  mat-raised-button 
-                  class="signoff-button" 
-                  [disabled]="!report.fileName" 
-                  (click)="signOff()">
-                  Sign off
-                </button>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div> -->
+        <p *ngIf="report.rowStatusVisible" >
+          <span class="label">Submission Status:</span>
+          <span>{{ report.soStatusTypeDesc }}</span>
+        </p>
+
+        <p *ngIf="report.rowNextStepVisible" >
+          <span class="label">Next Steps / Instructions:</span>
+          <span>{{ report.rptNextStatus }}</span>
+        </p>
+        
+
+        <p *ngIf="report.reviewComments != ''" >
+          <span class="label">Supervisor comments:</span>
+          <span>{{ report.reviewComments }}</span>
+        </p>
+        
+      </div>
     </mat-tab>
 
     <!-- Reports Submitted -->
@@ -72,22 +125,22 @@
             <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
         
             <div class="button-container">
-              <button mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+              <button mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>history</mat-icon>
                 <span class="animated-text">History</span>
               </button>
         
-              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings || report.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings || report.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>description</mat-icon>
                 <span class="animated-text">View in Excel</span>
               </button>
         
-              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
                 <mat-icon>warning</mat-icon>
                 <span class="animated-text">Warnings</span>
               </button>
 
-              <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0)">
+              <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>error</mat-icon>
                 <span class="animated-text">Errors</span>
               </button>
@@ -108,30 +161,6 @@
             </span>
           </span>
         </p>
-        
-        
-
-
-
-        <!-- <p *ngIf="report.showHistory">
-      <span class="label">Links:</span>
-      <a [href]="report.historyLink" target="_blank" class="history-link">History</a>
-    </p>
-
-    <p *ngIf="report.showExcel">
-      <span class="label">Links:</span>
-      <a [href]="report.excelLink" target="_blank" class="excel-link">View in Excel</a>
-    </p>
-
-    <p *ngIf="report.showWarnings">
-      <span class="label">Links:</span>
-      <a [href]="report.warningsLink" target="_blank" class="warnings-link">Warnings</a>
-    </p>
-
-    <p *ngIf="report.showErrors">
-      <span class="label">Links:</span>
-      <a [href]="report.warningsLink" target="_blank" class="errors-link">Errors</a>
-    </p> -->
       </div>
     </mat-tab>
   </mat-tab-group>

@@ -1,0 +1,77 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+        <h1 mat-dialog-title class="dialog-title">
+            <span class="label">
+                Validation Results For:</span>
+            <span class="value">{{ data.report.rptName }}</span>
+        </h1>
+        <button mat-icon-button class="close-button" (click)="onClose()">
+            <span class="material-icons">close</span>
+        </button>
+    </div>
+
+    <div class="dialog-body">
+        <div class="file-header">
+            <p class="file-name">
+                <span class="label">Due Date:</span>
+                <span> {{ data.report.rptDueDate }}</span>
+            </p>
+            <p class="file-name">
+                <span class="label"> Submission Type:</span>
+                <span> {{data.report.rptSubmissionType }}</span>
+            </p>
+            <!-- <p class="file-name">
+                <span class="label"> Submission Date:</span>
+                <span> {{data.report.fileUploadedOnDate }}</span>
+            </p> -->
+            <div class="button-group excel-button">
+                <button mat-icon-button class="animated-icon-button" (click)="viewInExcel(data.report)">
+                    <mat-icon>description</mat-icon>
+                    <span class="animated-text">Export to Excel</span>
+                </button></div>
+        </div>
+        
+        <!-- Loop through each file in the history data -->
+        <div *ngFor="let warning of data.warnings" class="file-history-container">
+            <!-- File Header with Name and Buttons -->
+            <div class="file-header">
+                <p class="file-name">
+                    <span class="label"> {{ warning.rowNo }} Rule ID:</span>
+                    <span> {{ warning.ruleID }}</span>
+                </p>
+                <p class="file-name">
+                    <span class="label"> Rule Description:</span>
+                    <span> {{ warning.errorDescription }}</span>
+                </p>
+                <div class="button-group">
+                    <!-- <button *ngIf="file.isRptXBRLValidationPassedwithwarnings || file.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="viewInExcel(file)">
+                        <mat-icon>description</mat-icon>
+                        <span class="animated-text">View in Excel</span>
+                    </button>
+
+                    <button *ngIf="file.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>warning</mat-icon>
+                        <span class="animated-text">Warnings</span>
+                    </button>
+
+                    <button *ngIf="file.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>error</mat-icon>
+                        <span class="animated-text">Errors</span>
+                    </button>
+
+                    <button *ngIf="file.isdocTypeToValidate" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                        <mat-icon>fact_check</mat-icon>
+                        <span class="animated-text">Data Validation</span>
+                    </button> -->
+                </div>
+            </div>
+            <span [innerHTML]="warning.w_ChildTableStr"></span>
+            <br>
+            <p class="file-name">
+                <span class="label"> Explanation:</span>
+                <textarea class="explanation-input" [(ngModel)]="warning.explanation"></textarea>
+            </p>
+
+        </div>
+    </div>
+</div>

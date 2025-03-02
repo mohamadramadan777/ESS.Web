@@ -10,7 +10,7 @@
 
     <div class="dialog-body">
         <!-- Loop through each file in the history data -->
-        <div *ngFor="let file of data" class="file-history-container">
+        <div *ngFor="let file of data.history" class="file-history-container">
             <!-- File Header with Name and Buttons -->
             <div class="file-header">
                 <p class="file-name">
@@ -24,17 +24,17 @@
                         <span class="animated-text">View in Excel</span>
                     </button>
 
-                    <button *ngIf="file.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                    <button *ngIf="file.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file, data.report)">
                         <mat-icon>warning</mat-icon>
                         <span class="animated-text">Warnings</span>
                     </button>
 
-                    <button *ngIf="file.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                    <button *ngIf="file.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file, data.report)">
                         <mat-icon>error</mat-icon>
                         <span class="animated-text">Errors</span>
                     </button>
 
-                    <button *ngIf="file.isdocTypeToValidate" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file)">
+                    <button *ngIf="file.isdocTypeToValidate" mat-icon-button class="animated-icon-button" (click)="viewWarnings(file, data.report)">
                         <mat-icon>fact_check</mat-icon>
                         <span class="animated-text">Data Validation</span>
                     </button>

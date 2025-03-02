@@ -1,0 +1,13 @@
+<div class="file-uploader-wrapper">
+    <!-- Single File Uploader -->
+    <div class="file-uploader-container single-file-uploader">
+        <div class="drop-zone" [class.drag-over]="isDragOverSingle" (dragover)="onDragOver($event, 'primary')"
+            (dragleave)="onDragLeave($event, 'primary')" (drop)="onDrop($event, 'primary')">
+            <p>Drag and drop a file here or</p>
+            <button mat-raised-button color="primary" (click)="singleFileInput.click()">Browse</button>
+            <input #singleFileInput type="file" (change)="onFilesSelected($event)"
+                style="display: none" />
+        </div>
+    </div>
+</div>
+<span class="Cancel" (click)="onClose()">Cancel</span>

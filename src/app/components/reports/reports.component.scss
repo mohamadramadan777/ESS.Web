@@ -126,6 +126,27 @@
         }
       }
       
+      .btn {
+        margin: 4px;
+        height: 46px;
+        display: flex;
+        align-items: center;
+        background-color: #a51e36;
+        color: white;
+        border-radius: 20px;
+        padding: 8px;
+        overflow: hidden;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    
+        &:hover {
+          background-color: #861624;
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+      }
+
       table {
         width: 100%;
         border-collapse: collapse;

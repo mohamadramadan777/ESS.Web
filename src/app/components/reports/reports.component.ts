@@ -6,6 +6,8 @@ import { LoadingService } from '../../services/loader.service';
 import { MatDialog } from '@angular/material/dialog';
 import { HistoryComponent } from './history/history.component';
 import { WObjects } from '../../enums/app.enums';
+import { WarningsComponent } from './warnings/warnings.component';
+import { ReportUploadComponent } from './report-upload/report-upload.component';
 
 @Component({
   selector: 'app-reports',
@@ -118,7 +120,7 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  onScheduleChange(): void {
+  public onScheduleChange(): void {
     this.loadingService.show();
     this.client.loadReportSchDetails(this.selectedSchedule?.rptSchFinYearFromDate, this.selectedSchedule?.rptSchFinYearToDate).subscribe({
       next: (response) => {
@@ -142,7 +144,7 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  openHistory(id: number): void {
+  openHistory(id: number, report: ReportSchDetailsDto): void {
     this.loadingService.show();
     var obj = new HistoryDetailsDto();
     obj.objectID = WObjects.ReportSchedule;
@@ -156,7 +158,10 @@ export class ReportsComponent implements OnInit {
             const dialogRef = this.dialog.open(HistoryComponent, {
               width: '80%',
               height: '85%',
-              data: response.response
+              data: {
+                history: response.response,
+                report: report,
+              },
             });
           }
         } else {
@@ -171,7 +176,48 @@ export class ReportsComponent implements OnInit {
       },
     });
   }
-  attachFile() { }
+
+  openWarnings(id: number, report: ReportSchDetailsDto): void {
+    this.loadingService.show();
+    this.client.getWarningsOrErrorsInFormat(id.toString(), 2).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response) {
+          if (response.response != undefined) {
+            const dialogRef = this.dialog.open(WarningsComponent, {
+              width: '80%',
+              height: '85%',
+              data: {
+                warnings: response.response,
+                report: report,
+              },
+            });
+          }
+        } else {
+          this.toastr.error('Failed to load Warnings.', 'Error');
+          console.error('Failed to load Warnings:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching Warnings.', 'Error');
+        console.error('Error occurred while fetching Warnings:', error);
+      },
+    });
+  }
+
+  attachFile(id: number, report: ReportSchDetailsDto): void {
+    const docTypesToValidate = '80';//BALMessageSettings.GetMessageProperty((int)ReportSchedule.DocTypes_To_Validate);
+
+    if(docTypesToValidate.indexOf((report.docTypeID ?? 'nothing').toString()) > -1) {
+      // redirect to ReportValidation.aspx
+    }
+    else{
+      const dialogRef = this.dialog.open(ReportUploadComponent, {
+        data: { report: report, parent: this }
+      });
+    }
+  }
   submitReport() { }
   signOff() { }
 }

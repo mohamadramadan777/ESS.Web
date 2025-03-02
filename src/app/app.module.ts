@@ -62,6 +62,8 @@ import { GensubComponent } from './components/submission-records/forms/gensub/ge
 import { SignOffGenericComponent } from './components/sign-off-generic/sign-off-generic.component';
 import { HistoryComponent } from './components/reports/history/history.component';
 import { DatePipe } from '@angular/common';
+import { WarningsComponent } from './components/reports/warnings/warnings.component';
+import { ReportUploadComponent } from './components/reports/report-upload/report-upload.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -94,6 +96,8 @@ import { DatePipe } from '@angular/common';
     GensubComponent,
     SignOffGenericComponent,
     HistoryComponent,
+    WarningsComponent,
+    ReportUploadComponent,
   ],
   imports: [
     BrowserModule,
