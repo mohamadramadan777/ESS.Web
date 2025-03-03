@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Client, ObjectSOTaskStatus, ObjTasks, ReportSchDto, HistoryDetailsDto, InsertObjectSOStatusDetailsDto, InsertReportSchDetailsDto, ReportSchDetailsDto, ReportSchDetailsDtoBaseResponse } from '../../services/api-client';
+import { Client, ObjectSOTaskStatus, ObjTasksDto, ReportSchDto, HistoryDetailsDto, InsertObjectSOStatusDetailsDto, InsertReportSchDetailsDto, ReportSchDetailsDto, ReportSchDetailsDtoBaseResponse } from '../../services/api-client';
 import { AppConstants } from '../../constants/app.constants';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
@@ -24,7 +24,7 @@ export class ReportsComponent implements OnInit {
     [key: string]: ObjectSOTaskStatus[];
   } | undefined = undefined;
   _SEFUsers: string[] = [];
-  _lstObjTasks: ObjTasks[] = []
+  _lstObjTasks: ObjTasksDto[] = []
   lstXBRLDocTypes: number[] = []
   firmTypeString: string = localStorage.getItem(AppConstants.Session.SESSION_FIRM_TYPE) ?? '';
   qfcNo: string = localStorage.getItem(AppConstants.Session.SESSION_QFC_NO) ?? '';

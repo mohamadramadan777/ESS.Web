@@ -64,6 +64,7 @@ import { HistoryComponent } from './components/reports/history/history.component
 import { DatePipe } from '@angular/common';
 import { WarningsComponent } from './components/reports/warnings/warnings.component';
 import { ReportUploadComponent } from './components/reports/report-upload/report-upload.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -98,6 +99,7 @@ import { ReportUploadComponent } from './components/reports/report-upload/report
     HistoryComponent,
     WarningsComponent,
     ReportUploadComponent,
+    ForgotPasswordComponent,
   ],
   imports: [
     BrowserModule,

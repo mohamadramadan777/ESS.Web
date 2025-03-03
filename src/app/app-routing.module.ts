@@ -13,6 +13,7 @@ import { ChangeSecurityquestionsComponent } from './components/change-securityqu
 import { NoticesComponent } from './components/notices/notices.component';
 import { ReportsComponent } from './components/reports/reports.component';
 import { SubmissionRecordsComponent } from './components/submission-records/submission-records.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -60,6 +61,10 @@ const routes: Routes = [
   // { path: 'Home', component: HomeComponent },
   { path: 'contactus', component: ContactUsComponent },
   { path: 'Contactus', component: ContactUsComponent },
+
+  { path: 'forgotpassword', component: ForgotPasswordComponent },
+  { path: 'Forgotpassword', component: ForgotPasswordComponent },
+
   {
     path: 'system-access',
     component: SystemAccessComponent,

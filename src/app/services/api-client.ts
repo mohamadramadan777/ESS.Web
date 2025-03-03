@@ -246,6 +246,62 @@ export class Client {
     }
 
     /**
+     * @param wAccessReqId (optional) 
+     * @return OK
+     */
+    getUserQaFp(wAccessReqId: string | undefined): Observable<UserQuestionAnswersListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-qa-fp?";
+        if (wAccessReqId === null)
+            throw new Error("The parameter 'wAccessReqId' cannot be null.");
+        else if (wAccessReqId !== undefined)
+            url_ += "WAccessReqId=" + encodeURIComponent("" + wAccessReqId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserQaFp(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserQaFp(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserQuestionAnswersListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserQuestionAnswersListBaseResponse>;
+        }));
+    }
+
+    protected processGetUserQaFp(response: HttpResponseBase): Observable<UserQuestionAnswersListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserQuestionAnswersListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserQuestionAnswersListBaseResponse>(null as any);
+    }
+
+    /**
      * @param email (optional) 
      * @return OK
      */
@@ -336,6 +392,62 @@ export class Client {
     }
 
     protected processResetPassword(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param text (optional) 
+     * @return OK
+     */
+    refreshFp(text: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/refresh-fp?";
+        if (text === null)
+            throw new Error("The parameter 'text' cannot be null.");
+        else if (text !== undefined)
+            url_ += "text=" + encodeURIComponent("" + text) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRefreshFp(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRefreshFp(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processRefreshFp(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1017,6 +1129,68 @@ export class Client {
     }
 
     /**
+     * @param email (optional) 
+     * @param objectInstanceID (optional) 
+     * @param qfcNumber (optional) 
+     * @return OK
+     */
+    sendEmailToWebsiteUserFp(email: string | undefined, objectInstanceID: number | undefined, qfcNumber: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/send-email-to-website-user-fp?";
+        if (email === null)
+            throw new Error("The parameter 'email' cannot be null.");
+        else if (email !== undefined)
+            url_ += "email=" + encodeURIComponent("" + email) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (qfcNumber === null)
+            throw new Error("The parameter 'qfcNumber' cannot be null.");
+        else if (qfcNumber !== undefined)
+            url_ += "qfcNumber=" + encodeURIComponent("" + qfcNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendEmailToWebsiteUserFp(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendEmailToWebsiteUserFp(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processSendEmailToWebsiteUserFp(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
      * @param wRoleIds (optional) 
      * @return OK
      */
@@ -1175,21 +1349,90 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
      * @return OK
      */
-    checkAccountExists(body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists";
+    deleteIndividualDetailsGET2(emailAddress: string): Observable<StringStringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/delete-individual-details/{emailAddress}";
+        if (emailAddress === undefined || emailAddress === null)
+            throw new Error("The parameter 'emailAddress' must be defined.");
+        url_ = url_.replace("{emailAddress}", encodeURIComponent("" + emailAddress));
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteIndividualDetailsGET2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteIndividualDetailsGET2(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringStringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringStringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processDeleteIndividualDetailsGET2(response: HttpResponseBase): Observable<StringStringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringStringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringStringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
+     * @param firmQFCNo (optional) 
+     * @param individualEmailAddress (optional) 
+     * @param aiNumber (optional) 
+     * @param userActiveFlag (optional) 
+     * @return OK
+     */
+    checkAccountExists(firmQFCNo: string | undefined, individualEmailAddress: string | undefined, aiNumber: string | undefined, userActiveFlag: boolean | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists?";
+        if (firmQFCNo === null)
+            throw new Error("The parameter 'firmQFCNo' cannot be null.");
+        else if (firmQFCNo !== undefined)
+            url_ += "FirmQFCNo=" + encodeURIComponent("" + firmQFCNo) + "&";
+        if (individualEmailAddress === null)
+            throw new Error("The parameter 'individualEmailAddress' cannot be null.");
+        else if (individualEmailAddress !== undefined)
+            url_ += "individualEmailAddress=" + encodeURIComponent("" + individualEmailAddress) + "&";
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (userActiveFlag === null)
+            throw new Error("The parameter 'userActiveFlag' cannot be null.");
+        else if (userActiveFlag !== undefined)
+            url_ += "userActiveFlag=" + encodeURIComponent("" + userActiveFlag) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
                 "Accept": "text/plain"
             })
         };
@@ -1231,21 +1474,31 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param individualEmailAddress (optional) 
+     * @param functionIDList (optional) 
+     * @param aINumber (optional) 
      * @return OK
      */
-    updateUserRoles(body: WAccessRequests | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/update-user-roles";
+    updateUserRoles(individualEmailAddress: string | undefined, functionIDList: string | undefined, aINumber: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/update-user-roles?";
+        if (individualEmailAddress === null)
+            throw new Error("The parameter 'individualEmailAddress' cannot be null.");
+        else if (individualEmailAddress !== undefined)
+            url_ += "individualEmailAddress=" + encodeURIComponent("" + individualEmailAddress) + "&";
+        if (functionIDList === null)
+            throw new Error("The parameter 'functionIDList' cannot be null.");
+        else if (functionIDList !== undefined)
+            url_ += "functionIDList=" + encodeURIComponent("" + functionIDList) + "&";
+        if (aINumber === null)
+            throw new Error("The parameter 'aINumber' cannot be null.");
+        else if (aINumber !== undefined)
+            url_ += "AINumber=" + encodeURIComponent("" + aINumber) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -1287,21 +1540,31 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param individualEmailAddress (optional) 
+     * @param functionIDList (optional) 
+     * @param aINumber (optional) 
      * @return OK
      */
-    deactivateUserRoles(body: WAccessRequests | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/deactivate-user-roles";
+    deactivateUserRoles(individualEmailAddress: string | undefined, functionIDList: string | undefined, aINumber: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/deactivate-user-roles?";
+        if (individualEmailAddress === null)
+            throw new Error("The parameter 'individualEmailAddress' cannot be null.");
+        else if (individualEmailAddress !== undefined)
+            url_ += "individualEmailAddress=" + encodeURIComponent("" + individualEmailAddress) + "&";
+        if (functionIDList === null)
+            throw new Error("The parameter 'functionIDList' cannot be null.");
+        else if (functionIDList !== undefined)
+            url_ += "functionIDList=" + encodeURIComponent("" + functionIDList) + "&";
+        if (aINumber === null)
+            throw new Error("The parameter 'aINumber' cannot be null.");
+        else if (aINumber !== undefined)
+            url_ += "AINumber=" + encodeURIComponent("" + aINumber) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "text/plain"
             })
         };
@@ -1512,21 +1775,26 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param aiNumber (optional) 
+     * @param activateRoleTypeID (optional) 
      * @return OK
      */
-    activateUserRoles(body: WAccessRequests | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-roles";
+    activateUserRoles(aiNumber: string | undefined, activateRoleTypeID: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-roles?";
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (activateRoleTypeID === null)
+            throw new Error("The parameter 'activateRoleTypeID' cannot be null.");
+        else if (activateRoleTypeID !== undefined)
+            url_ += "activateRoleTypeID=" + encodeURIComponent("" + activateRoleTypeID) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
             })
         };
 
@@ -1564,21 +1832,146 @@ export class Client {
     }
 
     /**
-     * @param body (optional) 
+     * @param aiNumber (optional) 
+     * @param activateRoleTypeID (optional) 
      * @return OK
      */
-    checkAccountExistsById(body: WAccessRequests | undefined): Observable<WAccessRequestsBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists-by-id";
+    activateUserRoles2(aiNumber: string | undefined, activateRoleTypeID: string | undefined, emailAddress: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-roles/{emailAddress}?";
+        if (emailAddress === undefined || emailAddress === null)
+            throw new Error("The parameter 'emailAddress' must be defined.");
+        url_ = url_.replace("{emailAddress}", encodeURIComponent("" + emailAddress));
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (activateRoleTypeID === null)
+            throw new Error("The parameter 'activateRoleTypeID' cannot be null.");
+        else if (activateRoleTypeID !== undefined)
+            url_ += "activateRoleTypeID=" + encodeURIComponent("" + activateRoleTypeID) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivateUserRoles2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivateUserRoles2(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processActivateUserRoles2(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param aiNumber (optional) 
+     * @param activateRoleTypeID (optional) 
+     * @return OK
+     */
+    activateUserRoles3(aiNumber: string | undefined, activateRoleTypeID: string | undefined, waccessRequestID: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/AccessRequest/activate-user-roles/{waccessRequestID}?";
+        if (waccessRequestID === undefined || waccessRequestID === null)
+            throw new Error("The parameter 'waccessRequestID' must be defined.");
+        url_ = url_.replace("{waccessRequestID}", encodeURIComponent("" + waccessRequestID));
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (activateRoleTypeID === null)
+            throw new Error("The parameter 'activateRoleTypeID' cannot be null.");
+        else if (activateRoleTypeID !== undefined)
+            url_ += "activateRoleTypeID=" + encodeURIComponent("" + activateRoleTypeID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processActivateUserRoles3(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processActivateUserRoles3(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processActivateUserRoles3(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param aiNumber (optional) 
+     * @param qfcNumber (optional) 
+     * @return OK
+     */
+    checkAccountExistsById(aiNumber: string | undefined, qfcNumber: string | undefined): Observable<WAccessRequestsBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/check-account-exists-by-id?";
+        if (aiNumber === null)
+            throw new Error("The parameter 'aiNumber' cannot be null.");
+        else if (aiNumber !== undefined)
+            url_ += "aiNumber=" + encodeURIComponent("" + aiNumber) + "&";
+        if (qfcNumber === null)
+            throw new Error("The parameter 'qfcNumber' cannot be null.");
+        else if (qfcNumber !== undefined)
+            url_ += "qfcNumber=" + encodeURIComponent("" + qfcNumber) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
                 "Accept": "text/plain"
             })
         };
@@ -2285,6 +2678,60 @@ export class Client {
     }
 
     /**
+     * @return OK
+     */
+    getUserLoginQuestions2(categoryID: number): Observable<Int32StringDictionaryBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-login-questions/{categoryId}";
+        if (categoryID === undefined || categoryID === null)
+            throw new Error("The parameter 'categoryID' must be defined.");
+        url_ = url_.replace("{categoryID}", encodeURIComponent("" + categoryID));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserLoginQuestions2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserLoginQuestions2(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32StringDictionaryBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32StringDictionaryBaseResponse>;
+        }));
+    }
+
+    protected processGetUserLoginQuestions2(response: HttpResponseBase): Observable<Int32StringDictionaryBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32StringDictionaryBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32StringDictionaryBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -2462,7 +2909,7 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    checkUserAnswerForResetPassword(body: UserQuestionAnswers | undefined): Observable<BooleanBaseResponse> {
+    checkUserAnswerForResetPassword(body: UserQuestionAnswersDto | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/AccessRequest/check-user-answer-for-reset-password";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2635,8 +3082,11 @@ export class Client {
      * @param roleId (optional) 
      * @return OK
      */
-    getUserDetailByRole(roleId: number | undefined): Observable<WUsersDtoBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/get-user-detail-by-role?";
+    user(roleId: number | undefined, userID: string): Observable<WUsersDtoBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-detail-by-role/user/{userID}?";
+        if (userID === undefined || userID === null)
+            throw new Error("The parameter 'userID' must be defined.");
+        url_ = url_.replace("{userID}", encodeURIComponent("" + userID));
         if (roleId === null)
             throw new Error("The parameter 'roleId' cannot be null.");
         else if (roleId !== undefined)
@@ -2652,11 +3102,11 @@ export class Client {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUserDetailByRole(response_);
+            return this.processUser(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetUserDetailByRole(response_ as any);
+                    return this.processUser(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<WUsersDtoBaseResponse>;
                 }
@@ -2665,7 +3115,7 @@ export class Client {
         }));
     }
 
-    protected processGetUserDetailByRole(response: HttpResponseBase): Observable<WUsersDtoBaseResponse> {
+    protected processUser(response: HttpResponseBase): Observable<WUsersDtoBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2912,6 +3362,65 @@ export class Client {
     }
 
     /**
+     * @param pRoleID (optional) 
+     * @return OK
+     */
+    getUserDetailByRole(pRoleID: number | undefined, qfcNumber: string): Observable<WAccessRequestsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/get-user-detail-by-role/{qfcNumber}?";
+        if (qfcNumber === undefined || qfcNumber === null)
+            throw new Error("The parameter 'qfcNumber' must be defined.");
+        url_ = url_.replace("{qfcNumber}", encodeURIComponent("" + qfcNumber));
+        if (pRoleID === null)
+            throw new Error("The parameter 'pRoleID' cannot be null.");
+        else if (pRoleID !== undefined)
+            url_ += "pRoleID=" + encodeURIComponent("" + pRoleID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserDetailByRole(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserDetailByRole(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAccessRequestsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAccessRequestsListBaseResponse>;
+        }));
+    }
+
+    protected processGetUserDetailByRole(response: HttpResponseBase): Observable<WAccessRequestsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAccessRequestsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAccessRequestsListBaseResponse>(null as any);
+    }
+
+    /**
      * @param emailAddress (optional) 
      * @param iPaddress (optional) 
      * @param requestToken (optional) 
@@ -2976,9 +3485,10 @@ export class Client {
     /**
      * @param emailAddress (optional) 
      * @param requestToken (optional) 
+     * @param firmQFCNo (optional) 
      * @return OK
      */
-    checkResetPasswordToken(emailAddress: string | undefined, requestToken: string | undefined): Observable<BooleanBaseResponse> {
+    checkResetPasswordToken(emailAddress: string | undefined, requestToken: string | undefined, firmQFCNo: string | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/AccessRequest/check-reset-password-token?";
         if (emailAddress === null)
             throw new Error("The parameter 'emailAddress' cannot be null.");
@@ -2988,6 +3498,10 @@ export class Client {
             throw new Error("The parameter 'requestToken' cannot be null.");
         else if (requestToken !== undefined)
             url_ += "requestToken=" + encodeURIComponent("" + requestToken) + "&";
+        if (firmQFCNo === null)
+            throw new Error("The parameter 'firmQFCNo' cannot be null.");
+        else if (firmQFCNo !== undefined)
+            url_ += "FirmQFCNo=" + encodeURIComponent("" + firmQFCNo) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -6522,7 +7036,7 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    insertUpdateObjTaskStatus(body: ObjTasks | undefined): Observable<BooleanBaseResponse> {
+    insertUpdateObjTaskStatus(body: ObjTasksDto | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/Firms/InsertUpdateObjTaskStatus";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -7223,20 +7737,10 @@ export class Client {
     }
 
     /**
-     * @param qFCNum (optional) 
-     * @param userID (optional) 
      * @return OK
      */
-    getSubmittedGenSubApplications(qFCNum: string | undefined, userID: number | undefined): Observable<PendingItemsDtoListBaseResponse> {
-        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-gen-sub-applications?";
-        if (qFCNum === null)
-            throw new Error("The parameter 'qFCNum' cannot be null.");
-        else if (qFCNum !== undefined)
-            url_ += "QFCNum=" + encodeURIComponent("" + qFCNum) + "&";
-        if (userID === null)
-            throw new Error("The parameter 'userID' cannot be null.");
-        else if (userID !== undefined)
-            url_ += "userID=" + encodeURIComponent("" + userID) + "&";
+    getSubmittedGenSubApplications(): Observable<PendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-submitted-gen-sub-applications";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -7754,7 +8258,7 @@ export class Client {
     /**
      * @return OK
      */
-    getObjectTaskStatus(): Observable<ObjTasksListBaseResponse> {
+    getObjectTaskStatus(): Observable<ObjTasksDtoListBaseResponse> {
         let url_ = this.baseUrl + "/api/GenSubmission/get-object-task-status";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -7773,14 +8277,14 @@ export class Client {
                 try {
                     return this.processGetObjectTaskStatus(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ObjTasksListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<ObjTasksDtoListBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ObjTasksListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<ObjTasksDtoListBaseResponse>;
         }));
     }
 
-    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<ObjTasksListBaseResponse> {
+    protected processGetObjectTaskStatus(response: HttpResponseBase): Observable<ObjTasksDtoListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -7791,7 +8295,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ObjTasksListBaseResponse.fromJS(resultData200);
+            result200 = ObjTasksDtoListBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -7799,7 +8303,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ObjTasksListBaseResponse>(null as any);
+        return _observableOf<ObjTasksDtoListBaseResponse>(null as any);
     }
 
     /**
@@ -8974,9 +9478,10 @@ export class Client {
      * @param lkbtnWarningsVisible (optional) 
      * @param lkbtnViewInExcelVisible (optional) 
      * @param lkbtnDataValidationVisible (optional) 
+     * @param lstObjectSOTaskStatus (optional) 
      * @return OK
      */
-    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
         if (qFCNum === null)
             throw new Error("The parameter 'qFCNum' cannot be null.");
@@ -9299,6 +9804,15 @@ export class Client {
             throw new Error("The parameter 'lkbtnDataValidationVisible' cannot be null.");
         else if (lkbtnDataValidationVisible !== undefined)
             url_ += "lkbtnDataValidationVisible=" + encodeURIComponent("" + lkbtnDataValidationVisible) + "&";
+        if (lstObjectSOTaskStatus === null)
+            throw new Error("The parameter 'lstObjectSOTaskStatus' cannot be null.");
+        else if (lstObjectSOTaskStatus !== undefined)
+            lstObjectSOTaskStatus && lstObjectSOTaskStatus.forEach((item, index) => {
+                for (const attr in item)
+        			if (item.hasOwnProperty(attr)) {
+        				url_ += "lstObjectSOTaskStatus[" + index + "]." + attr + "=" + encodeURIComponent("" + (item as any)[attr]) + "&";
+        			}
+            });
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -9741,7 +10255,7 @@ export class Client {
      * @param wObjInstanceID (optional) 
      * @return OK
      */
-    getReportSchSignOffDetails(wObjectID: number | undefined, wObjInstanceID: number | undefined): Observable<ObjectSoTaskStatusDtoListBaseResponse> {
+    getReportSchSignOffDetails(wObjectID: number | undefined, wObjInstanceID: number | undefined): Observable<ObjectSOTaskStatusDtoListBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-sign-off-details?";
         if (wObjectID === null)
             throw new Error("The parameter 'wObjectID' cannot be null.");
@@ -9768,14 +10282,14 @@ export class Client {
                 try {
                     return this.processGetReportSchSignOffDetails(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<ObjectSoTaskStatusDtoListBaseResponse>;
+                    return _observableThrow(e) as any as Observable<ObjectSOTaskStatusDtoListBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<ObjectSoTaskStatusDtoListBaseResponse>;
+                return _observableThrow(response_) as any as Observable<ObjectSOTaskStatusDtoListBaseResponse>;
         }));
     }
 
-    protected processGetReportSchSignOffDetails(response: HttpResponseBase): Observable<ObjectSoTaskStatusDtoListBaseResponse> {
+    protected processGetReportSchSignOffDetails(response: HttpResponseBase): Observable<ObjectSOTaskStatusDtoListBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -9786,7 +10300,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = ObjectSoTaskStatusDtoListBaseResponse.fromJS(resultData200);
+            result200 = ObjectSOTaskStatusDtoListBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -9794,7 +10308,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ObjectSoTaskStatusDtoListBaseResponse>(null as any);
+        return _observableOf<ObjectSOTaskStatusDtoListBaseResponse>(null as any);
     }
 
     /**
@@ -11943,6 +12457,62 @@ export class Client {
         }
         return _observableOf<ReportSignatoriesListBaseResponse>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    submitAccessRequest(body: SubmitAccessRequest | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/SystemAccess/submit-access-request";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitAccessRequest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitAccessRequest(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processSubmitAccessRequest(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
 }
 
 @Injectable()
@@ -12237,7 +12807,7 @@ export class ResponseClient {
      * @param body (optional) 
      * @return OK
      */
-    details(body: WFirmNotices | undefined): Observable<FirmNoticesDtoBaseResponse> {
+    details(body: WFirmNoticesDto | undefined): Observable<FirmNoticesDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/NoticeData/generate_notice_response_details";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -18139,6 +18709,7 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
     proposedRelocationDateDay?: number;
     proposedRelocationDateMonth?: number;
     proposedRelocationDateYear?: number;
+    userID?: number;
 
     constructor(data?: IApplicationDetailDto) {
         if (data) {
@@ -18203,6 +18774,7 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
             this.proposedRelocationDateDay = _data["proposedRelocationDateDay"];
             this.proposedRelocationDateMonth = _data["proposedRelocationDateMonth"];
             this.proposedRelocationDateYear = _data["proposedRelocationDateYear"];
+            this.userID = _data["userID"];
         }
     }
 
@@ -18267,6 +18839,7 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
         data["proposedRelocationDateDay"] = this.proposedRelocationDateDay;
         data["proposedRelocationDateMonth"] = this.proposedRelocationDateMonth;
         data["proposedRelocationDateYear"] = this.proposedRelocationDateYear;
+        data["userID"] = this.userID;
         return data;
     }
 }
@@ -18324,6 +18897,7 @@ export interface IApplicationDetailDto {
     proposedRelocationDateDay?: number;
     proposedRelocationDateMonth?: number;
     proposedRelocationDateYear?: number;
+    userID?: number;
 }
 
 export class ApplicationDetailDtoBaseResponse implements IApplicationDetailDtoBaseResponse {
@@ -18483,6 +19057,7 @@ export class AttachmentDto implements IAttachmentDto {
     isFileDescSysGenerated?: boolean | undefined;
     docTypeIdEffectivefromdate?: string | undefined;
     docTypeIdEffectivetodate?: string | undefined;
+    strQFCNumber?: any | undefined;
 
     constructor(data?: IAttachmentDto) {
         if (data) {
@@ -18547,6 +19122,7 @@ export class AttachmentDto implements IAttachmentDto {
             this.isFileDescSysGenerated = _data["isFileDescSysGenerated"];
             this.docTypeIdEffectivefromdate = _data["docTypeIdEffectivefromdate"];
             this.docTypeIdEffectivetodate = _data["docTypeIdEffectivetodate"];
+            this.strQFCNumber = _data["strQFCNumber"];
         }
     }
 
@@ -18611,6 +19187,7 @@ export class AttachmentDto implements IAttachmentDto {
         data["isFileDescSysGenerated"] = this.isFileDescSysGenerated;
         data["docTypeIdEffectivefromdate"] = this.docTypeIdEffectivefromdate;
         data["docTypeIdEffectivetodate"] = this.docTypeIdEffectivetodate;
+        data["strQFCNumber"] = this.strQFCNumber;
         return data;
     }
 }
@@ -18668,6 +19245,7 @@ export interface IAttachmentDto {
     isFileDescSysGenerated?: boolean | undefined;
     docTypeIdEffectivefromdate?: string | undefined;
     docTypeIdEffectivetodate?: string | undefined;
+    strQFCNumber?: any | undefined;
 }
 
 export class AttachmentDtoBaseResponse implements IAttachmentDtoBaseResponse {
@@ -22302,7 +22880,7 @@ export interface IDocumentDetails {
 }
 
 export class EmailEventForReportValidationRequest implements IEmailEventForReportValidationRequest {
-    objReportSchDetails?: ReportSchDetails;
+    objReportSchDetails?: ReportSchDetailsDto;
     lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
     eventType?: number;
     objectID?: number;
@@ -22318,7 +22896,7 @@ export class EmailEventForReportValidationRequest implements IEmailEventForRepor
 
     init(_data?: any) {
         if (_data) {
-            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetails.fromJS(_data["objReportSchDetails"]) : <any>undefined;
+            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetailsDto.fromJS(_data["objReportSchDetails"]) : <any>undefined;
             if (Array.isArray(_data["lstObjectSOTaskStatus"])) {
                 this.lstObjectSOTaskStatus = [] as any;
                 for (let item of _data["lstObjectSOTaskStatus"])
@@ -22351,14 +22929,14 @@ export class EmailEventForReportValidationRequest implements IEmailEventForRepor
 }
 
 export interface IEmailEventForReportValidationRequest {
-    objReportSchDetails?: ReportSchDetails;
+    objReportSchDetails?: ReportSchDetailsDto;
     lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
     eventType?: number;
     objectID?: number;
 }
 
 export class EmailEventRequest implements IEmailEventRequest {
-    objReportSchDetails?: ReportSchDetails;
+    objReportSchDetails?: ReportSchDetailsDto;
     lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
     eventType?: number;
     objectID?: number;
@@ -22374,7 +22952,7 @@ export class EmailEventRequest implements IEmailEventRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetails.fromJS(_data["objReportSchDetails"]) : <any>undefined;
+            this.objReportSchDetails = _data["objReportSchDetails"] ? ReportSchDetailsDto.fromJS(_data["objReportSchDetails"]) : <any>undefined;
             if (Array.isArray(_data["lstObjectSOTaskStatus"])) {
                 this.lstObjectSOTaskStatus = [] as any;
                 for (let item of _data["lstObjectSOTaskStatus"])
@@ -22407,7 +22985,7 @@ export class EmailEventRequest implements IEmailEventRequest {
 }
 
 export interface IEmailEventRequest {
-    objReportSchDetails?: ReportSchDetails;
+    objReportSchDetails?: ReportSchDetailsDto;
     lstObjectSOTaskStatus?: ObjectSOTaskStatus[] | undefined;
     eventType?: number;
     objectID?: number;
@@ -22849,6 +23427,9 @@ export class FirmDetailsDto implements IFirmDetailsDto {
     amlDirectorEmailAddress?: string | undefined;
     rsgEmailAddress?: string | undefined;
     firmTypeDesc?: string | undefined;
+    licensedTypeDesc?: string | undefined;
+    authorisationStatus?: string | undefined;
+    authorisationDate?: string | undefined;
 
     constructor(data?: IFirmDetailsDto) {
         if (data) {
@@ -22896,6 +23477,9 @@ export class FirmDetailsDto implements IFirmDetailsDto {
             this.amlDirectorEmailAddress = _data["amlDirectorEmailAddress"];
             this.rsgEmailAddress = _data["rsgEmailAddress"];
             this.firmTypeDesc = _data["firmTypeDesc"];
+            this.licensedTypeDesc = _data["licensedTypeDesc"];
+            this.authorisationStatus = _data["authorisationStatus"];
+            this.authorisationDate = _data["authorisationDate"];
         }
     }
 
@@ -22943,6 +23527,9 @@ export class FirmDetailsDto implements IFirmDetailsDto {
         data["amlDirectorEmailAddress"] = this.amlDirectorEmailAddress;
         data["rsgEmailAddress"] = this.rsgEmailAddress;
         data["firmTypeDesc"] = this.firmTypeDesc;
+        data["licensedTypeDesc"] = this.licensedTypeDesc;
+        data["authorisationStatus"] = this.authorisationStatus;
+        data["authorisationDate"] = this.authorisationDate;
         return data;
     }
 }
@@ -22983,6 +23570,9 @@ export interface IFirmDetailsDto {
     amlDirectorEmailAddress?: string | undefined;
     rsgEmailAddress?: string | undefined;
     firmTypeDesc?: string | undefined;
+    licensedTypeDesc?: string | undefined;
+    authorisationStatus?: string | undefined;
+    authorisationDate?: string | undefined;
 }
 
 export class FirmDetailsDtoBaseResponse implements IFirmDetailsDtoBaseResponse {
@@ -25097,66 +25687,6 @@ export interface INumberFormatInfo {
     digitSubstitution?: DigitShapes;
 }
 
-export class ObjTasks implements IObjTasks {
-    wObjTaskID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjInstanceID?: number | undefined;
-    wObjTaskSyncStatusTypeID?: number | undefined;
-    wObjectEventTypeID?: number | undefined;
-    dateCreated?: Date | undefined;
-    userCreated?: number | undefined;
-
-    constructor(data?: IObjTasks) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.wObjTaskID = _data["wObjTaskID"];
-            this.wObjectID = _data["wObjectID"];
-            this.wObjInstanceID = _data["wObjInstanceID"];
-            this.wObjTaskSyncStatusTypeID = _data["wObjTaskSyncStatusTypeID"];
-            this.wObjectEventTypeID = _data["wObjectEventTypeID"];
-            this.dateCreated = _data["dateCreated"] ? new Date(_data["dateCreated"].toString()) : <any>undefined;
-            this.userCreated = _data["userCreated"];
-        }
-    }
-
-    static fromJS(data: any): ObjTasks {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjTasks();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["wObjTaskID"] = this.wObjTaskID;
-        data["wObjectID"] = this.wObjectID;
-        data["wObjInstanceID"] = this.wObjInstanceID;
-        data["wObjTaskSyncStatusTypeID"] = this.wObjTaskSyncStatusTypeID;
-        data["wObjectEventTypeID"] = this.wObjectEventTypeID;
-        data["dateCreated"] = this.dateCreated ? this.dateCreated.toISOString() : <any>undefined;
-        data["userCreated"] = this.userCreated;
-        return data;
-    }
-}
-
-export interface IObjTasks {
-    wObjTaskID?: number | undefined;
-    wObjectID?: number | undefined;
-    wObjInstanceID?: number | undefined;
-    wObjTaskSyncStatusTypeID?: number | undefined;
-    wObjectEventTypeID?: number | undefined;
-    dateCreated?: Date | undefined;
-    userCreated?: number | undefined;
-}
-
 export class ObjTasksDto implements IObjTasksDto {
     wObjTaskID?: number | undefined;
     wObjectID?: number | undefined;
@@ -25217,13 +25747,13 @@ export interface IObjTasksDto {
     userCreated?: number | undefined;
 }
 
-export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
+export class ObjTasksDtoListBaseResponse implements IObjTasksDtoListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
     statusCode?: number;
-    response?: ObjTasks[] | undefined;
+    response?: ObjTasksDto[] | undefined;
 
-    constructor(data?: IObjTasksListBaseResponse) {
+    constructor(data?: IObjTasksDtoListBaseResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -25240,14 +25770,14 @@ export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
             if (Array.isArray(_data["response"])) {
                 this.response = [] as any;
                 for (let item of _data["response"])
-                    this.response!.push(ObjTasks.fromJS(item));
+                    this.response!.push(ObjTasksDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): ObjTasksListBaseResponse {
+    static fromJS(data: any): ObjTasksDtoListBaseResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ObjTasksListBaseResponse();
+        let result = new ObjTasksDtoListBaseResponse();
         result.init(data);
         return result;
     }
@@ -25266,11 +25796,11 @@ export class ObjTasksListBaseResponse implements IObjTasksListBaseResponse {
     }
 }
 
-export interface IObjTasksListBaseResponse {
+export interface IObjTasksDtoListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
     statusCode?: number;
-    response?: ObjTasks[] | undefined;
+    response?: ObjTasksDto[] | undefined;
 }
 
 export class ObjectSOStatus implements IObjectSOStatus {
@@ -25803,110 +26333,6 @@ export interface IObjectSOTaskStatusListBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: ObjectSOTaskStatus[] | undefined;
-}
-
-export class ObjectSoTaskStatusDto implements IObjectSoTaskStatusDto {
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    soTaskSeqNo?: number | undefined;
-    soTaskCompletionDate?: string | undefined;
-
-    constructor(data?: IObjectSoTaskStatusDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.individualName = _data["individualName"];
-            this.emailAdd = _data["emailAdd"];
-            this.soTaskSeqNo = _data["soTaskSeqNo"];
-            this.soTaskCompletionDate = _data["soTaskCompletionDate"];
-        }
-    }
-
-    static fromJS(data: any): ObjectSoTaskStatusDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSoTaskStatusDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["individualName"] = this.individualName;
-        data["emailAdd"] = this.emailAdd;
-        data["soTaskSeqNo"] = this.soTaskSeqNo;
-        data["soTaskCompletionDate"] = this.soTaskCompletionDate;
-        return data;
-    }
-}
-
-export interface IObjectSoTaskStatusDto {
-    individualName?: string | undefined;
-    emailAdd?: string | undefined;
-    soTaskSeqNo?: number | undefined;
-    soTaskCompletionDate?: string | undefined;
-}
-
-export class ObjectSoTaskStatusDtoListBaseResponse implements IObjectSoTaskStatusDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjectSoTaskStatusDto[] | undefined;
-
-    constructor(data?: IObjectSoTaskStatusDtoListBaseResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.isSuccess = _data["isSuccess"];
-            this.errorMessage = _data["errorMessage"];
-            this.statusCode = _data["statusCode"];
-            if (Array.isArray(_data["response"])) {
-                this.response = [] as any;
-                for (let item of _data["response"])
-                    this.response!.push(ObjectSoTaskStatusDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): ObjectSoTaskStatusDtoListBaseResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ObjectSoTaskStatusDtoListBaseResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["isSuccess"] = this.isSuccess;
-        data["errorMessage"] = this.errorMessage;
-        data["statusCode"] = this.statusCode;
-        if (Array.isArray(this.response)) {
-            data["response"] = [];
-            for (let item of this.response)
-                data["response"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IObjectSoTaskStatusDtoListBaseResponse {
-    isSuccess?: boolean;
-    errorMessage?: string | undefined;
-    statusCode?: number;
-    response?: ObjectSoTaskStatusDto[] | undefined;
 }
 
 export class ObjectTextDto implements IObjectTextDto {
@@ -26881,6 +27307,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     lkbtnWarningsVisible?: boolean | undefined;
     lkbtnViewInExcelVisible?: boolean | undefined;
     lkbtnDataValidationVisible?: boolean | undefined;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -26976,6 +27403,11 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
             this.lkbtnWarningsVisible = _data["lkbtnWarningsVisible"];
             this.lkbtnViewInExcelVisible = _data["lkbtnViewInExcelVisible"];
             this.lkbtnDataValidationVisible = _data["lkbtnDataValidationVisible"];
+            if (Array.isArray(_data["lstObjectSOTaskStatus"])) {
+                this.lstObjectSOTaskStatus = [] as any;
+                for (let item of _data["lstObjectSOTaskStatus"])
+                    this.lstObjectSOTaskStatus!.push(ObjectSOTaskStatusDto.fromJS(item));
+            }
         }
     }
 
@@ -27071,6 +27503,11 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
         data["lkbtnWarningsVisible"] = this.lkbtnWarningsVisible;
         data["lkbtnViewInExcelVisible"] = this.lkbtnViewInExcelVisible;
         data["lkbtnDataValidationVisible"] = this.lkbtnDataValidationVisible;
+        if (Array.isArray(this.lstObjectSOTaskStatus)) {
+            data["lstObjectSOTaskStatus"] = [];
+            for (let item of this.lstObjectSOTaskStatus)
+                data["lstObjectSOTaskStatus"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -27155,6 +27592,7 @@ export interface IReportSchDetailsDto {
     lkbtnWarningsVisible?: boolean | undefined;
     lkbtnViewInExcelVisible?: boolean | undefined;
     lkbtnDataValidationVisible?: boolean | undefined;
+    lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
@@ -28695,6 +29133,58 @@ export interface IStringStringDictionaryBaseResponse {
     response?: { [key: string]: string; } | undefined;
 }
 
+export class SubmitAccessRequest implements ISubmitAccessRequest {
+    objWAccessRequests?: WAccessRequests;
+    qfcNum?: string | undefined;
+    firmTypeId?: number;
+    contactID?: number;
+    contactAssnID?: number;
+
+    constructor(data?: ISubmitAccessRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.objWAccessRequests = _data["objWAccessRequests"] ? WAccessRequests.fromJS(_data["objWAccessRequests"]) : <any>undefined;
+            this.qfcNum = _data["qfcNum"];
+            this.firmTypeId = _data["firmTypeId"];
+            this.contactID = _data["contactID"];
+            this.contactAssnID = _data["contactAssnID"];
+        }
+    }
+
+    static fromJS(data: any): SubmitAccessRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitAccessRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["objWAccessRequests"] = this.objWAccessRequests ? this.objWAccessRequests.toJSON() : <any>undefined;
+        data["qfcNum"] = this.qfcNum;
+        data["firmTypeId"] = this.firmTypeId;
+        data["contactID"] = this.contactID;
+        data["contactAssnID"] = this.contactAssnID;
+        return data;
+    }
+}
+
+export interface ISubmitAccessRequest {
+    objWAccessRequests?: WAccessRequests;
+    qfcNum?: string | undefined;
+    firmTypeId?: number;
+    contactID?: number;
+    contactAssnID?: number;
+}
+
 export class Terms implements ITerms {
     wTermsID?: number;
     wTermSubject?: string | undefined;
@@ -29081,6 +29571,7 @@ export class UserQuestionAnswers implements IUserQuestionAnswers {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
     userQuestionAnswerID?: number;
     wAppUserID?: number;
     wLoginQuestionTypeID?: number;
@@ -29155,6 +29646,7 @@ export class UserQuestionAnswers implements IUserQuestionAnswers {
                     this.lstWUserRoles!.push(WUserRoles.fromJS(item));
             }
             this.objectID = _data["objectID"];
+            this.contactAssnID = _data["contactAssnID"];
             this.userQuestionAnswerID = _data["userQuestionAnswerID"];
             this.wAppUserID = _data["wAppUserID"];
             this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
@@ -29229,6 +29721,7 @@ export class UserQuestionAnswers implements IUserQuestionAnswers {
                 data["lstWUserRoles"].push(item.toJSON());
         }
         data["objectID"] = this.objectID;
+        data["contactAssnID"] = this.contactAssnID;
         data["userQuestionAnswerID"] = this.userQuestionAnswerID;
         data["wAppUserID"] = this.wAppUserID;
         data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
@@ -29288,6 +29781,7 @@ export interface IUserQuestionAnswers {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
     userQuestionAnswerID?: number;
     wAppUserID?: number;
     wLoginQuestionTypeID?: number;
@@ -29300,9 +29794,14 @@ export interface IUserQuestionAnswers {
 }
 
 export class UserQuestionAnswersDto implements IUserQuestionAnswersDto {
+    wAccessRequestID?: string | undefined;
     wLoginQuestionTypeID?: number;
-    wLoginQuestionCategoryTypeID?: number;
+    uqa?: string | undefined;
     answer?: string | undefined;
+    userIPAddess?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    userSessionID?: string | undefined;
+    wLoginQuestionCategoryTypeID?: number;
 
     constructor(data?: IUserQuestionAnswersDto) {
         if (data) {
@@ -29315,9 +29814,14 @@ export class UserQuestionAnswersDto implements IUserQuestionAnswersDto {
 
     init(_data?: any) {
         if (_data) {
+            this.wAccessRequestID = _data["wAccessRequestID"];
             this.wLoginQuestionTypeID = _data["wLoginQuestionTypeID"];
-            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
+            this.uqa = _data["uqa"];
             this.answer = _data["answer"];
+            this.userIPAddess = _data["userIPAddess"];
+            this.individualEmailAddress = _data["individualEmailAddress"];
+            this.userSessionID = _data["userSessionID"];
+            this.wLoginQuestionCategoryTypeID = _data["wLoginQuestionCategoryTypeID"];
         }
     }
 
@@ -29330,17 +29834,27 @@ export class UserQuestionAnswersDto implements IUserQuestionAnswersDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["wAccessRequestID"] = this.wAccessRequestID;
         data["wLoginQuestionTypeID"] = this.wLoginQuestionTypeID;
-        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
+        data["uqa"] = this.uqa;
         data["answer"] = this.answer;
+        data["userIPAddess"] = this.userIPAddess;
+        data["individualEmailAddress"] = this.individualEmailAddress;
+        data["userSessionID"] = this.userSessionID;
+        data["wLoginQuestionCategoryTypeID"] = this.wLoginQuestionCategoryTypeID;
         return data;
     }
 }
 
 export interface IUserQuestionAnswersDto {
+    wAccessRequestID?: string | undefined;
     wLoginQuestionTypeID?: number;
-    wLoginQuestionCategoryTypeID?: number;
+    uqa?: string | undefined;
     answer?: string | undefined;
+    userIPAddess?: string | undefined;
+    individualEmailAddress?: string | undefined;
+    userSessionID?: string | undefined;
+    wLoginQuestionCategoryTypeID?: number;
 }
 
 export class UserQuestionAnswersListBaseResponse implements IUserQuestionAnswersListBaseResponse {
@@ -29445,6 +29959,7 @@ export class WAccessRequests implements IWAccessRequests {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
 
     constructor(data?: IWAccessRequests) {
         if (data) {
@@ -29510,6 +30025,7 @@ export class WAccessRequests implements IWAccessRequests {
                     this.lstWUserRoles!.push(WUserRoles.fromJS(item));
             }
             this.objectID = _data["objectID"];
+            this.contactAssnID = _data["contactAssnID"];
         }
     }
 
@@ -29575,6 +30091,7 @@ export class WAccessRequests implements IWAccessRequests {
                 data["lstWUserRoles"].push(item.toJSON());
         }
         data["objectID"] = this.objectID;
+        data["contactAssnID"] = this.contactAssnID;
         return data;
     }
 }
@@ -29625,6 +30142,7 @@ export interface IWAccessRequests {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
 }
 
 export class WAccessRequestsBaseResponse implements IWAccessRequestsBaseResponse {
@@ -30071,24 +30589,16 @@ export interface IWApplicationDetailDtoListBaseResponse {
     response?: WApplicationDetailDto[] | undefined;
 }
 
-export class WFirmNoticeResponseItems implements IWFirmNoticeResponseItems {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
-    wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
-    wqfcNumber?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
-    wNoticeResponseItemID?: number;
-    wNoticeQuestionnaireItemID?: number;
-    wSourceNoticeQuestionnaireItemID?: number;
+export class WFirmNoticeResponseItemsDto implements IWFirmNoticeResponseItemsDto {
+    wNoticeResponseItemID?: number | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number | undefined;
     wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean;
-    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wFirmNoticeID?: number | undefined;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValuesDto[] | undefined;
 
-    constructor(data?: IWFirmNoticeResponseItems) {
+    constructor(data?: IWFirmNoticeResponseItemsDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -30099,59 +30609,35 @@ export class WFirmNoticeResponseItems implements IWFirmNoticeResponseItems {
 
     init(_data?: any) {
         if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
-            this.wqfcNumber = _data["wqfcNumber"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.createdBy = _data["createdBy"];
-            if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
-                this.lstWFirmNoticeResponseItems = [] as any;
-                for (let item of _data["lstWFirmNoticeResponseItems"])
-                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
-            }
             this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
             this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
             this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
             this.wExplanation = _data["wExplanation"];
             this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
+            this.wFirmNoticeID = _data["wFirmNoticeID"];
             if (Array.isArray(_data["lstWFirmNoticeResponseValues"])) {
                 this.lstWFirmNoticeResponseValues = [] as any;
                 for (let item of _data["lstWFirmNoticeResponseValues"])
-                    this.lstWFirmNoticeResponseValues!.push(WFirmNoticeResponseValues.fromJS(item));
+                    this.lstWFirmNoticeResponseValues!.push(WFirmNoticeResponseValuesDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): WFirmNoticeResponseItems {
+    static fromJS(data: any): WFirmNoticeResponseItemsDto {
         data = typeof data === 'object' ? data : {};
-        let result = new WFirmNoticeResponseItems();
+        let result = new WFirmNoticeResponseItemsDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
-        data["wqfcNumber"] = this.wqfcNumber;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["createdBy"] = this.createdBy;
-        if (Array.isArray(this.lstWFirmNoticeResponseItems)) {
-            data["lstWFirmNoticeResponseItems"] = [];
-            for (let item of this.lstWFirmNoticeResponseItems)
-                data["lstWFirmNoticeResponseItems"].push(item.toJSON());
-        }
         data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
         data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
         data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
         data["wExplanation"] = this.wExplanation;
         data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
+        data["wFirmNoticeID"] = this.wFirmNoticeID;
         if (Array.isArray(this.lstWFirmNoticeResponseValues)) {
             data["lstWFirmNoticeResponseValues"] = [];
             for (let item of this.lstWFirmNoticeResponseValues)
@@ -30161,45 +30647,23 @@ export class WFirmNoticeResponseItems implements IWFirmNoticeResponseItems {
     }
 }
 
-export interface IWFirmNoticeResponseItems {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
-    wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
-    wqfcNumber?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
-    wNoticeResponseItemID?: number;
-    wNoticeQuestionnaireItemID?: number;
-    wSourceNoticeQuestionnaireItemID?: number;
+export interface IWFirmNoticeResponseItemsDto {
+    wNoticeResponseItemID?: number | undefined;
+    wNoticeQuestionnaireItemID?: number | undefined;
+    wSourceNoticeQuestionnaireItemID?: number | undefined;
     wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean;
-    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
+    wExplanationReqdCriteriaMet?: boolean | undefined;
+    wFirmNoticeID?: number | undefined;
+    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValuesDto[] | undefined;
 }
 
-export class WFirmNoticeResponseValues implements IWFirmNoticeResponseValues {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
-    wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
-    wqfcNumber?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
-    wNoticeResponseItemID?: number;
-    wNoticeQuestionnaireItemID?: number;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean;
-    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
-    wNoticeResponseValueID?: number;
+export class WFirmNoticeResponseValuesDto implements IWFirmNoticeResponseValuesDto {
+    wNoticeResponseValueID?: number | undefined;
     wResponse?: string | undefined;
     wListValueID?: number | undefined;
+    wNoticeResponseItemID?: number | undefined;
 
-    constructor(data?: IWFirmNoticeResponseValues) {
+    constructor(data?: IWFirmNoticeResponseValuesDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -30210,107 +30674,49 @@ export class WFirmNoticeResponseValues implements IWFirmNoticeResponseValues {
 
     init(_data?: any) {
         if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
-            this.wFirmNoticeID = _data["wFirmNoticeID"];
-            this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
-            this.wqfcNumber = _data["wqfcNumber"];
-            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
-            this.wNotes = _data["wNotes"];
-            this.createdBy = _data["createdBy"];
-            if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
-                this.lstWFirmNoticeResponseItems = [] as any;
-                for (let item of _data["lstWFirmNoticeResponseItems"])
-                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
-            }
-            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
-            this.wNoticeQuestionnaireItemID = _data["wNoticeQuestionnaireItemID"];
-            this.wSourceNoticeQuestionnaireItemID = _data["wSourceNoticeQuestionnaireItemID"];
-            this.wExplanation = _data["wExplanation"];
-            this.wExplanationReqdCriteriaMet = _data["wExplanationReqdCriteriaMet"];
-            if (Array.isArray(_data["lstWFirmNoticeResponseValues"])) {
-                this.lstWFirmNoticeResponseValues = [] as any;
-                for (let item of _data["lstWFirmNoticeResponseValues"])
-                    this.lstWFirmNoticeResponseValues!.push(WFirmNoticeResponseValues.fromJS(item));
-            }
             this.wNoticeResponseValueID = _data["wNoticeResponseValueID"];
             this.wResponse = _data["wResponse"];
             this.wListValueID = _data["wListValueID"];
+            this.wNoticeResponseItemID = _data["wNoticeResponseItemID"];
         }
     }
 
-    static fromJS(data: any): WFirmNoticeResponseValues {
+    static fromJS(data: any): WFirmNoticeResponseValuesDto {
         data = typeof data === 'object' ? data : {};
-        let result = new WFirmNoticeResponseValues();
+        let result = new WFirmNoticeResponseValuesDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
-        data["wFirmNoticeID"] = this.wFirmNoticeID;
-        data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
-        data["wqfcNumber"] = this.wqfcNumber;
-        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
-        data["wNotes"] = this.wNotes;
-        data["createdBy"] = this.createdBy;
-        if (Array.isArray(this.lstWFirmNoticeResponseItems)) {
-            data["lstWFirmNoticeResponseItems"] = [];
-            for (let item of this.lstWFirmNoticeResponseItems)
-                data["lstWFirmNoticeResponseItems"].push(item.toJSON());
-        }
-        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
-        data["wNoticeQuestionnaireItemID"] = this.wNoticeQuestionnaireItemID;
-        data["wSourceNoticeQuestionnaireItemID"] = this.wSourceNoticeQuestionnaireItemID;
-        data["wExplanation"] = this.wExplanation;
-        data["wExplanationReqdCriteriaMet"] = this.wExplanationReqdCriteriaMet;
-        if (Array.isArray(this.lstWFirmNoticeResponseValues)) {
-            data["lstWFirmNoticeResponseValues"] = [];
-            for (let item of this.lstWFirmNoticeResponseValues)
-                data["lstWFirmNoticeResponseValues"].push(item.toJSON());
-        }
         data["wNoticeResponseValueID"] = this.wNoticeResponseValueID;
         data["wResponse"] = this.wResponse;
         data["wListValueID"] = this.wListValueID;
+        data["wNoticeResponseItemID"] = this.wNoticeResponseItemID;
         return data;
     }
 }
 
-export interface IWFirmNoticeResponseValues {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
-    wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
-    wqfcNumber?: string | undefined;
-    wObjectSOStatusID?: number | undefined;
-    wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
-    wNoticeResponseItemID?: number;
-    wNoticeQuestionnaireItemID?: number;
-    wSourceNoticeQuestionnaireItemID?: number;
-    wExplanation?: string | undefined;
-    wExplanationReqdCriteriaMet?: boolean;
-    lstWFirmNoticeResponseValues?: WFirmNoticeResponseValues[] | undefined;
-    wNoticeResponseValueID?: number;
+export interface IWFirmNoticeResponseValuesDto {
+    wNoticeResponseValueID?: number | undefined;
     wResponse?: string | undefined;
     wListValueID?: number | undefined;
+    wNoticeResponseItemID?: number | undefined;
 }
 
-export class WFirmNotices implements IWFirmNotices {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
+export class WFirmNoticesDto implements IWFirmNoticesDto {
     wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
+    wNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number | undefined;
+    wSourceNoticeID?: number | undefined;
     wqfcNumber?: string | undefined;
     wObjectSOStatusID?: number | undefined;
     wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    createdBy?: number | undefined;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItemsDto[] | undefined;
 
-    constructor(data?: IWFirmNotices) {
+    constructor(data?: IWFirmNoticesDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -30321,10 +30727,10 @@ export class WFirmNotices implements IWFirmNotices {
 
     init(_data?: any) {
         if (_data) {
-            this.wNoticeID = _data["wNoticeID"];
-            this.wSourceNoticeID = _data["wSourceNoticeID"];
             this.wFirmNoticeID = _data["wFirmNoticeID"];
+            this.wNoticeID = _data["wNoticeID"];
             this.wSourceFirmNoticeID = _data["wSourceFirmNoticeID"];
+            this.wSourceNoticeID = _data["wSourceNoticeID"];
             this.wqfcNumber = _data["wqfcNumber"];
             this.wObjectSOStatusID = _data["wObjectSOStatusID"];
             this.wNotes = _data["wNotes"];
@@ -30332,24 +30738,24 @@ export class WFirmNotices implements IWFirmNotices {
             if (Array.isArray(_data["lstWFirmNoticeResponseItems"])) {
                 this.lstWFirmNoticeResponseItems = [] as any;
                 for (let item of _data["lstWFirmNoticeResponseItems"])
-                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItems.fromJS(item));
+                    this.lstWFirmNoticeResponseItems!.push(WFirmNoticeResponseItemsDto.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): WFirmNotices {
+    static fromJS(data: any): WFirmNoticesDto {
         data = typeof data === 'object' ? data : {};
-        let result = new WFirmNotices();
+        let result = new WFirmNoticesDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["wNoticeID"] = this.wNoticeID;
-        data["wSourceNoticeID"] = this.wSourceNoticeID;
         data["wFirmNoticeID"] = this.wFirmNoticeID;
+        data["wNoticeID"] = this.wNoticeID;
         data["wSourceFirmNoticeID"] = this.wSourceFirmNoticeID;
+        data["wSourceNoticeID"] = this.wSourceNoticeID;
         data["wqfcNumber"] = this.wqfcNumber;
         data["wObjectSOStatusID"] = this.wObjectSOStatusID;
         data["wNotes"] = this.wNotes;
@@ -30363,16 +30769,16 @@ export class WFirmNotices implements IWFirmNotices {
     }
 }
 
-export interface IWFirmNotices {
-    wNoticeID?: number;
-    wSourceNoticeID?: number;
+export interface IWFirmNoticesDto {
     wFirmNoticeID?: number | undefined;
-    wSourceFirmNoticeID?: number;
+    wNoticeID?: number | undefined;
+    wSourceFirmNoticeID?: number | undefined;
+    wSourceNoticeID?: number | undefined;
     wqfcNumber?: string | undefined;
     wObjectSOStatusID?: number | undefined;
     wNotes?: string | undefined;
-    createdBy?: number;
-    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItems[] | undefined;
+    createdBy?: number | undefined;
+    lstWFirmNoticeResponseItems?: WFirmNoticeResponseItemsDto[] | undefined;
 }
 
 export class WIndFormType implements IWIndFormType {
@@ -32466,6 +32872,7 @@ export class WUsers implements IWUsers {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
     userLoginName?: string | undefined;
     isActive?: boolean;
     agreedOnTerms?: boolean;
@@ -32555,6 +32962,7 @@ export class WUsers implements IWUsers {
                     this.lstWUserRoles!.push(WUserRoles.fromJS(item));
             }
             this.objectID = _data["objectID"];
+            this.contactAssnID = _data["contactAssnID"];
             this.userLoginName = _data["userLoginName"];
             this.isActive = _data["isActive"];
             this.agreedOnTerms = _data["agreedOnTerms"];
@@ -32644,6 +33052,7 @@ export class WUsers implements IWUsers {
                 data["lstWUserRoles"].push(item.toJSON());
         }
         data["objectID"] = this.objectID;
+        data["contactAssnID"] = this.contactAssnID;
         data["userLoginName"] = this.userLoginName;
         data["isActive"] = this.isActive;
         data["agreedOnTerms"] = this.agreedOnTerms;
@@ -32718,6 +33127,7 @@ export interface IWUsers {
     wRoleStartDate?: string | undefined;
     lstWUserRoles?: WUserRoles[] | undefined;
     objectID?: number | undefined;
+    contactAssnID?: number | undefined;
     userLoginName?: string | undefined;
     isActive?: boolean;
     agreedOnTerms?: boolean;
@@ -33023,6 +33433,9 @@ export class WobjectAttachmentStatusDto implements IWobjectAttachmentStatusDto {
     wObjectAttachmentID?: number | undefined;
     wObjAttachmentStatusTypeID?: number | undefined;
     createdBy?: number | undefined;
+    lastModifiedBy?: number;
+    createdDate?: Date;
+    lastModifiedDate?: Date;
 
     constructor(data?: IWobjectAttachmentStatusDto) {
         if (data) {
@@ -33038,6 +33451,9 @@ export class WobjectAttachmentStatusDto implements IWobjectAttachmentStatusDto {
             this.wObjectAttachmentID = _data["wObjectAttachmentID"];
             this.wObjAttachmentStatusTypeID = _data["wObjAttachmentStatusTypeID"];
             this.createdBy = _data["createdBy"];
+            this.lastModifiedBy = _data["lastModifiedBy"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.lastModifiedDate = _data["lastModifiedDate"] ? new Date(_data["lastModifiedDate"].toString()) : <any>undefined;
         }
     }
 
@@ -33053,6 +33469,9 @@ export class WobjectAttachmentStatusDto implements IWobjectAttachmentStatusDto {
         data["wObjectAttachmentID"] = this.wObjectAttachmentID;
         data["wObjAttachmentStatusTypeID"] = this.wObjAttachmentStatusTypeID;
         data["createdBy"] = this.createdBy;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["lastModifiedDate"] = this.lastModifiedDate ? this.lastModifiedDate.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -33061,6 +33480,9 @@ export interface IWobjectAttachmentStatusDto {
     wObjectAttachmentID?: number | undefined;
     wObjAttachmentStatusTypeID?: number | undefined;
     createdBy?: number | undefined;
+    lastModifiedBy?: number;
+    createdDate?: Date;
+    lastModifiedDate?: Date;
 }
 
 export class WobjectAttachmentStatusDtoBaseResponse implements IWobjectAttachmentStatusDtoBaseResponse {

@@ -214,15 +214,15 @@ export class ChangeSecurityquestionsComponent {
   }
   
   
-  getUserQuestionAnswerList(): UserQuestionAnswers[] {
-    const lstUserQuestionAnswers: UserQuestionAnswers[] = [];
+  getUserQuestionAnswerList(): UserQuestionAnswersDto[] {
+    const lstUserQuestionAnswers: UserQuestionAnswersDto[] = [];
   
     try {
       // For Question 1
       if (this.question1Editable && this.question1Form.valid) {
         const objUserFirstQuestionAnswer = new UserQuestionAnswersDto();
         objUserFirstQuestionAnswer.wLoginQuestionTypeID = Number(this.question1Form.value.question);
-        objUserFirstQuestionAnswer.answer = this.encryptFields(this.question1Form.value.answer.toLowerCase().trim());
+        objUserFirstQuestionAnswer.uqa = this.encryptFields(this.question1Form.value.answer.toLowerCase().trim());
         objUserFirstQuestionAnswer.wLoginQuestionCategoryTypeID = 1;
         lstUserQuestionAnswers.push(objUserFirstQuestionAnswer);
       }
@@ -231,7 +231,7 @@ export class ChangeSecurityquestionsComponent {
       if (this.question2Editable && this.question2Form.valid) {
         const objUserSecondQuestionAnswer = new UserQuestionAnswersDto();
         objUserSecondQuestionAnswer.wLoginQuestionTypeID = Number(this.question2Form.value.question);
-        objUserSecondQuestionAnswer.answer = this.encryptFields(this.question2Form.value.answer.toLowerCase().trim());
+        objUserSecondQuestionAnswer.uqa = this.encryptFields(this.question2Form.value.answer.toLowerCase().trim());
         objUserSecondQuestionAnswer.wLoginQuestionCategoryTypeID = 2;
         lstUserQuestionAnswers.push(objUserSecondQuestionAnswer);
       }
@@ -240,7 +240,7 @@ export class ChangeSecurityquestionsComponent {
       if (this.question3Editable && this.question3Form.valid) {
         const objUserThirdQuestionAnswer = new UserQuestionAnswersDto();
         objUserThirdQuestionAnswer.wLoginQuestionTypeID = Number(this.question3Form.value.question);
-        objUserThirdQuestionAnswer.answer = this.encryptFields(this.question3Form.value.answer.toLowerCase().trim());
+        objUserThirdQuestionAnswer.uqa = this.encryptFields(this.question3Form.value.answer.toLowerCase().trim());
         objUserThirdQuestionAnswer.wLoginQuestionCategoryTypeID = 3;
         lstUserQuestionAnswers.push(objUserThirdQuestionAnswer);
       }

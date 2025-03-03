@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Client } from '../../services/api-client'; 
+import { Client } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { AppConstants } from '../../constants/app.constants';
 
@@ -14,6 +14,7 @@ import { AppConstants } from '../../constants/app.constants';
 export class ResetPasswordComponent implements OnInit {
   resetPasswordForm!: FormGroup;
   passwordsDoNotMatch: boolean = false;
+  passwordsInvalid: boolean = false;
   Appconstants = AppConstants;
 
   constructor(
@@ -21,8 +22,8 @@ export class ResetPasswordComponent implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private client: Client,
-    private loadingService : LoadingService
-  ) {}
+    private loadingService: LoadingService
+  ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -42,19 +43,30 @@ export class ResetPasswordComponent implements OnInit {
       this.toastr.warning('Please fill all required fields.', 'Validation Error');
       return;
     }
-  
+
     const formValues = this.resetPasswordForm.value;
-  
+
     if (formValues.newPassword !== formValues.confirmPassword) {
       this.passwordsDoNotMatch = true;
       this.toastr.error('Passwords do not match.', 'Error');
       return;
     }
-  
-    this.passwordsDoNotMatch = false;
+    else {
+      this.passwordsDoNotMatch = false;
+    }
+
+    if (!this.isValidPassword(formValues.newPassword)) {
+      this.toastr.error('Invalid Password.', 'Error');
+      this.passwordsInvalid = true
+      return;
+    }
+    else {
+      this.passwordsInvalid = false;
+    }
+
 
     this.loadingService.show(); // Show loader before API call
-  
+
     this.client.resetPassword(formValues.newPassword).subscribe({
       next: (response) => {
         this.loadingService.hide(); // Hide loader after API call
@@ -72,7 +84,7 @@ export class ResetPasswordComponent implements OnInit {
       },
     });
   }
-  
+
 
   navigateToHome(): void {
     this.router.navigate(['/home']);
@@ -91,5 +103,9 @@ export class ResetPasswordComponent implements OnInit {
     this.router.navigate(['/home']); // Redirect to home on cancel
   }
 
+  isValidPassword(password: string): boolean {
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9\S]{8,14}$/;
+    return regex.test(password);
+  }
 
 }
