@@ -9489,9 +9489,10 @@ export class Client {
      * @param lkbtnViewInExcelVisible (optional) 
      * @param lkbtnDataValidationVisible (optional) 
      * @param lstObjectSOTaskStatus (optional) 
+     * @param soseqno (optional) 
      * @return OK
      */
-    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
         if (qFCNum === null)
             throw new Error("The parameter 'qFCNum' cannot be null.");
@@ -9823,6 +9824,10 @@ export class Client {
         				url_ += "lstObjectSOTaskStatus[" + index + "]." + attr + "=" + encodeURIComponent("" + (item as any)[attr]) + "&";
         			}
             });
+        if (soseqno === null)
+            throw new Error("The parameter 'soseqno' cannot be null.");
+        else if (soseqno !== undefined)
+            url_ += "soseqno=" + encodeURIComponent("" + soseqno) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -11165,6 +11170,213 @@ export class Client {
     }
 
     /**
+     * @param fileName (optional) 
+     * @param rptName (optional) 
+     * @param rptDueDate (optional) 
+     * @param attachmentID (optional) 
+     * @param instanceID (optional) 
+     * @param docTypeID (optional) 
+     * @param freqTypeDescParam (optional) 
+     * @param allowResubmit (optional) 
+     * @return OK
+     */
+    submitReport(fileName: string | undefined, rptName: string | undefined, rptDueDate: string | undefined, attachmentID: number | undefined, instanceID: number | undefined, docTypeID: number | undefined, freqTypeDescParam: string | undefined, allowResubmit: boolean | undefined): Observable<StringBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/submit-report?";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (rptName === null)
+            throw new Error("The parameter 'rptName' cannot be null.");
+        else if (rptName !== undefined)
+            url_ += "rptName=" + encodeURIComponent("" + rptName) + "&";
+        if (rptDueDate === null)
+            throw new Error("The parameter 'rptDueDate' cannot be null.");
+        else if (rptDueDate !== undefined)
+            url_ += "rptDueDate=" + encodeURIComponent("" + rptDueDate) + "&";
+        if (attachmentID === null)
+            throw new Error("The parameter 'attachmentID' cannot be null.");
+        else if (attachmentID !== undefined)
+            url_ += "attachmentID=" + encodeURIComponent("" + attachmentID) + "&";
+        if (instanceID === null)
+            throw new Error("The parameter 'instanceID' cannot be null.");
+        else if (instanceID !== undefined)
+            url_ += "instanceID=" + encodeURIComponent("" + instanceID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (freqTypeDescParam === null)
+            throw new Error("The parameter 'freqTypeDescParam' cannot be null.");
+        else if (freqTypeDescParam !== undefined)
+            url_ += "freqTypeDescParam=" + encodeURIComponent("" + freqTypeDescParam) + "&";
+        if (allowResubmit === null)
+            throw new Error("The parameter 'allowResubmit' cannot be null.");
+        else if (allowResubmit !== undefined)
+            url_ += "allowResubmit=" + encodeURIComponent("" + allowResubmit) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitReport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitReport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+        }));
+    }
+
+    protected processSubmitReport(response: HttpResponseBase): Observable<StringBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = StringBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<StringBaseResponse>(null as any);
+    }
+
+    /**
+     * @param instanceID (optional) 
+     * @param docTypeID (optional) 
+     * @param rptSchItemEndDate (optional) 
+     * @param fileAttachedUserEmail (optional) 
+     * @param rptSchItemAttachmentID (optional) 
+     * @param attachementStatusTypeID (optional) 
+     * @param rptFreqTypeDesc (optional) 
+     * @param soseqno (optional) 
+     * @param objectSOStatusID (optional) 
+     * @param fileName (optional) 
+     * @param rptName (optional) 
+     * @param rptDueDate (optional) 
+     * @param reportSubjecttoLateFee (optional) 
+     * @return OK
+     */
+    signOffReport(instanceID: number | undefined, docTypeID: number | undefined, rptSchItemEndDate: string | undefined, fileAttachedUserEmail: string | undefined, rptSchItemAttachmentID: number | undefined, attachementStatusTypeID: number | undefined, rptFreqTypeDesc: string | undefined, soseqno: string | undefined, objectSOStatusID: number | undefined, fileName: string | undefined, rptName: string | undefined, rptDueDate: string | undefined, reportSubjecttoLateFee: boolean | undefined): Observable<SwalResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/ReportSchedule/sign-off-report?";
+        if (instanceID === null)
+            throw new Error("The parameter 'instanceID' cannot be null.");
+        else if (instanceID !== undefined)
+            url_ += "instanceID=" + encodeURIComponent("" + instanceID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (rptSchItemEndDate === null)
+            throw new Error("The parameter 'rptSchItemEndDate' cannot be null.");
+        else if (rptSchItemEndDate !== undefined)
+            url_ += "rptSchItemEndDate=" + encodeURIComponent("" + rptSchItemEndDate) + "&";
+        if (fileAttachedUserEmail === null)
+            throw new Error("The parameter 'fileAttachedUserEmail' cannot be null.");
+        else if (fileAttachedUserEmail !== undefined)
+            url_ += "fileAttachedUserEmail=" + encodeURIComponent("" + fileAttachedUserEmail) + "&";
+        if (rptSchItemAttachmentID === null)
+            throw new Error("The parameter 'rptSchItemAttachmentID' cannot be null.");
+        else if (rptSchItemAttachmentID !== undefined)
+            url_ += "rptSchItemAttachmentID=" + encodeURIComponent("" + rptSchItemAttachmentID) + "&";
+        if (attachementStatusTypeID === null)
+            throw new Error("The parameter 'attachementStatusTypeID' cannot be null.");
+        else if (attachementStatusTypeID !== undefined)
+            url_ += "attachementStatusTypeID=" + encodeURIComponent("" + attachementStatusTypeID) + "&";
+        if (rptFreqTypeDesc === null)
+            throw new Error("The parameter 'rptFreqTypeDesc' cannot be null.");
+        else if (rptFreqTypeDesc !== undefined)
+            url_ += "RptFreqTypeDesc=" + encodeURIComponent("" + rptFreqTypeDesc) + "&";
+        if (soseqno === null)
+            throw new Error("The parameter 'soseqno' cannot be null.");
+        else if (soseqno !== undefined)
+            url_ += "soseqno=" + encodeURIComponent("" + soseqno) + "&";
+        if (objectSOStatusID === null)
+            throw new Error("The parameter 'objectSOStatusID' cannot be null.");
+        else if (objectSOStatusID !== undefined)
+            url_ += "objectSOStatusID=" + encodeURIComponent("" + objectSOStatusID) + "&";
+        if (fileName === null)
+            throw new Error("The parameter 'fileName' cannot be null.");
+        else if (fileName !== undefined)
+            url_ += "fileName=" + encodeURIComponent("" + fileName) + "&";
+        if (rptName === null)
+            throw new Error("The parameter 'rptName' cannot be null.");
+        else if (rptName !== undefined)
+            url_ += "rptName=" + encodeURIComponent("" + rptName) + "&";
+        if (rptDueDate === null)
+            throw new Error("The parameter 'rptDueDate' cannot be null.");
+        else if (rptDueDate !== undefined)
+            url_ += "rptDueDate=" + encodeURIComponent("" + rptDueDate) + "&";
+        if (reportSubjecttoLateFee === null)
+            throw new Error("The parameter 'reportSubjecttoLateFee' cannot be null.");
+        else if (reportSubjecttoLateFee !== undefined)
+            url_ += "reportSubjecttoLateFee=" + encodeURIComponent("" + reportSubjecttoLateFee) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSignOffReport(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSignOffReport(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SwalResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SwalResultBaseResponse>;
+        }));
+    }
+
+    protected processSignOffReport(response: HttpResponseBase): Observable<SwalResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SwalResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SwalResultBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -12472,7 +12684,7 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    submitAccessRequest(body: SubmitAccessRequest | undefined): Observable<StringBaseResponse> {
+    submitAccessRequest(body: SubmitAccessRequest | undefined): Observable<SwalResultBaseResponse> {
         let url_ = this.baseUrl + "/api/SystemAccess/submit-access-request";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -12495,14 +12707,14 @@ export class Client {
                 try {
                     return this.processSubmitAccessRequest(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
+                    return _observableThrow(e) as any as Observable<SwalResultBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
+                return _observableThrow(response_) as any as Observable<SwalResultBaseResponse>;
         }));
     }
 
-    protected processSubmitAccessRequest(response: HttpResponseBase): Observable<StringBaseResponse> {
+    protected processSubmitAccessRequest(response: HttpResponseBase): Observable<SwalResultBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -12513,7 +12725,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = StringBaseResponse.fromJS(resultData200);
+            result200 = SwalResultBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -12521,7 +12733,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<StringBaseResponse>(null as any);
+        return _observableOf<SwalResultBaseResponse>(null as any);
     }
 }
 
@@ -25899,6 +26111,7 @@ export class ObjectSOStatusDto implements IObjectSOStatusDto {
     soStatusTypeID?: number | undefined;
     userID?: number | undefined;
     soTaskValid?: boolean | undefined;
+    attachmentID?: number;
 
     constructor(data?: IObjectSOStatusDto) {
         if (data) {
@@ -25916,6 +26129,7 @@ export class ObjectSOStatusDto implements IObjectSOStatusDto {
             this.soStatusTypeID = _data["soStatusTypeID"];
             this.userID = _data["userID"];
             this.soTaskValid = _data["soTaskValid"];
+            this.attachmentID = _data["attachmentID"];
         }
     }
 
@@ -25933,6 +26147,7 @@ export class ObjectSOStatusDto implements IObjectSOStatusDto {
         data["soStatusTypeID"] = this.soStatusTypeID;
         data["userID"] = this.userID;
         data["soTaskValid"] = this.soTaskValid;
+        data["attachmentID"] = this.attachmentID;
         return data;
     }
 }
@@ -25943,6 +26158,7 @@ export interface IObjectSOStatusDto {
     soStatusTypeID?: number | undefined;
     userID?: number | undefined;
     soTaskValid?: boolean | undefined;
+    attachmentID?: number;
 }
 
 export class ObjectSOStatusListBaseResponse implements IObjectSOStatusListBaseResponse {
@@ -27318,6 +27534,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     lkbtnViewInExcelVisible?: boolean | undefined;
     lkbtnDataValidationVisible?: boolean | undefined;
     lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
+    soseqno?: string | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -27418,6 +27635,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
                 for (let item of _data["lstObjectSOTaskStatus"])
                     this.lstObjectSOTaskStatus!.push(ObjectSOTaskStatusDto.fromJS(item));
             }
+            this.soseqno = _data["soseqno"];
         }
     }
 
@@ -27518,6 +27736,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
             for (let item of this.lstObjectSOTaskStatus)
                 data["lstObjectSOTaskStatus"].push(item.toJSON());
         }
+        data["soseqno"] = this.soseqno;
         return data;
     }
 }
@@ -27603,6 +27822,7 @@ export interface IReportSchDetailsDto {
     lkbtnViewInExcelVisible?: boolean | undefined;
     lkbtnDataValidationVisible?: boolean | undefined;
     lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
+    soseqno?: string | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
@@ -29213,6 +29433,94 @@ export interface ISubmitAccessRequest {
     wFunctionTypeIDsList?: string | undefined;
     contactID?: number | undefined;
     contactAssnID?: number | undefined;
+}
+
+export class SwalResult implements ISwalResult {
+    message?: string | undefined;
+    type?: string | undefined;
+
+    constructor(data?: ISwalResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.message = _data["message"];
+            this.type = _data["type"];
+        }
+    }
+
+    static fromJS(data: any): SwalResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SwalResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["message"] = this.message;
+        data["type"] = this.type;
+        return data;
+    }
+}
+
+export interface ISwalResult {
+    message?: string | undefined;
+    type?: string | undefined;
+}
+
+export class SwalResultBaseResponse implements ISwalResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SwalResult;
+
+    constructor(data?: ISwalResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SwalResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SwalResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SwalResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISwalResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SwalResult;
 }
 
 export class Terms implements ITerms {

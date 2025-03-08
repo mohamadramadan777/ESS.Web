@@ -5,9 +5,12 @@ import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
 import { MatDialog } from '@angular/material/dialog';
 import { HistoryComponent } from './history/history.component';
-import { WObjects } from '../../enums/app.enums';
+import { TermSubject, WObjects } from '../../enums/app.enums';
 import { WarningsComponent } from './warnings/warnings.component';
 import { ReportUploadComponent } from './report-upload/report-upload.component';
+import { SignOffComponent } from '../sign-off/sign-off.component';
+import { SignOffGenericComponent } from '../sign-off-generic/sign-off-generic.component';
+import Swal, { SweetAlertIcon } from 'sweetalert2';
 
 @Component({
   selector: 'app-reports',
@@ -29,6 +32,7 @@ export class ReportsComponent implements OnInit {
   firmTypeString: string = localStorage.getItem(AppConstants.Session.SESSION_FIRM_TYPE) ?? '';
   qfcNo: string = localStorage.getItem(AppConstants.Session.SESSION_QFC_NO) ?? '';
   firmType = 0;
+  selectedReport: ReportSchDetailsDto | null = null; // Store the selected report
   constructor(private client: Client,
     private loadingService: LoadingService,
     private toastr: ToastrService,
@@ -209,15 +213,89 @@ export class ReportsComponent implements OnInit {
   attachFile(id: number, report: ReportSchDetailsDto): void {
     const docTypesToValidate = '80';//BALMessageSettings.GetMessageProperty((int)ReportSchedule.DocTypes_To_Validate);
 
-    if(docTypesToValidate.indexOf((report.docTypeID ?? 'nothing').toString()) > -1) {
+    if (docTypesToValidate.indexOf((report.docTypeID ?? 'nothing').toString()) > -1) {
       // redirect to ReportValidation.aspx
     }
-    else{
+    else {
       const dialogRef = this.dialog.open(ReportUploadComponent, {
         data: { report: report, parent: this }
       });
     }
   }
-  submitReport() { }
-  signOff() { }
+  submitReport(report: ReportSchDetailsDto) {
+    if (report.fileName?.length ?? 0 > 0) {
+      this.loadingService.show();
+      this.client.submitReport(report.fileName, report.rptName, report.rptDueDate, report.rptSchItemAttachmentID, report.rptSchItemID, report.docTypeID, report.rptPeriodTypeDesc, report.allowReSubmit).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess && response.response != "") {
+            if (response.response == "signoff") {
+              this.onScheduleChange();
+              this.openSignOffDialog(report);
+            }
+            else if (response.response != undefined) {
+              this.onScheduleChange();
+              this.toastr.success(response.response, 'Success');
+            }
+          } else {
+            this.toastr.error('Failed to submit Report.', 'Error');
+            console.error('Failed to submit Report:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while submitting Report.', 'Error');
+          console.error('Error occurred while submitting Report:', error);
+        },
+      });
+    }
+    else {
+      this.toastr.warning('Please attach a file before submit.', 'Wanring');
+    }
+  }
+
+  openSignOffDialog(report: ReportSchDetailsDto): void {
+    this.selectedReport = report;
+    const dialogRef = this.dialog.open(SignOffGenericComponent, {
+      width: 'auto',
+      height: 'auto',
+      data: {
+        TermID: TermSubject.UserSignOffSubject, // Pass the TermID dynamically
+        ShowAcceptTermsCheckBox: false, // Pass the ShowAcceptTermsCheckBox dynamically
+        signOffMethod: () => this.signOff(),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Dialog closed with result:', result);
+      // Handle any logic after dialog closes
+    });
+  }
+
+  signOff() {
+    this.loadingService.show();
+    this.client.signOffReport(this.selectedReport?.rptSchItemID, this.selectedReport?.docTypeID, this.selectedReport?.rptPeriodToDate, this.selectedReport?.fileAttachedUserEmail, this.selectedReport?.rptSchItemAttachmentID, 
+      this.selectedReport?.attachmentStatusTypeID, this.selectedReport?.rptFreqTypeDesc, this.selectedReport?.soseqno, this.selectedReport?.objectSOStatusID, this.selectedReport?.fileName, this.selectedReport?.rptName, 
+      this.selectedReport?.rptDueDate, this.selectedReport?.lateFeeFlag ?? false).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess) {
+            Swal.fire(
+              'Sign Off',
+              response.response?.message,
+              response.response?.type as SweetAlertIcon ?? "warning"
+            );
+            this.onScheduleChange();
+          } else {
+            this.toastr.error('Failed to sign off Report.', 'Error');
+            console.error('Failed to sign off Report:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while signing Report.', 'Error');
+          console.error('Error occurred while signing Report:', error);
+        },
+      });
+  }
 }

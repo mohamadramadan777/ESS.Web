@@ -6,6 +6,7 @@ import { ApplicationDetail, Client, ControledFunction, SubmitAccessRequest } fro
 import { LoadingService } from '../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { SweetAlertIcon } from 'sweetalert2';
 
 @Component({
   selector: 'app-access-modal',
@@ -168,11 +169,11 @@ export class AccessModalComponent implements OnInit {
     this.client.submitAccessRequest(requestDto).subscribe({
       next: (response) => {
         this.loadingService.hide();
-        if (response && response.response != "") {
+        if (response && response.response?.message != "") {
           Swal.fire(
             'Submit Request',
-            response.response,
-            response.response?.indexOf('success') ??  -1 > -1 ? 'success' :  'warning'
+            response.response?.message,
+            response.response?.type as SweetAlertIcon ?? "warning"
           );
           this.closeModal();
         } else {

@@ -50,11 +50,11 @@
                 <span class="animated-text">Data Validation</span>
               </button>
 
-              <button *ngIf="report.btnSignOffVisible" mat-raised-button color="primary" class="btn" (click)="submitReport()">
+              <button *ngIf="report.btnSignOffVisible" mat-raised-button color="primary" class="btn" (click)="openSignOffDialog(report)">
                 <mat-icon>draw</mat-icon> Sign off
               </button>
 
-              <button *ngIf="report.btnSubmitVisible" mat-raised-button color="primary" class="btn" (click)="submitReport()">
+              <button *ngIf="report.btnSubmitVisible" mat-raised-button color="primary" class="btn" (click)="submitReport(report)">
                 <mat-icon>send</mat-icon> Submit
               </button>
 

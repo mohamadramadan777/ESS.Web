@@ -20,10 +20,17 @@ export class SignOffGenericComponent implements OnInit {
   RegisteredEmail: string = '';
   Password: string = '';
 
-  constructor(    @Inject(MAT_DIALOG_DATA) public data: { TermID: number; ShowAcceptTermsCheckBox: boolean ,},
-  private dialogRef: MatDialogRef<SignOffGenericComponent>,
-  private client: Client, private toastr: ToastrService, private loadingService: LoadingService) {}
-
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { 
+      TermID: number; 
+      ShowAcceptTermsCheckBox: boolean; 
+      signOffMethod: () => void; // No parameters
+    },
+    private dialogRef: MatDialogRef<SignOffGenericComponent>,
+    private client: Client, 
+    private toastr: ToastrService, 
+    private loadingService: LoadingService
+  ) {}
   ngOnInit(): void {
     this.loadTermsText(this.data.TermID);
   }
@@ -50,10 +57,13 @@ export class SignOffGenericComponent implements OnInit {
   }
 
   onSignOff(): void {
-    // Handle sign-off logic
-    console.log('Sign-off clicked');
-    console.log('Registered Email:', this.RegisteredEmail);
-    console.log('Password:', this.Password);
+    if (this.data.signOffMethod) {
+      this.data.signOffMethod(); // Call the signOff method from parent (no params)
+      this.dialogRef.close(true); // Close modal after calling signOff
+    } else {
+      console.error('SignOff method is not defined');
+      this.toastr.error('Unable to sign off report.', 'Error');
+    }
   }
 
   onCancel(): void {
