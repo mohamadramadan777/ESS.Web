@@ -18,95 +18,129 @@
 
       <div class="form-grid">
         <!-- Document Admin Form -->
-        <ng-container *ngIf="selectedAccessType == '19'">
+        <form [formGroup]="documentAdminForm" *ngIf="selectedAccessType == '19'" (ngSubmit)="onRequest()">
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Name of the Individual</mat-label>
-              <input matInput type="text" [(ngModel)]="documentAdminForm.name" />
+              <input matInput type="text" formControlName="name" />
+              <mat-error *ngIf="documentAdminForm.controls['name'].invalid">Name is required</mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Job Title</mat-label>
-              <input matInput type="text" [(ngModel)]="documentAdminForm.jobTitle" />
+              <input matInput type="text" formControlName="jobTitle" />
+              <mat-error *ngIf="documentAdminForm.controls['jobTitle'].invalid">Job Title is required</mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Date of Birth</mat-label>
-              <input matInput type="date" [(ngModel)]="documentAdminForm.dob" />
+              <input matInput type="date" formControlName="dob" />
+              <mat-error *ngIf="documentAdminForm.controls['dob'].invalid">Date of Birth is required</mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Nationality</mat-label>
-              <mat-select [(ngModel)]="documentAdminForm.nationality">
+              <mat-select formControlName="nationality">
                 <mat-option *ngFor="let option of countries" [value]="option">
                   {{ option }}
                 </mat-option>
               </mat-select>
+              <mat-error *ngIf="documentAdminForm.controls['nationality'].invalid">Nationality is required</mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Email Address</mat-label>
-              <input matInput type="email" [(ngModel)]="documentAdminForm.email" />
+              <input matInput type="email" formControlName="emailAddress" />
+              <mat-error *ngIf="documentAdminForm.controls['emailAddress'].invalid">Valid Email is required</mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Confirm Email Address</mat-label>
-              <input matInput type="email" [(ngModel)]="documentAdminForm.confirmEmail" />
+              <input matInput type="email" formControlName="confirmEmail" />
+              <mat-error *ngIf="documentAdminForm.controls['confirmEmail'].invalid">
+                Confirmation Email is required
+              </mat-error>
             </mat-form-field>
           </div>
-        </ng-container>
+          <div class="modal-actions">
+            <button mat-raised-button type="submit" class="btn-request" [disabled]="documentAdminForm.invalid">
+              Submit Request
+            </button>
+            <button mat-raised-button class="btn-cancel" (click)="closeModal()">Close</button>
+          </div>
+        </form>
 
         <!-- Approved Individual Form -->
-        <ng-container *ngIf="selectedAccessType == '1'">
+        <form [formGroup]="approvedIndividualForm" *ngIf="selectedAccessType != '' && selectedAccessType != '19'" (ngSubmit)="onRequest()">
           <div class="form-item full-width">
             <mat-form-field appearance="outline" class="form-input">
-              <mat-label>{{ this.lblAIorRI }}</mat-label>
-              <mat-select [(ngModel)]="approvedIndividualForm.controlledFunctions">
-                <mat-option *ngFor="let option of contacts" [value]="option">
-                  {{ option }}
+              <mat-label>{{ lblAIorRI }}</mat-label>
+              <mat-select formControlName="contactsDDL" (selectionChange)="onContactChange($event)">
+                <mat-option *ngFor="let contact of contacts | keyvalue" [value]="contact.key">
+                  {{ contact.value }}
                 </mat-option>
               </mat-select>
+              
+              <mat-error *ngIf="approvedIndividualForm.controls['contactsDDL'].invalid">
+                Selection is required
+              </mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-item full-width">
             <mat-form-field appearance="outline" class="form-input">
-              <mat-label>{{ this.lblCFsLable }}</mat-label>
-              <mat-select >
-                <!-- <mat-select [(ngModel)]="approvedIndividualForm.controlledFunctions"> -->
-                <mat-option *ngFor="let option of contacts" [value]="option">
-                  {{ option }}
-                </mat-option>
-              </mat-select>
+              <mat-label>Email Address</mat-label>
+              <input matInput type="email" formControlName="email" [disabled]="true" />
             </mat-form-field>
           </div>
-        </ng-container>
-        <div class="g-recaptcha" data-sitekey="Your_Site_Key_Here"></div>
 
+          <div class="form-item full-width" >
+            <mat-form-field appearance="outline" class="form-input">
+              <mat-label>Job Title</mat-label>
+              <input matInput type="text" formControlName="jobTitle" />
+            </mat-form-field>
+          </div>
+
+          <div class="form-item full-width" *ngIf="approvedIndividualForm.controls['dob'].value">
+            <mat-form-field appearance="outline" class="form-input">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput type="text" formControlName="dob" [disabled]="true" />
+            </mat-form-field>
+          </div>
+
+          <div class="form-item full-width" *ngIf="approvedIndividualForm.controls['nationality'].value">
+            <mat-form-field appearance="outline" class="form-input">
+              <mat-label>Nationality</mat-label>
+              <input matInput type="text" formControlName="nationality" [disabled]="true" />
+            </mat-form-field>
+          </div>
+
+
+          <div class="form-item full-width">
+            <mat-form-field appearance="outline" class="form-input">
+              <mat-label>{{ lblCFsLable }}</mat-label>
+              <input matInput type="text" formControlName="cfLabel" [disabled]="true" />
+            </mat-form-field>
+          </div>
+
+          <div class="modal-actions">
+            <button mat-raised-button type="submit" class="btn-request" [disabled]="approvedIndividualForm.invalid">
+              Submit Request
+            </button>
+            <button mat-raised-button type="button" class="btn-cancel" (click)="closeModal()">Close</button>
+          </div>
+        </form>
       </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="modal-actions">
-      <button mat-raised-button class="btn-cancel" (click)="closeModal()">Close</button>
-      <button
-        mat-raised-button
-        class="btn-request"
-        [disabled]="!isFormValid()"
-        (click)="onRequest()"
-      >
-        Request
-      </button>
     </div>
   </div>
 </div>

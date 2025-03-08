@@ -18,6 +18,8 @@ import {
 import { Client, WAccessRequests } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
+import { AppConstants } from '../../constants/app.constants';
+import { FirmType } from '../../enums/app.enums';
 @Component({
   selector: 'app-system-access',
   templateUrl: './system-access.component.html',
@@ -48,22 +50,28 @@ export class SystemAccessComponent {
 
   onModalClosed(): void {
     document.body.classList.remove('modal-open');
+    this.ngOnInit();
   }
 
   individualsColDef: ColDef[] = config.individualsColDef
   systemAccountColDef: ColDef[] = config.systemAccountColDef
-  constructor(
-    private client: Client,
-    private loadingService: LoadingService,
-    private toastr: ToastrService) { }
-  ngOnInit(): void {
-    this.loadIndividials();
-    this.loadSystemAccounts();
-  }
   individuals: WAccessRequests[] = [];
   systemAccounts: WAccessRequests[] = [];
   individualsLoaded: boolean = false;
   systemAccountsLoaded: boolean = false;
+  firmTypeString: string = localStorage.getItem(AppConstants.Session.SESSION_FIRM_TYPE) ?? '';
+  firmType = 0;
+
+  constructor(
+    private client: Client,
+    private loadingService: LoadingService,
+    private toastr: ToastrService) { }
+
+  ngOnInit(): void {
+    this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
+    this.loadIndividials();
+    this.loadSystemAccounts();
+  }
 
   defaultColDef = {
     flex: 1,
@@ -156,13 +164,104 @@ export class SystemAccessComponent {
         }).then((result) => {
           if (result.isConfirmed) {
             // Handle the revoke action here
-            console.log(`Access revoked for ${data.individualName}`);
-            // Optionally, show a success message
-            Swal.fire(
-              'Revoked!',
-              `Access has been revoked for ${data.individualName}.`,
-              'success'
-            );
+            const contactID = data.contactID ?? 0;
+            const contactAssnID = data.contactAssnID ?? 0;
+            const wAccessReqId = data.wAccessRequestID ?? 0;
+            const isFirmRecordRequiredUpdate: boolean = contactID != 0 && contactAssnID != 0
+            if (data.isRegistered) {
+              this.loadingService.show();
+              this.client.deactivateWuser(wAccessReqId, "").subscribe({
+                next: (response) => {
+                  this.loadingService.hide();
+                  if (response && response.response) {
+                    if (this.firmType == FirmType.DNFBP && isFirmRecordRequiredUpdate) {
+                      this.client.updateContactIsEssAccess(contactID, contactAssnID, false).subscribe({
+                        next: (response2) => {
+                          console.log(`Access revoked for ${data.individualName}`);
+                          // Optionally, show a success message
+                          Swal.fire(
+                            'Revoked!',
+                            `Access has been revoked for ${data.individualName}.`,
+                            'success'
+                          );
+                          this.ngOnInit();
+                        },
+                        error: (error) => {
+                          console.error('Failed to revoke ESS access:', error);
+                          this.toastr.error('Failed to revoke ESS access. Please try again.', 'Error');
+                        }
+                      });
+                    }
+                    else {
+                      console.log(`Access revoked for ${data.individualName}`);
+                      // Optionally, show a success message
+                      Swal.fire(
+                        'Revoked!',
+                        `Access has been revoked for ${data.individualName}.`,
+                        'success'
+                      );
+                      this.ngOnInit();
+                    }
+
+                  } else {
+                    console.error('Error revoking access.');
+                    this.toastr.error('Error revoking access. Please try again.', 'Error');
+                  }
+                },
+                error: (error) => {
+                  this.loadingService.hide();
+                  console.error('Failed to revoke access:', error);
+                  this.toastr.error('Failed to revoke access. Please try again.', 'Error');
+                }
+              });
+            }
+            else{
+              this.loadingService.show();
+              this.client.deleteIndividualDetailsPOST(wAccessReqId).subscribe({
+                next: (response) => {
+                  this.loadingService.hide();
+                  if (response && response.response) {
+                    if (this.firmType == FirmType.DNFBP && isFirmRecordRequiredUpdate) {
+                      this.client.updateContactIsEssAccess(contactID, contactAssnID, false).subscribe({
+                        next: (response2) => {
+                          console.log(`Access revoked for ${data.individualName}`);
+                          // Optionally, show a success message
+                          Swal.fire(
+                            'Revoked!',
+                            `Access has been revoked for ${data.individualName}.`,
+                            'success'
+                          );
+                          this.ngOnInit();
+                        },
+                        error: (error) => {
+                          console.error('Failed to revoke ESS access:', error);
+                          this.toastr.error('Failed to revoke ESS access. Please try again.', 'Error');
+                        }
+                      });
+                    }
+                    else {
+                      console.log(`Access revoked for ${data.individualName}`);
+                      // Optionally, show a success message
+                      Swal.fire(
+                        'Revoked!',
+                        `Access has been revoked for ${data.individualName}.`,
+                        'success'
+                      );
+                      this.ngOnInit();
+                    }
+
+                  } else {
+                    console.error('Error revoking access.');
+                    this.toastr.error('Error revoking access. Please try again.', 'Error');
+                  }
+                },
+                error: (error) => {
+                  this.loadingService.hide();
+                  console.error('Failed to revoke access:', error);
+                  this.toastr.error('Failed to revoke access. Please try again.', 'Error');
+                }
+              });
+            }
           }
         });
       } else if (target.closest('.btn-info')) {

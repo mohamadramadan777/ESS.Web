@@ -1,9 +1,11 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { AppConstants } from '../../../constants/app.constants';
-import { FirmType, AccesRequestType } from '../../../enums/app.enums';
-import { Client } from '../../../services/api-client'; 
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FirmType, AccesRequestType, FunctionStatusType } from '../../../enums/app.enums';
+import { ApplicationDetail, Client, ControledFunction, SubmitAccessRequest } from '../../../services/api-client';
 import { LoadingService } from '../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-access-modal',
@@ -20,31 +22,48 @@ export class AccessModalComponent implements OnInit {
   firmType = 0;
   accessTypes: { value: string; text: string }[] = [];
   countries: string[] = []; // Options for the dropdown
-  contacts: string[] = []; // Options for the dropdown
+  functionTypeIDs: string = "";
+  AINumber: string = "";
+  approvedIndividualName: string = "";
+  ContactID = 0;
+  contacts: {
+    [key: string]: string;
+  } = {};  // Options for the dropdown
 
-  documentAdminForm = {
-    name: '',
-    jobTitle: '',
-    dob: '',
-    nationality: '',
-    email: '',
-    confirmEmail: '',
-  };
+  documentAdminForm!: FormGroup;
+  approvedIndividualForm!: FormGroup;
 
-  approvedIndividualForm = {
-    name: '',
-    controlledFunctions: '',
-  };
   constructor(
+    private fb: FormBuilder,
     private client: Client,
-    private loadingService : LoadingService,
-    private toastr: ToastrService) {}
+    private loadingService: LoadingService,
+    private toastr: ToastrService
+  ) { }
+
   ngOnInit(): void {
     this.firmType = this.firmTypeString != "" ? Number(this.firmTypeString) : 0;
     this.setLableasPerFirm();
     this.populateRequestAccessType();
     this.fillCountries();
     this.populateContacts();
+
+    this.documentAdminForm = this.fb.group({
+      name: ['', Validators.required],
+      jobTitle: ['', Validators.required],
+      dob: ['', Validators.required],
+      nationality: ['', Validators.required],
+      emailAddress: ['', [Validators.required, Validators.email]],
+      confirmEmail: ['', Validators.required],
+    });
+
+    this.approvedIndividualForm = this.fb.group({
+      contactsDDL: ['', Validators.required],
+      cfLabel: [{ value: '', disabled: true }],
+      email: [{ value: '', disabled: true }],
+      jobTitle: [''],
+      dob: [{ value: '', disabled: true }],
+      nationality: [{ value: '', disabled: true }],
+    });
   }
 
   openModal(): void {
@@ -53,7 +72,7 @@ export class AccessModalComponent implements OnInit {
 
   closeModal(): void {
     this.isOpen = false;
-    this.resetForm();
+    this.resetForms();
     this.modalClosed.emit();
   }
 
@@ -61,46 +80,112 @@ export class AccessModalComponent implements OnInit {
     this.selectedAccessType = event.value;
   }
 
-  private resetForm(): void {
-    this.selectedAccessType = '';
-    this.documentAdminForm = {
-      name: '',
-      jobTitle: '',
-      dob: '',
-      nationality: '',
-      email: '',
-      confirmEmail: '',
-    };
-    this.approvedIndividualForm = {
-      name: '',
-      controlledFunctions: '',
-    };
+  onContactChange(event: any): void {
+    this.functionTypeIDs = "";
+    this.AINumber = "";
+    const selectedValue = event.value;
+    this.loadingService.show();
+    this.client.getAis("").subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.response) {
+          const AIApp: ApplicationDetail | undefined = response.response.find(a => a.objIndividualDetails?.aiNumber === selectedValue);
+          this.approvedIndividualName = AIApp?.objIndividualDetails?.fullName ?? "";
+          let singleFuncID: string = "";
+          let singleFuncDesc: string = "";
+          let functionTypeDesc: string = "";
+          this.ContactID = AIApp?.objFirmContactDetails?.contactID ?? 0;
+          AIApp?.lstControledFunction?.forEach((CF: ControledFunction) => {
+            if (
+              CF.functionStatusID === FunctionStatusType.Approved ||
+              CF.functionStatusID === FunctionStatusType.ConditionallyApproved ||
+              CF.functionStatusID === FunctionStatusType.APPROVED_INACTIVE ||
+              CF.functionStatusID === FunctionStatusType.APPROVED_FIRM_INLIQUIDATION
+            ) {
+              singleFuncID = CF.functionTypeID?.toString() ?? "";
+              singleFuncDesc = CF.functionTypeDesc ?? "";
+
+              if (!this.functionTypeIDs.includes(singleFuncID ?? ""))
+                this.functionTypeIDs += singleFuncID + ",";
+              if (!functionTypeDesc.includes(singleFuncDesc ?? ""))
+                functionTypeDesc += singleFuncDesc + ",";
+            }
+          });
+
+          if (this.functionTypeIDs.length > 0) {
+            this.functionTypeIDs = this.functionTypeIDs.slice(0, -1);
+            this.AINumber = AIApp?.objIndividualDetails?.aiNumber ?? "";
+          }
+
+
+          this.approvedIndividualForm.patchValue({
+            email: AIApp?.objIndividualDetails?.businessEmail, // Fill email
+            jobTitle: AIApp?.currentJobTitle, // Fill controlled functions
+            dob: AIApp?.objIndividualDetails?.dateOfBirth, // Fill controlled functions
+            nationality: AIApp?.objIndividualDetails?.nationality, // Fill controlled functions
+            cfLabel: functionTypeDesc.slice(0, -1), // Fill controlled functions
+          });
+          // Assuming response.response is a key-value dictionary
+        } else {
+          console.error('Error onContactChange.');
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        console.error('Failed: onContactChange.', error);
+      }
+    });
+
   }
 
-  isFormValid(): boolean {
-    if (this.selectedAccessType === 'documentAdmin') {
-      const { name, jobTitle, dob, nationality, email, confirmEmail } =
-        this.documentAdminForm;
-      return (
-        name.trim() !== '' &&
-        jobTitle.trim() !== '' &&
-        dob.trim() !== '' &&
-        nationality.trim() !== '' &&
-        email.trim() !== '' &&
-        confirmEmail.trim() !== '' &&
-        email === confirmEmail
-      );
-    } else if (this.selectedAccessType === 'approvedIndividual') {
-      const { name, controlledFunctions } = this.approvedIndividualForm;
-      return name.trim() !== '' && controlledFunctions.trim() !== '';
-    }
-    return false;
+  resetForms(): void {
+    this.selectedAccessType = '';
+    this.documentAdminForm.reset();
+    this.approvedIndividualForm.reset();
   }
 
   onRequest(): void {
-    if (this.isFormValid()) {
-      console.log('Form submitted successfully!');
+    const requestDto: SubmitAccessRequest = new SubmitAccessRequest();
+    if (this.selectedAccessType === '19' && this.documentAdminForm.valid) {
+      requestDto.individualName = this.documentAdminForm.controls['name'].value;
+      requestDto.nationality = this.documentAdminForm.controls['nationality'].value;
+      requestDto.jobTitle = this.documentAdminForm.controls['jobTitle'].value;
+      requestDto.dob = this.documentAdminForm.controls['dob'].value;
+      requestDto.selectedAccessValue = this.selectedAccessType;
+      requestDto.aiNumber = "";
+      requestDto.email = this.documentAdminForm.controls['emailAddress'].value;
+    } else if (this.selectedAccessType != '19' && this.approvedIndividualForm.valid) {
+      requestDto.individualName = this.approvedIndividualName;
+      requestDto.nationality = this.approvedIndividualForm.controls['nationality'].value;
+      requestDto.jobTitle = this.approvedIndividualForm.controls['jobTitle'].value;
+      requestDto.dob = this.approvedIndividualForm.controls['dob'].value;
+      requestDto.selectedAccessValue = this.selectedAccessType;
+      requestDto.aiNumber = this.AINumber;
+      requestDto.wFunctionTypeIDsList = this.functionTypeIDs;
+      requestDto.email = this.approvedIndividualForm.controls['email'].value;
     }
+    this.loadingService.show();
+    this.client.submitAccessRequest(requestDto).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.response != "") {
+          Swal.fire(
+            'Submit Request',
+            response.response,
+            response.response?.indexOf('success') ??  -1 > -1 ? 'success' :  'warning'
+          );
+          this.closeModal();
+        } else {
+          console.error('Empty Submit Response.');
+          this.toastr.error('An error occured while sumbitting the request. Please try again.', 'Error');
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        console.error('Failed to fetch Countries:', error);
+        this.toastr.error('Failed to submit the request. Please try again.', 'Error');
+      }
+    });
   }
 
   private populateRequestAccessType(): void {
@@ -115,8 +200,8 @@ export class AccessModalComponent implements OnInit {
         { value: Number(AccesRequestType.RequiredIndividual).toString(), text: AppConstants.Keywords.REGISTERED_INDIVIDUAL },
       ];
     }
-    else{
-      this.accessTypes = [ { value: Number(AccesRequestType.DocumentAdmin).toString(), text: AppConstants.Keywords.DOCUMENT_ADMIN },];
+    else {
+      this.accessTypes = [{ value: Number(AccesRequestType.DocumentAdmin).toString(), text: AppConstants.Keywords.DOCUMENT_ADMIN },];
     }
   }
 
@@ -143,7 +228,7 @@ export class AccessModalComponent implements OnInit {
       next: (response) => {
         if (response && response.response) {
           // Assuming response.response is a key-value dictionary
-          this.contacts = Object.values(response.response);
+          this.contacts = response.response;
         } else {
           console.error('No data received for Contacts.');
           this.toastr.error('No data received for Contacts. Please try again.', 'Error');
@@ -161,7 +246,7 @@ export class AccessModalComponent implements OnInit {
       next: (response) => {
         if (response && response.response) {
           // Assuming response.response is a key-value dictionary
-          this.contacts = Object.values(response.response);
+          this.contacts = response.response;
         } else {
           console.error('No data received for Contacts.');
           this.toastr.error('No data received for Contacts. Please try again.', 'Error');

@@ -1191,11 +1191,16 @@ export class Client {
     }
 
     /**
+     * @param wAccessReqId (optional) 
      * @param wRoleIds (optional) 
      * @return OK
      */
-    deactivateWuser(wRoleIds: string | undefined): Observable<BooleanBaseResponse> {
+    deactivateWuser(wAccessReqId: number | undefined, wRoleIds: string | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/AccessRequest/deactivate-wuser?";
+        if (wAccessReqId === null)
+            throw new Error("The parameter 'wAccessReqId' cannot be null.");
+        else if (wAccessReqId !== undefined)
+            url_ += "WAccessReqId=" + encodeURIComponent("" + wAccessReqId) + "&";
         if (wRoleIds === null)
             throw new Error("The parameter 'wRoleIds' cannot be null.");
         else if (wRoleIds !== undefined)
@@ -1247,10 +1252,15 @@ export class Client {
     }
 
     /**
+     * @param wAccessReqId (optional) 
      * @return OK
      */
-    deleteIndividualDetailsPOST(): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/AccessRequest/delete-individual-details";
+    deleteIndividualDetailsPOST(wAccessReqId: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/delete-individual-details?";
+        if (wAccessReqId === null)
+            throw new Error("The parameter 'wAccessReqId' cannot be null.");
+        else if (wAccessReqId !== undefined)
+            url_ += "WAccessReqId=" + encodeURIComponent("" + wAccessReqId) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -12462,7 +12472,7 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    submitAccessRequest(body: SubmitAccessRequest | undefined): Observable<BooleanBaseResponse> {
+    submitAccessRequest(body: SubmitAccessRequest | undefined): Observable<StringBaseResponse> {
         let url_ = this.baseUrl + "/api/SystemAccess/submit-access-request";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -12485,14 +12495,14 @@ export class Client {
                 try {
                     return this.processSubmitAccessRequest(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                    return _observableThrow(e) as any as Observable<StringBaseResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+                return _observableThrow(response_) as any as Observable<StringBaseResponse>;
         }));
     }
 
-    protected processSubmitAccessRequest(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+    protected processSubmitAccessRequest(response: HttpResponseBase): Observable<StringBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -12503,7 +12513,7 @@ export class Client {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = BooleanBaseResponse.fromJS(resultData200);
+            result200 = StringBaseResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -12511,7 +12521,7 @@ export class Client {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<BooleanBaseResponse>(null as any);
+        return _observableOf<StringBaseResponse>(null as any);
     }
 }
 
@@ -29134,11 +29144,16 @@ export interface IStringStringDictionaryBaseResponse {
 }
 
 export class SubmitAccessRequest implements ISubmitAccessRequest {
-    objWAccessRequests?: WAccessRequests;
-    qfcNum?: string | undefined;
-    firmTypeId?: number;
-    contactID?: number;
-    contactAssnID?: number;
+    selectedAccessValue?: string | undefined;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    jobTitle?: string | undefined;
+    dob?: string | undefined;
+    nationality?: string | undefined;
+    email?: string | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
 
     constructor(data?: ISubmitAccessRequest) {
         if (data) {
@@ -29151,9 +29166,14 @@ export class SubmitAccessRequest implements ISubmitAccessRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.objWAccessRequests = _data["objWAccessRequests"] ? WAccessRequests.fromJS(_data["objWAccessRequests"]) : <any>undefined;
-            this.qfcNum = _data["qfcNum"];
-            this.firmTypeId = _data["firmTypeId"];
+            this.selectedAccessValue = _data["selectedAccessValue"];
+            this.individualName = _data["individualName"];
+            this.aiNumber = _data["aiNumber"];
+            this.jobTitle = _data["jobTitle"];
+            this.dob = _data["dob"];
+            this.nationality = _data["nationality"];
+            this.email = _data["email"];
+            this.wFunctionTypeIDsList = _data["wFunctionTypeIDsList"];
             this.contactID = _data["contactID"];
             this.contactAssnID = _data["contactAssnID"];
         }
@@ -29168,9 +29188,14 @@ export class SubmitAccessRequest implements ISubmitAccessRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["objWAccessRequests"] = this.objWAccessRequests ? this.objWAccessRequests.toJSON() : <any>undefined;
-        data["qfcNum"] = this.qfcNum;
-        data["firmTypeId"] = this.firmTypeId;
+        data["selectedAccessValue"] = this.selectedAccessValue;
+        data["individualName"] = this.individualName;
+        data["aiNumber"] = this.aiNumber;
+        data["jobTitle"] = this.jobTitle;
+        data["dob"] = this.dob;
+        data["nationality"] = this.nationality;
+        data["email"] = this.email;
+        data["wFunctionTypeIDsList"] = this.wFunctionTypeIDsList;
         data["contactID"] = this.contactID;
         data["contactAssnID"] = this.contactAssnID;
         return data;
@@ -29178,11 +29203,16 @@ export class SubmitAccessRequest implements ISubmitAccessRequest {
 }
 
 export interface ISubmitAccessRequest {
-    objWAccessRequests?: WAccessRequests;
-    qfcNum?: string | undefined;
-    firmTypeId?: number;
-    contactID?: number;
-    contactAssnID?: number;
+    selectedAccessValue?: string | undefined;
+    individualName?: string | undefined;
+    aiNumber?: string | undefined;
+    jobTitle?: string | undefined;
+    dob?: string | undefined;
+    nationality?: string | undefined;
+    email?: string | undefined;
+    wFunctionTypeIDsList?: string | undefined;
+    contactID?: number | undefined;
+    contactAssnID?: number | undefined;
 }
 
 export class Terms implements ITerms {
