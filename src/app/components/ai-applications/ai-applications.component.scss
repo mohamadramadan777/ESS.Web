@@ -1,0 +1,219 @@
+:host {
+    display: block;
+    padding: 16px;
+    background-color: #f9f9f9;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: #a51e36; /* Maroon background */
+    padding: 5px 0; /* Slimmer navbar height */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.card-content {
+    font-size: 16px;
+    color: #666;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.page_enabled, .page_disabled {
+    border: 1px solid #CCCCCC;
+    display: inline-block;
+    font-size: 12px;
+    height: 15px;
+    margin: 3px;
+    min-width: 15px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.page_enabled {
+    background-color: #eee;
+    color: #000;
+}
+
+.page_disabled {
+    background-color: #6C6C6C;
+    color: #fff !important;
+}
+
+span.TextCellRight {
+    padding: 0;
+}
+
+.ai-applications {
+    h1 {
+      font-size: 2em;
+      color: #333;
+    }
+  
+    #divLoginBody {
+      .modalBackground {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+  
+        label {
+          color: #fff;
+          font-size: 1.2em;
+        }
+  
+        img {
+          margin-left: 10px;
+        }
+      }
+  
+      .message-box {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+  
+      .outerBodyStyle {
+        width: 100%;
+        border-collapse: collapse;
+  
+        .innerBodyStyle {
+          width: 100%;
+          border-collapse: collapse;
+  
+          .sectionHeading {
+            background-color: #f5f5f5;
+            font-weight: bold;
+  
+            a {
+              text-decoration: none;
+              color: #333;
+  
+              img {
+                vertical-align: middle;
+              }
+  
+              .darkGrayNote {
+                margin-left: 5px;
+              }
+            }
+          }
+  
+          .TableColor {
+            width: 100%;
+            border: 1px solid #ddd;
+  
+            .FormTableRow {
+              .TextCellLeftMiddle {
+                text-align: left;
+                vertical-align: middle;
+                padding: 5px;
+              }
+  
+              .TextCellRight {
+                text-align: right;
+                vertical-align: middle;
+                padding: 5px;
+              }
+            }
+          }
+  
+          .GridRow {
+            width: 100%;
+            border-collapse: collapse;
+  
+            .GridHeader {
+              background-color: #f5f5f5;
+              font-weight: bold;
+            }
+  
+            tr {
+              cursor: pointer;
+  
+              &:hover {
+                background-color: #f0f0f0;
+              }
+            }
+          }
+  
+          .GridView {
+            width: 100%;
+            border-collapse: collapse;
+  
+            th {
+              background-color: #f5f5f5;
+              font-weight: bold;
+              padding: 5px;
+            }
+  
+            td {
+              padding: 5px;
+            }
+          }
+  
+          .errMessageSmall {
+            color: red;
+            font-size: 0.9em;
+          }
+        }
+      }
+    }
+  }
+  

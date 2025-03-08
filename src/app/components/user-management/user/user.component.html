@@ -2,4 +2,26 @@
 <app-navbar [selectedPage]="'user'"></app-navbar>
 
 
-<p>user works!</p>
+<div class="user-management-container">
+    <h2>User Management</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Email Address</th>
+          <th>User Name</th>
+          <th>Roles</th>
+          <th>Service Request ID</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.emailAddress }}</td>
+          <td>{{ user.userName }}</td>
+          <td>{{ user.roles.join(', ') }}</td>
+          <td>{{ user.serviceRequestId }}</td>
+          <td>{{ user.note }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

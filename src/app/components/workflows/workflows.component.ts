@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Workflow } from '../../models/workflow.model';
+import { WorkflowService } from '../../services/workflow.service';
 
 @Component({
   selector: 'app-workflows',
@@ -6,9 +8,18 @@ import { Component } from '@angular/core';
   styleUrls: ['./workflows.component.scss'],
 })
 export class WorkflowsComponent {
-  constructor() {}
+  workflows: Workflow[] = [];
+  displayedColumns: string[] = ['QFCNumber', 'ObjectTypeDesc', 'ObjectDetails', 'WObjectWorkFlowStatusDesc'];
+
+  constructor(private workflowService: WorkflowService) { }
 
   ngOnInit(): void {
-    // Initialization logic here
+    this.loadWorkflows();
+  }
+
+  loadWorkflows(): void {
+    this.workflowService.getMockWorkflows().subscribe(data => {
+      this.workflows = data;
+    });
   }
 }

@@ -1,45 +1,26 @@
 <app-header></app-header>
+
 <app-navbar [selectedPage]="'create-new-user'"></app-navbar>
-<!-- Add your component-specific HTML here -->
-<div class="create-new-user">
-  <div id="divLoginBody">
-    <div class="modalBackground" *ngIf="isLoading">
-      <label>Please wait...</label>
-      <img src="assets/images/loading.gif" alt="Loading...">
+
+<div class="create-user-container">
+  <h2>Create User</h2>
+  <form>
+    <label for="emailAddress">Email Address:</label>
+    <input type="text" id="emailAddress" [(ngModel)]="user.emailAddress" name="emailAddress">
+    <label for="userName">User Name:</label>
+    <input type="text" id="userName" [(ngModel)]="user.userName" name="userName" readonly>
+    <label for="roles">User Privileges:</label>
+    <div *ngFor="let role of roles">
+      <label>
+        <input type="checkbox" [(ngModel)]="user.roles" [value]="role" title="Select role">{{ role }}
+      </label>
     </div>
-    <div>
-      <div class="message-box" *ngIf="message">{{ message }}</div>
-      <input type="hidden" [(ngModel)]="searchFlag" value="0">
-      <table class="outerBodyStyle">
-        <tr>
-          <td>
-            <div>
-              <table class="innerBodyStyle">
-                <tr>
-                  <td>
-                    <div>
-                      <table class="TableColor">
-                        <tr class="FormTableRow">
-                          <td class="TextCellLeftMiddle">Firm Name:</td>
-                          <td>
-                            <select [(ngModel)]="selectedFirm" (change)="onFirmChange()">
-                              <option *ngFor="let firm of firms" [value]="firm.value">{{ firm.text }}</option>
-                            </select>
-                          </td>
-                          <td class="TextCellLeftMiddle">QFC Number:</td>
-                          <td>
-                            <input type="text" [(ngModel)]="qfcNumber" maxlength="5" autocomplete="off">
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
+    <label for="serviceRequestId">Service Request ID:</label>
+    <input type="text" id="serviceRequestId" [(ngModel)]="user.serviceRequestId" name="serviceRequestId">
+    <label for="note">Additional Note:</label>
+    <textarea id="note" [(ngModel)]="user.note" name="note"></textarea>
+    <button (click)="createUser()">Create User</button>
+    <p *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p *ngIf="successMessage">{{ successMessage }}</p>
+  </form>
 </div>

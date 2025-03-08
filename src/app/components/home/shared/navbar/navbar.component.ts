@@ -15,6 +15,16 @@ export class NavbarComponent {
   }
 
   menuItems = [
+
+    { 
+      name: 'Home',
+      value: 'admin-home',
+      submenus: [],
+      isCurrent: false,
+      route: '/admin-home',
+      isDropdownOpen: false  
+    },
+  
     {
       name: 'User-Management',
       value: 'user-management',
@@ -24,7 +34,7 @@ export class NavbarComponent {
         { name: 'User', route: '/user', isCurrent: false }
       ],
       isCurrent: false,
-      isDropdownOpen: false // Add this property
+      isDropdownOpen: false  
     },
     {
       name: 'AI-Applications',
@@ -35,7 +45,7 @@ export class NavbarComponent {
       ],
       isCurrent: false,
       route: '/ai-applications',
-      isDropdownOpen: false // Add this property
+      isDropdownOpen: false 
     },
     {
       name: 'Workflows',
@@ -46,7 +56,7 @@ export class NavbarComponent {
       ],
       isCurrent: false,
       route: '/workflows',
-      isDropdownOpen: false // Add this property
+      isDropdownOpen: false  
     },
     {
       name: 'Notifications',
@@ -57,7 +67,7 @@ export class NavbarComponent {
       ],
       isCurrent: false,
       route: '/notifications',
-      isDropdownOpen: false // Add this property
+      isDropdownOpen: false  
     },
     {
       name: 'Administration',
@@ -69,15 +79,7 @@ export class NavbarComponent {
       ],
       isCurrent: false,
       route: '/administration',
-      isDropdownOpen: false // Add this property
-    },
-    {
-      name: 'admin-home',
-      value: 'admin-home',
-      submenus: [],
-      isCurrent: false,
-      route: '/admin-home',
-      isDropdownOpen: false // Add this property
+      isDropdownOpen: false  
     },
   ];
 

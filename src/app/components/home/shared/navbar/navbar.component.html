@@ -1,10 +1,11 @@
-<nav class="navbar">
+<nav class="navbar-container">
   <ul>
     <li *ngFor="let item of menuItems" (mouseenter)="toggleDropdown(item)" (mouseleave)="toggleDropdown(item)">
       <a [routerLink]="item.route" (click)="setActivePage(item.value)">{{ item.name }}</a>
       <ul *ngIf="item.isDropdownOpen" class="dropdown-menu">
-        <li *ngFor="let submenu of item.submenus">
-          <a [routerLink]="submenu.route">{{ submenu.name }}</a>
+     <li *ngFor="let child of item.submenus" >
+      <a [routerLink]="child.route" (click)="setActivePage(item.value)" >{{ child.name }}</a>
+          
         </li>
       </ul>
     </li>

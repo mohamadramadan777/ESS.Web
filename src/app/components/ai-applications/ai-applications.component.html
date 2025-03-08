@@ -1,11 +1,8 @@
 <app-header></app-header>
-<app-navbar [selectedPage]="'ai-applcications'"></app-navbar>
-<p>ai-applications works!</p>
-
+<app-navbar [selectedPage]="'ai-applcications'"></app-navbar> 
 
 <div class="ai-applications">
-    <h1>AI Applications</h1>
-    <div id="divLoginBody">
+     <div id="divLoginBody">
       <div class="modalBackground" *ngIf="isLoading">
         <label>Please wait...</label>
         <img src="assets/images/loading.gif" alt="Loading...">
@@ -186,4 +183,3 @@
       </div>
     </div>
   </div>
-  

@@ -2,6 +2,36 @@
 <app-navbar [selectedPage]="''"></app-navbar>
 
 <div class="workflows">
+  
+  
+  
   <h1>Workflows</h1>
-  <!-- Add your component HTML here -->
+ 
+ 
+  <div class="table-container">
+  <table mat-table [dataSource]="workflows" class="mat-elevation-z8">
+    <ng-container matColumnDef="QFCNumber">
+      <th mat-header-cell *matHeaderCellDef> QFC Number </th>
+      <td mat-cell *matCellDef="let element"> {{element.QFCNumber}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ObjectTypeDesc">
+      <th mat-header-cell *matHeaderCellDef> Object Type </th>
+      <td mat-cell *matCellDef="let element"> {{element.ObjectTypeDesc}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ObjectDetails">
+      <th mat-header-cell *matHeaderCellDef> Object Details </th>
+      <td mat-cell *matCellDef="let element"> {{element.ObjectDetails}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="WObjectWorkFlowStatusDesc">
+      <th mat-header-cell *matHeaderCellDef> Workflow Status </th>
+      <td mat-cell *matCellDef="let element"> {{element.WObjectWorkFlowStatusDesc}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
 </div>

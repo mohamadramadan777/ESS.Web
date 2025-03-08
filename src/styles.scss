@@ -490,3 +490,761 @@ button.disabled {
   background-color: rgba(255, 0, 0, 0.2);
   /* Slightly darker on hover */
 }
+
+.heading {
+  font-weight: bold;
+  font-size: 14pt;
+  font-family: 'Century Gothic';
+  color: Maroon;
+}
+
+.headingQ03 {
+  font-weight: bold;
+  font-size: 14pt;
+  font-family: 'Century Gothic';
+  color: Maroon;
+}
+
+.headingQ03_WithoutBold {
+  font-size: 14pt;
+  font-family: 'Century Gothic';
+  color: Maroon;
+}
+
+.subHeadingQ03 {
+  font-weight: bold;
+  font-family: 'Century Gothic';
+  font-size: 12pt;
+  color: Maroon;
+}
+
+.sectionHeadingQ03 {
+  font-weight: bold;
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: White;
+}
+
+.rowText {
+  font-weight: bold;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+}
+
+.EmptyClass {}
+
+.sectionInstructions {
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: White;
+}
+
+.darkGrayNote {
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+  color: White;
+  font-weight: bold;
+}
+
+.darkBlackNote {
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+  color: Black;
+  font-weight: bold;
+}
+
+.numberOrder {
+  height: 30px;
+  font-size: 10pt;
+  color: #3A4349;
+  text-align: left;
+  vertical-align: top;
+  padding: 0px 0px 0px 10px;
+  width: 30px;
+  font-family: 'Century Gothic';
+  font-weight: bold;
+}
+
+.TableColor {
+  background-color: #D0D0D0;
+  border: 1px solid;
+}
+
+.FormTableRow {
+  background-color: #F0F0F0;
+  border: 1px none #D0D0D0;
+}
+
+.HeaderTableStyle {
+  background-color: Gray;
+}
+
+.HeaderRowStyle {
+  background-color: #BCC7D8;
+  height: 25px;
+}
+
+.HeaderTextStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: Black;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+}
+
+.ItemTableStyle {
+  background-color: Gray;
+}
+
+.ItemRowStyle {
+  background-color: #F0F0F0;
+}
+
+.SigItemStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 18px;
+}
+
+.SigItemStyleWithBorder {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 18px;
+  border-right: 1px solid gray;
+}
+
+.ItemTextStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 18px;
+}
+
+.ItemTextStyleWithBorder {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 18px;
+  border-right: 1px solid gray;
+}
+
+.ListItemTextStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 25px;
+}
+
+.Information {
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: top;
+  font-family: 'Century Gothic';
+}
+
+.HelpInformation {
+  font-size: 9pt;
+  color: #3A4349;
+  text-align: left;
+  vertical-align: top;
+  font-family: 'Century Gothic';
+  font-style: italic;
+  padding-left: 10px;
+}
+
+.HelpInformationNoItalic {
+  font-size: 9pt;
+  color: #3A4349;
+  text-align: left;
+  vertical-align: top;
+  font-family: 'Century Gothic';
+  padding-left: 10px;
+}
+
+.outerLeftMargin {
+  width: 5%;
+}
+
+.outerRightMargin {
+  width: 5%;
+}
+
+.innerLeftMargin {
+  width: 10px;
+}
+
+.innerRightMargin {
+  width: 10px;
+}
+
+.outerBodyStyle {
+  background-color: #F2F4F5;
+}
+
+.outerTopMargin {
+  width: 10px;
+}
+
+.outerBottomMargin {
+  width: 10px;
+}
+
+.innerBodyStyle {
+  background-color: White;
+  border: solid 1pt Maroon;
+}
+
+.verticalSeperator {
+  width: 0.01%;
+  background-color: Black;
+}
+
+.sectionBorderRptSch {
+  border: 1px solid Maroon;
+}
+
+.sectionHeadingRptSch {
+  height: 25px;
+  padding-left: 10px;
+  background-color: Gray;
+  border: 1px solid Black;
+  font-weight: bold;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: White;
+}
+
+.subHeadingRptSch {
+  padding-left: 3px;
+  height: 20px;
+  font-weight: bold;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+}
+
+.RepSubItemTableStyle {
+  background-color: White;
+}
+
+.RepItemTableStyle {
+  background-color: Gray;
+}
+
+.RepItemRowStyle {
+  background-color: White;
+}
+
+.RepItemSubRowStyle {
+  background-color: #CCC8C8;
+}
+
+.ReportGap {
+  height: 10px;
+}
+
+.RepItemTextStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 20px;
+}
+
+.RepItemContentStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 20px;
+  width: 200px;
+}
+
+.RepItemDataStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #000000;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 20px;
+}
+
+.ButtonColumnStyle {
+  padding: 3px 10px 3px 10px;
+  width: 90px;
+  border-bottom: 1px solid Gray;
+  border-top: 1px solid Gray;
+  border-right: 1px solid Gray;
+  text-align: center;
+}
+
+.InfoItemTextStyle {
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: Red;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  height: 20px;
+}
+
+.YetNotDueReport {
+  background-color: White;
+}
+
+.PendingReport {
+  background-color: White;
+}
+
+.OverDueReport {
+  background-color: White;
+}
+
+.SubmittedReport {
+  background-color: White;
+}
+
+.HighlightReport {
+  background-color: #E1EFF4;
+}
+
+.BTN_LightGray {
+  font-family: 'Century Gothic';
+  cursor: pointer;
+  font-size: 10pt;
+  font-weight: bold;
+  height: 25px;
+}
+
+.GrayRowBackground {
+  background-color: #F0F0F0;
+  background-repeat: repeat repeat-x;
+}
+
+.dividerWithLine {
+  border-bottom-color: Maroon;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+}
+
+.dividerThickLine {
+  background-color: Maroon;
+  height: 2px;
+}
+
+.linkButtonGray {
+  color: Black;
+  font-size: 8pt;
+  font-weight: bold;
+  font-family: 'Century Gothic';
+}
+
+a {
+  text-decoration: none;
+}
+
+.BTN_LightMaroon {
+  background-color: #B3525E;
+  border: solid 0px #B3525E;
+  font-weight: bold;
+  color: #FFFFFF;
+  font-family: 'Century Gothic';
+  cursor: pointer;
+  height: 25px;
+  border: solid 1.5pt White;
+  width: 90px;
+}
+
+.BTN_LightMaroon_New {
+  background-color: #CA747D;
+  border: solid 0px #CA747D;
+  font-weight: bold;
+  color: #FFFFFF;
+  font-family: 'Century Gothic';
+  cursor: pointer;
+  height: 25px;
+  border: solid 1.5pt White;
+}
+
+.TextOnlyCellLeft {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 3px;
+  width: 18%;
+}
+
+.TextOnlyCellRight {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: right;
+  vertical-align: inherit;
+  padding: 0px 10px 3px 3px;
+  width: 18%;
+}
+
+.TextCellLeft {
+  height: 20px;
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: right;
+  vertical-align: middle;
+  padding: 0px 10px 3px 0px;
+  width: 200px;
+}
+
+.TextCellRight {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #000000;
+  text-align: Left;
+  vertical-align: middle;
+  padding: 0px 0px 0px 5px;
+  width: 250px;
+}
+
+.TextCellLeftTop {
+  height: 25px;
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: Left;
+  vertical-align: top;
+  padding: 0px 0px 0px 10px;
+  font-family: 'Century Gothic';
+}
+
+.TextCellRightTop {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #000000;
+  text-align: Left;
+  vertical-align: top;
+  padding: 0px 0px 0px 10px;
+}
+
+.TextCellLeftMiddle {
+  height: 25px;
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: Left;
+  vertical-align: middle;
+  padding: 0px 0px 0px 10px;
+  font-family: 'Century Gothic';
+}
+
+.TextCellMiddle {
+  font-size: 9pt;
+  color: #3A4349;
+  text-align: center;
+  vertical-align: middle;
+  font-family: 'Century Gothic';
+  background-color: #FAFAD2;
+}
+
+.TextCellMiddleWithoutBG {
+  font-size: 9pt;
+  color: #3A4349;
+  text-align: center;
+  vertical-align: middle;
+  font-family: 'Century Gothic';
+}
+
+.TextCellRightMiddle {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #000000;
+  text-align: Left;
+  vertical-align: middle;
+  padding: 0px 0px 0px 10px;
+}
+
+.TextCellLeftFitness {
+  height: 25px;
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: Left;
+  vertical-align: top;
+  padding: 5px 5px 5px 5px;
+  font-family: 'Century Gothic';
+  width: 78%;
+}
+
+.MenuBackColor {
+  background-color: White;
+}
+
+.dividerWithWhiteLine {
+  border-bottom-color: White;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+}
+
+.DatesStyle {
+  font-size: 8pt;
+  color: #3A4349;
+  vertical-align: middle;
+  font-family: 'Century Gothic';
+}
+
+.Form {
+  padding: 7px 10px 7px 10px;
+  background-color: #F7F7F7;
+  color: #FC6343;
+  border: solid 1px maroon;
+}
+
+.FormForGridView {
+  padding: 7px 10px 7px 10px;
+  background-color: #F2F7F7;
+  color: #FC6343;
+}
+
+.FormTxt {
+  font-size: 8pt;
+  color: #333333;
+  text-align: center;
+}
+
+.PopupCloseTxt {
+  font-size: 10pt;
+  text-align: right;
+  color: blue;
+  font-weight: bold;
+  text-decoration: underline;
+  font-family: 'Century Gothic';
+}
+
+.FormText {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: lighter;
+  text-align: left;
+  vertical-align: middle;
+  padding: 0px 10px 3px 0px;
+  width: 800px;
+}
+
+.NotYetRegistered {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 10pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: right;
+  vertical-align: inherit;
+  padding: 1px 3px 1px 3px;
+}
+
+.errMessageSmall {
+  color: Red;
+  font-size: 10pt;
+}
+
+.GridView {
+  border: none;
+  border-color: White;
+  border-width: thin;
+}
+
+.GridRow {
+  border: none;
+  background-color: #fffbd6;
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+  color: #333333;
+  text-align: left;
+}
+
+.GridSelectedRow {
+  background-color: Maroon;
+  font-size: 10pt;
+  color: White;
+}
+
+.GridHeader {
+  background-color: #BCC7D8;
+  font-weight: bold;
+  color: Black;
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+  text-align: left;
+}
+
+.GridFooter {
+  background-color: #CCCC99;
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+}
+
+.GridPager {
+  background-color: #D4D0C8;
+  color: Black;
+  font-size: 10pt;
+  font-family: 'Century Gothic';
+  font-weight: bold;
+}
+
+.GridPager span {
+  text-decoration: underline overline;
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.myHiddenPanel {
+  display: none;
+}
+
+.TextCellLeftWith60Pad {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: right;
+  vertical-align: middle;
+  padding: 0px 10px 3px 0px;
+  width: 200px;
+  padding-left: 30px;
+}
+
+.TextCellLeftWith80Pad {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: right;
+  vertical-align: middle;
+  padding: 0px 10px 3px 0px;
+  width: 200px;
+  padding-left: 45px;
+}
+
+.modal {
+  background-color: Gray;
+  filter: alpha(opacity=40);
+  opacity: 0.7;
+}
+
+.dividerWithGrayLine {
+  border-bottom-color: #D0D0D0;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+}
+
+.TextCellLeftWithoutPadding {
+  height: 25px;
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+  width: 200px;
+}
+
+.subMenuSelected {
+  background-color: White;
+}
+
+.sectionHeading {
+  padding-left: 10px;
+  background-color: Gray;
+  border: solid 1.5pt White;
+  height: 20px;
+}
+
+.subMenuItemLink {
+  color: Black;
+}
+
+.helpButton {
+  width: 20px;
+  height: 20px;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.questionSection {
+  padding-left: 9px;
+  background-color: #D0D0D0;
+  border: solid 1.5pt White;
+  height: 20px;
+}
+
+.addMoreQuestionSection {
+  padding-left: 8px;
+  background-color: #BCC7D8;
+  border: solid 1.5pt White;
+  height: 20px;
+}
+
+.questionSectionText {
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.addQuestionSectionText {
+  font-family: 'Century Gothic';
+  font-size: 8pt;
+  color: #3A4349;
+  font-weight: bold;
+  text-align: left;
+  vertical-align: middle;
+}
+

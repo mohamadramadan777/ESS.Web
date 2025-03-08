@@ -23,6 +23,7 @@ import { NotificationsComponent } from './components/notifications/notifications
 import { ManageFirmsComponent } from './components/administration/manage-firms/manage-firms.component';
 import { ManageConfigurationComponent } from './components/administration/manage-configuration/manage-configuration.component';
 import { AdminReportsComponent } from './components/administration/admin-reports/admin-reports.component';
+import { CreateNewAiApplicationComponent } from './components/ai-applications/create-new-ai-application/create-new-ai-application.component';
 
 
 const routes: Routes = [
@@ -49,6 +50,10 @@ const routes: Routes = [
   { path: 'administration', component: AdministrationComponent },
   { path: 'workflows', component: WorkflowsComponent },
   { path: 'notifications', component: NotificationsComponent },
+  
+  { path: 'create-new-ai-application', component: CreateNewAiApplicationComponent },
+
+
   { path: 'ai-applications', component: AiApplicationsComponent },
   { path: 'System-access', component: SystemAccessComponent },
   { path: 'submission-records', component: SubmissionRecordsComponent },

@@ -73,7 +73,26 @@ export class AiApplicationsComponent implements OnInit {
   }
 
   onSearch() {
-    // Handle search
+    this.isLoading = true;
+    this.message = '';
+
+    // Simulate a service call
+    setTimeout(() => {
+      const filteredApplications = this.applications.filter(application => {
+        return (!this.selectedFirm || application.firmName === this.selectedFirm) &&
+               (!this.qfcNumber || application.qfcNumber === this.qfcNumber) &&
+               (!this.selectedFormType || application.formTypeDesc === this.selectedFormType) &&
+               (!this.selectedApplicationStatus || application.applicationStatus === this.selectedApplicationStatus);
+      });
+
+      if (filteredApplications.length > 0) {
+        this.applications = filteredApplications;
+      } else {
+        this.message = 'No applications found.';
+      }
+
+      this.isLoading = false;
+    }, 1000);
   }
 
   onReset() {

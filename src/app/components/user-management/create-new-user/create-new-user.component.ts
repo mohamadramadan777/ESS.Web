@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
 
 @Component({
   selector: 'app-create-new-user',
@@ -6,56 +9,73 @@ import { Component } from '@angular/core';
   styleUrls: ['./create-new-user.component.scss']
 })
 export class CreateNewUserComponent {
-  selectedFirm: string = '';
-  qfcNumber: string = '';
-  selectedFormType: string = '';
-  selectedApplicationStatus: string = '';
-  searchFlag: string = '0'; // Add this property
-  firms = [
-    { value: 'firm1', text: 'Firm 1' },
-    { value: 'firm2', text: 'Firm 2' }
-  ];
-  formTypes = [
-    { value: 'type1', text: 'Type 1' },
-    { value: 'type2', text: 'Type 2' }
-  ];
-  applicationStatuses = [
-    { value: 'status1', text: 'Status 1' },
-    { value: 'status2', text: 'Status 2' }
-  ];
-  applications = [
-    // Your application data here
-  ];
-  selectedApplication: any;
-  signOffDetails = [
-    // Your sign-off details here
-  ];
-  isLoading: boolean = false;
-  message: string = '';
-  lblErrorMessage: string = '';
-  lblReportName: string = '';
-  isExportVisible: boolean = false;
-  isProcessRequestVisible: boolean = false;
-  isFirmListVisible: boolean = false;
-  lblFirmMessage: string = '';
+  user: User = { 
+    emailAddress: '', 
+    userName: '', 
+    roles: [], 
+    serviceRequestId: '', 
+    note: '', 
+    wUserId: 0, 
+    wAccessRequestId: '0', 
+    qfcNumber: '', 
+    firmName: '',
+    individualName: '',
+    individualEmailAddress: '',
+    isRegistered: false,
+    isActive: false,
+    createdDate: new Date(),
+    modifiedDate: new Date(),
+    updatedDate: new Date(),
+    createdBy: '',
+    updatedBy: ''
+  };
+  roles: string[] = ['Admin', 'User', 'Manager'];
+  errorMessage: string = '';
+  successMessage: string = '';
 
-  onFirmChange() {
-    // Handle firm change
+  constructor(private userService: UserService) {}
+
+  createUser() {
+    if (this.isDataFilledIn()) {
+      this.userService.createUser(this.user).subscribe(response => {
+        if (response.success) {
+          this.successMessage = response.message;
+          this.errorMessage = '';
+          this.clearAllFields();
+        } else {
+          this.errorMessage = response.message;
+          this.successMessage = '';
+        }
+      });
+    } else {
+      this.errorMessage = 'Please fill in all required fields.';
+    }
   }
 
-  onSearch() {
-    // Handle search
+  isDataFilledIn(): boolean {
+    return this.user.emailAddress !== '' && this.user.userName !== '' && this.user.roles.length > 0 && this.user.serviceRequestId !== '';
   }
 
-  onReset() {
-    // Handle reset
-  }
-
-  onSelect(application: any) {
-    this.selectedApplication = application;
-  }
-
-  exportToExcel() {
-    // Handle export to Excel
+  clearAllFields() {
+    this.user = { 
+      emailAddress: '', 
+      userName: '', 
+      roles: [], 
+      serviceRequestId: '', 
+      note: '', 
+      wUserId: 0, 
+      wAccessRequestId: '0', 
+      qfcNumber: '', 
+      firmName: '',
+      individualName: '',
+      individualEmailAddress: '',
+      isRegistered: false,
+      isActive: false,
+      createdDate: new Date(),
+      modifiedDate: new Date(),
+      updatedDate: new Date(),
+      createdBy: '',
+      updatedBy: ''
+    };
   }
 }
