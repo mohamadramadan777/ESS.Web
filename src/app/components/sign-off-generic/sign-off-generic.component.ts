@@ -2,7 +2,7 @@ import { Component, Inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Client } from '../../services/api-client'; 
+import { Client } from '../../services/api-client';
 import { LoadingService } from '../../services/loader.service';
 import { AppConstants } from '../../constants/app.constants';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -19,18 +19,19 @@ export class SignOffGenericComponent implements OnInit {
   TermsTitle: string = '';
   RegisteredEmail: string = '';
   Password: string = '';
+  AppConstants = AppConstants;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { 
-      TermID: number; 
-      ShowAcceptTermsCheckBox: boolean; 
+    @Inject(MAT_DIALOG_DATA) public data: {
+      TermID: number;
+      ShowAcceptTermsCheckBox: boolean;
       signOffMethod: () => void; // No parameters
     },
     private dialogRef: MatDialogRef<SignOffGenericComponent>,
-    private client: Client, 
-    private toastr: ToastrService, 
+    private client: Client,
+    private toastr: ToastrService,
     private loadingService: LoadingService
-  ) {}
+  ) { }
   ngOnInit(): void {
     this.loadTermsText(this.data.TermID);
   }
@@ -57,13 +58,30 @@ export class SignOffGenericComponent implements OnInit {
   }
 
   onSignOff(): void {
-    if (this.data.signOffMethod) {
-      this.data.signOffMethod(); // Call the signOff method from parent (no params)
-      this.dialogRef.close(true); // Close modal after calling signOff
-    } else {
-      console.error('SignOff method is not defined');
-      this.toastr.error('Unable to sign off report.', 'Error');
-    }
+    const userId = localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID);
+    this.loadingService.show();
+    this.client.validateSignOffLogin(this.RegisteredEmail, this.Password).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response?.toString() == userId) {
+          if (this.data.signOffMethod) {
+            this.data.signOffMethod(); // Call the signOff method from parent (no params)
+            this.dialogRef.close(true); // Close modal after calling signOff
+          } else {
+            console.error('SignOff method is not defined');
+            this.toastr.error('Unable to sign off report.', 'Error');
+          }
+        } else {
+          this.toastr.error('Incorrect Username or Password.', 'Error');
+          console.error('Incorrect Username or Password.', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while validating username and password.', 'Error');
+        console.error('Error occurred while validating username and password:', error);
+      },
+    });    
   }
 
   onCancel(): void {
