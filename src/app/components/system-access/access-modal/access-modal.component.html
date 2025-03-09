@@ -76,7 +76,7 @@
             <button mat-raised-button type="submit" class="btn-request" [disabled]="documentAdminForm.invalid">
               Submit Request
             </button>
-            <button mat-raised-button class="btn-cancel" (click)="closeModal()">Close</button>
+            <button mat-raised-button  type="button" class="btn-cancel" (click)="closeModal()">Close</button>
           </div>
         </form>
 
@@ -98,13 +98,13 @@
           </div>
 
           <div class="form-item full-width">
-            <mat-form-field appearance="outline" class="form-input">
+            <mat-form-field appearance="outline" class="form-input"  *ngIf="approvedIndividualForm.controls['email'].value">
               <mat-label>Email Address</mat-label>
               <input matInput type="email" formControlName="email" [disabled]="true" />
             </mat-form-field>
           </div>
 
-          <div class="form-item full-width" >
+          <div class="form-item full-width" *ngIf="approvedIndividualForm.controls['cfLabel'].value">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>Job Title</mat-label>
               <input matInput type="text" formControlName="jobTitle" />
@@ -126,7 +126,7 @@
           </div>
 
 
-          <div class="form-item full-width">
+          <div class="form-item full-width" *ngIf="approvedIndividualForm.controls['cfLabel'].value">
             <mat-form-field appearance="outline" class="form-input">
               <mat-label>{{ lblCFsLable }}</mat-label>
               <input matInput type="text" formControlName="cfLabel" [disabled]="true" />
