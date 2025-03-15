@@ -227,6 +227,7 @@
             [DocSignText]="this.DocSignText"
             [ReportFormName]="data.Form"
             (fileUploaded)="onFileUploaded($event)"
+            (beforeUpload)="beforeFileUploaded()"
           ></app-file-uploader>
         </div>
       </mat-tab>

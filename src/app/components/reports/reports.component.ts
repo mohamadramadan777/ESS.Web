@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Client, ObjectSOTaskStatus, ObjTasksDto, ReportSchDto, HistoryDetailsDto, InsertObjectSOStatusDetailsDto, InsertReportSchDetailsDto, ReportSchDetailsDto, ReportSchDetailsDtoBaseResponse } from '../../services/api-client';
+import { Client, ObjectSOTaskStatus, ObjTasksDto, ReportSchDto, HistoryDetailsDto, InsertReportSchDetailsDto, ReportSchDetailsDto, ReportSchDetailsDtoBaseResponse } from '../../services/api-client';
 import { AppConstants } from '../../constants/app.constants';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';

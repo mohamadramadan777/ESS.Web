@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { HtmlViewerComponent } from '../../html-viewer/html-viewer.component';
 import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
+import { FileUploaderComponent } from '../../file-uploader/file-uploader.component';
 
 @Component({
   selector: 'app-view-notice',
@@ -17,6 +18,7 @@ import Swal from 'sweetalert2';
 })
 export class ViewNoticeComponent {
   @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
+    @ViewChild(FileUploaderComponent) fileUploader!: FileUploaderComponent;
   @Input() ReadOnly: boolean = false;
   unsavedChanges: boolean = false; // Track unsaved changes
   constructor(
@@ -217,6 +219,14 @@ export class ViewNoticeComponent {
   
   onFileUploaded(uploadIds: number[]): void {
     console.log('Uploaded File IDs:', uploadIds);
+  }
+
+  beforeFileUploaded() {
+    try {
+      this.fileUploader.proceedToUploadAfterSave();
+    } catch (error) {
+      console.error('Error while submitting application data', error);
+    }
   }
 
 }

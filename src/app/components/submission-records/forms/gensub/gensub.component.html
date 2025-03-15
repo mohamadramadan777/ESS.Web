@@ -26,6 +26,7 @@
               [ReportFormName]="data.Form"
               (fileUploaded)="onFileUploaded($event)"
               (ObjectInstanceIDChange)="onObjectInstanceIDChange($event)"
+              (beforeUpload)="beforeFileUploaded()"
             ></app-file-uploader>
           </div>
         </mat-tab>

@@ -28,6 +28,7 @@ export class FileUploaderComponent {
   @Input() ReportFormName: string = "";
 
   @Output() fileUploaded = new EventEmitter<number[]>();
+  @Output() beforeUpload = new EventEmitter<void>();
   @Output() ObjectInstanceIDChange = new EventEmitter<number>(); // Notify parent when changed
 
   regexStrings: { [key: number]: string } = {};
@@ -44,7 +45,9 @@ export class FileUploaderComponent {
   lstAttachmentsSvc: AttachmentDto[] = [];
   EffectiveFromDate = "";
   EffectiveToDate = "";
-
+  filesUploading: FileList | undefined = undefined;
+  uploaderType: 'primary' | 'additional' = "primary";
+  index: any;
   @Input() ReadOnly: boolean = false;
   @ViewChildren('fileInputs') fileInputs!: QueryList<ElementRef>;
   constructor(
@@ -236,8 +239,15 @@ export class FileUploaderComponent {
   onFilesSelected(event: Event, uploaderType: 'primary' | 'additional', index: any): void {
     const target = event.target as HTMLInputElement;
     if (target.files) {
-      this.uploadFiles(target.files, uploaderType, index);
+      this.uploaderType = uploaderType;
+      this.filesUploading = target.files;
+      this.index = index;
+      this.beforeUpload.emit();
     }
+  }
+
+  proceedToUploadAfterSave(): void{
+    this.uploadFiles( this.filesUploading as FileList, this.uploaderType, this.index);
   }
 
   private uploadFiles(files: FileList, uploaderType: 'primary' | 'additional', index: any): void {

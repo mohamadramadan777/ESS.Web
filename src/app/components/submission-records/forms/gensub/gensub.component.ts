@@ -7,7 +7,7 @@ import { LoadingService } from '../../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { FileUploaderComponent } from '../../../file-uploader/file-uploader.component';
 import { MessagePropertyService } from '../../../../services/message-property.service';
 import { SignOffGenericComponent } from '../../../sign-off-generic/sign-off-generic.component';
@@ -108,6 +108,8 @@ export class GensubComponent implements AfterViewInit {
       // }
     }
     else {
+    // TODO: Sign off label
+
       this.client.getDocSignatories(this.data.DocTypeId, "", Number(WObjects.GeneralSubmission)).subscribe({
         next: (response) => {
           if (response && response.isSuccess && response.response) {
@@ -212,7 +214,7 @@ export class GensubComponent implements AfterViewInit {
   }
 
   // Submit functionality
-  onSubmit(): void {
+  onSubmitOld(): void {
     if (this.fileUploader.primaryFile) {
       const objGenSub: GeneralSubmissionDto = new GeneralSubmissionDto();
       if (this.GenSubID != 0) {
@@ -236,10 +238,10 @@ export class GensubComponent implements AfterViewInit {
             this.loadingService.show();
             setTimeout(() => {
               this.loadingService.hide();
-              if(Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID)) == 2101){
+              if (Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID)) == 2101) {
                 this.openSignOffDialog();
               }
-              else{
+              else {
                 this.showSignOffMessage = true;
                 this.navigateToTab(2);
               }
@@ -249,15 +251,15 @@ export class GensubComponent implements AfterViewInit {
             //   {
             //       BasePage basePage = new BasePage();
             //       basePage.ShowAlertMessageBox_Ajax(BALMessageSettings.GetMessageProperty((int)ReportSchedule.INVALID_EFFECTIVE_DATE), (int)ErrorType.Error);
-                  
+
             //       mpeFileUpload.Hide();
             //       return;
             //   }
-            if(this.XBRLDocType){
+            if (this.XBRLDocType) {
               //TODO: Implement
             }
-            else{
-              if(!this.signOffRequired){
+            else {
+              if (!this.signOffRequired) {
                 //success= submitGenSubDetailsSignOffNotRequired();
               }
             }
@@ -283,6 +285,68 @@ export class GensubComponent implements AfterViewInit {
       });
     }
   }
+
+
+  // Submit functionality
+  onSubmit(): void {
+    if (this.fileUploader.primaryFile) {
+      const objGenSub: GeneralSubmissionDto = new GeneralSubmissionDto();
+      if (this.GenSubID != 0) {
+        objGenSub.genSubmissionID = this.GenSubID;
+      }
+      objGenSub.qfcNumber = localStorage.getItem(this.AppConstants.Session.SESSION_QFC_NO) ?? "";
+      if (this.data.DocTypeId != 0 && this.data.DocTypeId != undefined) {
+        objGenSub.docTypeID = this.data.DocTypeId;
+        objGenSub.rptSOMethodTypeID = SignOffMethodType.ElectronicSigned;
+      }
+      objGenSub.comments = this.Comments;
+      objGenSub.objectStatusTypeID = ObjectStatus.Pending;
+      objGenSub.userCreated = Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID));
+      this.loadingService.show();
+      //TODO: rptEnddate in xbrl
+      this.client.submitGenSub(this.GenSubID, this.data.DocTypeId, this.isXbrlType, this.fileUploader.EffectiveFromDate,
+        this.fileUploader.EffectiveToDate, "", this.isSignOffRequired, ""
+      ).subscribe({
+        next: (response) => {
+          this.loadingService.hide();
+          if (response && response.isSuccess && response.response) {
+            if (response.response.messageType == "error") {
+              Swal.fire(
+                'Warning!',
+                response.response.message,
+                'error'
+              );
+            }
+            else if(response.response.btnSignOffVisible){
+              this.openSignOffDialog();//TODO: Show sign off button
+            }
+            else if(response.response.messageType == "success"){
+              this.toastr.success(response.response.message, 'Success');
+              this.dialogRef.close();
+            }
+          } else {
+            this.toastr.error('Failed to submit general submission.', 'Error');
+            console.error('Failed to submit general submission:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.toastr.error('Error occurred while submitting general submission.', 'Error');
+          console.error('Error occurred while submitting general submission:', error);
+        },
+      });
+    }
+    else {
+      this.messagePropertyService.getMessageProperty(GenSubMessage.PleaseAttachFormTypeDescForAdditionalDoc.toString()).subscribe((message) => {
+        Swal.fire(
+          'Warning!',
+          message.replace(AppConstants.Keywords.EMAIL_FORM_TYPE_DESC, this.data.Form),
+          'warning'
+        );
+      });
+    }
+  }
+
   private async checkUnsavedChanges(): Promise<void> {
     if (this.unsavedChanges) {
       const result = await Swal.fire({
@@ -317,19 +381,52 @@ export class GensubComponent implements AfterViewInit {
   }
 
 
-openSignOffDialog(): void {
-  const dialogRef = this.dialog.open(SignOffGenericComponent, {
-    width: 'auto',
-    height: 'auto',
-    data: {
-      TermID: this.wTermID, // Pass the TermID dynamically
-      ShowAcceptTermsCheckBox: false, // Pass the ShowAcceptTermsCheckBox dynamically
-    },
-  });
+  openSignOffDialog(): void {
+    const dialogRef = this.dialog.open(SignOffGenericComponent, {
+      width: 'auto',
+      height: 'auto',
+      data: {
+        TermID: this.wTermID, // Pass the TermID dynamically
+        ShowAcceptTermsCheckBox: false, // Pass the ShowAcceptTermsCheckBox dynamically
+        signOffMethod: () => this.signOff(),
+      },
+    });
 
-  dialogRef.afterClosed().subscribe((result) => {
-    console.log('Dialog closed with result:', result);
-    // Handle any logic after dialog closes
-  });
-}
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Dialog closed with result:', result);
+      // Handle any logic after dialog closes
+    });
+  }
+//TODO: Show hide buttons
+   signOff() {
+      this.loadingService.show();
+      this.client.signOffGenSub(this.GenSubID, this.data.DocTypeId, this.isSignOffRequired).subscribe({
+          next: (response) => {
+            this.loadingService.hide();
+            if (response && response.isSuccess) {
+              Swal.fire(
+                'Sign Off',
+                response.response?.message,
+                response.response?.type as SweetAlertIcon ?? "warning"
+              );
+            } else {
+              this.toastr.error('Failed to sign off submission.', 'Error');
+              console.error('Failed to sign off submission:', response?.errorMessage);
+            }
+          },
+          error: (error) => {
+            this.loadingService.hide();
+            this.toastr.error('Error occurred while signing submission.', 'Error');
+            console.error('Error occurred while signing submission:', error);
+          },
+        });
+    }
+
+  beforeFileUploaded() {
+    try {
+      this.fileUploader.proceedToUploadAfterSave();
+    } catch (error) {
+      console.error('Error while submitting application data', error);
+    }
+  }
 }

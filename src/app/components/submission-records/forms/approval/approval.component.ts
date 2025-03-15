@@ -27,6 +27,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { FileUploaderComponent } from '../../../file-uploader/file-uploader.component';
 @Component({
   selector: 'app-approval',
   templateUrl: './approval.component.html',
@@ -34,6 +35,7 @@ import { Router } from '@angular/router';
 })
 export class ApprovalComponent {
   @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
+  @ViewChild(FileUploaderComponent) fileUploader!: FileUploaderComponent;
   @Input() ReadOnly: boolean = false;
   unsavedChanges: boolean = false; // Track unsaved change
   AttObjectID = WObjects.IndividualApplications;
@@ -55,51 +57,51 @@ export class ApprovalComponent {
     email: '',
     isResident: null,
   };
-
+//TODO: get from api
   controlledFunctions = [
     {
       id: 1,
       name: 'Non-Executive Governance Function',
-      typeId: 101,
+      typeId: 3,
       isSelected: false,
     },
     {
       id: 2,
       name: 'Executive Governance Function',
-      typeId: 102,
+      typeId: 2,
       isSelected: false,
     },
     {
       id: 3,
       name: 'Senior Executive Function',
-      typeId: 103,
+      typeId: 1,
       isSelected: false,
     },
     {
       id: 4,
       name: 'Senior Management Function',
-      typeId: 104,
+      typeId: 8,
       isSelected: false,
     },
-    { id: 5, name: 'Finance Function', typeId: 105, isSelected: false },
-    { id: 6, name: 'Risk Management Function', typeId: 106, isSelected: false },
+    { id: 5, name: 'Finance Function', typeId: 6, isSelected: false },
+    { id: 6, name: 'Risk Management Function', typeId: 5, isSelected: false },
     {
       id: 7,
       name: 'Compliance Oversight Function',
-      typeId: 107,
+      typeId: 4,
       isSelected: false,
     },
-    { id: 8, name: 'MLRO Function', typeId: 108, isSelected: false },
-    { id: 9, name: 'Internal Audit Function', typeId: 109, isSelected: false },
-    { id: 10, name: 'Actuarial Function', typeId: 110, isSelected: false },
+    { id: 8, name: 'MLRO Function', typeId: 7, isSelected: false },
+    { id: 9, name: 'Internal Audit Function', typeId: 21, isSelected: false },
+    { id: 10, name: 'Actuarial Function', typeId: 9, isSelected: false },
   ];
   getSelectedFunctions(): ControlledFunctionDto[] {
     return this.controlledFunctions
       .filter((func) => func.isSelected)
       .map((func) =>
         ControlledFunctionDto.fromJS({
-          controlFunctionID: func.id, // C# equivalent of hdnFunctionID
-          ApplicationID: this.data.ApplicationID ?? 0, // Equivalent of lblAppicationID
+          controlFunctionID: null, // C# equivalent of hdnFunctionID
+          ApplicationID: this.ApplicationID ?? this.data.ApplicationID ?? 0, // Equivalent of lblAppicationID
           functionTypeID: func.typeId, // C# equivalent of hdnFunctionTypeID
           functionTypeDesc: func.name.replace(/<i>|<\/i>/g, ''), // Remove <i> tags if present
           actionTypeID: 1, // Equivalent of ActionType.Add in C#
@@ -149,7 +151,7 @@ export class ApprovalComponent {
     private dialog: MatDialog,
     private messagePropertyService: MessagePropertyService,
     private datePipe: DatePipe
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.dropdwonvalues();
@@ -317,6 +319,7 @@ export class ApprovalComponent {
     }
 
     if (appID > 0) {
+      this.ApplicationID = appID;
       this.toastr.success('Application saved successfully!', 'Success');
       this.unsavedChanges = false; // Reset unsaved changes flag
     } else {
@@ -338,6 +341,18 @@ export class ApprovalComponent {
   onFileUploaded(file: any) {
     this.uploadedFiles.push(file); // Store the uploaded file
   }
+
+  async beforeFileUploaded() {
+    try {
+      let appID = 0;
+      appID = await this.saveApplicationData(); // Use await to get the resolved value
+      this.fileUploader.ObjectInstanceID = appID;
+      this.fileUploader.proceedToUploadAfterSave();
+    } catch (error) {
+      console.error('Error while submitting application data', error);
+    }
+  }
+
   onClose(): void {
     this.dialogRef.close();
   }
@@ -354,6 +369,12 @@ export class ApprovalComponent {
       this.toastr.error('Please fix validation errors before submitting.');
       return;
     }
+    if (!this.fileUploader.primaryFile) {
+      this.toastr.error('Please attach a duly completed, signed and scanned copy of Q03 before submitting.');
+      return;
+    }
+
+
     let appID = 0;
     try {
       appID = await this.saveApplicationData(); // Use await to get the resolved value
@@ -362,12 +383,13 @@ export class ApprovalComponent {
     }
 
     if (appID > 0) {
-      this.submitAIApplicationData(
+      await this.submitAIApplicationData(
         appID.toString(),
         this.data.Form,
         this.data.DocTypeId
       );
       this.toastr.success('Application submited successfully!', 'Success');
+      this.dialogRef.close();
       this.unsavedChanges = false; // Reset unsaved changes flag
     } else {
       this.validationErrors['submitmessage'] = await this.getValidationMessage(
@@ -568,16 +590,14 @@ export class ApprovalComponent {
       // Ensure values are properly set before calling the API
       const qfcNumber = localStorage.getItem('qfc_no') || '';
       const aiNumber = this.applicant.aiNumber || '';
-      const formTypeID= this.data.WIndFromTypeID?.toString() || undefined;
-      const windApplicationID = this.data.ApplicationID || 0;
+      const formTypeID = this.data.WIndFromTypeID?.toString() || undefined;
+      const windApplicationID = this.ApplicationID ?? this.data.ApplicationID ?? 0;
 
       // Get selected controlled function IDs
-      const lstFunctions: number[] = this.controlledFunctions
-        .filter((func) => func.isSelected && func.id !== undefined) // Ensure 'id' is defined
-        .map((func) => func.id!) // Type assertion ensures 'id' is treated as number
-        .filter((id): id is number => id !== undefined); // Filter out undefined values
+      const lstFunctions: number[] = []
 
       // Call the API
+      //TODO: Fix this call
       const response = await lastValueFrom(
         this.client.isDuplicateApplication(
           qfcNumber,
@@ -602,7 +622,7 @@ export class ApprovalComponent {
     let appID = 0;
     try {
       const individualDetails = IndividualDetailsDto.fromJS({
-        applicationID: this.data.ApplicationID || 0,
+        applicationID: this.ApplicationID ?? this.data.ApplicationID ?? 0,
         userID: localStorage.getItem('w_userid') || 0,
         qfcNumber: localStorage.getItem('qfc_no') || undefined,
         aiNumber: this.applicant.aiNumber || undefined,
@@ -627,14 +647,15 @@ export class ApprovalComponent {
       });
 
       console.log('Submitting application data:', applicationData);
-
+      this.loadingService.show();
       const response = await lastValueFrom(
         this.client.insertUpdateApplicationData(applicationData)
       );
-
+      this.loadingService.hide();
       if (response && response.response) {
         console.log('Application saved successfully:', response);
         appID = response.response;
+        this.ApplicationID = appID;
       } else {
         console.error('Application saving failed', response);
         this.toastr.error('Failed to save application. Please try again.');
@@ -650,10 +671,12 @@ export class ApprovalComponent {
     formName: string,
     docTypeID: number
   ): Promise<void> {
+    this.loadingService.show();
     const response = await lastValueFrom(
       this.client.submitApplication(appID, formName, docTypeID)
     );
-    if (response && response.isSuccess===true) {
+    this.loadingService.hide();
+    if (response && response.isSuccess === true) {
       console.log('Application submitted successfully:', response);
     } else {
       console.error('Application submission failed', response);

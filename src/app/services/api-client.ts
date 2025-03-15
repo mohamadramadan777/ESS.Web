@@ -8317,6 +8317,163 @@ export class Client {
     }
 
     /**
+     * @param genSubID (optional) 
+     * @param docTypeID (optional) 
+     * @param isXbrlType (optional) 
+     * @param effectiveFromDate (optional) 
+     * @param effectiveToDate (optional) 
+     * @param rptEndDate (optional) 
+     * @param signOffRequired (optional) 
+     * @param txtDateSigned (optional) 
+     * @return OK
+     */
+    submitGenSub(genSubID: number | undefined, docTypeID: number | undefined, isXbrlType: boolean | undefined, effectiveFromDate: string | undefined, effectiveToDate: string | undefined, rptEndDate: string | undefined, signOffRequired: boolean | undefined, txtDateSigned: string | undefined): Observable<SubmitGenSubResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/submit-gen-sub?";
+        if (genSubID === null)
+            throw new Error("The parameter 'genSubID' cannot be null.");
+        else if (genSubID !== undefined)
+            url_ += "GenSubID=" + encodeURIComponent("" + genSubID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (isXbrlType === null)
+            throw new Error("The parameter 'isXbrlType' cannot be null.");
+        else if (isXbrlType !== undefined)
+            url_ += "isXbrlType=" + encodeURIComponent("" + isXbrlType) + "&";
+        if (effectiveFromDate === null)
+            throw new Error("The parameter 'effectiveFromDate' cannot be null.");
+        else if (effectiveFromDate !== undefined)
+            url_ += "effectiveFromDate=" + encodeURIComponent("" + effectiveFromDate) + "&";
+        if (effectiveToDate === null)
+            throw new Error("The parameter 'effectiveToDate' cannot be null.");
+        else if (effectiveToDate !== undefined)
+            url_ += "effectiveToDate=" + encodeURIComponent("" + effectiveToDate) + "&";
+        if (rptEndDate === null)
+            throw new Error("The parameter 'rptEndDate' cannot be null.");
+        else if (rptEndDate !== undefined)
+            url_ += "rptEndDate=" + encodeURIComponent("" + rptEndDate) + "&";
+        if (signOffRequired === null)
+            throw new Error("The parameter 'signOffRequired' cannot be null.");
+        else if (signOffRequired !== undefined)
+            url_ += "signOffRequired=" + encodeURIComponent("" + signOffRequired) + "&";
+        if (txtDateSigned === null)
+            throw new Error("The parameter 'txtDateSigned' cannot be null.");
+        else if (txtDateSigned !== undefined)
+            url_ += "txtDateSigned=" + encodeURIComponent("" + txtDateSigned) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitGenSub(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitGenSub(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SubmitGenSubResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SubmitGenSubResultBaseResponse>;
+        }));
+    }
+
+    protected processSubmitGenSub(response: HttpResponseBase): Observable<SubmitGenSubResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SubmitGenSubResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SubmitGenSubResultBaseResponse>(null as any);
+    }
+
+    /**
+     * @param genSubID (optional) 
+     * @param docTypeID (optional) 
+     * @param signOffRequired (optional) 
+     * @return OK
+     */
+    signOffGenSub(genSubID: number | undefined, docTypeID: number | undefined, signOffRequired: boolean | undefined): Observable<SwalResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/sign-off-gen-sub?";
+        if (genSubID === null)
+            throw new Error("The parameter 'genSubID' cannot be null.");
+        else if (genSubID !== undefined)
+            url_ += "GenSubID=" + encodeURIComponent("" + genSubID) + "&";
+        if (docTypeID === null)
+            throw new Error("The parameter 'docTypeID' cannot be null.");
+        else if (docTypeID !== undefined)
+            url_ += "docTypeID=" + encodeURIComponent("" + docTypeID) + "&";
+        if (signOffRequired === null)
+            throw new Error("The parameter 'signOffRequired' cannot be null.");
+        else if (signOffRequired !== undefined)
+            url_ += "signOffRequired=" + encodeURIComponent("" + signOffRequired) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSignOffGenSub(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSignOffGenSub(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SwalResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SwalResultBaseResponse>;
+        }));
+    }
+
+    protected processSignOffGenSub(response: HttpResponseBase): Observable<SwalResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SwalResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SwalResultBaseResponse>(null as any);
+    }
+
+    /**
      * @param tableName (optional) 
      * @return OK
      */
@@ -9350,62 +9507,6 @@ export class Client {
             }));
         }
         return _observableOf<Int32ListBaseResponse>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    insertUpdateObjectSoStatusDetails2(body: InsertObjectSOStatusDetailsDto | undefined): Observable<Int32BaseResponse> {
-        let url_ = this.baseUrl + "/api/ReportSchedule/insert-update-object-so-status-details";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processInsertUpdateObjectSoStatusDetails2(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processInsertUpdateObjectSoStatusDetails2(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
-        }));
-    }
-
-    protected processInsertUpdateObjectSoStatusDetails2(response: HttpResponseBase): Observable<Int32BaseResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = Int32BaseResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Int32BaseResponse>(null as any);
     }
 
     /**
@@ -25301,54 +25402,6 @@ export interface IInsertFirmNoticeRequest {
     objNotice?: WNoticeDto;
 }
 
-export class InsertObjectSOStatusDetailsDto implements IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
-
-    constructor(data?: IInsertObjectSOStatusDetailsDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.objectSOStatus = _data["objectSOStatus"] ? ObjectSOStatusDto.fromJS(_data["objectSOStatus"]) : <any>undefined;
-            if (Array.isArray(_data["lstReportSignatories"])) {
-                this.lstReportSignatories = [] as any;
-                for (let item of _data["lstReportSignatories"])
-                    this.lstReportSignatories!.push(ReportSignatories.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): InsertObjectSOStatusDetailsDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new InsertObjectSOStatusDetailsDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["objectSOStatus"] = this.objectSOStatus ? this.objectSOStatus.toJSON() : <any>undefined;
-        if (Array.isArray(this.lstReportSignatories)) {
-            data["lstReportSignatories"] = [];
-            for (let item of this.lstReportSignatories)
-                data["lstReportSignatories"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IInsertObjectSOStatusDetailsDto {
-    objectSOStatus?: ObjectSOStatusDto;
-    lstReportSignatories?: ReportSignatories[] | undefined;
-}
-
 export class InsertReportSchDetailsDto implements IInsertReportSchDetailsDto {
     objReportSch?: ReportSchDto;
     objReportSchItem?: ReportSchItem;
@@ -29433,6 +29486,110 @@ export interface ISubmitAccessRequest {
     wFunctionTypeIDsList?: string | undefined;
     contactID?: number | undefined;
     contactAssnID?: number | undefined;
+}
+
+export class SubmitGenSubResult implements ISubmitGenSubResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    showSignOffPanell?: boolean | undefined;
+    message?: string | undefined;
+    messageType?: string | undefined;
+
+    constructor(data?: ISubmitGenSubResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.lblUsers = _data["lblUsers"];
+            this.hdnUserIDs = _data["hdnUserIDs"];
+            this.btnSignOffVisible = _data["btnSignOffVisible"];
+            this.showSignOffPanell = _data["showSignOffPanell"];
+            this.message = _data["message"];
+            this.messageType = _data["messageType"];
+        }
+    }
+
+    static fromJS(data: any): SubmitGenSubResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitGenSubResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["lblUsers"] = this.lblUsers;
+        data["hdnUserIDs"] = this.hdnUserIDs;
+        data["btnSignOffVisible"] = this.btnSignOffVisible;
+        data["showSignOffPanell"] = this.showSignOffPanell;
+        data["message"] = this.message;
+        data["messageType"] = this.messageType;
+        return data;
+    }
+}
+
+export interface ISubmitGenSubResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    showSignOffPanell?: boolean | undefined;
+    message?: string | undefined;
+    messageType?: string | undefined;
+}
+
+export class SubmitGenSubResultBaseResponse implements ISubmitGenSubResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitGenSubResult;
+
+    constructor(data?: ISubmitGenSubResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SubmitGenSubResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SubmitGenSubResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitGenSubResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISubmitGenSubResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitGenSubResult;
 }
 
 export class SwalResult implements ISwalResult {
