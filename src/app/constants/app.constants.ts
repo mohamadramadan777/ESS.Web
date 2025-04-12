@@ -1,3 +1,5 @@
+import { MatDateFormats } from "@angular/material/core";
+
 export const AppConstants = {
     Messages: {
       Welcome: 'Welcome to the application!',
@@ -47,4 +49,16 @@ export const AppConstants = {
       SESSION_FIRM_TYPE   : 'firm_type',
       SESSION_FIRM_NAME   : 'firm_name',
     }
+  };
+
+  export const CUSTOM_DATE_FORMATS: MatDateFormats = {
+    parse: {
+      dateInput: 'dd/MMM/yyyy',
+    },
+    display: {
+      dateInput: 'dd/MMM/yyyy',
+      monthYearLabel: 'MMM yyyy',
+      dateA11yLabel: 'dd/MMM/yyyy',
+      monthYearA11yLabel: 'MMMM yyyy',
+    },
   };
