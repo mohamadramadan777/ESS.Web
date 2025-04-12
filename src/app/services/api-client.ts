@@ -83,6 +83,168 @@ export class Client {
     }
 
     /**
+     * @param firmQFCNo (optional) 
+     * @param email (optional) 
+     * @param individualDateOfBirth (optional) 
+     * @param regPass (optional) 
+     * @return OK
+     */
+    submitRegister(firmQFCNo: string | undefined, email: string | undefined, individualDateOfBirth: Date | undefined, regPass: string | undefined): Observable<SubmitRegisterResponseBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/submit-register?";
+        if (firmQFCNo === null)
+            throw new Error("The parameter 'firmQFCNo' cannot be null.");
+        else if (firmQFCNo !== undefined)
+            url_ += "FirmQFCNo=" + encodeURIComponent("" + firmQFCNo) + "&";
+        if (email === null)
+            throw new Error("The parameter 'email' cannot be null.");
+        else if (email !== undefined)
+            url_ += "email=" + encodeURIComponent("" + email) + "&";
+        if (individualDateOfBirth === null)
+            throw new Error("The parameter 'individualDateOfBirth' cannot be null.");
+        else if (individualDateOfBirth !== undefined)
+            url_ += "IndividualDateOfBirth=" + encodeURIComponent(individualDateOfBirth ? "" + individualDateOfBirth.toISOString() : "") + "&";
+        if (regPass === null)
+            throw new Error("The parameter 'regPass' cannot be null.");
+        else if (regPass !== undefined)
+            url_ += "regPass=" + encodeURIComponent("" + regPass) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitRegister(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitRegister(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SubmitRegisterResponseBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SubmitRegisterResponseBaseResponse>;
+        }));
+    }
+
+    protected processSubmitRegister(response: HttpResponseBase): Observable<SubmitRegisterResponseBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SubmitRegisterResponseBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SubmitRegisterResponseBaseResponse>(null as any);
+    }
+
+    /**
+     * @param userLoginName (optional) 
+     * @param userPassword (optional) 
+     * @param question1 (optional) 
+     * @param answer1 (optional) 
+     * @param question2 (optional) 
+     * @param answer2 (optional) 
+     * @param question3 (optional) 
+     * @param answer3 (optional) 
+     * @return OK
+     */
+    createAccount(userLoginName: string | undefined, userPassword: string | undefined, question1: number | undefined, answer1: string | undefined, question2: number | undefined, answer2: string | undefined, question3: number | undefined, answer3: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/create-account?";
+        if (userLoginName === null)
+            throw new Error("The parameter 'userLoginName' cannot be null.");
+        else if (userLoginName !== undefined)
+            url_ += "UserLoginName=" + encodeURIComponent("" + userLoginName) + "&";
+        if (userPassword === null)
+            throw new Error("The parameter 'userPassword' cannot be null.");
+        else if (userPassword !== undefined)
+            url_ += "UserPassword=" + encodeURIComponent("" + userPassword) + "&";
+        if (question1 === null)
+            throw new Error("The parameter 'question1' cannot be null.");
+        else if (question1 !== undefined)
+            url_ += "question1=" + encodeURIComponent("" + question1) + "&";
+        if (answer1 === null)
+            throw new Error("The parameter 'answer1' cannot be null.");
+        else if (answer1 !== undefined)
+            url_ += "answer1=" + encodeURIComponent("" + answer1) + "&";
+        if (question2 === null)
+            throw new Error("The parameter 'question2' cannot be null.");
+        else if (question2 !== undefined)
+            url_ += "question2=" + encodeURIComponent("" + question2) + "&";
+        if (answer2 === null)
+            throw new Error("The parameter 'answer2' cannot be null.");
+        else if (answer2 !== undefined)
+            url_ += "answer2=" + encodeURIComponent("" + answer2) + "&";
+        if (question3 === null)
+            throw new Error("The parameter 'question3' cannot be null.");
+        else if (question3 !== undefined)
+            url_ += "question3=" + encodeURIComponent("" + question3) + "&";
+        if (answer3 === null)
+            throw new Error("The parameter 'answer3' cannot be null.");
+        else if (answer3 !== undefined)
+            url_ += "answer3=" + encodeURIComponent("" + answer3) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateAccount(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateAccount(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processCreateAccount(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -5297,6 +5459,128 @@ export class Client {
             }));
         }
         return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appId (optional) 
+     * @return OK
+     */
+    loadApplicantName(appId: number | undefined): Observable<IndividualDetailsListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/load-applicant-name?";
+        if (appId === null)
+            throw new Error("The parameter 'appId' cannot be null.");
+        else if (appId !== undefined)
+            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processLoadApplicantName(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processLoadApplicantName(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<IndividualDetailsListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<IndividualDetailsListBaseResponse>;
+        }));
+    }
+
+    protected processLoadApplicantName(response: HttpResponseBase): Observable<IndividualDetailsListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = IndividualDetailsListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<IndividualDetailsListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param appId (optional) 
+     * @param aINumber (optional) 
+     * @param applicationStatus (optional) 
+     * @return OK
+     */
+    loadControlledFunction(appId: number | undefined, aINumber: string | undefined, applicationStatus: number | undefined): Observable<LoadControlledFunctionResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/AIApplications/load-controlled-function?";
+        if (appId === null)
+            throw new Error("The parameter 'appId' cannot be null.");
+        else if (appId !== undefined)
+            url_ += "appId=" + encodeURIComponent("" + appId) + "&";
+        if (aINumber === null)
+            throw new Error("The parameter 'aINumber' cannot be null.");
+        else if (aINumber !== undefined)
+            url_ += "AINumber=" + encodeURIComponent("" + aINumber) + "&";
+        if (applicationStatus === null)
+            throw new Error("The parameter 'applicationStatus' cannot be null.");
+        else if (applicationStatus !== undefined)
+            url_ += "applicationStatus=" + encodeURIComponent("" + applicationStatus) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processLoadControlledFunction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processLoadControlledFunction(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LoadControlledFunctionResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LoadControlledFunctionResultBaseResponse>;
+        }));
+    }
+
+    protected processLoadControlledFunction(response: HttpResponseBase): Observable<LoadControlledFunctionResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LoadControlledFunctionResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<LoadControlledFunctionResultBaseResponse>(null as any);
     }
 
     /**
@@ -25362,6 +25646,62 @@ export interface IIndividualDetailsDtoListBaseResponse {
     response?: IndividualDetailsDto[] | undefined;
 }
 
+export class IndividualDetailsListBaseResponse implements IIndividualDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetails[] | undefined;
+
+    constructor(data?: IIndividualDetailsListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(IndividualDetails.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): IndividualDetailsListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IndividualDetailsListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IIndividualDetailsListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: IndividualDetails[] | undefined;
+}
+
 export class InsertFirmNoticeRequest implements IInsertFirmNoticeRequest {
     dsFirmNotice?: DataSet;
     objNotice?: WNoticeDto;
@@ -25652,6 +25992,106 @@ export interface IInt32StringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class LoadControlledFunctionResult implements ILoadControlledFunctionResult {
+    familyName?: string | undefined;
+    otherName?: string | undefined;
+    controledFunctions?: ControledFunction[] | undefined;
+
+    constructor(data?: ILoadControlledFunctionResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.familyName = _data["familyName"];
+            this.otherName = _data["otherName"];
+            if (Array.isArray(_data["controledFunctions"])) {
+                this.controledFunctions = [] as any;
+                for (let item of _data["controledFunctions"])
+                    this.controledFunctions!.push(ControledFunction.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): LoadControlledFunctionResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoadControlledFunctionResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["familyName"] = this.familyName;
+        data["otherName"] = this.otherName;
+        if (Array.isArray(this.controledFunctions)) {
+            data["controledFunctions"] = [];
+            for (let item of this.controledFunctions)
+                data["controledFunctions"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ILoadControlledFunctionResult {
+    familyName?: string | undefined;
+    otherName?: string | undefined;
+    controledFunctions?: ControledFunction[] | undefined;
+}
+
+export class LoadControlledFunctionResultBaseResponse implements ILoadControlledFunctionResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: LoadControlledFunctionResult;
+
+    constructor(data?: ILoadControlledFunctionResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? LoadControlledFunctionResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): LoadControlledFunctionResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoadControlledFunctionResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ILoadControlledFunctionResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: LoadControlledFunctionResult;
 }
 
 export class LoadRptSchDetailsDto implements ILoadRptSchDetailsDto {
@@ -29590,6 +30030,134 @@ export interface ISubmitGenSubResultBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: SubmitGenSubResult;
+}
+
+export class SubmitRegisterResponse implements ISubmitRegisterResponse {
+    errorMessage?: string | undefined;
+    userName?: string | undefined;
+    wAccessRequestID?: number | undefined;
+    questionAnswers1?: UserQuestionAnswers[] | undefined;
+    questionAnswers2?: UserQuestionAnswers[] | undefined;
+    questionAnswers3?: UserQuestionAnswers[] | undefined;
+
+    constructor(data?: ISubmitRegisterResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.errorMessage = _data["errorMessage"];
+            this.userName = _data["userName"];
+            this.wAccessRequestID = _data["wAccessRequestID"];
+            if (Array.isArray(_data["questionAnswers1"])) {
+                this.questionAnswers1 = [] as any;
+                for (let item of _data["questionAnswers1"])
+                    this.questionAnswers1!.push(UserQuestionAnswers.fromJS(item));
+            }
+            if (Array.isArray(_data["questionAnswers2"])) {
+                this.questionAnswers2 = [] as any;
+                for (let item of _data["questionAnswers2"])
+                    this.questionAnswers2!.push(UserQuestionAnswers.fromJS(item));
+            }
+            if (Array.isArray(_data["questionAnswers3"])) {
+                this.questionAnswers3 = [] as any;
+                for (let item of _data["questionAnswers3"])
+                    this.questionAnswers3!.push(UserQuestionAnswers.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SubmitRegisterResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitRegisterResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["errorMessage"] = this.errorMessage;
+        data["userName"] = this.userName;
+        data["wAccessRequestID"] = this.wAccessRequestID;
+        if (Array.isArray(this.questionAnswers1)) {
+            data["questionAnswers1"] = [];
+            for (let item of this.questionAnswers1)
+                data["questionAnswers1"].push(item.toJSON());
+        }
+        if (Array.isArray(this.questionAnswers2)) {
+            data["questionAnswers2"] = [];
+            for (let item of this.questionAnswers2)
+                data["questionAnswers2"].push(item.toJSON());
+        }
+        if (Array.isArray(this.questionAnswers3)) {
+            data["questionAnswers3"] = [];
+            for (let item of this.questionAnswers3)
+                data["questionAnswers3"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISubmitRegisterResponse {
+    errorMessage?: string | undefined;
+    userName?: string | undefined;
+    wAccessRequestID?: number | undefined;
+    questionAnswers1?: UserQuestionAnswers[] | undefined;
+    questionAnswers2?: UserQuestionAnswers[] | undefined;
+    questionAnswers3?: UserQuestionAnswers[] | undefined;
+}
+
+export class SubmitRegisterResponseBaseResponse implements ISubmitRegisterResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitRegisterResponse;
+
+    constructor(data?: ISubmitRegisterResponseBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SubmitRegisterResponse.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SubmitRegisterResponseBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitRegisterResponseBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISubmitRegisterResponseBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitRegisterResponse;
 }
 
 export class SwalResult implements ISwalResult {

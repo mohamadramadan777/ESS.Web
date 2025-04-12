@@ -598,6 +598,7 @@ export class ApprovalComponent {
 
       // Call the API
       //TODO: Fix this call
+      this.loadingService.show();
       const response = await lastValueFrom(
         this.client.isDuplicateApplication(
           qfcNumber,
@@ -607,6 +608,7 @@ export class ApprovalComponent {
           windApplicationID
         )
       );
+      this.loadingService.hide();
       if (response === null || response === undefined) {
         throw new Error('Error fetching message server error ');
       }

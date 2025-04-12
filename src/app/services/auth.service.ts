@@ -48,7 +48,7 @@ export class AuthService {
           localStorage.setItem(this.AppConstants.Session.SESSION_EMAIL_ID, response.response.userInfo?.individualEmailAddress?.toString() ?? ""); 
   
           if (!response.response?.bIsRegistered) {
-            localStorage.setItem(this.AppConstants.Session.SESSION_REG_PASS, response.response.userInfo?.registrationPassword?.toString() ?? ""); 
+            localStorage.setItem(this.AppConstants.Session.SESSION_REG_PASS, credentials.userPassword ?? ""); 
             console.log('Not Registered');
             this.router.navigate(['/register']);
             return "success";

@@ -65,6 +65,10 @@ import { DatePipe } from '@angular/common';
 import { WarningsComponent } from './components/reports/warnings/warnings.component';
 import { ReportUploadComponent } from './components/reports/report-upload/report-upload.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { CustomDateAdapter } from './services/custom-date-adapter';
+import { CUSTOM_DATE_FORMATS } from './constants/app.constants';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -133,7 +137,18 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
       progressBar: true,
     }),
   ],
-  providers: [provideAnimationsAsync(),DatePipe, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }, Client, { provide: API_BASE_URL, useValue: environment.apiBaseUrl }, LoadingService, MatDatepickerModule],
+  providers: [
+    provideAnimationsAsync(),
+    DatePipe,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    Client,
+    { provide: API_BASE_URL, useValue: environment.apiBaseUrl },
+    LoadingService,
+    MatDatepickerModule,
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB'  }, // Optional: ensures dd/MM/yyyy base behavior
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })

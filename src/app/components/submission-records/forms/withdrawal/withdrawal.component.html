@@ -24,10 +24,16 @@
                         (selectionChange)="onApplicantChange()"
                       >
                         <mat-option *ngFor="let applicant of applicantNames" [value]="applicant">
-                          {{ applicant.name }}
+                          {{ applicant.fullName }}
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
+                    <div
+                    *ngIf="validationErrors['applicantName']"
+                    class="error-message"
+                  >
+                    {{ validationErrors["applicantName"] }}
+                  </div>
                   </td>
                 </tr>
                 <tr>
@@ -42,13 +48,14 @@
                     <table class="controlled-functions-table">
                       <tbody>
                         <tr *ngFor="let function of controlledFunctions; let i = index">
-                          <td>{{ function.name }}</td>
+                          <td>{{ function.functionTypeDesc }}</td>
                           <td>
-                            <mat-checkbox [(ngModel)]="function.isWithdrawn" (change)="onWithdrawChange(i)">
-                              Withdraw
+                            <mat-checkbox [(ngModel)]="function.updateWobjectStatus" (change)="onWithdrawChange(i)">
+                              {{ function.withdrawActionTypeDesc }}
                             </mat-checkbox>
-                            <div class="approved-date">
-                              (Approved on {{ function.approvedDate }})
+                            <div class="approved-date" *ngIf="(function.functionStatusID == FunctionStatusType.Approved || function.functionStatusID == FunctionStatusType.AppliedForWithdrawn
+                            || function.functionStatusID == FunctionStatusType.APPROVED_INACTIVE || function.functionStatusID == FunctionStatusType.APPROVED_FIRM_INLIQUIDATION) && function.functionStatusDate != '' && function.functionStatusDate != null">
+                              (Approved on {{ function.functionStatusDate }})
                             </div>
                           </td>
                         </tr>
@@ -64,11 +71,11 @@
         <!-- Attachments Tab -->
         <mat-tab label="Attachments">
           <div class="tab-content">
-            <app-file-uploader  *ngIf="WithdrawalObjectID && WithdrawalID"
+            <app-file-uploader 
               [ShowHeaderPanel]="true"
               [ShowHeaderFormName]="true"
-              [ObjectID]="this.WithdrawalObjectID"
-              [ObjectInstanceID]="this.WithdrawalID"
+              [ObjectID]="this.AttObjectID"
+              [ObjectInstanceID]="this.ApplicationID"
               [ObjectInstanceRevNum]="1"
               [DocTypeID]="this.data.DocTypeId"
               [FormTypeID]="this.data.WIndFromTypeID"
@@ -76,7 +83,6 @@
               [DocSignText]="this.DocSignText"
               [ReportFormName]="data.Form"
               (fileUploaded)="onFileUploaded($event)"
-              (ObjectInstanceIDChange)="onObjectInstanceIDChange($event)"
               (beforeUpload)="beforeFileUploaded()"
             ></app-file-uploader>
           </div>
