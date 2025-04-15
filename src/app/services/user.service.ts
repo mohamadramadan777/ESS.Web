@@ -29,19 +29,23 @@ export class UserService {
     // Mocking an HTTP call
     const users: User[] = [
       { emailAddress: 'user1@example.com', 
-        userName: 'User One', roles: ['Admin'], serviceRequestId: '12345',
-         note: 'Note 1', wUserId: 1, wAccessRequestId: 'req1',
-          qfcNumber: 'QFC1', firmName: 'Firm One',
-          individualName: 'Individual One', individualEmailAddress: 'ind1@example.com',
-          isRegistered: true, isActive: true, createdDate: new Date(), updatedDate: new Date(),
-          createdBy: 'Admin', updatedBy: 'Admin', modifiedDate: new Date() },
+      userName: 'User One', roles: ['Admin'], serviceRequestId: '12345',
+       note: 'Note 1', wUserId: 1, wAccessRequestId: 'req1',
+        qfcNumber: 'QFC1', firmName: 'Firm One',
+        individualName: 'Individual One', individualEmailAddress: 'ind1@example.com',
+        isRegistered: true, isActive: true, createdDate: new Date(), updatedDate: new Date(),
+        createdBy: 'Admin', updatedBy: 'Admin', modifiedDate: new Date(),
+        isAccountLocked: false, isUserAccessAuthorised: true, 
+        firmTypeDesc: 'Type One', firmTypeId: 1, roleIds: [], activeRoleIds: [], roleDescription: '' },
       { emailAddress: 'user2@example.com', userName: 'User Two', 
-        roles: ['User'], serviceRequestId: '67890', note: 'Note 2',
-         wUserId: 2, wAccessRequestId: 'req2', qfcNumber: 'QFC2', 
-         firmName: 'Firm Two', individualName: 'Individual Two', 
-         individualEmailAddress: 'ind2@example.com', isRegistered: true, 
-         isActive: true, createdDate: new Date(), updatedDate: new Date(),
-         createdBy: 'Admin', updatedBy: 'Admin', modifiedDate: new Date() }
+      roles: ['User'], serviceRequestId: '67890', note: 'Note 2',
+       wUserId: 2, wAccessRequestId: 'req2', qfcNumber: 'QFC2', 
+       firmName: 'Firm Two', individualName: 'Individual Two', 
+       individualEmailAddress: 'ind2@example.com', isRegistered: true, 
+       isActive: true, createdDate: new Date(), updatedDate: new Date(),
+       createdBy: 'Admin', updatedBy: 'Admin', modifiedDate: new Date(),
+       isAccountLocked: false, isUserAccessAuthorised: true, firmTypeId: 2, 
+       firmTypeDesc: 'Type Two', roleIds: [], activeRoleIds: [], roleDescription: '' }
     ];
     return of(users);
   }

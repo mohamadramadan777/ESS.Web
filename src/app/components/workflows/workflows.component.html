@@ -1,37 +1,59 @@
 <app-header></app-header>
-<app-navbar [selectedPage]="''"></app-navbar>
+<app-navbar [selectedPage]="'workflows'"></app-navbar>
 
 <div class="workflows">
   
-  
-  
   <h1>Workflows</h1>
  
- 
-  <div class="table-container">
+</div><div class="search-form">
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+    <input formControlName="qfcNumber" placeholder="QFC Number">
+    <input formControlName="objectTypeDesc" placeholder="Object Type">
+    <input formControlName="objectDetails" placeholder="Object Details">
+    <label for="workflowStatusDesc">Workflow Status</label>
+    <select id="workflowStatusDesc" formControlName="workflowStatusDesc">
+      <option value="">All</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+    <button type="submit">Search</button>
+    <button type="button" (click)="onReset()">Reset</button>
+  </form>
+</div>
+
+<div class="table-container">
   <table mat-table [dataSource]="workflows" class="mat-elevation-z8">
-    <ng-container matColumnDef="QFCNumber">
+    <ng-container matColumnDef="qfcNumber">
       <th mat-header-cell *matHeaderCellDef> QFC Number </th>
-      <td mat-cell *matCellDef="let element"> {{element.QFCNumber}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.qfcNumber}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="ObjectTypeDesc">
+    <ng-container matColumnDef="objectTypeDesc">
       <th mat-header-cell *matHeaderCellDef> Object Type </th>
-      <td mat-cell *matCellDef="let element"> {{element.ObjectTypeDesc}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.objectTypeDesc}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="ObjectDetails">
+    <ng-container matColumnDef="objectDetails">
       <th mat-header-cell *matHeaderCellDef> Object Details </th>
-      <td mat-cell *matCellDef="let element"> {{element.ObjectDetails}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.objectDetails}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="WObjectWorkFlowStatusDesc">
+    <ng-container matColumnDef="workflowStatusDesc">
       <th mat-header-cell *matHeaderCellDef> Workflow Status </th>
-      <td mat-cell *matCellDef="let element"> {{element.WObjectWorkFlowStatusDesc}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.workflowStatusDesc}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="unlockWorkflow(element.WObjectID)">Unlock</button>
+        <button (click)="editWorkflow(element.WObjectID)">Edit</button>
+        <button (click)="deleteWorkflow(element.WObjectID)">Delete</button>
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
 </div>
-</div>
+<mat-paginator [length]="totalItems" [pageSize]="pageSize" (page)="onPageChange($event)"></mat-paginator>

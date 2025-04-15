@@ -57,3 +57,40 @@ export interface PaginatedResponse<T> {
   pageSize: number;
   totalItems: number;
 }
+
+export interface Project {
+  projectId: number;
+  projectName: string;
+  projectDescription: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+}
+
+export interface User {
+  wUserId: number;
+  wAccessRequestId: string;
+  qfcNumber: string;
+  firmName: string;
+  individualName: string;
+  individualEmailAddress: string;
+  isRegistered: boolean;
+  isActive: boolean;
+  isAccountLocked: boolean;
+  isUserAccessAuthorised: boolean;
+  firmTypeId: number;
+  firmTypeDesc: string;
+  roleIds: number[];
+  activeRoleIds: number[];
+  roleDescription: string;
+  emailAddress: string;
+  userName: string;
+  roles: string[];
+  serviceRequestId: string;
+  note: string;
+  createdDate: Date;
+  updatedDate: Date;
+  createdBy: string;
+  updatedBy: string;
+  modifiedDate: Date;
+}

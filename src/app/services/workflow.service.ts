@@ -2,21 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Workflow } from '../models/workflow.model';
+import { WorkflowResponse } from './project-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkflowService {
-  private apiUrl = 'https://api.example.com/workflows'; // Replace with your API URL
-
+  private apiUrl = 'https://apicom/workflows'; 
+ 
   constructor(private http: HttpClient) { }
 
-  getWorkflows(params: any): Observable<Workflow[]> {
-    // Replace with actual HTTP request
-    return this.http.get<Workflow[]>(this.apiUrl, { params });
+  getWorkflows(params: any): Observable<{ workflows: Workflow[], totalItems: number }> {
+    return this.http.get<{ workflows: Workflow[], totalItems: number }>(`${this.apiUrl}/workflows`, { params });
   }
 
-  getMockWorkflows(): Observable<Workflow[]> {
+  getMockWorkflows(): Observable<WorkflowResponse> {
     const mockWorkflows: Workflow[] = [
       {
         WObjectID: 1,
@@ -35,56 +35,43 @@ export class WorkflowService {
         WObjectWorkFlowStatusDesc: 'Status 2'
       }
     ];
-    return of(mockWorkflows);
+    return of({ items: mockWorkflows, totalItems: mockWorkflows.length });
   }
-}import { Component, OnInit } from '@angular/core';
-import { WorkflowService } from 'src/app/services/workflow.service';
-import { Workflow } from 'src/app/models/workflow.model';
-
-@Component({
-  selector: 'app-workflow',
-  templateUrl: './workflow.component.html',
-  styleUrls: ['./workflow.component.css']
-})
-export class WorkflowComponent implements OnInit {
-  workflows: Workflow[] = [];
-  displayedColumns: string[] = ['QFCNumber', 'ObjectTypeDesc', 'ObjectDetails', 'WObjectWorkFlowStatusDesc'];
-
-  constructor(private workflowService: WorkflowService) { }
-
-  ngOnInit(): void {
-    this.loadWorkflows();
+  unlockWorkflow(workflowId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${workflowId}/unlock`, {});
   }
-
-  loadWorkflows(): void {
-    this.workflowService.getMockWorkflows().subscribe(data => {
-      this.workflows = data;
-    });
+  deleteWorkflow(workflowId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${workflowId}`);
   }
+  getWorkflowsAll(params: any): Observable<{ workflows: Workflow[], totalItems: number }> {
+    return this.http.get<{ workflows: Workflow[], totalItems: number }>(`${this.apiUrl}/workflows`, { params });
+  }
+  createWorkflow(workflow: Workflow): Observable<Workflow> {
+    return this.http.post<Workflow>(this.apiUrl, workflow);
+  }
+  updateWorkflow(workflow: Workflow): Observable<Workflow> {
+    return this.http.put<Workflow>(`${this.apiUrl}/${workflow.WObjectID}`, workflow);
+  }
+  getWorkflowById(workflowId: number): Observable<Workflow> {
+    return this.http.get<Workflow>(`${this.apiUrl}/${workflowId}`);
+  }
+  getWorkflowTypes(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/types`);
+  }
+  getWorkflowStatuses(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/statuses`);
+  }
+  getWorkflowTasks(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/tasks`);
+  }
+  getWorkflowSignatories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/signatories`);
+  }
+  getWorkflowSignatoryRoles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/signatory-roles`);
+  }
+  getWorkflowSignatoryEmails(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/signatory-emails`);
+  }
+  
 }
-```
-<!-- filepath: src/app/components/workflow/workflow.component.html -->
-<table mat-table [dataSource]="workflows" class="mat-elevation-z8">
-  <ng-container matColumnDef="QFCNumber">
-    <th mat-header-cell *matHeaderCellDef> QFC Number </th>
-    <td mat-cell *matCellDef="let element"> {{element.QFCNumber}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="ObjectTypeDesc">
-    <th mat-header-cell *matHeaderCellDef> Object Type </th>
-    <td mat-cell *matCellDef="let element"> {{element.ObjectTypeDesc}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="ObjectDetails">
-    <th mat-header-cell *matHeaderCellDef> Object Details </th>
-    <td mat-cell *matCellDef="let element"> {{element.ObjectDetails}} </td>
-  </ng-container>
-
-  <ng-container matColumnDef="WObjectWorkFlowStatusDesc">
-    <th mat-header-cell *matHeaderCellDef> Workflow Status </th>
-    <td mat-cell *matCellDef="let element"> {{element.WObjectWorkFlowStatusDesc}} </td>
-  </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>

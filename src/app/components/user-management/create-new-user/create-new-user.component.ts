@@ -9,25 +9,32 @@ import { User } from '../../../models/user.model';
   styleUrls: ['./create-new-user.component.scss']
 })
 export class CreateNewUserComponent {
-  user: User = { 
-    emailAddress: '', 
-    userName: '', 
-    roles: [], 
-    serviceRequestId: '', 
-    note: '', 
-    wUserId: 0, 
-    wAccessRequestId: '0', 
-    qfcNumber: '', 
-    firmName: '',
-    individualName: '',
-    individualEmailAddress: '',
-    isRegistered: false,
-    isActive: false,
+  user: User = {
+    emailAddress: 'mockemail@example.com',
+    userName: 'mockuser',
+    roles: ['Admin'],
+    serviceRequestId: '12345',
+    note: 'This is a mock user',
+    wUserId: 1,
+    wAccessRequestId: '1',
+    qfcNumber: 'QFC123',
+    firmName: 'Mock Firm',
+    individualName: 'Mock Individual',
+    individualEmailAddress: 'mockindividual@example.com',
+    isRegistered: true,
+    isActive: true,
     createdDate: new Date(),
     modifiedDate: new Date(),
-    updatedDate: new Date(),
-    createdBy: '',
-    updatedBy: ''
+    createdBy: 'admin',
+    updatedBy: 'admin',
+    isAccountLocked: false,
+    isUserAccessAuthorised: true,
+    firmTypeId: 1,
+    firmTypeDesc: 'Mock Firm Type',
+    roleIds: [1],
+    activeRoleIds: [1],
+    roleDescription: 'Mock Role Description',
+    updatedDate: new Date() // Add this missing property
   };
   roles: string[] = ['Admin', 'User', 'Manager'];
   errorMessage: string = '';
@@ -53,19 +60,19 @@ export class CreateNewUserComponent {
   }
 
   isDataFilledIn(): boolean {
-    return this.user.emailAddress !== '' && this.user.userName !== '' && this.user.roles.length > 0 && this.user.serviceRequestId !== '';
+    return this.user.emailAddress !== '' && this.user.userName !== '' && this.user.roles.length > 0;
   }
 
   clearAllFields() {
-    this.user = { 
-      emailAddress: '', 
-      userName: '', 
-      roles: [], 
-      serviceRequestId: '', 
-      note: '', 
-      wUserId: 0, 
-      wAccessRequestId: '0', 
-      qfcNumber: '', 
+    this.user = {
+      emailAddress: '',
+      userName: '',
+      roles: [],
+      serviceRequestId: '',
+      note: '',
+      wUserId: 0,
+      wAccessRequestId: '0',
+      qfcNumber: '',
       firmName: '',
       individualName: '',
       individualEmailAddress: '',
@@ -73,9 +80,16 @@ export class CreateNewUserComponent {
       isActive: false,
       createdDate: new Date(),
       modifiedDate: new Date(),
-      updatedDate: new Date(),
       createdBy: '',
-      updatedBy: ''
+      updatedBy: '',
+      isAccountLocked: false,
+      isUserAccessAuthorised: false,
+      firmTypeId: 0,
+      firmTypeDesc: '',
+      roleIds: [],
+      activeRoleIds: [],
+      roleDescription: '',
+      updatedDate: new Date() // Add this missing property
     };
   }
 }

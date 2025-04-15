@@ -6,8 +6,8 @@ import { Component, Input, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent {
-  @Input() selectedPage: string = ''; // Default active page
-
+  @Input() selectedPage: string = 'admin-home'; 
+  
   @Output() itemSelected = new EventEmitter<string>();
 
   setActivePage(page: string): void {
@@ -51,7 +51,7 @@ export class NavbarComponent {
       name: 'Workflows',
       value: 'workflows',
       submenus: [
-        { name: 'Create New Workflow', route: '/create-new-workflow', isCurrent: false },
+        { name: 'Create-New-Workflow', route: '/create-new-workflow', isCurrent: false },
         { name: 'Workflows', route: '/workflows', isCurrent: false }
       ],
       isCurrent: false,

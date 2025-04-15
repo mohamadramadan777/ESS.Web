@@ -29,12 +29,10 @@ import { CreateNewAiApplicationComponent } from './components/ai-applications/cr
 const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'Register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
+   { path: 'login', component: LoginComponent },
   { path: 'Login', redirectTo: 'login' },
   { path: 'home', component: HomeComponent },
-  { path: 'Home', component: HomeComponent },
-  { path: 'Reports', component: ReportsComponent },
+   { path: 'Reports', component: ReportsComponent },
   { path: 'reports', component: ReportsComponent },
   { path: 'Notices', component: NoticesComponent },
   { path: 'notices', component: NoticesComponent },
@@ -68,8 +66,7 @@ const routes: Routes = [
   { path: 'manage-firms', component: ManageFirmsComponent },
   { path: 'manage-configuration', component: ManageConfigurationComponent },
   { path: 'admin-reports', component: AdminReportsComponent },
-  // Add other routes here
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home' }
 ];
 

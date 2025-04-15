@@ -19,7 +19,7 @@
     <input type="text" id="serviceRequestId" [(ngModel)]="user.serviceRequestId" name="serviceRequestId">
     <label for="note">Additional Note:</label>
     <textarea id="note" [(ngModel)]="user.note" name="note"></textarea>
-    <button (click)="createUser()">Create User</button>
+    <button type="button" (click)="createUser()">Create User</button>
     <p *ngIf="errorMessage">{{ errorMessage }}</p>
     <p *ngIf="successMessage">{{ successMessage }}</p>
   </form>
