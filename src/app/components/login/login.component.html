@@ -10,7 +10,8 @@
                 </h2>
                 <h4 id="instruction"></h4>
                 <form [formGroup]="loginForm" (ngSubmit)="login()">
-                    <mat-radio-group formControlName="idType" class="radio-group" (change)="onIdTypeChange($event.value)" hidden>
+                    <mat-radio-group formControlName="idType" class="radio-group"
+                        (change)="onIdTypeChange($event.value)" hidden>
                         <mat-radio-button value="qfc">QFC Number</mat-radio-button>
                         <mat-radio-button value="rf">RF Number</mat-radio-button>
                     </mat-radio-group>
@@ -37,20 +38,26 @@
 
                     <p class="label">Registered Email <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <input matInput formControlName="email" placeholder="Enter your email" (keydown.enter)="login()"/>
+                        <input matInput formControlName="email" placeholder="Enter your email"
+                            (keydown.enter)="login()" />
                         <mat-error *ngIf="loginForm.get('email')?.invalid">Valid email is required</mat-error>
                     </mat-form-field>
 
                     <p class="label">Password <span class="asterisk">*</span></p>
                     <mat-form-field appearance="outline" class="form-field">
-                        <input matInput type="password" formControlName="password" placeholder="Enter your password" (keydown.enter)="login()" />
+                        <input matInput type="password" formControlName="password" placeholder="Enter your password"
+                            (keydown.enter)="login()" />
                         <mat-error *ngIf="loginForm.get('password')?.invalid">Password is required</mat-error>
                     </mat-form-field>
 
-                    <div class="g-recaptcha" data-sitekey="Your_Site_Key_Here"></div>
+                    <!-- <div class="g-recaptcha" data-sitekey="Your_Site_Key_Here"></div> -->
+
+                    <div class="h-captcha" data-sitekey="1e587e86-fdf4-4872-9cc4-eebc536ebf2a"></div>
 
                     <div class="terms-container">
-                        <mat-checkbox formControlName="termsAgreed">I Agree to the <a href="assets/files/QFCRA_Electronic_Submission_System_Terms_Of_Use.pdf" target="_blank" rel="noopener noreferrer" class="help-text">terms of use</a></mat-checkbox>
+                        <mat-checkbox formControlName="termsAgreed">I Agree to the <a
+                                href="assets/files/QFCRA_Electronic_Submission_System_Terms_Of_Use.pdf" target="_blank"
+                                rel="noopener noreferrer" class="help-text">terms of use</a></mat-checkbox>
                         <a routerLink="/forgotpassword" class="forget-pass-link">Forgot Password?</a>
                     </div>
 
@@ -62,7 +69,8 @@
                     <div class="contact-us-divider">
                         <a routerLink="/contactus" class="contact-us-text">Contact us</a>
                         <div class="divider"></div>
-                        <a href="assets/files/QFCRA_Electronic_Submission_System_User_Guide.pdf" target="_blank" rel="noopener noreferrer" class="help-text">Help</a>
+                        <a href="assets/files/QFCRA_Electronic_Submission_System_User_Guide.pdf" target="_blank"
+                            rel="noopener noreferrer" class="help-text">Help</a>
                     </div>
                 </form>
             </div>
@@ -74,15 +82,18 @@
                     <img src="assets/images/Paper.png" alt="Document Icon" class="document-icon" />
                     <h3 class="system-users-title">System Users:</h3>
                     <p class="system-users-description">
-                        This system is meant to be used by individuals from firms which are authorized to engage in regulated
-                        activities licensed by the QFC Regulatory Authority of a Designated Non-Financial Business or Professional
+                        This system is meant to be used by individuals from firms which are authorized to engage in
+                        regulated
+                        activities licensed by the QFC Regulatory Authority of a Designated Non-Financial Business or
+                        Professional
                         (DNFBP).
                     </p>
                 </div>
                 <hr />
                 <div class="compatibility-section">
                     <p>
-                        This website works best with Internet Explorer 11, Microsoft Edge 13 and above, Firefox 47 and above, or
+                        This website works best with Internet Explorer 11, Microsoft Edge 13 and above, Firefox 47 and
+                        above, or
                         Google Chrome 57 and above.
                     </p>
                 </div>
@@ -92,18 +103,20 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
                             <path
                                 d="M12.4169 7.27034C15.1175 7.50289 16.2203 8.89071 16.2203 11.9289V12.0264C16.2203 15.3797 14.8775 16.7225 11.5242 16.7225H6.64054C3.28727 16.7225 1.94446 15.3797 1.94446 12.0264V11.9289C1.94446 8.91322 3.03221 7.5254 5.68782 7.27784"
-                                stroke="#A51E36" stroke-width="1.03085" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M9.08594 2.09395V11.7562" stroke="#A51E36" stroke-width="1.03085" stroke-linecap="round"
+                                stroke="#A51E36" stroke-width="1.03085" stroke-linecap="round"
                                 stroke-linejoin="round" />
-                            <path d="M11.5994 10.0834L9.08632 12.5964L6.57324 10.0834" stroke="#A51E36" stroke-width="1.03085"
+                            <path d="M9.08594 2.09395V11.7562" stroke="#A51E36" stroke-width="1.03085"
                                 stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M11.5994 10.0834L9.08632 12.5964L6.57324 10.0834" stroke="#A51E36"
+                                stroke-width="1.03085" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         &nbsp;
                         <span class="download-text">Download file</span>
                     </a>
                     <a href="#" class="download-link">
                         You can find QFC Regulatory Authority forms &nbsp;
-                        <a href="https://qfcra-en.thomsonreuters.com/rulebook/qfc-forms" target="_blank" class="download-text">Here</a>
+                        <a href="https://qfcra-en.thomsonreuters.com/rulebook/qfc-forms" target="_blank"
+                            class="download-text">Here</a>
                     </a>
                 </div>
             </div>
