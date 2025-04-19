@@ -25,31 +25,63 @@ export const theme = themeAlpine.withParams(
     },
     'dark-red'
   );
-  export const rowClassRules = {
-    'response-required-row': (params: any) => params.data?.wResponseRequired === true,
-  };
-  
+export const rowClassRules = {
+  'response-required-row': (params: any) => params.data?.wResponseRequired === true,
+};
+
 export const paginationPageSizeSelector = [10, 25, 50];
 
 
 export const colDef = [
-  { headerName: 'Notice Type', field: 'wNoticeTypeDesc', flex: 1, minWidth: 190, maxWidth: 190, },
-  { headerName: 'Sent Date', field: 'wNotificationSentDate', flex: 1, minWidth: 120, maxWidth: 120 },
-  { headerName: 'Notice Ref. Number', field: 'wReferenceNumber', flex: 1, minWidth: 185, maxWidth: 185 },
   {
-    headerName: 'Subject', field: 'wSubject', flex: 2, minWidth: 450, cellRenderer: (params: any) => {
+    headerName: 'Notice Type', field: 'wNoticeTypeDesc', flex: 1, minWidth: 190, maxWidth: 190, cellRenderer: (params: any) => {
       const responseRequired = (params.data?.wResponseRequired && !(params.data?.wsosStatusTypeID == SignOffStatusType.Submitted));
       const iconHtml = responseRequired
         ? ` <button class="btn-icon btn-revoke" title="Response required"><span class="material-icons">warning</span></button> `
         : '';
-      const htmlTag = responseRequired ? 'b' : 'span';  
+      const htmlTag = responseRequired ? 'b' : 'span';
       return `<div class="notice-type-cell">
-              ${iconHtml}
+            ${iconHtml}
+            <${htmlTag}>${params.value || ''}</${htmlTag}>
+          </div>`;
+    },
+  },
+  {
+    headerName: 'Sent Date', field: 'wNotificationSentDate', flex: 1, minWidth: 120, maxWidth: 120, cellRenderer: (params: any) => {
+      const responseRequired = (params.data?.wResponseRequired && !(params.data?.wsosStatusTypeID == SignOffStatusType.Submitted));
+      const htmlTag = responseRequired ? 'b' : 'span';
+      return `<div class="notice-type-cell">
+            <${htmlTag}>${params.value || ''}</${htmlTag}>
+          </div>`;
+    },
+  },
+  {
+    headerName: 'Notice Ref. Number', field: 'wReferenceNumber', flex: 1, minWidth: 185, maxWidth: 185, cellRenderer: (params: any) => {
+      const responseRequired = (params.data?.wResponseRequired && !(params.data?.wsosStatusTypeID == SignOffStatusType.Submitted));
+      const htmlTag = responseRequired ? 'b' : 'span';
+      return `<div class="notice-type-cell">
+            <${htmlTag}>${params.value || ''}</${htmlTag}>
+          </div>`;
+    },
+  },
+  {
+    headerName: 'Subject', field: 'wSubject', flex: 2, minWidth: 450, cellRenderer: (params: any) => {
+      const responseRequired = (params.data?.wResponseRequired && !(params.data?.wsosStatusTypeID == SignOffStatusType.Submitted));
+      const htmlTag = responseRequired ? 'b' : 'span';
+      return `<div class="notice-type-cell">
               <${htmlTag}>${params.value || ''}</${htmlTag}>
             </div>`;
     },
   },
-  { headerName: 'Due Date', field: 'responseDueDate', flex: 1, minWidth: 120, maxWidth: 120 },
+  {
+    headerName: 'Due Date', field: 'responseDueDate', flex: 1, minWidth: 120, maxWidth: 120, cellRenderer: (params: any) => {
+      const responseRequired = (params.data?.wResponseRequired && !(params.data?.wsosStatusTypeID == SignOffStatusType.Submitted));
+      const htmlTag = responseRequired ? 'b' : 'span';
+      return `<div class="notice-type-cell">
+            <${htmlTag}>${params.value || ''}</${htmlTag}>
+          </div>`;
+    },
+  },
   { headerName: 'Signed By', field: 'responseSignedBy', flex: 1, minWidth: 150, maxWidth: 150 },
   { headerName: 'Sign Date', field: 'responseProvidedDate', flex: 1, minWidth: 120, maxWidth: 120 },
 ];

@@ -100,9 +100,10 @@
       <!-- Attachments Tab -->
       <mat-tab *ngIf="this.responseRequired" label="Attachments">
         <div class="tab-content">
-          <app-file-uploader [ShowHeaderPanel]="true" [ShowHeaderFormName]="false" [ObjectID]="123"
-            [ObjectInstanceID]="456" [ObjectInstanceRevNum]="1" [DocTypeID]="789" [FormTypeID]="101112"
-            [ShowPrimaryDoc]="true" (fileUploaded)="onFileUploaded($event)"
+          <app-file-uploader [ShowHeaderPanel]="false" [ShowHeaderFormName]="false" [ObjectID]="this.FirmNoticeResponseObjectID"
+            [ObjectInstanceID]="this.wFirmNoticeID" [ObjectInstanceRevNum]="1" [DocTypeID]="this.NoticeResponseFormTypeID" 
+            [FormTypeID]="this.NoticeResponseFormTypeID"
+            [ShowPrimaryDoc]="false" (fileUploaded)="onFileUploaded($event)"
             (beforeUpload)="beforeFileUploaded()"></app-file-uploader>
         </div>
       </mat-tab>

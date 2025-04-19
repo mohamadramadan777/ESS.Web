@@ -1,8 +1,8 @@
 import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { WObjects, SignOffStatusType } from '../../../enums/app.enums';
+import { WObjects, SignOffStatusType, FormType } from '../../../enums/app.enums';
 import { AppConstants } from '../../../constants/app.constants';
-import { Client, AttachmentDto, WNoticeQuestionnaireItemDto, ObjectSOTaskStatus } from '../../../services/api-client';
+import { Client, AttachmentDto, WNoticeQuestionnaireItemDto, ObjectSOTaskStatus, FirmNoticeDataDto, WFirmNoticesDto } from '../../../services/api-client';
 import { LoadingService } from '../../../services/loader.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +18,7 @@ import { FileUploaderComponent } from '../../file-uploader/file-uploader.compone
 })
 export class ViewNoticeComponent {
   @ViewChild(MatTabGroup, { static: true }) tabGroup!: MatTabGroup;
-    @ViewChild(FileUploaderComponent) fileUploader!: FileUploaderComponent;
+  @ViewChild(FileUploaderComponent) fileUploader!: FileUploaderComponent;
   @Input() ReadOnly: boolean = false;
   unsavedChanges: boolean = false; // Track unsaved changes
   constructor(
@@ -46,6 +46,8 @@ export class ViewNoticeComponent {
   wRespondentTypeID: number = 0;
   additionalAttachments: AttachmentDto[] = [];
   noticeQuestions: WNoticeQuestionnaireItemDto[] = [];
+  FirmNoticeResponseObjectID = WObjects.FirmNoticeResponse;
+  NoticeResponseFormTypeID = FormType.NoticeResponse
   onClose(): void {
     this.dialogRef.close();
   }
@@ -171,15 +173,44 @@ export class ViewNoticeComponent {
   }
 
   // Save functionality
-  onSave(): void {
-    this.toastr.success('Changes saved successfully!', 'Success');
+  onSave(withClose: boolean = false): void {
+    const userId = localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID);
+    const firmNoticeData: FirmNoticeDataDto = new FirmNoticeDataDto();
+    firmNoticeData.lstQuestionResponse = this.noticeQuestions;
+    firmNoticeData.objWFirmNotice = new WFirmNoticesDto();
+    firmNoticeData.objWFirmNotice.wFirmNoticeID = this.wFirmNoticeID;
+    firmNoticeData.objWFirmNotice.wNoticeID = this.wNoticeID;
+    firmNoticeData.objWFirmNotice.wNotes = this.data.wNotes;
+    firmNoticeData.objWFirmNotice.wObjectSOStatusID = this.data?.wObjectSOStatusID;
+    firmNoticeData.objWFirmNotice.createdBy = Number(userId);
+    //TODO: Save DDL value --> method getListofEvalutionsFromUI in web forms
+    this.loadingService.show();
+    this.client.saveNoticeResponse(firmNoticeData).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response == 1) {
+          this.unsavedChanges = false;
+          this.toastr.success('Changes saved successfully!', 'Success');
+          if (withClose) {
+            this.dialogRef.close();
+          }
+        } else {
+          this.toastr.error('Failed to save response.', 'Error');
+          console.error('Failed to save response:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.noticeQuestionsLoaded = true;
+        this.toastr.error('Error occurred while saving response.', 'Error');
+        console.error('Error occurred while saving response:', error);
+      },
+    });
   }
 
   // Save and close functionality
   onSaveAndClose(): void {
-    this.toastr.success('Changes saved successfully!', 'Success');
-    this.dialogRef.close();
-
+    this.onSave(true);
   }
 
   // Submit functionality
@@ -216,7 +247,7 @@ export class ViewNoticeComponent {
   onNoticeQuestionsChange(): void {
     this.unsavedChanges = true;
   }
-  
+
   onFileUploaded(uploadIds: number[]): void {
     console.log('Uploaded File IDs:', uploadIds);
   }

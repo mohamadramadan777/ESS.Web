@@ -65,6 +65,9 @@ export class FileUploaderComponent {
     this.getFileLocation();
     this.loadRegexStrings();
     this.loadAllowedExtensions();
+    setTimeout(() => {
+      this.bindAttachments();
+    }, 400);
   }
 
   getAttachmentsFromViewState(): void {
