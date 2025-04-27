@@ -27,6 +27,7 @@
               (fileUploaded)="onFileUploaded($event)"
               (ObjectInstanceIDChange)="onObjectInstanceIDChange($event)"
               (beforeUpload)="beforeFileUploaded()"
+              [ReadOnly]="this.ReadOnly"
             ></app-file-uploader>
           </div>
         </mat-tab>
@@ -44,8 +45,8 @@
           <mat-tab label="Signature">
             <div class="tab-content">
               <p *ngIf="this.showSignOffMessage">{{this.SignOffMessage}}</p>
-              <p><strong>Name of Individual:</strong></p>
-              <p><strong>Date Signed:</strong></p>
+              <p><strong>Name of Individual: </strong> {{ this.txtSignatoryName }} </p>
+              <p><strong>Date Signed: </strong> {{ this.txtDateSigned }}</p>
             </div>
           </mat-tab>
       </mat-tab-group>
@@ -67,7 +68,7 @@
         <mat-icon>folder_check</mat-icon>
         <span class="animated-text">Save & Close</span>
       </button>
-      <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+      <button *ngIf="SubmitVisible" mat-raised-button color="primary" class="btn" (click)="onSubmit()">
         <mat-icon>send</mat-icon> {{SubmitLabel}}
       </button>
     </div>

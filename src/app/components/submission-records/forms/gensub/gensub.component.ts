@@ -43,12 +43,15 @@ export class GensubComponent implements AfterViewInit {
   isSignOffRequired: boolean = false
   GENSUBDOCSIGNATORIES = "docSignatories";
   SubmitLabel = "Submit";
+  SubmitVisible = true;
   DocSignText = "";
   GenSubObjectID = WObjects.GeneralSubmission;
   GenSubID = 0;
   Comments = "";
   showSignOffMessage = false;
-  SignOffMessage = "Any one of the following individual(s) can sign on this application: Myrtice Waelchi or Jacynthe Prosacco or Alvena Hackett or Gwen Smitham"
+  SignOffMessage = "";
+  txtSignatoryName = "";
+  txtDateSigned = "";
   constructor(
     private client: Client,
     private loadingService: LoadingService,
@@ -64,7 +67,58 @@ export class GensubComponent implements AfterViewInit {
     if (this.data.DocTypeId != 0 && this.data.DocTypeId != undefined) {
       this.signOffRequired();
     }
-    this.loadApplicants(); // Load applicants via API
+    this.GenSubID = this.data.applicationID ?? 0;
+    if (this.GenSubID != 0) {
+      this.GetAndBindGenSubDetails();
+      this.GetAndBindFormSignatories();
+    }
+  }
+
+  GetAndBindGenSubDetails(): void {
+    this.client.getGenSubDetails(this.GenSubID).subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          const comments = response.response.comments ?? "";
+          const qfcNum = response.response.qfcNumber ?? "";
+          if (qfcNum != "" && comments != "")
+            this.Comments = comments;
+        } else {
+          this.toastr.error('Failed to load General Submission.', 'Error');
+          console.error('Failed to load General Submission:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching General Submission.', 'Error');
+        console.error('Error occurred while fetching General Submission:', error);
+      },
+    });
+  }
+
+  GetAndBindFormSignatories(): void {
+    this.client.getAndBindFormSignatories(this.GenSubID, this.txtDateSigned).subscribe({
+      next: (response) => {
+        if (response && response.isSuccess && response.response) {
+          this.txtSignatoryName = response.response.txtSignatoryName ?? "";
+          this.txtDateSigned = response.response.txtDateSigned ?? "";
+          this.ReadOnly = response.response.isReadOnly ?? this.ReadOnly;
+          if(response.response.btnSignOffVisible == true){
+            this.SubmitLabel = "Sign Off"
+          }
+          this.SubmitVisible = ((response.response.btnSignOffVisible ?? false) || (response.response.btnSubmitVisible ?? false));
+          this.showSignOffMessage = response.response.rwSignatureInfoVisible ?? false;
+          this.SignOffMessage = (response.response.rwSignatureInfoVisible ?? false) ? response.response.lblSignatureInfoText + ": " + response.response.lblUsers : "";
+        } else {
+          this.toastr.error('Failed to load Signatories.', 'Error');
+          console.error('Failed to load Signatories:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while fetching Signatories.', 'Error');
+        console.error('Error occurred while fetching Signatories:', error);
+      },
+    });
   }
 
   getXbrlDoctypes(): void {
@@ -108,7 +162,7 @@ export class GensubComponent implements AfterViewInit {
       // }
     }
     else {
-    // TODO: Sign off label
+      // TODO: Sign off label
 
       this.client.getDocSignatories(this.data.DocTypeId, "", Number(WObjects.GeneralSubmission)).subscribe({
         next: (response) => {
@@ -137,15 +191,6 @@ export class GensubComponent implements AfterViewInit {
     }
   }
 
-  // Load applicants via API
-  loadApplicants(): void {
-    // TODO: Replace with API call to fetch applicants
-    this.applicantNames = [
-      { id: 1, name: 'Cecelia Cecila Carter', aiNumber: 'AI00969' },
-      { id: 2, name: 'John Doe', aiNumber: 'AI00888' },
-      { id: 3, name: 'Jane Smith', aiNumber: 'AI00777' },
-    ];
-  }
 
   // Save functionality
   onSave(withClose: boolean = false): void {
@@ -317,10 +362,11 @@ export class GensubComponent implements AfterViewInit {
                 'error'
               );
             }
-            else if(response.response.btnSignOffVisible){
-              this.openSignOffDialog();//TODO: Show sign off button
+            else if (response.response.btnSignOffVisible) {
+              this.openSignOffDialog();
+              this.GetAndBindFormSignatories();
             }
-            else if(response.response.messageType == "success"){
+            else if (response.response.messageType == "success") {
               this.toastr.success(response.response.message, 'Success');
               this.dialogRef.close();
             }
@@ -397,30 +443,31 @@ export class GensubComponent implements AfterViewInit {
       // Handle any logic after dialog closes
     });
   }
-//TODO: Show hide buttons
-   signOff() {
-      this.loadingService.show();
-      this.client.signOffGenSub(this.GenSubID, this.data.DocTypeId, this.isSignOffRequired).subscribe({
-          next: (response) => {
-            this.loadingService.hide();
-            if (response && response.isSuccess) {
-              Swal.fire(
-                'Sign Off',
-                response.response?.message,
-                response.response?.type as SweetAlertIcon ?? "warning"
-              );
-            } else {
-              this.toastr.error('Failed to sign off submission.', 'Error');
-              console.error('Failed to sign off submission:', response?.errorMessage);
-            }
-          },
-          error: (error) => {
-            this.loadingService.hide();
-            this.toastr.error('Error occurred while signing submission.', 'Error');
-            console.error('Error occurred while signing submission:', error);
-          },
-        });
-    }
+  
+  signOff() {
+    this.loadingService.show();
+    this.client.signOffGenSub(this.GenSubID, this.data.DocTypeId, this.isSignOffRequired).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess) {
+          Swal.fire(
+            'Sign Off',
+            response.response?.message,
+            response.response?.type as SweetAlertIcon ?? "warning"
+          );
+          this.GetAndBindFormSignatories();
+        } else {
+          this.toastr.error('Failed to sign off submission.', 'Error');
+          console.error('Failed to sign off submission:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while signing submission.', 'Error');
+        console.error('Error occurred while signing submission:', error);
+      },
+    });
+  }
 
   beforeFileUploaded() {
     try {

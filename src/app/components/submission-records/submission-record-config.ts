@@ -46,7 +46,7 @@ export const theme = themeAlpine
   );
 export const paginationPageSizeSelector = [10, 25, 50];
 
-export const TableColDef: ColDef<ISubmissionRecord>[] = [
+export const TableColDef: ColDef<any>[] = [
   {
     headerName: 'Description',
     field: 'description',
@@ -84,6 +84,35 @@ export const TableColDef: ColDef<ISubmissionRecord>[] = [
     sortable: false,
     filter: false,
     maxWidth: 400,
+  },
+];
+
+
+export const PendingTableColDef: ColDef<any>[] = [
+  {
+    headerName: 'Description',
+    field: 'description',
+    autoHeight: true,
+    sortable: true,
+    filter: true,
+    cellStyle:{display:'flex' , alignitems:'center'},
+  },
+  {
+    headerName: '',
+    field: 'showDelete',
+    cellRenderer: (params: any) => {
+      if (params.value) {
+        return `
+        <button class="btn-icon btn-revoke" title="Delete">
+          <span class="material-icons">delete</span>
+        </button>`;
+      } else {
+        return '';
+      }
+    },
+    sortable: false,
+    filter: false,
+    maxWidth: 75
   },
 ];
 

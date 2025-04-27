@@ -4644,6 +4644,57 @@ export class Client {
     /**
      * @return OK
      */
+    showSubmissionPendingItems(): Observable<ItemsPendingListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AccessRequest/show-submission-pending-items";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processShowSubmissionPendingItems(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processShowSubmissionPendingItems(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ItemsPendingListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ItemsPendingListBaseResponse>;
+        }));
+    }
+
+    protected processShowSubmissionPendingItems(response: HttpResponseBase): Observable<ItemsPendingListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ItemsPendingListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ItemsPendingListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
     getEssFirms(): Observable<FirmDtoListBaseResponse> {
         let url_ = this.baseUrl + "/api/AdminRequest/get-ess-firms";
         url_ = url_.replace(/[?&]$/, "");
@@ -5343,7 +5394,7 @@ export class Client {
      * @param applicationId (optional) 
      * @return OK
      */
-    deleteApplication(applicationId: number | undefined): Observable<BooleanBaseResponse> {
+    deleteApplicationDELETE(applicationId: number | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/AIApplications/delete-application?";
         if (applicationId === null)
             throw new Error("The parameter 'applicationId' cannot be null.");
@@ -5360,11 +5411,11 @@ export class Client {
         };
 
         return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteApplication(response_);
+            return this.processDeleteApplicationDELETE(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDeleteApplication(response_ as any);
+                    return this.processDeleteApplicationDELETE(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
                 }
@@ -5373,7 +5424,7 @@ export class Client {
         }));
     }
 
-    protected processDeleteApplication(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+    protected processDeleteApplicationDELETE(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -7536,6 +7587,67 @@ export class Client {
     }
 
     /**
+     * @param applicationID (optional) 
+     * @param objectID (optional) 
+     * @return OK
+     */
+    deleteApplicationPOST(applicationID: number | undefined, objectID: number | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/delete-application?";
+        if (applicationID === null)
+            throw new Error("The parameter 'applicationID' cannot be null.");
+        else if (applicationID !== undefined)
+            url_ += "applicationID=" + encodeURIComponent("" + applicationID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteApplicationPOST(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteApplicationPOST(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processDeleteApplicationPOST(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
      * @return OK
      */
     getPendingItems(): Observable<PendingItemsDtoListBaseResponse> {
@@ -8755,6 +8867,67 @@ export class Client {
             }));
         }
         return _observableOf<SwalResultBaseResponse>(null as any);
+    }
+
+    /**
+     * @param genSubID (optional) 
+     * @param txtDateSigned (optional) 
+     * @return OK
+     */
+    getAndBindFormSignatories(genSubID: number | undefined, txtDateSigned: string | undefined): Observable<GetAndBindFormSignatoriesResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/GenSubmission/get-and-bind-form-signatories?";
+        if (genSubID === null)
+            throw new Error("The parameter 'genSubID' cannot be null.");
+        else if (genSubID !== undefined)
+            url_ += "GenSubID=" + encodeURIComponent("" + genSubID) + "&";
+        if (txtDateSigned === null)
+            throw new Error("The parameter 'txtDateSigned' cannot be null.");
+        else if (txtDateSigned !== undefined)
+            url_ += "txtDateSigned=" + encodeURIComponent("" + txtDateSigned) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAndBindFormSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAndBindFormSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<GetAndBindFormSignatoriesResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<GetAndBindFormSignatoriesResultBaseResponse>;
+        }));
+    }
+
+    protected processGetAndBindFormSignatories(response: HttpResponseBase): Observable<GetAndBindFormSignatoriesResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetAndBindFormSignatoriesResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetAndBindFormSignatoriesResultBaseResponse>(null as any);
     }
 
     /**
@@ -10079,6 +10252,279 @@ export class Client {
     }
 
     /**
+     * @param firmNoticeID (optional) 
+     * @param _userID (optional) 
+     * @param _qfcNumber (optional) 
+     * @param firmTypeID (optional) 
+     * @param lblRefrenceNumber (optional) 
+     * @param lblNoticeName (optional) 
+     * @param lblSubject (optional) 
+     * @param hdnWNotificationSentDate (optional) 
+     * @param lblResponseDueDate (optional) 
+     * @return OK
+     */
+    submitNoticeResponseSignOffNotRequired(firmNoticeID: number | undefined, _userID: number | undefined, _qfcNumber: string | undefined, firmTypeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/submit-notice-response-sign-off-not-required?";
+        if (firmNoticeID === null)
+            throw new Error("The parameter 'firmNoticeID' cannot be null.");
+        else if (firmNoticeID !== undefined)
+            url_ += "firmNoticeID=" + encodeURIComponent("" + firmNoticeID) + "&";
+        if (_userID === null)
+            throw new Error("The parameter '_userID' cannot be null.");
+        else if (_userID !== undefined)
+            url_ += "_userID=" + encodeURIComponent("" + _userID) + "&";
+        if (_qfcNumber === null)
+            throw new Error("The parameter '_qfcNumber' cannot be null.");
+        else if (_qfcNumber !== undefined)
+            url_ += "_qfcNumber=" + encodeURIComponent("" + _qfcNumber) + "&";
+        if (firmTypeID === null)
+            throw new Error("The parameter 'firmTypeID' cannot be null.");
+        else if (firmTypeID !== undefined)
+            url_ += "firmTypeID=" + encodeURIComponent("" + firmTypeID) + "&";
+        if (lblRefrenceNumber === null)
+            throw new Error("The parameter 'lblRefrenceNumber' cannot be null.");
+        else if (lblRefrenceNumber !== undefined)
+            url_ += "lblRefrenceNumber=" + encodeURIComponent("" + lblRefrenceNumber) + "&";
+        if (lblNoticeName === null)
+            throw new Error("The parameter 'lblNoticeName' cannot be null.");
+        else if (lblNoticeName !== undefined)
+            url_ += "lblNoticeName=" + encodeURIComponent("" + lblNoticeName) + "&";
+        if (lblSubject === null)
+            throw new Error("The parameter 'lblSubject' cannot be null.");
+        else if (lblSubject !== undefined)
+            url_ += "lblSubject=" + encodeURIComponent("" + lblSubject) + "&";
+        if (hdnWNotificationSentDate === null)
+            throw new Error("The parameter 'hdnWNotificationSentDate' cannot be null.");
+        else if (hdnWNotificationSentDate !== undefined)
+            url_ += "hdnWNotificationSentDate=" + encodeURIComponent("" + hdnWNotificationSentDate) + "&";
+        if (lblResponseDueDate === null)
+            throw new Error("The parameter 'lblResponseDueDate' cannot be null.");
+        else if (lblResponseDueDate !== undefined)
+            url_ += "lblResponseDueDate=" + encodeURIComponent("" + lblResponseDueDate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitNoticeResponseSignOffNotRequired(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitNoticeResponseSignOffNotRequired(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processSubmitNoticeResponseSignOffNotRequired(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
+     * @param firmNoticeID (optional) 
+     * @param lblRefrenceNumber (optional) 
+     * @param lblNoticeName (optional) 
+     * @param lblSubject (optional) 
+     * @param hdnWNotificationSentDate (optional) 
+     * @param lblResponseDueDate (optional) 
+     * @param hdnWRespondentsControlledFunctionTypeIDs (optional) 
+     * @param hdnWRespondentsDNFBPFunctionTypeIDs (optional) 
+     * @param txtDateSigned (optional) 
+     * @return OK
+     */
+    submitNoticeResponseWithSignOff(firmNoticeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined, hdnWRespondentsControlledFunctionTypeIDs: string | undefined, hdnWRespondentsDNFBPFunctionTypeIDs: string | undefined, txtDateSigned: string | undefined): Observable<SubmitNoticeResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/submit-notice-response-with-sign-off?";
+        if (firmNoticeID === null)
+            throw new Error("The parameter 'firmNoticeID' cannot be null.");
+        else if (firmNoticeID !== undefined)
+            url_ += "firmNoticeID=" + encodeURIComponent("" + firmNoticeID) + "&";
+        if (lblRefrenceNumber === null)
+            throw new Error("The parameter 'lblRefrenceNumber' cannot be null.");
+        else if (lblRefrenceNumber !== undefined)
+            url_ += "lblRefrenceNumber=" + encodeURIComponent("" + lblRefrenceNumber) + "&";
+        if (lblNoticeName === null)
+            throw new Error("The parameter 'lblNoticeName' cannot be null.");
+        else if (lblNoticeName !== undefined)
+            url_ += "lblNoticeName=" + encodeURIComponent("" + lblNoticeName) + "&";
+        if (lblSubject === null)
+            throw new Error("The parameter 'lblSubject' cannot be null.");
+        else if (lblSubject !== undefined)
+            url_ += "lblSubject=" + encodeURIComponent("" + lblSubject) + "&";
+        if (hdnWNotificationSentDate === null)
+            throw new Error("The parameter 'hdnWNotificationSentDate' cannot be null.");
+        else if (hdnWNotificationSentDate !== undefined)
+            url_ += "hdnWNotificationSentDate=" + encodeURIComponent("" + hdnWNotificationSentDate) + "&";
+        if (lblResponseDueDate === null)
+            throw new Error("The parameter 'lblResponseDueDate' cannot be null.");
+        else if (lblResponseDueDate !== undefined)
+            url_ += "lblResponseDueDate=" + encodeURIComponent("" + lblResponseDueDate) + "&";
+        if (hdnWRespondentsControlledFunctionTypeIDs === null)
+            throw new Error("The parameter 'hdnWRespondentsControlledFunctionTypeIDs' cannot be null.");
+        else if (hdnWRespondentsControlledFunctionTypeIDs !== undefined)
+            url_ += "hdnWRespondentsControlledFunctionTypeIDs=" + encodeURIComponent("" + hdnWRespondentsControlledFunctionTypeIDs) + "&";
+        if (hdnWRespondentsDNFBPFunctionTypeIDs === null)
+            throw new Error("The parameter 'hdnWRespondentsDNFBPFunctionTypeIDs' cannot be null.");
+        else if (hdnWRespondentsDNFBPFunctionTypeIDs !== undefined)
+            url_ += "hdnWRespondentsDNFBPFunctionTypeIDs=" + encodeURIComponent("" + hdnWRespondentsDNFBPFunctionTypeIDs) + "&";
+        if (txtDateSigned === null)
+            throw new Error("The parameter 'txtDateSigned' cannot be null.");
+        else if (txtDateSigned !== undefined)
+            url_ += "txtDateSigned=" + encodeURIComponent("" + txtDateSigned) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitNoticeResponseWithSignOff(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitNoticeResponseWithSignOff(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SubmitNoticeResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SubmitNoticeResultBaseResponse>;
+        }));
+    }
+
+    protected processSubmitNoticeResponseWithSignOff(response: HttpResponseBase): Observable<SubmitNoticeResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SubmitNoticeResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SubmitNoticeResultBaseResponse>(null as any);
+    }
+
+    /**
+     * @param firmNoticeID (optional) 
+     * @param lblRefrenceNumber (optional) 
+     * @param lblNoticeName (optional) 
+     * @param lblSubject (optional) 
+     * @param hdnWNotificationSentDate (optional) 
+     * @param lblResponseDueDate (optional) 
+     * @return OK
+     */
+    signOffClick(firmNoticeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/sign-off-click?";
+        if (firmNoticeID === null)
+            throw new Error("The parameter 'firmNoticeID' cannot be null.");
+        else if (firmNoticeID !== undefined)
+            url_ += "firmNoticeID=" + encodeURIComponent("" + firmNoticeID) + "&";
+        if (lblRefrenceNumber === null)
+            throw new Error("The parameter 'lblRefrenceNumber' cannot be null.");
+        else if (lblRefrenceNumber !== undefined)
+            url_ += "lblRefrenceNumber=" + encodeURIComponent("" + lblRefrenceNumber) + "&";
+        if (lblNoticeName === null)
+            throw new Error("The parameter 'lblNoticeName' cannot be null.");
+        else if (lblNoticeName !== undefined)
+            url_ += "lblNoticeName=" + encodeURIComponent("" + lblNoticeName) + "&";
+        if (lblSubject === null)
+            throw new Error("The parameter 'lblSubject' cannot be null.");
+        else if (lblSubject !== undefined)
+            url_ += "lblSubject=" + encodeURIComponent("" + lblSubject) + "&";
+        if (hdnWNotificationSentDate === null)
+            throw new Error("The parameter 'hdnWNotificationSentDate' cannot be null.");
+        else if (hdnWNotificationSentDate !== undefined)
+            url_ += "hdnWNotificationSentDate=" + encodeURIComponent("" + hdnWNotificationSentDate) + "&";
+        if (lblResponseDueDate === null)
+            throw new Error("The parameter 'lblResponseDueDate' cannot be null.");
+        else if (lblResponseDueDate !== undefined)
+            url_ += "lblResponseDueDate=" + encodeURIComponent("" + lblResponseDueDate) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSignOffClick(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSignOffClick(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<BooleanBaseResponse>;
+        }));
+    }
+
+    protected processSignOffClick(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BooleanBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<BooleanBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -10216,9 +10662,12 @@ export class Client {
      * @param lkbtnDataValidationVisible (optional) 
      * @param lstObjectSOTaskStatus (optional) 
      * @param soseqno (optional) 
+     * @param isItemAccessible (optional) 
+     * @param description (optional) 
+     * @param objectInstanceID (optional) 
      * @return OK
      */
-    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined, isItemAccessible: boolean | undefined, description: string | undefined, objectInstanceID: number | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
         if (qFCNum === null)
             throw new Error("The parameter 'qFCNum' cannot be null.");
@@ -10554,6 +11003,18 @@ export class Client {
             throw new Error("The parameter 'soseqno' cannot be null.");
         else if (soseqno !== undefined)
             url_ += "soseqno=" + encodeURIComponent("" + soseqno) + "&";
+        if (isItemAccessible === null)
+            throw new Error("The parameter 'isItemAccessible' cannot be null.");
+        else if (isItemAccessible !== undefined)
+            url_ += "IsItemAccessible=" + encodeURIComponent("" + isItemAccessible) + "&";
+        if (description === null)
+            throw new Error("The parameter 'description' cannot be null.");
+        else if (description !== undefined)
+            url_ += "Description=" + encodeURIComponent("" + description) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "ObjectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -24918,6 +25379,130 @@ export interface IGeneralSubmissionFormListBaseResponse {
     response?: GeneralSubmissionForm[] | undefined;
 }
 
+export class GetAndBindFormSignatoriesResult implements IGetAndBindFormSignatoriesResult {
+    lblSignatureInfoText?: string | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    txtSignatoryName?: string | undefined;
+    txtDateSigned?: string | undefined;
+    btnSaveVisible?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    isReadOnly?: boolean | undefined;
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+
+    constructor(data?: IGetAndBindFormSignatoriesResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.lblSignatureInfoText = _data["lblSignatureInfoText"];
+            this.rwSignatureInfoVisible = _data["rwSignatureInfoVisible"];
+            this.rwUsersVisible = _data["rwUsersVisible"];
+            this.txtSignatoryName = _data["txtSignatoryName"];
+            this.txtDateSigned = _data["txtDateSigned"];
+            this.btnSaveVisible = _data["btnSaveVisible"];
+            this.btnSubmitVisible = _data["btnSubmitVisible"];
+            this.btnSignOffVisible = _data["btnSignOffVisible"];
+            this.isReadOnly = _data["isReadOnly"];
+            this.lblUsers = _data["lblUsers"];
+            this.hdnUserIDs = _data["hdnUserIDs"];
+        }
+    }
+
+    static fromJS(data: any): GetAndBindFormSignatoriesResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAndBindFormSignatoriesResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["lblSignatureInfoText"] = this.lblSignatureInfoText;
+        data["rwSignatureInfoVisible"] = this.rwSignatureInfoVisible;
+        data["rwUsersVisible"] = this.rwUsersVisible;
+        data["txtSignatoryName"] = this.txtSignatoryName;
+        data["txtDateSigned"] = this.txtDateSigned;
+        data["btnSaveVisible"] = this.btnSaveVisible;
+        data["btnSubmitVisible"] = this.btnSubmitVisible;
+        data["btnSignOffVisible"] = this.btnSignOffVisible;
+        data["isReadOnly"] = this.isReadOnly;
+        data["lblUsers"] = this.lblUsers;
+        data["hdnUserIDs"] = this.hdnUserIDs;
+        return data;
+    }
+}
+
+export interface IGetAndBindFormSignatoriesResult {
+    lblSignatureInfoText?: string | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    txtSignatoryName?: string | undefined;
+    txtDateSigned?: string | undefined;
+    btnSaveVisible?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    isReadOnly?: boolean | undefined;
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+}
+
+export class GetAndBindFormSignatoriesResultBaseResponse implements IGetAndBindFormSignatoriesResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: GetAndBindFormSignatoriesResult;
+
+    constructor(data?: IGetAndBindFormSignatoriesResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? GetAndBindFormSignatoriesResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): GetAndBindFormSignatoriesResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAndBindFormSignatoriesResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IGetAndBindFormSignatoriesResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: GetAndBindFormSignatoriesResult;
+}
+
 export class HistoryDetailsDto implements IHistoryDetailsDto {
     objectID?: number | undefined;
     rptSchItemID?: number | undefined;
@@ -26036,6 +26621,234 @@ export interface IInt32StringDictionaryBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: { [key: string]: string; } | undefined;
+}
+
+export class ItemsPending implements IItemsPending {
+    firmsRptSchID?: number;
+    firmsRptSchItemID?: number;
+    rptSchID?: number;
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
+    rptSchItemID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    manuallyReceived?: boolean;
+    description?: string | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    applicationID?: number;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number;
+    statusTypeID?: number;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    wObjectSOStatusID?: number | undefined;
+    allowReSubmit?: boolean;
+    resubmissionComments?: string | undefined;
+    submissionTypeID?: number;
+    isOverdue?: boolean | undefined;
+
+    constructor(data?: IItemsPending) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.firmsRptSchID = _data["firmsRptSchID"];
+            this.firmsRptSchItemID = _data["firmsRptSchItemID"];
+            this.rptSchID = _data["rptSchID"];
+            this.qfcNum = _data["qfcNum"];
+            this.rptSchFinYearFromDate = _data["rptSchFinYearFromDate"];
+            this.rptSchFinYearToDate = _data["rptSchFinYearToDate"];
+            this.rptSchFinYearPeriod = _data["rptSchFinYearPeriod"];
+            this.rptSchItemID = _data["rptSchItemID"];
+            this.docTypeID = _data["docTypeID"];
+            this.rptName = _data["rptName"];
+            this.rptDueDate = _data["rptDueDate"];
+            this.rptPeriodFromDate = _data["rptPeriodFromDate"];
+            this.rptPeriodToDate = _data["rptPeriodToDate"];
+            this.manuallyReceived = _data["manuallyReceived"];
+            this.description = _data["description"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.rptPeriodTypeDesc = _data["rptPeriodTypeDesc"];
+            this.rptFreqTypeDesc = _data["rptFreqTypeDesc"];
+            this.applicationID = _data["applicationID"];
+            this.qfcNmuner = _data["qfcNmuner"];
+            this.formTypeID = _data["formTypeID"];
+            this.statusTypeID = _data["statusTypeID"];
+            this.formType = _data["formType"];
+            this.individualName = _data["individualName"];
+            this.applicationStatus = _data["applicationStatus"];
+            this.applicationContactDetailID = _data["applicationContactDetailID"];
+            this.createdDate = _data["createdDate"];
+            this.isItemAccessible = _data["isItemAccessible"];
+            this.userCreated = _data["userCreated"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.allowReSubmit = _data["allowReSubmit"];
+            this.resubmissionComments = _data["resubmissionComments"];
+            this.submissionTypeID = _data["submissionTypeID"];
+            this.isOverdue = _data["isOverdue"];
+        }
+    }
+
+    static fromJS(data: any): ItemsPending {
+        data = typeof data === 'object' ? data : {};
+        let result = new ItemsPending();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["firmsRptSchID"] = this.firmsRptSchID;
+        data["firmsRptSchItemID"] = this.firmsRptSchItemID;
+        data["rptSchID"] = this.rptSchID;
+        data["qfcNum"] = this.qfcNum;
+        data["rptSchFinYearFromDate"] = this.rptSchFinYearFromDate;
+        data["rptSchFinYearToDate"] = this.rptSchFinYearToDate;
+        data["rptSchFinYearPeriod"] = this.rptSchFinYearPeriod;
+        data["rptSchItemID"] = this.rptSchItemID;
+        data["docTypeID"] = this.docTypeID;
+        data["rptName"] = this.rptName;
+        data["rptDueDate"] = this.rptDueDate;
+        data["rptPeriodFromDate"] = this.rptPeriodFromDate;
+        data["rptPeriodToDate"] = this.rptPeriodToDate;
+        data["manuallyReceived"] = this.manuallyReceived;
+        data["description"] = this.description;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["rptPeriodTypeDesc"] = this.rptPeriodTypeDesc;
+        data["rptFreqTypeDesc"] = this.rptFreqTypeDesc;
+        data["applicationID"] = this.applicationID;
+        data["qfcNmuner"] = this.qfcNmuner;
+        data["formTypeID"] = this.formTypeID;
+        data["statusTypeID"] = this.statusTypeID;
+        data["formType"] = this.formType;
+        data["individualName"] = this.individualName;
+        data["applicationStatus"] = this.applicationStatus;
+        data["applicationContactDetailID"] = this.applicationContactDetailID;
+        data["createdDate"] = this.createdDate;
+        data["isItemAccessible"] = this.isItemAccessible;
+        data["userCreated"] = this.userCreated;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["allowReSubmit"] = this.allowReSubmit;
+        data["resubmissionComments"] = this.resubmissionComments;
+        data["submissionTypeID"] = this.submissionTypeID;
+        data["isOverdue"] = this.isOverdue;
+        return data;
+    }
+}
+
+export interface IItemsPending {
+    firmsRptSchID?: number;
+    firmsRptSchItemID?: number;
+    rptSchID?: number;
+    qfcNum?: string | undefined;
+    rptSchFinYearFromDate?: string | undefined;
+    rptSchFinYearToDate?: string | undefined;
+    rptSchFinYearPeriod?: string | undefined;
+    rptSchItemID?: number;
+    docTypeID?: number;
+    rptName?: string | undefined;
+    rptDueDate?: string | undefined;
+    rptPeriodFromDate?: string | undefined;
+    rptPeriodToDate?: string | undefined;
+    manuallyReceived?: boolean;
+    description?: string | undefined;
+    objectID?: number;
+    objectInstanceID?: number;
+    rptPeriodTypeDesc?: string | undefined;
+    rptFreqTypeDesc?: string | undefined;
+    applicationID?: number;
+    qfcNmuner?: string | undefined;
+    formTypeID?: number;
+    statusTypeID?: number;
+    formType?: string | undefined;
+    individualName?: string | undefined;
+    applicationStatus?: string | undefined;
+    applicationContactDetailID?: number;
+    createdDate?: string | undefined;
+    isItemAccessible?: boolean;
+    userCreated?: number;
+    wObjectSOStatusID?: number | undefined;
+    allowReSubmit?: boolean;
+    resubmissionComments?: string | undefined;
+    submissionTypeID?: number;
+    isOverdue?: boolean | undefined;
+}
+
+export class ItemsPendingListBaseResponse implements IItemsPendingListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ItemsPending[] | undefined;
+
+    constructor(data?: IItemsPendingListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ItemsPending.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ItemsPendingListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ItemsPendingListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IItemsPendingListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ItemsPending[] | undefined;
 }
 
 export class LoadControlledFunctionResult implements ILoadControlledFunctionResult {
@@ -28072,6 +28885,9 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     lkbtnDataValidationVisible?: boolean | undefined;
     lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
     soseqno?: string | undefined;
+    isItemAccessible?: boolean | undefined;
+    description?: string | undefined;
+    objectInstanceID?: number | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -28173,6 +28989,9 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
                     this.lstObjectSOTaskStatus!.push(ObjectSOTaskStatusDto.fromJS(item));
             }
             this.soseqno = _data["soseqno"];
+            this.isItemAccessible = _data["isItemAccessible"];
+            this.description = _data["description"];
+            this.objectInstanceID = _data["objectInstanceID"];
         }
     }
 
@@ -28274,6 +29093,9 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
                 data["lstObjectSOTaskStatus"].push(item.toJSON());
         }
         data["soseqno"] = this.soseqno;
+        data["isItemAccessible"] = this.isItemAccessible;
+        data["description"] = this.description;
+        data["objectInstanceID"] = this.objectInstanceID;
         return data;
     }
 }
@@ -28360,6 +29182,9 @@ export interface IReportSchDetailsDto {
     lkbtnDataValidationVisible?: boolean | undefined;
     lstObjectSOTaskStatus?: ObjectSOTaskStatusDto[] | undefined;
     soseqno?: string | undefined;
+    isItemAccessible?: boolean | undefined;
+    description?: string | undefined;
+    objectInstanceID?: number | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
@@ -28660,6 +29485,7 @@ export class ReportSchEmailDet implements IReportSchEmailDet {
     submittedOnDate?: string | undefined;
     signOffRequiredBy?: string | undefined;
     signOffCompletedBy?: string | undefined;
+    signOffCompletedOn?: string | undefined;
     completionSignOffCompletedBy?: string | undefined;
     url?: string | undefined;
     notifiedBy?: number;
@@ -28704,6 +29530,7 @@ export class ReportSchEmailDet implements IReportSchEmailDet {
             this.submittedOnDate = _data["submittedOnDate"];
             this.signOffRequiredBy = _data["signOffRequiredBy"];
             this.signOffCompletedBy = _data["signOffCompletedBy"];
+            this.signOffCompletedOn = _data["signOffCompletedOn"];
             this.completionSignOffCompletedBy = _data["completionSignOffCompletedBy"];
             this.url = _data["url"];
             this.notifiedBy = _data["notifiedBy"];
@@ -28748,6 +29575,7 @@ export class ReportSchEmailDet implements IReportSchEmailDet {
         data["submittedOnDate"] = this.submittedOnDate;
         data["signOffRequiredBy"] = this.signOffRequiredBy;
         data["signOffCompletedBy"] = this.signOffCompletedBy;
+        data["signOffCompletedOn"] = this.signOffCompletedOn;
         data["completionSignOffCompletedBy"] = this.completionSignOffCompletedBy;
         data["url"] = this.url;
         data["notifiedBy"] = this.notifiedBy;
@@ -28785,6 +29613,7 @@ export interface IReportSchEmailDet {
     submittedOnDate?: string | undefined;
     signOffRequiredBy?: string | undefined;
     signOffCompletedBy?: string | undefined;
+    signOffCompletedOn?: string | undefined;
     completionSignOffCompletedBy?: string | undefined;
     url?: string | undefined;
     notifiedBy?: number;
@@ -30074,6 +30903,126 @@ export interface ISubmitGenSubResultBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: SubmitGenSubResult;
+}
+
+export class SubmitNoticeResult implements ISubmitNoticeResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    lblSignatureInfo?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    showSignOffPanell?: boolean | undefined;
+    message?: string | undefined;
+    messageType?: string | undefined;
+
+    constructor(data?: ISubmitNoticeResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.lblUsers = _data["lblUsers"];
+            this.hdnUserIDs = _data["hdnUserIDs"];
+            this.lblSignatureInfo = _data["lblSignatureInfo"];
+            this.btnSignOffVisible = _data["btnSignOffVisible"];
+            this.btnSubmitVisible = _data["btnSubmitVisible"];
+            this.rwSignatureInfoVisible = _data["rwSignatureInfoVisible"];
+            this.rwUsersVisible = _data["rwUsersVisible"];
+            this.showSignOffPanell = _data["showSignOffPanell"];
+            this.message = _data["message"];
+            this.messageType = _data["messageType"];
+        }
+    }
+
+    static fromJS(data: any): SubmitNoticeResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitNoticeResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["lblUsers"] = this.lblUsers;
+        data["hdnUserIDs"] = this.hdnUserIDs;
+        data["lblSignatureInfo"] = this.lblSignatureInfo;
+        data["btnSignOffVisible"] = this.btnSignOffVisible;
+        data["btnSubmitVisible"] = this.btnSubmitVisible;
+        data["rwSignatureInfoVisible"] = this.rwSignatureInfoVisible;
+        data["rwUsersVisible"] = this.rwUsersVisible;
+        data["showSignOffPanell"] = this.showSignOffPanell;
+        data["message"] = this.message;
+        data["messageType"] = this.messageType;
+        return data;
+    }
+}
+
+export interface ISubmitNoticeResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    lblSignatureInfo?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    showSignOffPanell?: boolean | undefined;
+    message?: string | undefined;
+    messageType?: string | undefined;
+}
+
+export class SubmitNoticeResultBaseResponse implements ISubmitNoticeResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitNoticeResult;
+
+    constructor(data?: ISubmitNoticeResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? SubmitNoticeResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SubmitNoticeResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new SubmitNoticeResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISubmitNoticeResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: SubmitNoticeResult;
 }
 
 export class SubmitRegisterResponse implements ISubmitRegisterResponse {

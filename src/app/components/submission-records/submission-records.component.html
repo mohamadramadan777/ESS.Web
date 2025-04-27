@@ -24,6 +24,7 @@
             [paginationPageSizeSelector]="paginationPageSizeSelector"
             [domLayout]="'autoHeight'"
             [getRowHeight]="getRowHeight"
+            (rowDoubleClicked)="onRowDoubleClickedSubmitted($event)"
           >
           </ag-grid-angular>
         </div>
@@ -38,12 +39,13 @@
             [defaultColDef]="defaultColDef"
             [columnDefs]="PendingColDef"
             [rowData]="Pending"
-            (cellClicked)="onRowClicked($event)"
+            (cellClicked)="onCellClicked($event)"
             [pagination]="true"
             [paginationPageSize]="paginationPageSize"
             [paginationPageSizeSelector]="paginationPageSizeSelector"
             [domLayout]="'autoHeight'"
             [getRowHeight]="getRowHeight"
+            (rowDoubleClicked)="onRowDoubleClickedPending($event)"
           >
           </ag-grid-angular>
         </div>

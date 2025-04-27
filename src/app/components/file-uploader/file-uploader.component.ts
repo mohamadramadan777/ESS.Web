@@ -66,6 +66,7 @@ export class FileUploaderComponent {
     this.loadRegexStrings();
     this.loadAllowedExtensions();
     setTimeout(() => {
+      if(this.ObjectInstanceID != 0 && this.ObjectInstanceID != undefined && this.ObjectInstanceID != null)
       this.bindAttachments();
     }, 400);
   }

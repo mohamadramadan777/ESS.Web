@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppConstants } from '../../constants/app.constants';
 import { FirmType, WObjects, DocTypes } from '../../enums/app.enums';
-import { Client, GeneralSubmissionForm, UserPendingItems, WNoticeList } from '../../services/api-client';
+import { Client, GeneralSubmissionForm, ItemsPending, UserPendingItems, WNoticeList } from '../../services/api-client';
 import { ToastrService } from 'ngx-toastr';
 import { LoadingService } from '../../services/loader.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -51,8 +51,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
   ];
 
-  pendingSubmissions: { title: string; wNoticeID: number; wFirmNoticeID: number; wsosStatusTypeID: number }[] = [
-    { title: "Loading...", wNoticeID: 0, wFirmNoticeID: 0, wsosStatusTypeID: 0 }
+  pendingSubmissions: { title: string; overdueDays: string; }[] = [
+    { title: "Loading...", overdueDays: "" }
   ];
 
   generalSubmissionForms: { title: string; link: string; WIndFromTypeID: number; DocTypeId: number }[] = [
@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.getPendingForLoggedInUser();
     this.getGeneralCommunication();
     this.getGeneralSubmissionForms();
-    this.pendingSubmissionsLoaded = true;
+    this.showSubmissionPendingItems();
     //this.startAutoSwitch();
   }
 
@@ -126,58 +126,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     {
       header: 'Pending Submissions',
       icon: 'pending_actions',
-      data: [
-        {
-          title: 'Submission Overdue: 2023 Annual MLRO Report',
-          dueDate: '31/May/2024',
-          overdueDays: 162,
-        },
-        {
-          title: 'Submission Overdue: March - 2024 Quarterly Lead Regulator Report',
-          dueDate: '31/May/2024',
-          overdueDays: 162,
-        },
-        {
-          title: 'Submission Overdue: April - 2024 Monthly Prudential Return',
-          dueDate: '31/May/2024',
-          overdueDays: 162,
-        },
-        {
-          title: 'Submission Overdue: May - 2024 Monthly Prudential Return (Solo)',
-          dueDate: '30/Jun/2024',
-          overdueDays: 144,
-        },
-        {
-          title: 'Submission Overdue: June - 2024 Monthly Prudential Return (Solo)',
-          dueDate: '31/Jul/2024',
-          overdueDays: 121,
-        },
-        {
-          title: 'Submission Overdue: June - 2024 Quarterly Prudential Returns',
-          dueDate: '31/Jul/2024',
-          overdueDays: 121,
-        },
-        {
-          title: 'Submission Overdue: June - 2024 Semi-Annual Prudential Returns (Solo)',
-          dueDate: '31/Jul/2024',
-          overdueDays: 121,
-        },
-        {
-          title: 'Submission Overdue: 2023 Annual Confirmation of CRS Submission',
-          dueDate: '31/Jul/2024',
-          overdueDays: 121,
-        },
-        {
-          title: 'Submission Overdue: June - 2024 Quarterly Lead Regulator Report',
-          dueDate: '31/Aug/2024',
-          overdueDays: 100,
-        },
-        {
-          title: 'Submission Overdue: July - 2024 Monthly Prudential Returns (Solo)',
-          dueDate: '31/Aug/2024',
-          overdueDays: 100,
-        },
-      ],
+      data: this.pendingSubmissions,
       columns: [
         { headerName: 'Following items are pending for submission:', field: 'title', flex: 1, minWidth: 800 },
         { field: 'dueDate', flex: 1 },
@@ -185,7 +134,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           headerName: 'Overdue',
           field: 'overdueDays',
           cellRenderer: (params: any) =>
-            `<span style="color: red; font-weight: bold;">${params.value} days</span>`,
+            `<span style="color: red; font-weight: bold;">${params.value}</span>`,
           flex: 1,
         },
       ],
@@ -526,8 +475,50 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.generalSubmissionForms.push({
         title: item.docTypeDesc ?? "",
         link: item.linkToDownload ?? "",
-        WIndFromTypeID: item.wIndFromTypeID ?? 0, // TODO: 
+        WIndFromTypeID: item.wIndFromTypeID ?? 0, 
         DocTypeId: item.docTypeId ?? 0,
+      });
+    }
+  }
+
+  showSubmissionPendingItems(): void {
+
+    this.client.showSubmissionPendingItems().subscribe({
+      next: (response) => {
+         this.pendingSubmissions.pop();
+        if (response && response.isSuccess && response.response) {
+          this.pendingSubmissionsLoaded = true;
+          this.processPendingSubmissions(response.response);//map the response to the table data here.
+          this.selectDefaultTable();
+        } else {
+          this.toastr.error('Failed to load Pending Items.', 'Error');
+          console.error('Failed to load Pending Items:', response?.errorMessage);
+          this.loadingService.hide();
+        }
+      },
+      error: (error) => {
+         this.pendingSubmissions.pop();
+        this.toastr.error('Error occurred while fetching Pending Items.', 'Error');
+        console.error('Error occurred while fetching Pending Items:', error);
+        this.loadingService.hide();
+      },
+    });
+  }
+
+
+
+  processPendingSubmissions(responseData: ItemsPending[]): void {
+    //TODO: Sign button + Open + Delete
+    for (const item of responseData) {
+      // if(!item.isItemAccessible){
+      //   continue;
+      // }
+      // Push the processed data to the array
+      this.pendingSubmissions.push({
+        title: item.description ?? "",
+        // overdueDays: (item?.description?.indexOf("is overdue") ?? -2) > -1 ? "Yes" : ""
+        overdueDays: item.isOverdue ? "Yes" : ""
+        // dueDate: item.rptDueDate ?? "", 
       });
     }
   }

@@ -20,7 +20,7 @@
           <button mat-icon-button class="download-btn" (click)="onDownload(primaryFile)">
             <mat-icon>download</mat-icon>
           </button>
-          <button mat-icon-button class="remove-btn" (click)="removePrimaryFile()">
+          <button *ngIf="!ReadOnly" mat-icon-button class="remove-btn" (click)="removePrimaryFile()">
             <mat-icon>close</mat-icon>
           </button>
         </div>
