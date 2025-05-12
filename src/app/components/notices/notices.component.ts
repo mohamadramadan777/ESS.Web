@@ -102,8 +102,10 @@ export class NoticesComponent implements OnInit {
             },
           });
 
-          dialogRef.afterClosed().subscribe((result) => {
-            console.log('The dialog was closed', result);
+          dialogRef.afterClosed().subscribe((shouldRefresh: boolean) => {
+            if (shouldRefresh) {
+              this.loadNotices(Number(this.selectedYear));
+            }
           });
         } else {
           this.toastr.error('Failed to load notice data.', 'Error');
@@ -117,5 +119,5 @@ export class NoticesComponent implements OnInit {
       },
     });
   }
-  
+
 }

@@ -100,17 +100,19 @@
       <!-- Attachments Tab -->
       <mat-tab *ngIf="this.responseRequired" label="Attachments">
         <div class="tab-content">
-          <app-file-uploader [ShowHeaderPanel]="false" [ShowHeaderFormName]="false" [ObjectID]="this.FirmNoticeResponseObjectID"
-            [ObjectInstanceID]="this.wFirmNoticeID" [ObjectInstanceRevNum]="1" [DocTypeID]="this.NoticeResponseFormTypeID" 
-            [FormTypeID]="this.NoticeResponseFormTypeID"
-            [ShowPrimaryDoc]="false" (fileUploaded)="onFileUploaded($event)"
-            (beforeUpload)="beforeFileUploaded()"></app-file-uploader>
+          <app-file-uploader [ShowHeaderPanel]="false" [ShowHeaderFormName]="false"
+            [ObjectID]="this.FirmNoticeResponseObjectID" [ObjectInstanceID]="this.wFirmNoticeID"
+            [ObjectInstanceRevNum]="1" [DocTypeID]="this.NoticeResponseFormTypeID"
+            [FormTypeID]="this.NoticeResponseFormTypeID" [ShowPrimaryDoc]="false" [ReadOnly]="this.ReadOnly"
+            (fileUploaded)="onFileUploaded($event)" (beforeUpload)="beforeFileUploaded()"></app-file-uploader>
         </div>
       </mat-tab>
 
       <!-- Signature Tab -->
       <mat-tab *ngIf="this.responseRequired" label="Signature">
         <div class="tab-content">
+          <p *ngIf="this.rwSignatureInfoVisible">{{this.lblSignatureInfo}}</p>
+          <p *ngIf="this.rwUsersVisible">{{this.lblUsers}}</p>
           <p><strong>Name of Individual:</strong> {{ this.signatoryName }}</p>
           <p><strong>Date Signed:</strong> {{ this.dateSigned }}</p>
         </div>
@@ -142,8 +144,11 @@
       <mat-icon>folder_check</mat-icon>
       <span class="animated-text">Save & Close</span>
     </button>
-    <button mat-raised-button color="primary" class="btn" (click)="onSubmit()">
+    <button mat-raised-button *ngIf="btnSubmitVisible" color="primary" class="btn" (click)="onSubmit()">
       <mat-icon>send</mat-icon> Submit
+    </button>
+     <button mat-raised-button *ngIf="btnSignOffVisible" color="primary" class="btn" (click)="onSignOff()">
+      <mat-icon>send</mat-icon> Sign Off
     </button>
   </div>
 

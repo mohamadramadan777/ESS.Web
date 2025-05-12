@@ -1,6 +1,6 @@
 import { Component, Inject, Input, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { WObjects, SignOffStatusType, FormType } from '../../../enums/app.enums';
+import { WObjects, SignOffStatusType, FormType, TermSubject } from '../../../enums/app.enums';
 import { AppConstants } from '../../../constants/app.constants';
 import { Client, AttachmentDto, WNoticeQuestionnaireItemDto, ObjectSOTaskStatus, FirmNoticeDataDto, WFirmNoticesDto } from '../../../services/api-client';
 import { LoadingService } from '../../../services/loader.service';
@@ -10,6 +10,7 @@ import { HtmlViewerComponent } from '../../html-viewer/html-viewer.component';
 import { MatTabGroup } from '@angular/material/tabs';
 import Swal from 'sweetalert2';
 import { FileUploaderComponent } from '../../file-uploader/file-uploader.component';
+import { SignOffGenericComponent } from '../../sign-off-generic/sign-off-generic.component';
 
 @Component({
   selector: 'app-view-notice',
@@ -47,7 +48,15 @@ export class ViewNoticeComponent {
   additionalAttachments: AttachmentDto[] = [];
   noticeQuestions: WNoticeQuestionnaireItemDto[] = [];
   FirmNoticeResponseObjectID = WObjects.FirmNoticeResponse;
-  NoticeResponseFormTypeID = FormType.NoticeResponse
+  NoticeResponseFormTypeID = FormType.NoticeResponse;
+  hdnUserIDs = "";
+  lblUsers = "";
+  lblSignatureInfo = "";
+  rwUsersVisible: boolean = false;
+  rwSignatureInfoVisible: boolean = false;
+  btnSignOffVisible: boolean = false;
+  btnSubmitVisible: boolean = true;
+  wTermID = TermSubject.UserSignOffSubject;
   onClose(): void {
     this.dialogRef.close();
   }
@@ -116,22 +125,52 @@ export class ViewNoticeComponent {
     });
   }
 
-  getAndBindNoticeSignatories(): void {
+  getAndBindNoticeSignatoriesOld(): void {
     if (this.wFirmNoticeID != 0) {
       this.client.getObjectSoTaskStatus(WObjects.FirmNoticeResponse, this.wFirmNoticeID, undefined).subscribe({
         next: (response) => {
           if (response && response.isSuccess && response.response) {
-            const bSingUserInfo: ObjectSOTaskStatus | undefined = response.response?.filter(c => c.soTaskCompletionDate && c.soTaskCompletionDate.trim() !== '').shift();
-            if (bSingUserInfo && bSingUserInfo.soTaskAssignedTo != 0) {
-              this.noticeCompleted = true;
-              this.signatoryName = bSingUserInfo.individualName ?? '';
-              this.dateSigned = bSingUserInfo.soTaskCompletionDate ?? '';
-              // TODO: Show Hide
+            if (response.response?.length > 0) {
+              const bSingUserInfo: ObjectSOTaskStatus | undefined = response.response?.filter(c => c.soTaskCompletionDate && c.soTaskCompletionDate.trim() !== '').shift();
+              if (bSingUserInfo && bSingUserInfo.soTaskAssignedTo != 0) {
+                this.noticeCompleted = true;
+                this.signatoryName = bSingUserInfo.individualName ?? '';
+                this.dateSigned = bSingUserInfo.soTaskCompletionDate ?? '';
+                this.rwSignatureInfoVisible = false;
+                this.rwUsersVisible = false;
+                this.btnSignOffVisible = false;
+                this.ReadOnly = true;
+                this.noticeCompleted = true;
+              }
+              else if (this.dateSigned != "") {
+                const TEXT_SPACE_OR = " or ";
+                const COMMA = ",";
+                const _userID = Number(localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID));
+
+                const activeUsers = response.response?.filter(c => c.userActive)
+                  .map(c => ({
+                    SOTaskAssignedTo: c.soTaskAssignedTo as number,
+                    IndividualName: c.individualName as string
+                  }));
+
+                const uniqueUsers = Array.from(
+                  new Map(activeUsers?.map(u => [u.SOTaskAssignedTo + '|' + u.IndividualName?.trim(), u])).values()
+                );
+
+                this.lblUsers = uniqueUsers
+                  .filter(u => u.IndividualName && u.IndividualName.trim() !== '')
+                  .map(u => u.IndividualName.trim())
+                  .join(TEXT_SPACE_OR);
+
+                this.hdnUserIDs = COMMA + uniqueUsers.map(u => u.SOTaskAssignedTo).join(COMMA) + COMMA;
+                const bCanLoggedInUserSign = response.response?.find(c => c.soTaskAssignedTo === _userID);
+                this.btnSignOffVisible = false;
+
+
+                this.noticeCompleted = false;
+              }
             }
-            else if (bSingUserInfo?.soTaskCompletionDate != null && bSingUserInfo?.soTaskCompletionDate != "") {
-              this.noticeCompleted = false;
-              // TODO: Bind the signatory name
-            }
+
           } else {
             this.toastr.error('Failed to load signatories.', 'Error');
             console.error('Failed to load signatories:', response?.errorMessage);
@@ -146,6 +185,41 @@ export class ViewNoticeComponent {
       });
     }
   }
+
+  getAndBindNoticeSignatories(): void {
+    if (this.wFirmNoticeID != 0) {
+      this.client.getAndBindNoticeSignatories(this.wFirmNoticeID, this.dateSigned).subscribe({
+        next: (response) => {
+          if (response && response.isSuccess && response.response) {
+            if (!response.response?.doNothing) {
+              this.noticeCompleted = response.response?.noticeCompleted ?? false;
+              this.lblSignatureInfo = response.response?.lblSignatureInfo ?? "";
+              this.signatoryName = response.response?.txtSignatoryName ?? '';
+              this.dateSigned = response.response?.txtDateSigned ?? '';
+              this.rwSignatureInfoVisible = response.response?.rwSignatureInfoVisible ?? false;
+              this.rwUsersVisible = response.response?.rwUsersVisible ?? false;
+              this.btnSignOffVisible = response.response?.btnSignOffVisible ?? false;
+              this.btnSubmitVisible = response.response?.btnSubmitVisible ?? false;
+              this.ReadOnly = response.response?.readOnly ?? false;
+              this.lblUsers = response.response?.lblUsers ?? "";
+              this.hdnUserIDs = response.response?.hdnUserIDs ?? "";
+            }
+
+          } else {
+            this.toastr.error('Failed to load signatories.', 'Error');
+            console.error('Failed to load signatories:', response?.errorMessage);
+          }
+        },
+        error: (error) => {
+          this.loadingService.hide();
+          this.noticeQuestionsLoaded = true;
+          this.toastr.error('Error occurred while fetching signatories.', 'Error');
+          console.error('Error occurred while signatories:', error);
+        },
+      });
+    }
+  }
+
 
   openHtmlViewer(): void {
     if (this.data.wEmailNotificationContent) {
@@ -192,7 +266,7 @@ export class ViewNoticeComponent {
           this.unsavedChanges = false;
           this.toastr.success('Changes saved successfully!', 'Success');
           if (withClose) {
-            this.dialogRef.close();
+            this.dialogRef.close(false);
           }
         } else {
           this.toastr.error('Failed to save response.', 'Error');
@@ -215,7 +289,87 @@ export class ViewNoticeComponent {
 
   // Submit functionality
   onSubmit(): void {
-    console.log('Submit clicked');
+    const userId = localStorage.getItem(this.AppConstants.Session.SESSION_W_USERID);
+    const firmNoticeData: FirmNoticeDataDto = new FirmNoticeDataDto();
+    firmNoticeData.lstQuestionResponse = this.noticeQuestions;
+    firmNoticeData.objWFirmNotice = new WFirmNoticesDto();
+    firmNoticeData.objWFirmNotice.wFirmNoticeID = this.wFirmNoticeID;
+    firmNoticeData.objWFirmNotice.wNoticeID = this.wNoticeID;
+    firmNoticeData.objWFirmNotice.wNotes = this.data.wNotes;
+    firmNoticeData.objWFirmNotice.wObjectSOStatusID = this.data?.wObjectSOStatusID;
+    firmNoticeData.objWFirmNotice.createdBy = Number(userId);
+    //TODO: Save DDL value --> method getListofEvalutionsFromUI in web forms
+    this.loadingService.show();
+    this.client.saveNoticeResponse(firmNoticeData).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess && response.response == 1) {
+          this.unsavedChanges = false;
+          //TODO: Validate mandatory fields (answers) for questions
+          if (!this.signOffRequired()) {
+            this.client.submitNoticeResponseSignOffNotRequired(this.wFirmNoticeID, this.data.wReferenceNumber, this.data.wNoticeName, this.data.wSubject, this.data.wNotificationSentDate, this.data.wResponseDueDate).subscribe({
+              next: (response) => {
+                this.loadingService.hide();
+                if (response && response.isSuccess && response.response) {
+                  this.unsavedChanges = false;
+                  this.toastr.success('Response submitted successfully!', 'Success');
+                  this.dialogRef.close(true);
+                } else {
+                  this.toastr.error('Failed to submit response.', 'Error');
+                  console.error('Failed to submit response:', response?.errorMessage);
+                }
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.noticeQuestionsLoaded = true;
+                this.toastr.error('Error occurred while saving response.', 'Error');
+                console.error('Error occurred while saving response:', error);
+              },
+            });
+          }
+          else {
+            this.client.submitNoticeResponseWithSignOff(this.wFirmNoticeID, this.data.wReferenceNumber, this.data.wNoticeName, this.data.wSubject, this.data.wNotificationSentDate,
+              this.data.wResponseDueDate, this.data.wRespondentsControlledFunctionTypeIDs, this.data.wRespondentsDNFBPFunctionTypeIDs, this.dateSigned
+            ).subscribe({
+              next: (response) => {
+                this.loadingService.hide();
+                if (response && response.isSuccess && response.response) {
+                  this.unsavedChanges = false;
+                  this.btnSubmitVisible = response.response.btnSubmitVisible ?? false;
+                  this.btnSignOffVisible = response.response.btnSignOffVisible ?? false;
+                  this.rwSignatureInfoVisible = response.response.rwSignatureInfoVisible ?? false;
+                  this.rwUsersVisible = response.response.rwUsersVisible ?? false;
+                  this.lblSignatureInfo = response.response.lblSignatureInfo ?? "";
+                  this.lblUsers = response.response.lblUsers ?? "";
+                  this.hdnUserIDs = response.response.hdnUserIDs ?? "";
+                  this.toastr.success('Changes saved successfully!', 'Success');
+                  this.openSignOffDialog();
+                } else {
+                  this.toastr.error('Failed to submit response.', 'Error');
+                  console.error('Failed to submit response:', response?.errorMessage);
+                }
+              },
+              error: (error) => {
+                this.loadingService.hide();
+                this.noticeQuestionsLoaded = true;
+                this.toastr.error('Error occurred while saving response.', 'Error');
+                console.error('Error occurred while saving response:', error);
+              },
+            });
+          }
+
+        } else {
+          this.toastr.error('Failed to save response.', 'Error');
+          console.error('Failed to save response:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.noticeQuestionsLoaded = true;
+        this.toastr.error('Error occurred while saving response.', 'Error');
+        console.error('Error occurred while saving response:', error);
+      },
+    });
   }
 
   onNotesChange(): void {
@@ -246,6 +400,52 @@ export class ViewNoticeComponent {
 
   onNoticeQuestionsChange(): void {
     this.unsavedChanges = true;
+  }
+
+  openSignOffDialog(): void {
+    const dialogRef = this.dialog.open(SignOffGenericComponent, {
+      width: 'auto',
+      height: 'auto',
+      data: {
+        TermID: this.wTermID, // Pass the TermID dynamically
+        ShowAcceptTermsCheckBox: false, // Pass the ShowAcceptTermsCheckBox dynamically
+        signOffMethod: () => this.signOff(),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Dialog closed with result:', result);
+      // Handle any logic after dialog closes
+    });
+  }
+
+  onSignOff(): void {
+    this.openSignOffDialog();
+  }
+
+  signOff(): void {
+    this.loadingService.show();
+    this.client.signOffClickNotice(this.wFirmNoticeID, this.data.wReferenceNumber, this.data.wNoticeName, this.data.wSubject, this.data.wNotificationSentDate, this.data.wResponseDueDate).subscribe({
+      next: (response) => {
+        this.loadingService.hide();
+        if (response && response.isSuccess) {
+          this.toastr.success('Response submitted successfully!', 'Success');
+          this.dialogRef.close(true);
+        } else {
+          this.toastr.error('Failed to sign off notice.', 'Error');
+          console.error('Failed to sign off notice:', response?.errorMessage);
+        }
+      },
+      error: (error) => {
+        this.loadingService.hide();
+        this.toastr.error('Error occurred while signing notice.', 'Error');
+        console.error('Error occurred while signing notice:', error);
+      },
+    });
+  }
+
+  signOffRequired(): boolean {
+    return this.wRespondentTypeID == 1;
   }
 
   onFileUploaded(uploadIds: number[]): void {

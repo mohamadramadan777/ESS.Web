@@ -15,6 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 import { API_BASE_URL } from './tokens';
 
+
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -10196,6 +10197,67 @@ export class Client {
     }
 
     /**
+     * @param firmNoticeID (optional) 
+     * @param txtDateSigned (optional) 
+     * @return OK
+     */
+    getAndBindNoticeSignatories(firmNoticeID: number | undefined, txtDateSigned: string | undefined): Observable<NoticeBindSignatoriesResultBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/get-and-bind-notice-signatories?";
+        if (firmNoticeID === null)
+            throw new Error("The parameter 'firmNoticeID' cannot be null.");
+        else if (firmNoticeID !== undefined)
+            url_ += "firmNoticeID=" + encodeURIComponent("" + firmNoticeID) + "&";
+        if (txtDateSigned === null)
+            throw new Error("The parameter 'txtDateSigned' cannot be null.");
+        else if (txtDateSigned !== undefined)
+            url_ += "txtDateSigned=" + encodeURIComponent("" + txtDateSigned) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAndBindNoticeSignatories(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAndBindNoticeSignatories(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<NoticeBindSignatoriesResultBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<NoticeBindSignatoriesResultBaseResponse>;
+        }));
+    }
+
+    protected processGetAndBindNoticeSignatories(response: HttpResponseBase): Observable<NoticeBindSignatoriesResultBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = NoticeBindSignatoriesResultBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<NoticeBindSignatoriesResultBaseResponse>(null as any);
+    }
+
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -10253,9 +10315,6 @@ export class Client {
 
     /**
      * @param firmNoticeID (optional) 
-     * @param _userID (optional) 
-     * @param _qfcNumber (optional) 
-     * @param firmTypeID (optional) 
      * @param lblRefrenceNumber (optional) 
      * @param lblNoticeName (optional) 
      * @param lblSubject (optional) 
@@ -10263,24 +10322,12 @@ export class Client {
      * @param lblResponseDueDate (optional) 
      * @return OK
      */
-    submitNoticeResponseSignOffNotRequired(firmNoticeID: number | undefined, _userID: number | undefined, _qfcNumber: string | undefined, firmTypeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
+    submitNoticeResponseSignOffNotRequired(firmNoticeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/NoticeData/submit-notice-response-sign-off-not-required?";
         if (firmNoticeID === null)
             throw new Error("The parameter 'firmNoticeID' cannot be null.");
         else if (firmNoticeID !== undefined)
             url_ += "firmNoticeID=" + encodeURIComponent("" + firmNoticeID) + "&";
-        if (_userID === null)
-            throw new Error("The parameter '_userID' cannot be null.");
-        else if (_userID !== undefined)
-            url_ += "_userID=" + encodeURIComponent("" + _userID) + "&";
-        if (_qfcNumber === null)
-            throw new Error("The parameter '_qfcNumber' cannot be null.");
-        else if (_qfcNumber !== undefined)
-            url_ += "_qfcNumber=" + encodeURIComponent("" + _qfcNumber) + "&";
-        if (firmTypeID === null)
-            throw new Error("The parameter 'firmTypeID' cannot be null.");
-        else if (firmTypeID !== undefined)
-            url_ += "firmTypeID=" + encodeURIComponent("" + firmTypeID) + "&";
         if (lblRefrenceNumber === null)
             throw new Error("The parameter 'lblRefrenceNumber' cannot be null.");
         else if (lblRefrenceNumber !== undefined)
@@ -10452,8 +10499,8 @@ export class Client {
      * @param lblResponseDueDate (optional) 
      * @return OK
      */
-    signOffClick(firmNoticeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
-        let url_ = this.baseUrl + "/api/NoticeData/sign-off-click?";
+    signOffClickNotice(firmNoticeID: number | undefined, lblRefrenceNumber: string | undefined, lblNoticeName: string | undefined, lblSubject: string | undefined, hdnWNotificationSentDate: string | undefined, lblResponseDueDate: string | undefined): Observable<BooleanBaseResponse> {
+        let url_ = this.baseUrl + "/api/NoticeData/sign-off-click-notice?";
         if (firmNoticeID === null)
             throw new Error("The parameter 'firmNoticeID' cannot be null.");
         else if (firmNoticeID !== undefined)
@@ -10489,11 +10536,11 @@ export class Client {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSignOffClick(response_);
+            return this.processSignOffClickNotice(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processSignOffClick(response_ as any);
+                    return this.processSignOffClickNotice(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<BooleanBaseResponse>;
                 }
@@ -10502,7 +10549,7 @@ export class Client {
         }));
     }
 
-    protected processSignOffClick(response: HttpResponseBase): Observable<BooleanBaseResponse> {
+    protected processSignOffClickNotice(response: HttpResponseBase): Observable<BooleanBaseResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -27081,6 +27128,138 @@ export interface ILoadRptSchDetailsDtoBaseResponse {
     errorMessage?: string | undefined;
     statusCode?: number;
     response?: LoadRptSchDetailsDto;
+}
+
+export class NoticeBindSignatoriesResult implements INoticeBindSignatoriesResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    lblSignatureInfo?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    readOnly?: boolean | undefined;
+    noticeCompleted?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    doNothing?: boolean | undefined;
+    message?: string | undefined;
+    txtSignatoryName?: string | undefined;
+    txtDateSigned?: string | undefined;
+
+    constructor(data?: INoticeBindSignatoriesResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.lblUsers = _data["lblUsers"];
+            this.hdnUserIDs = _data["hdnUserIDs"];
+            this.lblSignatureInfo = _data["lblSignatureInfo"];
+            this.btnSignOffVisible = _data["btnSignOffVisible"];
+            this.readOnly = _data["readOnly"];
+            this.noticeCompleted = _data["noticeCompleted"];
+            this.btnSubmitVisible = _data["btnSubmitVisible"];
+            this.rwSignatureInfoVisible = _data["rwSignatureInfoVisible"];
+            this.rwUsersVisible = _data["rwUsersVisible"];
+            this.doNothing = _data["doNothing"];
+            this.message = _data["message"];
+            this.txtSignatoryName = _data["txtSignatoryName"];
+            this.txtDateSigned = _data["txtDateSigned"];
+        }
+    }
+
+    static fromJS(data: any): NoticeBindSignatoriesResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new NoticeBindSignatoriesResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["lblUsers"] = this.lblUsers;
+        data["hdnUserIDs"] = this.hdnUserIDs;
+        data["lblSignatureInfo"] = this.lblSignatureInfo;
+        data["btnSignOffVisible"] = this.btnSignOffVisible;
+        data["readOnly"] = this.readOnly;
+        data["noticeCompleted"] = this.noticeCompleted;
+        data["btnSubmitVisible"] = this.btnSubmitVisible;
+        data["rwSignatureInfoVisible"] = this.rwSignatureInfoVisible;
+        data["rwUsersVisible"] = this.rwUsersVisible;
+        data["doNothing"] = this.doNothing;
+        data["message"] = this.message;
+        data["txtSignatoryName"] = this.txtSignatoryName;
+        data["txtDateSigned"] = this.txtDateSigned;
+        return data;
+    }
+}
+
+export interface INoticeBindSignatoriesResult {
+    lblUsers?: string | undefined;
+    hdnUserIDs?: string | undefined;
+    lblSignatureInfo?: string | undefined;
+    btnSignOffVisible?: boolean | undefined;
+    readOnly?: boolean | undefined;
+    noticeCompleted?: boolean | undefined;
+    btnSubmitVisible?: boolean | undefined;
+    rwSignatureInfoVisible?: boolean | undefined;
+    rwUsersVisible?: boolean | undefined;
+    doNothing?: boolean | undefined;
+    message?: string | undefined;
+    txtSignatoryName?: string | undefined;
+    txtDateSigned?: string | undefined;
+}
+
+export class NoticeBindSignatoriesResultBaseResponse implements INoticeBindSignatoriesResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: NoticeBindSignatoriesResult;
+
+    constructor(data?: INoticeBindSignatoriesResultBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            this.response = _data["response"] ? NoticeBindSignatoriesResult.fromJS(_data["response"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): NoticeBindSignatoriesResultBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new NoticeBindSignatoriesResultBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        data["response"] = this.response ? this.response.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface INoticeBindSignatoriesResultBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: NoticeBindSignatoriesResult;
 }
 
 export class NumberFormatInfo implements INumberFormatInfo {
