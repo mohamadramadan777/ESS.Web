@@ -15,7 +15,6 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 import { API_BASE_URL } from './tokens';
 
-
 @Injectable()
 export class Client {
     private http: HttpClient;
@@ -4850,6 +4849,498 @@ export class Client {
             }));
         }
         return _observableOf<WUsersDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getRequestProcess(): Observable<WAdminProcessListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-request-process";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRequestProcess(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRequestProcess(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WAdminProcessListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WAdminProcessListBaseResponse>;
+        }));
+    }
+
+    protected processGetRequestProcess(response: HttpResponseBase): Observable<WAdminProcessListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WAdminProcessListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WAdminProcessListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    insertUpdateAdminProcess(body: WAdminProcess | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AdminRequest/insert-update-admin-process";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processInsertUpdateAdminProcess(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processInsertUpdateAdminProcess(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processInsertUpdateAdminProcess(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getObjectNotifications(body: EmailRequisitesDto | undefined): Observable<EmailRequisitesDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-object-notifications";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetObjectNotifications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetObjectNotifications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<EmailRequisitesDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<EmailRequisitesDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetObjectNotifications(response: HttpResponseBase): Observable<EmailRequisitesDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = EmailRequisitesDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<EmailRequisitesDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param objNotificationID (optional) 
+     * @param objectID (optional) 
+     * @param objectInstanceID (optional) 
+     * @return OK
+     */
+    reprocessEmailNotifications(objNotificationID: number | undefined, objectID: number | undefined, objectInstanceID: number | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AdminRequest/reprocess-email-notifications?";
+        if (objNotificationID === null)
+            throw new Error("The parameter 'objNotificationID' cannot be null.");
+        else if (objNotificationID !== undefined)
+            url_ += "objNotificationID=" + encodeURIComponent("" + objNotificationID) + "&";
+        if (objectID === null)
+            throw new Error("The parameter 'objectID' cannot be null.");
+        else if (objectID !== undefined)
+            url_ += "objectID=" + encodeURIComponent("" + objectID) + "&";
+        if (objectInstanceID === null)
+            throw new Error("The parameter 'objectInstanceID' cannot be null.");
+        else if (objectInstanceID !== undefined)
+            url_ += "objectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processReprocessEmailNotifications(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processReprocessEmailNotifications(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processReprocessEmailNotifications(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    getListOfWorkflows(body: ObjectWorkflowDto | undefined): Observable<ObjectWorkflowDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-list-of-workflows";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetListOfWorkflows(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetListOfWorkflows(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<ObjectWorkflowDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<ObjectWorkflowDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetListOfWorkflows(response: HttpResponseBase): Observable<ObjectWorkflowDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ObjectWorkflowDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ObjectWorkflowDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param userID (optional) 
+     * @return OK
+     */
+    getLoggedInUsers(userID: number | undefined): Observable<WUsersDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-logged-in-users?";
+        if (userID === null)
+            throw new Error("The parameter 'userID' cannot be null.");
+        else if (userID !== undefined)
+            url_ += "userID=" + encodeURIComponent("" + userID) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetLoggedInUsers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetLoggedInUsers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<WUsersDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<WUsersDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetLoggedInUsers(response: HttpResponseBase): Observable<WUsersDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = WUsersDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<WUsersDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    getPendingJobs(): Observable<UserPendingItemsDtoListBaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/get-pending-jobs";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPendingJobs(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPendingJobs(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<UserPendingItemsDtoListBaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<UserPendingItemsDtoListBaseResponse>;
+        }));
+    }
+
+    protected processGetPendingJobs(response: HttpResponseBase): Observable<UserPendingItemsDtoListBaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserPendingItemsDtoListBaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserPendingItemsDtoListBaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    createAdminUser(body: WUsersDto | undefined): Observable<Int32BaseResponse> {
+        let url_ = this.baseUrl + "/api/AdminRequest/create-admin-user";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateAdminUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateAdminUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<Int32BaseResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<Int32BaseResponse>;
+        }));
+    }
+
+    protected processCreateAdminUser(response: HttpResponseBase): Observable<Int32BaseResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Int32BaseResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<Int32BaseResponse>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    updateUserRequest(body: WUsersDto | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/AdminRequest/update-user-request";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateUserRequest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateUserRequest(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateUserRequest(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(null as any);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(null as any);
     }
 
     /**
@@ -10712,9 +11203,10 @@ export class Client {
      * @param isItemAccessible (optional) 
      * @param description (optional) 
      * @param objectInstanceID (optional) 
+     * @param rptSchItemAttachments (optional) 
      * @return OK
      */
-    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined, isItemAccessible: boolean | undefined, description: string | undefined, objectInstanceID: number | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined, isItemAccessible: boolean | undefined, description: string | undefined, objectInstanceID: number | undefined, rptSchItemAttachments: ReportSchAttachmentDto[] | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
         if (qFCNum === null)
             throw new Error("The parameter 'qFCNum' cannot be null.");
@@ -11062,6 +11554,15 @@ export class Client {
             throw new Error("The parameter 'objectInstanceID' cannot be null.");
         else if (objectInstanceID !== undefined)
             url_ += "ObjectInstanceID=" + encodeURIComponent("" + objectInstanceID) + "&";
+        if (rptSchItemAttachments === null)
+            throw new Error("The parameter 'rptSchItemAttachments' cannot be null.");
+        else if (rptSchItemAttachments !== undefined)
+            rptSchItemAttachments && rptSchItemAttachments.forEach((item, index) => {
+                for (const attr in item)
+        			if (item.hasOwnProperty(attr)) {
+        				url_ += "RptSchItemAttachments[" + index + "]." + attr + "=" + encodeURIComponent("" + (item as any)[attr]) + "&";
+        			}
+            });
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -19773,7 +20274,6 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
     wObjectSOStatusID?: number | undefined;
     updateWobjectStatus?: boolean;
     resubmissionComments?: string | undefined;
-    appUserID?: number;
     qfcNmuner?: string | undefined;
     aiNumber?: string | undefined;
     formTypeID?: number;
@@ -19838,7 +20338,6 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
             this.wObjectSOStatusID = _data["wObjectSOStatusID"];
             this.updateWobjectStatus = _data["updateWobjectStatus"];
             this.resubmissionComments = _data["resubmissionComments"];
-            this.appUserID = _data["appUserID"];
             this.qfcNmuner = _data["qfcNmuner"];
             this.aiNumber = _data["aiNumber"];
             this.formTypeID = _data["formTypeID"];
@@ -19903,7 +20402,6 @@ export class ApplicationDetailDto implements IApplicationDetailDto {
         data["wObjectSOStatusID"] = this.wObjectSOStatusID;
         data["updateWobjectStatus"] = this.updateWobjectStatus;
         data["resubmissionComments"] = this.resubmissionComments;
-        data["appUserID"] = this.appUserID;
         data["qfcNmuner"] = this.qfcNmuner;
         data["aiNumber"] = this.aiNumber;
         data["formTypeID"] = this.formTypeID;
@@ -19961,7 +20459,6 @@ export interface IApplicationDetailDto {
     wObjectSOStatusID?: number | undefined;
     updateWobjectStatus?: boolean;
     resubmissionComments?: string | undefined;
-    appUserID?: number;
     qfcNmuner?: string | undefined;
     aiNumber?: string | undefined;
     formTypeID?: number;
@@ -24190,6 +24687,138 @@ export interface IEmailRequisites {
     notifiedBy?: number | undefined;
 }
 
+export class EmailRequisitesDto implements IEmailRequisitesDto {
+    toEmail?: string | undefined;
+    objectID?: number | undefined;
+    qfcNumber?: string | undefined;
+    notifiedDate?: string | undefined;
+    body?: string | undefined;
+    subject?: string | undefined;
+    pageIndex?: number | undefined;
+    pageSize?: number | undefined;
+    emailCount?: number | undefined;
+    objectNotificationID?: number | undefined;
+    objectDesc?: string | undefined;
+
+    constructor(data?: IEmailRequisitesDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.toEmail = _data["toEmail"];
+            this.objectID = _data["objectID"];
+            this.qfcNumber = _data["qfcNumber"];
+            this.notifiedDate = _data["notifiedDate"];
+            this.body = _data["body"];
+            this.subject = _data["subject"];
+            this.pageIndex = _data["pageIndex"];
+            this.pageSize = _data["pageSize"];
+            this.emailCount = _data["emailCount"];
+            this.objectNotificationID = _data["objectNotificationID"];
+            this.objectDesc = _data["objectDesc"];
+        }
+    }
+
+    static fromJS(data: any): EmailRequisitesDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EmailRequisitesDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["toEmail"] = this.toEmail;
+        data["objectID"] = this.objectID;
+        data["qfcNumber"] = this.qfcNumber;
+        data["notifiedDate"] = this.notifiedDate;
+        data["body"] = this.body;
+        data["subject"] = this.subject;
+        data["pageIndex"] = this.pageIndex;
+        data["pageSize"] = this.pageSize;
+        data["emailCount"] = this.emailCount;
+        data["objectNotificationID"] = this.objectNotificationID;
+        data["objectDesc"] = this.objectDesc;
+        return data;
+    }
+}
+
+export interface IEmailRequisitesDto {
+    toEmail?: string | undefined;
+    objectID?: number | undefined;
+    qfcNumber?: string | undefined;
+    notifiedDate?: string | undefined;
+    body?: string | undefined;
+    subject?: string | undefined;
+    pageIndex?: number | undefined;
+    pageSize?: number | undefined;
+    emailCount?: number | undefined;
+    objectNotificationID?: number | undefined;
+    objectDesc?: string | undefined;
+}
+
+export class EmailRequisitesDtoListBaseResponse implements IEmailRequisitesDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: EmailRequisitesDto[] | undefined;
+
+    constructor(data?: IEmailRequisitesDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(EmailRequisitesDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): EmailRequisitesDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new EmailRequisitesDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IEmailRequisitesDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: EmailRequisitesDto[] | undefined;
+}
+
 export class Firm implements IFirm {
     firmName?: string | undefined;
     firmCode?: string | undefined;
@@ -28254,6 +28883,174 @@ export interface IObjectTextDtoListBaseResponse {
     response?: ObjectTextDto[] | undefined;
 }
 
+export class ObjectWorkflowDto implements IObjectWorkflowDto {
+    qfcNumber?: string | undefined;
+    objectTypeID?: number | undefined;
+    wObjectWorkflowStatusTypeID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    docTypeID?: number | undefined;
+    soInititiationDate?: string | undefined;
+    objectTypeDesc?: string | undefined;
+    objectDetails?: string | undefined;
+    wObjectWorkFlowStatusDesc?: string | undefined;
+    signatoryName?: string | undefined;
+    signatoryRole?: string | undefined;
+    signatoryEmailAddress?: string | undefined;
+    soStatusCompletedDate?: string | undefined;
+    soStatusTypeID?: number | undefined;
+    soStatusAssignedDate?: string | undefined;
+    wObjectSoTaskStatusDesc?: string | undefined;
+    wObjectSOTaskStatusID?: number | undefined;
+    taskSeq?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjectInstanceID?: number | undefined;
+
+    constructor(data?: IObjectWorkflowDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.objectTypeID = _data["objectTypeID"];
+            this.wObjectWorkflowStatusTypeID = _data["wObjectWorkflowStatusTypeID"];
+            this.wObjectSOStatusID = _data["wObjectSOStatusID"];
+            this.docTypeID = _data["docTypeID"];
+            this.soInititiationDate = _data["soInititiationDate"];
+            this.objectTypeDesc = _data["objectTypeDesc"];
+            this.objectDetails = _data["objectDetails"];
+            this.wObjectWorkFlowStatusDesc = _data["wObjectWorkFlowStatusDesc"];
+            this.signatoryName = _data["signatoryName"];
+            this.signatoryRole = _data["signatoryRole"];
+            this.signatoryEmailAddress = _data["signatoryEmailAddress"];
+            this.soStatusCompletedDate = _data["soStatusCompletedDate"];
+            this.soStatusTypeID = _data["soStatusTypeID"];
+            this.soStatusAssignedDate = _data["soStatusAssignedDate"];
+            this.wObjectSoTaskStatusDesc = _data["wObjectSoTaskStatusDesc"];
+            this.wObjectSOTaskStatusID = _data["wObjectSOTaskStatusID"];
+            this.taskSeq = _data["taskSeq"];
+            this.wObjectID = _data["wObjectID"];
+            this.wObjectInstanceID = _data["wObjectInstanceID"];
+        }
+    }
+
+    static fromJS(data: any): ObjectWorkflowDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectWorkflowDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["objectTypeID"] = this.objectTypeID;
+        data["wObjectWorkflowStatusTypeID"] = this.wObjectWorkflowStatusTypeID;
+        data["wObjectSOStatusID"] = this.wObjectSOStatusID;
+        data["docTypeID"] = this.docTypeID;
+        data["soInititiationDate"] = this.soInititiationDate;
+        data["objectTypeDesc"] = this.objectTypeDesc;
+        data["objectDetails"] = this.objectDetails;
+        data["wObjectWorkFlowStatusDesc"] = this.wObjectWorkFlowStatusDesc;
+        data["signatoryName"] = this.signatoryName;
+        data["signatoryRole"] = this.signatoryRole;
+        data["signatoryEmailAddress"] = this.signatoryEmailAddress;
+        data["soStatusCompletedDate"] = this.soStatusCompletedDate;
+        data["soStatusTypeID"] = this.soStatusTypeID;
+        data["soStatusAssignedDate"] = this.soStatusAssignedDate;
+        data["wObjectSoTaskStatusDesc"] = this.wObjectSoTaskStatusDesc;
+        data["wObjectSOTaskStatusID"] = this.wObjectSOTaskStatusID;
+        data["taskSeq"] = this.taskSeq;
+        data["wObjectID"] = this.wObjectID;
+        data["wObjectInstanceID"] = this.wObjectInstanceID;
+        return data;
+    }
+}
+
+export interface IObjectWorkflowDto {
+    qfcNumber?: string | undefined;
+    objectTypeID?: number | undefined;
+    wObjectWorkflowStatusTypeID?: number | undefined;
+    wObjectSOStatusID?: number | undefined;
+    docTypeID?: number | undefined;
+    soInititiationDate?: string | undefined;
+    objectTypeDesc?: string | undefined;
+    objectDetails?: string | undefined;
+    wObjectWorkFlowStatusDesc?: string | undefined;
+    signatoryName?: string | undefined;
+    signatoryRole?: string | undefined;
+    signatoryEmailAddress?: string | undefined;
+    soStatusCompletedDate?: string | undefined;
+    soStatusTypeID?: number | undefined;
+    soStatusAssignedDate?: string | undefined;
+    wObjectSoTaskStatusDesc?: string | undefined;
+    wObjectSOTaskStatusID?: number | undefined;
+    taskSeq?: number | undefined;
+    wObjectID?: number | undefined;
+    wObjectInstanceID?: number | undefined;
+}
+
+export class ObjectWorkflowDtoListBaseResponse implements IObjectWorkflowDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectWorkflowDto[] | undefined;
+
+    constructor(data?: IObjectWorkflowDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(ObjectWorkflowDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ObjectWorkflowDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ObjectWorkflowDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IObjectWorkflowDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: ObjectWorkflowDto[] | undefined;
+}
+
 export class PendingItemsDto implements IPendingItemsDto {
     applicationID?: number | undefined;
     qfcNmuner?: string | undefined;
@@ -28702,6 +29499,66 @@ export interface IProductActivity {
     conditionalApprovalDate?: string | undefined;
 }
 
+export class ReportSchAttachmentDto implements IReportSchAttachmentDto {
+    fileName?: string | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    attachmentFileURI?: string | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    submittedOn?: string | undefined;
+
+    constructor(data?: IReportSchAttachmentDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileName = _data["fileName"];
+            this.rptSchItemAttachmentID = _data["rptSchItemAttachmentID"];
+            this.attachmentFileURI = _data["attachmentFileURI"];
+            this.fileUploadedByName = _data["fileUploadedByName"];
+            this.fileUploadedByEmailAdd = _data["fileUploadedByEmailAdd"];
+            this.attachmentFilePath = _data["attachmentFilePath"];
+            this.submittedOn = _data["submittedOn"];
+        }
+    }
+
+    static fromJS(data: any): ReportSchAttachmentDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReportSchAttachmentDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileName"] = this.fileName;
+        data["rptSchItemAttachmentID"] = this.rptSchItemAttachmentID;
+        data["attachmentFileURI"] = this.attachmentFileURI;
+        data["fileUploadedByName"] = this.fileUploadedByName;
+        data["fileUploadedByEmailAdd"] = this.fileUploadedByEmailAdd;
+        data["attachmentFilePath"] = this.attachmentFilePath;
+        data["submittedOn"] = this.submittedOn;
+        return data;
+    }
+}
+
+export interface IReportSchAttachmentDto {
+    fileName?: string | undefined;
+    rptSchItemAttachmentID?: number | undefined;
+    attachmentFileURI?: string | undefined;
+    fileUploadedByName?: string | undefined;
+    fileUploadedByEmailAdd?: string | undefined;
+    attachmentFilePath?: string | undefined;
+    submittedOn?: string | undefined;
+}
+
 export class ReportSchDetails implements IReportSchDetails {
     firmsRptSchID?: number;
     firmsRptSchItemID?: number;
@@ -29067,6 +29924,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     isItemAccessible?: boolean | undefined;
     description?: string | undefined;
     objectInstanceID?: number | undefined;
+    rptSchItemAttachments?: ReportSchAttachmentDto[] | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -29171,6 +30029,11 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
             this.isItemAccessible = _data["isItemAccessible"];
             this.description = _data["description"];
             this.objectInstanceID = _data["objectInstanceID"];
+            if (Array.isArray(_data["rptSchItemAttachments"])) {
+                this.rptSchItemAttachments = [] as any;
+                for (let item of _data["rptSchItemAttachments"])
+                    this.rptSchItemAttachments!.push(ReportSchAttachmentDto.fromJS(item));
+            }
         }
     }
 
@@ -29275,6 +30138,11 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
         data["isItemAccessible"] = this.isItemAccessible;
         data["description"] = this.description;
         data["objectInstanceID"] = this.objectInstanceID;
+        if (Array.isArray(this.rptSchItemAttachments)) {
+            data["rptSchItemAttachments"] = [];
+            for (let item of this.rptSchItemAttachments)
+                data["rptSchItemAttachments"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -29364,6 +30232,7 @@ export interface IReportSchDetailsDto {
     isItemAccessible?: boolean | undefined;
     description?: string | undefined;
     objectInstanceID?: number | undefined;
+    rptSchItemAttachments?: ReportSchAttachmentDto[] | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
@@ -31704,6 +32573,118 @@ export interface IUserPendingItems {
     nextRunTime?: string | undefined;
 }
 
+export class UserPendingItemsDto implements IUserPendingItemsDto {
+    qfcNumber?: string | undefined;
+    userID?: number | undefined;
+    objectType?: string | undefined;
+    finalDescription?: string | undefined;
+    taskType?: string | undefined;
+    dateCreated?: string | undefined;
+
+    constructor(data?: IUserPendingItemsDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.qfcNumber = _data["qfcNumber"];
+            this.userID = _data["userID"];
+            this.objectType = _data["objectType"];
+            this.finalDescription = _data["finalDescription"];
+            this.taskType = _data["taskType"];
+            this.dateCreated = _data["dateCreated"];
+        }
+    }
+
+    static fromJS(data: any): UserPendingItemsDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItemsDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["qfcNumber"] = this.qfcNumber;
+        data["userID"] = this.userID;
+        data["objectType"] = this.objectType;
+        data["finalDescription"] = this.finalDescription;
+        data["taskType"] = this.taskType;
+        data["dateCreated"] = this.dateCreated;
+        return data;
+    }
+}
+
+export interface IUserPendingItemsDto {
+    qfcNumber?: string | undefined;
+    userID?: number | undefined;
+    objectType?: string | undefined;
+    finalDescription?: string | undefined;
+    taskType?: string | undefined;
+    dateCreated?: string | undefined;
+}
+
+export class UserPendingItemsDtoListBaseResponse implements IUserPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItemsDto[] | undefined;
+
+    constructor(data?: IUserPendingItemsDtoListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(UserPendingItemsDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UserPendingItemsDtoListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserPendingItemsDtoListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IUserPendingItemsDtoListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: UserPendingItemsDto[] | undefined;
+}
+
 export class UserPendingItemsListBaseResponse implements IUserPendingItemsListBaseResponse {
     isSuccess?: boolean;
     errorMessage?: string | undefined;
@@ -32578,6 +33559,130 @@ export interface IWAdminAccessRequestsDto {
     isAccountExpired?: boolean;
     isLoggedIn?: boolean;
     isSessionActive?: boolean;
+}
+
+export class WAdminProcess implements IWAdminProcess {
+    serviceProcessID?: number | undefined;
+    serviceRequestNo?: number;
+    objectID?: number | undefined;
+    objectInstanceID?: number;
+    serviceProcessDesc?: string | undefined;
+    serviceProcessUserNote?: string | undefined;
+    createdBy?: number;
+    createdByName?: string | undefined;
+    createdDate?: string | undefined;
+
+    constructor(data?: IWAdminProcess) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.serviceProcessID = _data["serviceProcessID"];
+            this.serviceRequestNo = _data["serviceRequestNo"];
+            this.objectID = _data["objectID"];
+            this.objectInstanceID = _data["objectInstanceID"];
+            this.serviceProcessDesc = _data["serviceProcessDesc"];
+            this.serviceProcessUserNote = _data["serviceProcessUserNote"];
+            this.createdBy = _data["createdBy"];
+            this.createdByName = _data["createdByName"];
+            this.createdDate = _data["createdDate"];
+        }
+    }
+
+    static fromJS(data: any): WAdminProcess {
+        data = typeof data === 'object' ? data : {};
+        let result = new WAdminProcess();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["serviceProcessID"] = this.serviceProcessID;
+        data["serviceRequestNo"] = this.serviceRequestNo;
+        data["objectID"] = this.objectID;
+        data["objectInstanceID"] = this.objectInstanceID;
+        data["serviceProcessDesc"] = this.serviceProcessDesc;
+        data["serviceProcessUserNote"] = this.serviceProcessUserNote;
+        data["createdBy"] = this.createdBy;
+        data["createdByName"] = this.createdByName;
+        data["createdDate"] = this.createdDate;
+        return data;
+    }
+}
+
+export interface IWAdminProcess {
+    serviceProcessID?: number | undefined;
+    serviceRequestNo?: number;
+    objectID?: number | undefined;
+    objectInstanceID?: number;
+    serviceProcessDesc?: string | undefined;
+    serviceProcessUserNote?: string | undefined;
+    createdBy?: number;
+    createdByName?: string | undefined;
+    createdDate?: string | undefined;
+}
+
+export class WAdminProcessListBaseResponse implements IWAdminProcessListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAdminProcess[] | undefined;
+
+    constructor(data?: IWAdminProcessListBaseResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.isSuccess = _data["isSuccess"];
+            this.errorMessage = _data["errorMessage"];
+            this.statusCode = _data["statusCode"];
+            if (Array.isArray(_data["response"])) {
+                this.response = [] as any;
+                for (let item of _data["response"])
+                    this.response!.push(WAdminProcess.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WAdminProcessListBaseResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new WAdminProcessListBaseResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isSuccess"] = this.isSuccess;
+        data["errorMessage"] = this.errorMessage;
+        data["statusCode"] = this.statusCode;
+        if (Array.isArray(this.response)) {
+            data["response"] = [];
+            for (let item of this.response)
+                data["response"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IWAdminProcessListBaseResponse {
+    isSuccess?: boolean;
+    errorMessage?: string | undefined;
+    statusCode?: number;
+    response?: WAdminProcess[] | undefined;
 }
 
 export class WApplicationDetailDto implements IWApplicationDetailDto {

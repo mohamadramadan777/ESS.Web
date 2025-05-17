@@ -18,43 +18,51 @@
       <div *ngFor="let report of reportsToBeSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-        
+
           <!-- New container for due date and buttons -->
           <div class="due-date-container">
             <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
-            <p *ngIf="report.resubmissionDueDate != ''" class="due-date"><strong>Resubmission Due Date:</strong> {{ report.resubmissionDueDate }}</p>
+            <p *ngIf="report.resubmissionDueDate != ''" class="due-date"><strong>Resubmission Due Date:</strong> {{
+              report.resubmissionDueDate }}</p>
             <div class="button-container">
 
-              <button *ngIf="report.btnUploadFileVisible" mat-icon-button class="animated-icon-button" (click)="attachFile(report?.rptSchItemID ?? 0, report)">
+              <button *ngIf="report.btnUploadFileVisible" mat-icon-button class="animated-icon-button"
+                (click)="attachFile(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>attach_file</mat-icon>
                 <span class="animated-text">Attach File</span>
               </button>
 
-              <button *ngIf="report.rowLinksVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+              <button *ngIf="report.rowLinksVisible" mat-icon-button class="animated-icon-button"
+                (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>history</mat-icon>
                 <span class="animated-text">History</span>
               </button>
-        
-              <button *ngIf="report.lkbtnViewInExcelVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+
+              <button *ngIf="report.lkbtnViewInExcelVisible" mat-icon-button class="animated-icon-button"
+                (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>description</mat-icon>
                 <span class="animated-text">View in Excel</span>
               </button>
-        
-              <button *ngIf="report.lkbtnWarningsVisible" mat-icon-button class="animated-icon-button" (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
+
+              <button *ngIf="report.lkbtnWarningsVisible" mat-icon-button class="animated-icon-button"
+                (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
                 <mat-icon>warning</mat-icon>
                 <span class="animated-text">Warnings</span>
               </button>
 
-              <button *ngIf="report.lkbtnDataValidationVisible" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+              <button *ngIf="report.lkbtnDataValidationVisible" mat-icon-button class="animated-icon-button"
+                (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>fact_check</mat-icon>
                 <span class="animated-text">Data Validation</span>
               </button>
 
-              <button *ngIf="report.btnSignOffVisible" mat-raised-button color="primary" class="btn" (click)="openSignOffDialog(report)">
+              <button *ngIf="report.btnSignOffVisible" mat-raised-button color="primary" class="btn"
+                (click)="openSignOffDialog(report)">
                 <mat-icon>draw</mat-icon> Sign off
               </button>
 
-              <button *ngIf="report.btnSubmitVisible" mat-raised-button color="primary" class="btn" (click)="submitReport(report)">
+              <button *ngIf="report.btnSubmitVisible" mat-raised-button color="primary" class="btn"
+                (click)="submitReport(report)">
                 <mat-icon>send</mat-icon> Submit
               </button>
 
@@ -65,22 +73,44 @@
             </div>
           </div>
         </div>
-        
+
         <p>
           <span class="label">Submission Type:</span>
           <span>{{ report.rptSubmissionType }}</span> &nbsp;&nbsp;&nbsp;&nbsp;
           <span *ngIf="report.rptFormsToBeSubmited != ''" class="label">Additional Forms to be submitted:</span>
           <span>{{ report.rptFormsToBeSubmited }}</span>
         </p>
-        
-        <p *ngIf="report.fileNameBtnVisible &&  report.fileName != '' &&  report.fileName != null">
-          <span class="label">Attached File:</span>
+
+        <!-- <p *ngIf="report.fileNameBtnVisible &&  report.fileName != '' &&  report.fileName != null">
+          <span class="label">Attached File(s):</span>
           <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
         </p>
 
         <p *ngIf="report.fileNameLabelVisible &&  report.fileName != '' &&  report.fileName != null">
-          <span class="label">Attached File:</span>
+          <span class="label">Attached File(s):</span>
           <span>{{ report.fileName }}</span>
+        </p> -->
+
+        <p *ngIf="report.rptSchItemAttachments?.length">
+          <span class="label">Attached File(s):</span>
+          <ng-container *ngIf="report.fileNameBtnVisible; else labelOnly">
+            <ng-container *ngFor="let attachment of report.rptSchItemAttachments; let last = last">
+              <span style="display: inline-flex; align-items: center;">
+                <a [href]="attachment.attachmentFileURI" target="_blank">{{ attachment.fileName }}</a>
+                <mat-icon style="font-size: 16px; margin-left: 4px; cursor: pointer; vertical-align: middle;"
+                  color="warn" (click)="deleteAttachment(attachment.rptSchItemAttachmentID, attachment.fileName ?? '', attachment.attachmentFilePath ?? '')">
+                  close
+                </mat-icon>
+              </span><span *ngIf="!last">, </span>
+            </ng-container>
+          </ng-container>
+          <ng-template #labelOnly>
+            <ng-container *ngFor="let attachment of report.rptSchItemAttachments; let last = last">
+              <span style="display: inline-flex; align-items: center;">
+                {{ attachment.fileName }}
+              </span><span *ngIf="!last">, </span>
+            </ng-container>
+          </ng-template>
         </p>
 
         <p class="inline-list">
@@ -95,22 +125,22 @@
           <span [innerHTML]="report.docSignText"></span>
         </p>
 
-        <p *ngIf="report.rowStatusVisible" >
+        <p *ngIf="report.rowStatusVisible">
           <span class="label">Submission Status:</span>
           <span>{{ report.soStatusTypeDesc }}</span>
         </p>
 
-        <p *ngIf="report.rowNextStepVisible" >
+        <p *ngIf="report.rowNextStepVisible">
           <span class="label">Next Steps / Instructions:</span>
           <span>{{ report.rptNextStatus }}</span>
         </p>
-        
 
-        <p *ngIf="report.reviewComments != ''" >
+
+        <p *ngIf="report.reviewComments != ''">
           <span class="label">Supervisor comments:</span>
           <span>{{ report.reviewComments }}</span>
         </p>
-        
+
       </div>
     </mat-tab>
 
@@ -119,40 +149,48 @@
       <div *ngFor="let report of reportsSubmitted" class="report-card">
         <div class="card-header">
           <h3>{{ report.rptName }}</h3>
-        
+
           <!-- New container for due date and buttons -->
           <div class="due-date-container">
             <p class="due-date"><strong>Due Date:</strong> {{ report.rptDueDate }}</p>
-        
+
             <div class="button-container">
-              <button mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+              <button mat-icon-button class="animated-icon-button"
+                (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>history</mat-icon>
                 <span class="animated-text">History</span>
               </button>
-        
-              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings || report.isRptXBRLValidationPassed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings || report.isRptXBRLValidationPassed"
+                mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>description</mat-icon>
                 <span class="animated-text">View in Excel</span>
               </button>
-        
-              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button" (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
+
+              <button *ngIf="report.isRptXBRLValidationPassedwithwarnings" mat-icon-button class="animated-icon-button"
+                (click)="openWarnings(report?.rptSchItemAttachmentID ?? 0, report)">
                 <mat-icon>warning</mat-icon>
                 <span class="animated-text">Warnings</span>
               </button>
 
-              <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button" (click)="openHistory(report?.rptSchItemID ?? 0, report)">
+              <button *ngIf="report.isRptXBRLValidationFailed" mat-icon-button class="animated-icon-button"
+                (click)="openHistory(report?.rptSchItemID ?? 0, report)">
                 <mat-icon>error</mat-icon>
                 <span class="animated-text">Errors</span>
               </button>
             </div>
           </div>
         </div>
-        
-        <p>
-          <span class="label">Attached File:</span>
-          <a [href]="report.attachmentFileURI" target="_blank">{{ report.fileName }}</a>
+
+        <p *ngIf="report.rptSchItemAttachments?.length">
+          <span class="label">Attached File(s):</span>
+          <ng-container *ngFor="let attachment of report.rptSchItemAttachments; let last = last">
+            <span>
+              📎 <a [href]="attachment.attachmentFileURI" target="_blank">{{ attachment.fileName }}</a>
+            </span><span *ngIf="!last">, </span>
+          </ng-container>
         </p>
-        
+
         <p class="inline-list">
           <span class="label">Signed by:</span>
           <span class="names-list">

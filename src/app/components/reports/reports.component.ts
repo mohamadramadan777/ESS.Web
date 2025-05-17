@@ -274,8 +274,8 @@ export class ReportsComponent implements OnInit {
 
   signOff() {
     this.loadingService.show();
-    this.client.signOffReport(this.selectedReport?.rptSchItemID, this.selectedReport?.docTypeID, this.selectedReport?.rptPeriodToDate, this.selectedReport?.fileAttachedUserEmail, this.selectedReport?.rptSchItemAttachmentID, 
-      this.selectedReport?.attachmentStatusTypeID, this.selectedReport?.rptFreqTypeDesc, this.selectedReport?.soseqno, this.selectedReport?.objectSOStatusID, this.selectedReport?.fileName, this.selectedReport?.rptName, 
+    this.client.signOffReport(this.selectedReport?.rptSchItemID, this.selectedReport?.docTypeID, this.selectedReport?.rptPeriodToDate, this.selectedReport?.fileAttachedUserEmail, this.selectedReport?.rptSchItemAttachmentID,
+      this.selectedReport?.attachmentStatusTypeID, this.selectedReport?.rptFreqTypeDesc, this.selectedReport?.soseqno, this.selectedReport?.objectSOStatusID, this.selectedReport?.fileName, this.selectedReport?.rptName,
       this.selectedReport?.rptDueDate, this.selectedReport?.lateFeeFlag ?? false).subscribe({
         next: (response) => {
           this.loadingService.hide();
@@ -297,5 +297,36 @@ export class ReportsComponent implements OnInit {
           console.error('Error occurred while signing Report:', error);
         },
       });
+  }
+
+  deleteAttachment(id: number | undefined, fileName: string, filePath: string) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to remove the file "${fileName}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove it!',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#a51e36',
+      cancelButtonColor: '#555555',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.client.deleteAttachment(id, fileName, filePath, true).subscribe({
+          next: (response) => {
+            if (response && response.isSuccess && response.response) {
+              this.toastr.success('The file has been removed.', 'Removed!');
+              this.onScheduleChange();
+            } else {
+              this.toastr.error('Failed to remove file.', 'Error');
+              console.error('Failed to remove file:', response?.errorMessage);
+            }
+          },
+          error: (error) => {
+            this.toastr.error('Error occurred while removing file.', 'Error');
+            console.error('Error occurred while removing file:', error);
+          },
+        });
+      }
+    });
   }
 }
