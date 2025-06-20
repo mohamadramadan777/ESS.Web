@@ -289,7 +289,7 @@ export class ReportUploadComponent {
       this.loadingService.show();
       this.client.uploadReport(fileParam, report.rptSchFinYearFromDate, report.rptSchFinYearToDate, report.rptPeriodTypeDesc, report.docTypeID, report.rptName,
         report.rptDueDate, report.rptSubmissionTypeID, report.rptPeriodFromDate, report.rptPeriodToDate, report.rptFreqTypeDesc, report.firmsRptSchID ?? 0, report.rptSchItemID ?? 0,
-        report.rptSchItemAttachmentID ?? 0, report.attachmentFilePath ?? "", report.attachmentStatusTypeID ?? 0, report.allowReSubmit ?? false, file.name).subscribe({
+        report.rptSchItemAttachmentID ?? 0, report.attachmentFilePath ?? "", report.attachmentStatusTypeID ?? 0, report.allowReSubmit ?? false, report.isMultipleAttachments ?? false, file.name).subscribe({
           next: (response) => {
             if (response && response.isSuccess && response.response) {
               this.toastr.success(`File ${file.name} uploaded successfully!`, 'Upload Success');

@@ -11204,9 +11204,10 @@ export class Client {
      * @param description (optional) 
      * @param objectInstanceID (optional) 
      * @param rptSchItemAttachments (optional) 
+     * @param isMultipleAttachments (optional) 
      * @return OK
      */
-    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined, isItemAccessible: boolean | undefined, description: string | undefined, objectInstanceID: number | undefined, rptSchItemAttachments: ReportSchAttachmentDto[] | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
+    getReportSchItemDetails(qFCNum: string | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, sOCompletionDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, userID: number | undefined, firmsRptSchID: number | undefined, rptSchAttachmentStatusId: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, fileUploadedOnDate: string | undefined, rptSchAttachmentStatusDesc: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptSubmissionType: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, fileName: string | undefined, attachmentFileURI: string | undefined, objectSOStatusID: number | undefined, fileUploadedByName: string | undefined, fileUploadedByEmailAdd: string | undefined, submittedOn: string | undefined, sOStatusTypeDesc: string | undefined, attachmentFilePath: string | undefined, sOStatusTypeID: number | undefined, submittedBy: number | undefined, rptNextStatus: string | undefined, attachmentStatusTypeID: number | undefined, objectID: number | undefined, fileAttachedUserEmail: string | undefined, rptAttachmentStatusDate: string | undefined, fileStream: string | undefined, reviewComments: string | undefined, firmsRptSchItemID: number | undefined, manuallyReceived: boolean | undefined, allowReSubmit: boolean | undefined, isFileRecieved: boolean | undefined, lateFeeFlag: boolean | undefined, isReportDue: boolean | undefined, daysOverDue: number | undefined, isReportReminderDue: boolean | undefined, isResubmissionRequested: boolean | undefined, resubmissionRequestedDate: string | undefined, isResubmissionNotificationRequired: boolean | undefined, docReceivedDate: string | undefined, isAMLDocType: boolean | undefined, rptFormsToBeSubmited: string | undefined, submissionBeforeRptPeriodEnd: boolean | undefined, resubmissionDueDate: string | undefined, isRptXBRLValidationPassedwithwarnings: boolean | undefined, isRptXBRLValidationFailed: boolean | undefined, isRptXBRLValidationPassed: boolean | undefined, docSignText: string | undefined, tdAdditionalSheetsVisible: boolean | undefined, statusDesc: string | undefined, status: string | undefined, rowNextStepVisible: boolean | undefined, rowLinksVisible: boolean | undefined, rowStatusVisible: boolean | undefined, rowAttachedFileVisible: boolean | undefined, fileNameBtnVisible: boolean | undefined, fileNameLabelVisible: boolean | undefined, btnSubmitVisible: boolean | undefined, btnSignOffVisible: boolean | undefined, btnUploadFileVisible: boolean | undefined, lstSignOffDetails: SignOffDetails[] | undefined, repDueReportSigVisible: boolean | undefined, rowAllSigNotPresentVisible: boolean | undefined, lblSigNotPresent: string | undefined, lblUserNotRegistered: string | undefined, lblUserNotRegisteredVisible: boolean | undefined, lkbtnWarningsVisible: boolean | undefined, lkbtnViewInExcelVisible: boolean | undefined, lkbtnDataValidationVisible: boolean | undefined, lstObjectSOTaskStatus: ObjectSOTaskStatusDto[] | undefined, soseqno: string | undefined, isItemAccessible: boolean | undefined, description: string | undefined, objectInstanceID: number | undefined, rptSchItemAttachments: ReportSchAttachmentDto[] | undefined, isMultipleAttachments: boolean | undefined): Observable<ReportSchDetailsDtoBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/get-report-sch-item-details?";
         if (qFCNum === null)
             throw new Error("The parameter 'qFCNum' cannot be null.");
@@ -11563,6 +11564,10 @@ export class Client {
         				url_ += "RptSchItemAttachments[" + index + "]." + attr + "=" + encodeURIComponent("" + (item as any)[attr]) + "&";
         			}
             });
+        if (isMultipleAttachments === null)
+            throw new Error("The parameter 'isMultipleAttachments' cannot be null.");
+        else if (isMultipleAttachments !== undefined)
+            url_ += "isMultipleAttachments=" + encodeURIComponent("" + isMultipleAttachments) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -12778,10 +12783,11 @@ export class Client {
      * @param attachmentFilePath (optional) 
      * @param attachmentStatusTypeID (optional) 
      * @param allowReSubmit (optional) 
+     * @param isMultipleAttachments (optional) 
      * @param pFileName (optional) 
      * @return OK
      */
-    uploadReport(file: FileParameter | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, attachmentFilePath: string | undefined, attachmentStatusTypeID: number | undefined, allowReSubmit: boolean | undefined, pFileName: string | undefined): Observable<BooleanBaseResponse> {
+    uploadReport(file: FileParameter | undefined, rptSchFinYearFromDate: string | undefined, rptSchFinYearToDate: string | undefined, rptPeriodTypeDesc: string | undefined, docTypeID: number | undefined, rptName: string | undefined, rptDueDate: string | undefined, rptSubmissionTypeID: number | undefined, rptPeriodFromDate: string | undefined, rptPeriodToDate: string | undefined, rptFreqTypeDesc: string | undefined, rptSchID: number | undefined, rptSchItemID: number | undefined, rptSchItemAttachmentID: number | undefined, attachmentFilePath: string | undefined, attachmentStatusTypeID: number | undefined, allowReSubmit: boolean | undefined, isMultipleAttachments: boolean | undefined, pFileName: string | undefined): Observable<BooleanBaseResponse> {
         let url_ = this.baseUrl + "/api/ReportSchedule/upload-report";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -12854,6 +12860,10 @@ export class Client {
             throw new Error("The parameter 'allowReSubmit' cannot be null.");
         else
             content_.append("AllowReSubmit", allowReSubmit.toString());
+        if (isMultipleAttachments === null || isMultipleAttachments === undefined)
+            throw new Error("The parameter 'isMultipleAttachments' cannot be null.");
+        else
+            content_.append("isMultipleAttachments", isMultipleAttachments.toString());
         if (pFileName === null || pFileName === undefined)
             throw new Error("The parameter 'pFileName' cannot be null.");
         else
@@ -29925,6 +29935,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
     description?: string | undefined;
     objectInstanceID?: number | undefined;
     rptSchItemAttachments?: ReportSchAttachmentDto[] | undefined;
+    isMultipleAttachments?: boolean | undefined;
 
     constructor(data?: IReportSchDetailsDto) {
         if (data) {
@@ -30034,6 +30045,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
                 for (let item of _data["rptSchItemAttachments"])
                     this.rptSchItemAttachments!.push(ReportSchAttachmentDto.fromJS(item));
             }
+            this.isMultipleAttachments = _data["isMultipleAttachments"];
         }
     }
 
@@ -30143,6 +30155,7 @@ export class ReportSchDetailsDto implements IReportSchDetailsDto {
             for (let item of this.rptSchItemAttachments)
                 data["rptSchItemAttachments"].push(item.toJSON());
         }
+        data["isMultipleAttachments"] = this.isMultipleAttachments;
         return data;
     }
 }
@@ -30233,6 +30246,7 @@ export interface IReportSchDetailsDto {
     description?: string | undefined;
     objectInstanceID?: number | undefined;
     rptSchItemAttachments?: ReportSchAttachmentDto[] | undefined;
+    isMultipleAttachments?: boolean | undefined;
 }
 
 export class ReportSchDetailsDtoBaseResponse implements IReportSchDetailsDtoBaseResponse {
