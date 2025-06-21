@@ -569,33 +569,29 @@ export class HomeComponent implements OnInit, OnDestroy {
             this.loadingService.hide();
           }, 100);
         }
-        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded) {
-          if (this.pendingSubmissions.length > 0) {
-            this.selectTable(2);
-            setTimeout(() => {
-              this.selectTable(1);
-              this.defaultTableSelected = true;
-              this.loadingService.hide();
-            }, 100);
-          }
+        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded && this.pendingSubmissions.length > 0) {
+          this.selectTable(2);
+          setTimeout(() => {
+            this.selectTable(1);
+            this.defaultTableSelected = true;
+            this.loadingService.hide();
+          }, 100);
         }
-        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded && this.generalCommunicationLoaded) {
-          if (this.generealCommunications.length > 0) {
-            this.selectTable(1);
-            setTimeout(() => {
-              this.selectTable(2);
-              this.defaultTableSelected = true;
-              this.loadingService.hide();
-            }, 100);
-          }
-          else if (this.formsLoaded && this.generalSubmissionForms.length > 0) {
-            this.selectTable(1);
-            setTimeout(() => {
-              this.selectTable(2);
-              this.defaultTableSelected = true;
-              this.loadingService.hide();
-            }, 100);
-          }
+        else if (this.formsLoaded && this.generalSubmissionForms.length > 0) {
+          this.selectTable(1);
+          setTimeout(() => {
+            this.selectTable(2);
+            this.defaultTableSelected = true;
+            this.loadingService.hide();
+          }, 100);
+        }
+        else if (this.requiredSignoffLoaded && this.pendingSubmissionsLoaded && this.generalCommunicationLoaded && this.generealCommunications.length > 0) {
+          this.selectTable(1);
+          setTimeout(() => {
+            this.selectTable(2);
+            this.defaultTableSelected = true;
+            this.loadingService.hide();
+          }, 100);
         }
       }, 100);
     }
